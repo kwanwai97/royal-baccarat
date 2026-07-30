@@ -471,6 +471,7 @@ let currentChip=1000;
 let bets={player:0,banker:0,tie:0,ppair:0,bpair:0,big:0,small:0,luck6:0,luck7:0};
 let lastBets=null;
 let dealing=false;
+let settled=false; // settle已執行後clearBets唔再退款
 
 let stats={ total:0, pWin:0, bWin:0, tie:0, hit:0, betRounds:0, streak:0, maxStreak:0, winAmt:0, lossAmt:0, peak:50000 };
 /* 這一靴牌的統計（非戰績累計）：每次洗牌開新靴清零，一啟動未派牌全0 */
@@ -786,7 +787,7 @@ function placeBet(k){
   if(balance<currentChip){ showToast('⚠ 餘額不足'); return; }
   balance -= currentChip; bets[k]+=currentChip; updateBetDisplay(); sndChip(); flyChip(k);
 }
-function clearBets(force){ if(dealing && !betting && !force)return; if(!dealing){ const refund=Object.values(bets).reduce((a,b)=>a+b,0); balance+=refund; } bets={player:0,banker:0,tie:0,ppair:0,bpair:0,big:0,small:0,luck6:0,luck7:0}; updateBetDisplay(); }
+function clearBets(force){ if(dealing && !betting && !force)return; if(!settled){ const refund=Object.values(bets).reduce((a,b)=>a+b,0); balance+=refund; } bets={player:0,banker:0,tie:0,ppair:0,bpair:0,big:0,small:0,luck6:0,luck7:0}; updateBetDisplay(); }
 /* 落注期：綠字倒數 N 秒，期間人類可落注；AI 已經先落好供參考 */
 let betting=false;
 function bettingPhase(sec){
@@ -1048,6 +1049,7 @@ async function deal(auto){
 
 /* ===================== 結算 ===================== */
 function settle(winner, playerPair, bankerPair, big, totalCards, pTotal, bTotal, pCards, bCards){
+  settled=true;
   let payout=0;
   const winDetail={};
   if(winner==='player'){ if(bets.player>0){ payout+=bets.player*2; winDetail.player=true; } }
@@ -1124,7 +1126,7 @@ function settle(winner, playerPair, bankerPair, big, totalCards, pTotal, bTotal,
   const flashMap={player:'.bet.player',banker:'.bet.banker',tie:'.bet.tie',ppair:'.bet.ppair',bpair:'.bet.bpair',big:'.bet.big',small:'.bet.small',luck6:'.bet.luck6',luck7:'.bet.luck7'};
   for(const k in resultDetail){ const el=document.querySelector(flashMap[k]); if(el){ el.classList.add('win-pulse2'); setTimeout(()=>el.classList.remove('win-pulse2'),2500); } }
   // 籌碼等閃爍連閃兩下(3秒)之後先一齊消失（唔好開牌即刻無）；人類+AI同格籌碼一齊清
-  setTimeout(()=>{ clearBets(true); saveRoads(); if(ais.length) aiSettle(winner); }, 3000);
+  setTimeout(()=>{ clearBets(true); saveRoads(); settled=false; if(ais.length) aiSettle(winner); }, 3000);
 }
 /* 結果文字：3行式 + 補牌提示 */
 function resultText(label, pTotal, bTotal, pp, bp, big, pCards, bCards){
