@@ -780,7 +780,7 @@ function flyChip(k){
 }
 
 function placeBet(k){
-  if(dealing && !betting) return;   // 開牌中不可落注；落注期(betting)內可落
+  if(dealing && !betting && settled) return;   // 開牌中/結算後不可落注；落注期(betting)內可落、未結算可落
   if(bets[k]+currentChip>LIMIT_MAX){ showToast('⚠ 單注超過限紅 '+fmt(LIMIT_MAX)); return; }
   let total=0; for(const x in bets) total+=bets[x];
   if(total+currentChip>TABLE_MAX){ showToast('⚠ 全桌注額超過 '+fmt(TABLE_MAX)); return; }
