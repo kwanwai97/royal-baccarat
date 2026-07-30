@@ -1138,6 +1138,8 @@ function saveStats(){
 /* ===================== AI 陪玩 · 人物性格大兜亂 ===================== */
 let ais=[];   // 多AI陣列，最多3個
 const AI_ICONS=['🤖','👽','🦊'];
+function saveAiList(){ try{ localStorage.setItem('bac_ai', JSON.stringify(ais)); }catch(e){} }
+function loadAiList(){ try{ const s=localStorage.getItem('bac_ai'); if(s){ const arr=JSON.parse(s); if(Array.isArray(arr)) ais=arr.map(ai=>({ ...ai, currentBet:null })); } }catch(e){} }
 // 10種人物性格（人生百態）：各有獨特投注方向 + 對白
 const AI_PERSONAS={
   banker:{ name:'死忠莊',   icon:'🏦', pick:()=>'banker',                                   blurb:'莊家抽水都贏，一世信莊', lines:['莊就係唔會輸嘅','莊閒一齊都係莊','莊旺，跟住佢'] },
@@ -1169,7 +1171,7 @@ function aiPlaceBets(){   // 所有AI同局落注（供人類參考）
     ai.currentBet={bet, pick};
     ai.balance-=bet;
   });
-  updateBetDisplay(); updateAiBalances();
+  updateBetDisplay(); updateAiBalances(); saveAiList();
 }
 /* ===================== AI 走馬燈對話 ===================== */
 function showMarquee(items){
@@ -1211,7 +1213,7 @@ function aiSettle(result){
     ai.currentBet=null;
   });
   if(dialogues.length) showMarquee(dialogues);
-  updateBetDisplay(); updateAiBalances();
+  updateBetDisplay(); updateAiBalances(); saveAiList();
 }
 function updateAiBalances(){   // 頂欄 2×2：你(人類)永遠第一格(左上) + 3個AI填第2/3/4格
   const box=document.getElementById('aiBalanceBox');
@@ -1394,7 +1396,7 @@ function renderAiList(){
   // 編輯/刪除外掛事件
   list.querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click',()=>{
     const id=b.dataset.del; const i=ais.findIndex(a=>a.id===id); if(i<0) return;
-    const nm=ais[i].name; ais.splice(i,1); updateAiBalances(); renderAiList(); showToast('🗑 已移除 '+nm+'（剩 '+ais.length+'個）');
+    const nm=ais[i].name; ais.splice(i,1); updateAiBalances(); renderAiList(); saveAiList(); showToast('🗑 已移除 '+nm+'（剩 '+ais.length+'個）');
   }));
   list.querySelectorAll('[data-edit]').forEach(b=>b.addEventListener('click',()=>{
     const id=b.dataset.edit; const ai=ais.find(a=>a.id===id); if(!ai) return;
@@ -1424,17 +1426,17 @@ document.getElementById('aiConfirm').addEventListener('click',()=>{
     const ai=ais.find(a=>a.id===editingAiId);
     if(ai){ ai.name=name; ai.persona=persona; ai.plan=plan; ai.balance=bank; ai.baseBet=Math.max(1000, Math.floor(bank/20/1000)*1000); }
     editingAiId=null; document.getElementById('aiConfirm').textContent='確認 · 新增 AI';
-    document.getElementById('aiModal').classList.remove('show'); updateAiBalances(); renderAiList();
+    document.getElementById('aiModal').classList.remove('show'); updateAiBalances(); renderAiList(); saveAiList();
     showToast('💾 已更新「'+name+'」'); return;
   }
   const ai={ id:'ai'+(Date.now())+'-'+ais.length, name, icon:AI_ICONS[ais.length], balance:bank, persona, plan, baseBet:Math.max(1000, Math.floor(bank/20/1000)*1000), step:0, history:[], currentBet:null };
   ais.push(ai);
-  document.getElementById('aiModal').classList.remove('show'); updateAiBalances(); renderAiList();
+  document.getElementById('aiModal').classList.remove('show'); updateAiBalances(); renderAiList(); saveAiList();
   showToast(ai.icon+' '+name+' 入枱！本金 '+fmt(ai.balance)+'（共'+ais.length+'個AI）');
 });
 document.getElementById('aiStop').addEventListener('click',()=>{
   document.getElementById('aiModal').classList.remove('show');
-  if(ais.length && confirm('確定移除全部 '+ais.length+' 個 AI 陪玩？')){ ais=[]; updateAiBalances(); renderAiList(); showToast('🤖 已移除全部 AI'); }
+  if(ais.length && confirm('確定移除全部 '+ais.length+' 個 AI 陪玩？')){ ais=[]; updateAiBalances(); renderAiList(); saveAiList(); showToast('🤖 已移除全部 AI'); }
 });
 document.getElementById('aiExit').addEventListener('click',()=>{ document.getElementById('aiModal').classList.remove('show'); });
 document.getElementById('btnMute').addEventListener('click',()=>{ mute=!mute; document.getElementById('btnMute').textContent=mute?'🔇':'🔊'; if(!mute) sndChip(); });
@@ -1490,7 +1492,7 @@ function openRoadModal(id){
 document.getElementById('roadModalClose').addEventListener('click',()=>document.getElementById('roadModal').classList.remove('show'));
 document.getElementById('roadModal').addEventListener('click',e=>{ if(e.target.id==='roadModal') document.getElementById('roadModal').classList.remove('show'); });
 
-loadStats(); resetShoe(); resetRoads(); updateBalance(); updateBetDisplay(); checkDaily(); drawAllRoads();
+loadStats(); loadAiList(); resetShoe(); resetRoads(); updateBalance(); updateBetDisplay(); checkDaily(); drawAllRoads();
 </script>
 </body>
 </html>
