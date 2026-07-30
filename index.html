@@ -1492,7 +1492,7 @@ function openRoadModal(id){
 document.getElementById('roadModalClose').addEventListener('click',()=>document.getElementById('roadModal').classList.remove('show'));
 document.getElementById('roadModal').addEventListener('click',e=>{ if(e.target.id==='roadModal') document.getElementById('roadModal').classList.remove('show'); });
 
-loadStats(); loadAiList(); resetShoe(); resetRoads(); updateBalance(); updateBetDisplay(); checkDaily(); drawAllRoads();
+loadStats(); loadAiList(); updateAiBalances(); resetShoe(); resetRoads(); updateBalance(); updateBetDisplay(); checkDaily(); drawAllRoads();
 </script>
 </body>
 </html>
