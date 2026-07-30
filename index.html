@@ -806,7 +806,7 @@ function bettingPhase(sec){
 }
 function repeatBets(){ if(dealing||!lastBets)return; let total=0; for(const x in lastBets) total+=lastBets[x];
   if(total>TABLE_MAX||balance<total){ showToast('⚠ 餘額不足重複'); return; }
-  bets=Object.assign({},lastBets); updateBetDisplay(); sndChip();
+  balance-=total; bets=Object.assign({},lastBets); updateBalance(); updateAiBalances(); updateBetDisplay(); sndChip();
 }
 
 /* ===================== 發牌流程 ===================== */
@@ -1223,6 +1223,9 @@ function aiSettle(result){
     if(result===pick){
       if(pick==='player') payout=bet*2; else if(pick==='banker') payout=Math.round(bet*1.95); else if(pick==='tie') payout=bet*9;
       ai.balance+=payout; ai.step=0; ai.lastWin=true; win=true;
+    } else if(result==='tie' && (pick==='player'||pick==='banker')){
+      // 和局時 Player/Banker 注退款
+      ai.balance+=bet; ai.lastWin=null; win=false;
     } else { ai.step++; ai.lastWin=false; win=false; }
     ai.history.push(result==='player'?'P':result==='banker'?'B':'T');
     if(ai.history.length>40) ai.history.shift();
