@@ -784,6 +784,7 @@ function placeBet(k){
   let total=0; for(const x in bets) total+=bets[x];
   if(total+currentChip>TABLE_MAX){ showToast('⚠ 全桌注額超過 '+fmt(TABLE_MAX)); return; }
   if(balance<currentChip){ showToast('⚠ 餘額不足'); return; }
+  balance -= currentChip;          // 立即扣款（人類）
   bets[k]+=currentChip; updateBetDisplay(); sndChip(); flyChip(k);
 }
 function clearBets(force){ if(dealing && !betting && !force)return; bets={player:0,banker:0,tie:0,ppair:0,bpair:0,big:0,small:0,luck6:0,luck7:0}; updateBetDisplay(); }
