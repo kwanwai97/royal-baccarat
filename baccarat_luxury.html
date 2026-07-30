@@ -760,15 +760,14 @@ function flyChip(k){
 }
 
 function placeBet(k){
-  if(dealing && !betting) return;
+  if(dealing && !betting) return;   // 開牌中不可落注；落注期(betting)內可落
   if(bets[k]+currentChip>LIMIT_MAX){ showToast('⚠ 單注超過限紅 '+fmt(LIMIT_MAX)); return; }
   let total=0; for(const x in bets) total+=bets[x];
   if(total+currentChip>TABLE_MAX){ showToast('⚠ 全桌注額超過 '+fmt(TABLE_MAX)); return; }
   if(balance<currentChip){ showToast('⚠ 餘額不足'); return; }
-  balance -= currentChip;   // 人類點注即刻扣
   bets[k]+=currentChip; updateBetDisplay(); sndChip(); flyChip(k);
 }
-function clearBets(force){ if(dealing && !betting && !force)return; balance += Object.values(bets).reduce((a,b)=>a+b,0); bets={player:0,banker:0,tie:0,ppair:0,bpair:0,big:0,small:0,luck6:0,luck7:0}; updateBetDisplay(); }
+function clearBets(force){ if(dealing && !betting && !force)return; bets={player:0,banker:0,tie:0,ppair:0,bpair:0,big:0,small:0,luck6:0,luck7:0}; updateBetDisplay(); }
 /* 落注期：綠字倒數 N 秒，期間人類可落注；AI 已經先落好供參考 */
 let betting=false;
 function bettingPhase(sec){
@@ -1052,7 +1051,7 @@ function settle(winner, playerPair, bankerPair, big, totalCards, pTotal, bTotal,
   }
 
   const staked=Object.values(bets).reduce((a,b)=>a+b,0);
-  balance = balance + payout;   // placeBet 已扣 staked，呢度只加派彩
+  balance = balance - staked + payout;
   const net=payout-staked;
   lastStaked=staked;
 
@@ -1493,7 +1492,7 @@ function openRoadModal(id){
 document.getElementById('roadModalClose').addEventListener('click',()=>document.getElementById('roadModal').classList.remove('show'));
 document.getElementById('roadModal').addEventListener('click',e=>{ if(e.target.id==='roadModal') document.getElementById('roadModal').classList.remove('show'); });
 
-loadStats(); loadAiList(); updateAiBalances(); resetShoe(); resetRoads(); updateBalance(); updateBetDisplay(); checkDaily(); drawAllRoads();
+loadStats(); loadAiList(); updateAiBalances(); resetShoe(); updateBalance(); updateBetDisplay(); checkDaily(); drawAllRoads();
 </script>
 </body>
 </html>
