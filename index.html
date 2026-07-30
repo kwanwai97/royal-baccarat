@@ -787,7 +787,7 @@ function placeBet(k){
   balance -= currentChip;          // 立即扣款（人類）
   bets[k]+=currentChip; updateBetDisplay(); sndChip(); flyChip(k);
 }
-function clearBets(force){ if(dealing && !betting && !force)return; bets={player:0,banker:0,tie:0,ppair:0,bpair:0,big:0,small:0,luck6:0,luck7:0}; updateBetDisplay(); }
+function clearBets(force){ if(dealing && !betting && !force)return; balance += Object.values(bets).reduce((a,b)=>a+b,0); bets={player:0,banker:0,tie:0,ppair:0,bpair:0,big:0,small:0,luck6:0,luck7:0}; updateBetDisplay(); }
 /* 落注期：綠字倒數 N 秒，期間人類可落注；AI 已經先落好供參考 */
 let betting=false;
 function bettingPhase(sec){
@@ -1071,7 +1071,7 @@ function settle(winner, playerPair, bankerPair, big, totalCards, pTotal, bTotal,
   }
 
   const staked=Object.values(bets).reduce((a,b)=>a+b,0);
-  balance = balance - staked + payout;
+  balance = balance + payout;   // placeBet 已立即扣 staked，這裏只加派彩
   const net=payout-staked;
   lastStaked=staked;
 
