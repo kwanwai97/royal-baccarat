@@ -1424,7 +1424,7 @@ document.getElementById('aiConfirm').addEventListener('click',()=>{
   const bank=50000; // 新增/编辑一律固定5万，不显示本金选单
   if(editingAiId){
     const ai=ais.find(a=>a.id===editingAiId);
-    if(ai){ ai.name=name; ai.persona=persona; ai.plan=plan; ai.balance=bank; ai.baseBet=Math.max(1000, Math.floor(bank/20/1000)*1000); }
+    if(ai){ ai.name=name; ai.persona=persona; ai.plan=plan; /* 保留原本 balance */ ai.baseBet=Math.max(1000, Math.floor(ai.balance/20/1000)*1000); }
     editingAiId=null; document.getElementById('aiConfirm').textContent='確認 · 新增 AI';
     document.getElementById('aiModal').classList.remove('show'); updateAiBalances(); renderAiList(); saveAiList();
     showToast('💾 已更新「'+name+'」'); return;
