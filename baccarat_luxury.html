@@ -485,7 +485,26 @@ const STREAK_BONUS=[0,0,0,0.02,0.05,0.10,0.15,0.20,0.30,0.50]; // 連勝第3局�
 let bigCols=[];
 let history=[]; // {winner:'player'|'banker'|'tie', playerPair, bankerPair, totalCards}
 
-function resetRoads(){ bigCols=[]; history=[]; shoeStats={ round:0, pWin:0, bWin:0, tie:0, ppair:0, bpair:0, luck6:0, luck7:0, lastCards:0 }; }
+/* ===================== 路單 localStorage ===================== */
+function saveRoads(){
+  try{
+    localStorage.setItem('bac_road_big', JSON.stringify(bigCols));
+    localStorage.setItem('bac_road_hist', JSON.stringify(history));
+    localStorage.setItem('bac_road_stats', JSON.stringify(shoeStats));
+  }catch(e){}
+}
+function loadRoads(){
+  try{
+    const b=localStorage.getItem('bac_road_big');
+    const h=localStorage.getItem('bac_road_hist');
+    const s=localStorage.getItem('bac_road_stats');
+    if(b) bigCols=JSON.parse(b);
+    if(h) history=JSON.parse(h);
+    if(s) shoeStats=Object.assign(shoeStats, JSON.parse(s));
+  }catch(e){}
+}
+
+function resetRoads(){ bigCols=[]; history=[]; shoeStats={ round:0, pWin:0, bWin:0, tie:0, ppair:0, bpair:0, luck6:0, luck7:0, lastCards:0 }; saveRoads(); }
 
 function addResult(winner, playerPair, bankerPair){
   history.push({winner, playerPair, bankerPair});
@@ -1009,7 +1028,7 @@ async function deal(auto){
 
   settle(winner, playerPair, bankerPair, big, totalCards, pTotal, bTotal, pc.length, bc.length);
   addResult(winner, playerPair, bankerPair);
-  drawAllRoads();
+  drawAllRoads(); saveRoads();
   saveStats();
   // 開牌3秒後啤牌淡出消失，結果文字保留
   setTimeout(function(){
@@ -1492,7 +1511,7 @@ function openRoadModal(id){
 document.getElementById('roadModalClose').addEventListener('click',()=>document.getElementById('roadModal').classList.remove('show'));
 document.getElementById('roadModal').addEventListener('click',e=>{ if(e.target.id==='roadModal') document.getElementById('roadModal').classList.remove('show'); });
 
-loadStats(); loadAiList(); updateAiBalances(); resetShoe(); updateBalance(); updateBetDisplay(); checkDaily(); drawAllRoads();
+loadStats(); loadAiList(); loadRoads(); updateAiBalances(); resetShoe(); updateBalance(); updateBetDisplay(); checkDaily(); drawAllRoads();
 </script>
 </body>
 </html>
