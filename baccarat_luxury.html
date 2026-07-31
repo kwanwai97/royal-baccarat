@@ -1050,6 +1050,7 @@ async function deal(auto){
 /* ===================== 結算 ===================== */
 function settle(winner, playerPair, bankerPair, big, totalCards, pTotal, bTotal, pCards, bCards){
   settled=true;
+  lastBets=Object.assign({},bets);  // 記錄本局投注供重複按鈕用
   let payout=0;
   const winDetail={};
   if(winner==='player'){ if(bets.player>0){ payout+=bets.player*2; winDetail.player=true; } }
