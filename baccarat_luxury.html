@@ -261,7 +261,7 @@
 
   .daily-tip{text-align:center; font-size:11px; color:var(--gold2); padding:0 10px 4px; min-height:14px;}
   /* AI 陪玩 · 3+1 顯示：上面2個AI + 下邊1個AI + 你最底 */
-  .ai-balances{display:grid; grid-template-columns:repeat(2,auto); grid-auto-rows:auto; gap:1px 4px; align-items:center; justify-content:start;}
+  .ai-balances{display:flex; flex-wrap:wrap; gap:1px 4px; align-items:center; justify-content:flex-start; overflow-x:auto; max-width:100%;}
   .ai-balances .aib{display:flex; flex-direction:column; line-height:1.1; padding:1px 5px; border-left:1px solid rgba(255,255,255,.15);}
   .ai-balances .aib small{font-size:8px; opacity:.75; white-space:nowrap;}
   .ai-balances .aib b{font-size:11px; color:var(--gold2); font-weight:800;}
@@ -350,6 +350,8 @@
           <span class="ai-chip" data-v="pro">🧠 算牌神</span>
           <span class="ai-chip" data-v="million">💎 大戶豪</span>
           <span class="ai-chip" data-v="rookie">🐣 初哥仔</span>
+          <span class="ai-chip" data-v="analyst">📊 分析師</span>
+          <span class="ai-chip" data-v="rebel">🦹 反叛者</span>
         </div>
         <div id="aiPersonaBlurb" class="ai-blurb">莊家抽水都贏，一世信莊</div>
       </div>
@@ -1156,34 +1158,98 @@ function saveStats(){
   try{ localStorage.setItem('bac_stats',JSON.stringify(stats)); localStorage.setItem('bac_balance',String(balance)); }catch(e){}
 }
 
-/* ===================== AI 陪玩 · 人物性格大兜亂 ===================== */
-let ais=[];   // 多AI陣列，最多3個
-const AI_ICONS=['🤖','👽','🦊'];
+/* ===================== AI 陪玩 v2 · 多因子+情感+人生百態 ===================== */
+let ais=[];   // 多AI陣列，最多6個
+const AI_ICONS=['🤖','👽','🦊','🐲','🦉','🎭'];
 function saveAiList(){ try{ localStorage.setItem('bac_ai', JSON.stringify(ais)); }catch(e){} }
-function loadAiList(){ try{ const s=localStorage.getItem('bac_ai'); if(s){ const arr=JSON.parse(s); if(Array.isArray(arr)) ais=arr.map(ai=>({ ...ai, currentBet:null })); } }catch(e){} }
-// 10種人物性格（人生百態）：各有獨特投注方向 + 對白
+function loadAiList(){ try{ const s=localStorage.getItem('bac_ai'); if(s){ const arr=JSON.parse(s); if(Array.isArray(arr)) ais=arr.map(ai=>({ ...ai, currentBet:null, emotion:ai.emotion||50, joy:ai.joy||0, rage:ai.rage||0 })); } }catch(e){} }
+
+// === 多因子決策引擎：每個AI根據性格權重分析5個維度 ===
+function aiMultiFactor(ai){
+  const h=ai.history; if(h.length===0) return Math.random()<0.55?'banker':'player';
+  // 因子1：近期趨勢（近10局莊閒比）
+  let p=0,b=0; const recent=h.slice(-10);
+  recent.forEach(x=>{if(x==='P')p++;else if(x==='B')b++;});
+  const trendBias=b>=p?'banker':'player';
+  const trendConf=Math.abs(b-p)/Math.max(1,b+p);
+  // 因子2：路單形態（連龍/單跳檢測）
+  let streakP=0,streakB=0,jump=0;
+  for(let i=h.length-1;i>=1;i--){
+    if(h[i]===h[i-1]&&h[i]!=='T'){if(h[i]==='P')streakP++;else streakB++;}
+    else if(h[i]!=='T'&&h[i-1]!=='T'&&h[i]!==h[i-1]) jump++;
+    else break;
+  }
+  const isStreak=streakP>=2||streakB>=2;
+  const isJump=jump>=2;
+  // 因子3：資金情緒狀態
+  const emotionScore=ai.emotion>65?1:ai.emotion<35?-1:0;
+  // 因子4：其他AI行為
+  let othersB=0,othersP=0;
+  ais.forEach(a=>{if(a!==ai&&a.currentBet){if(a.currentBet.pick==='banker')othersB++;else if(a.currentBet.pick==='player')othersP++;}});
+  const crowdPick=othersB>othersP?'banker':othersP>othersB?'player':null;
+  // 因子5：歷史模式記憶
+  let memBias=0;
+  const last3=h.slice(-3).filter(x=>x!=='T').join('');
+  if(last3.length>=2){
+    for(let i=0;i<h.length-3;i++){
+      const pat=h.slice(i,i+3).filter(x=>x!=='T').join('');
+      if(pat===last3){ const after=h[i+3]; if(after==='P')memBias--;else if(after==='B')memBias++; }
+    }
+  }
+  // 各性格權重不同
+  const W=ai.weights||{trend:1,pattern:1,emotion:1,crowd:0.5,memory:0.5};
+  let scoreB=0,scoreP=0;
+  if(trendBias==='banker')scoreB+=W.trend*trendConf; else scoreP+=W.trend*trendConf;
+  if(isStreak){ if(streakB>streakP)scoreB+=W.pattern*0.8; else scoreP+=W.pattern*0.8; }
+  else if(isJump){ const last=h[h.length-1]; if(last==='P')scoreB+=W.pattern*0.6; else scoreP+=W.pattern*0.6; }
+  if(emotionScore>0)scoreB+=W.emotion*0.3; else if(emotionScore<0)scoreP+=W.emotion*0.3;
+  if(crowdPick==='banker')scoreB+=W.crowd*0.4; else if(crowdPick==='player')scoreP+=W.crowd*0.4;
+  if(memBias>0)scoreB+=W.memory*0.5; else if(memBias<0)scoreP+=W.memory*0.5;
+  scoreB+=Math.random()*0.15; scoreP+=Math.random()*0.15;
+  if(scoreB>scoreP+0.1) return 'banker';
+  if(scoreP>scoreB+0.1) return 'player';
+  return Math.random()<0.05?'tie':(scoreB>=scoreP?'banker':'player');
+}
+
+// === 12種人物性格 v2：各有權重+情緒反應+豐富對白 ===
 const AI_PERSONAS={
-  banker:{ name:'死忠莊',   icon:'🏦', pick:()=>'banker',                                   blurb:'莊家抽水都贏，一世信莊', lines:['莊就係唔會輸嘅','莊閒一齊都係莊','莊旺，跟住佢'] },
-  player:{ name:'閒家膽',   icon:'🎯', pick:()=>'player', blurb:'莊抽水太衰，淨買閒', lines:['抽水真係乞人憎','閒先係王道','唔幫莊發達'] },
-  dragon:{ name:'追龍佬',   icon:'🐉', pick:(h)=>{ const l=h[h.length-1]; return l==='P'?'player':l==='B'?'banker':(['player','banker'][Math.floor(Math.random()*2)]); }, blurb:'跟最長連龍，龍邊跟邊', lines:['龍吔！跟龍發財','條龍仲未斷','趁龍未冧快上'] },
-  road:{   name:'路單迷',   icon:'📐', pick:(h)=>{ const t=[...h].reverse().find(x=>x!=='T'); return t==='P'?'player':t==='B'?'banker':(['player','banker'][Math.floor(Math.random()*2)]); }, blurb:'跟大路走勢，反向都試', lines:['路單話事','大路指住邊就去邊','呢鋪要轉路'] },
-  gambler:{name:'賭徒膽',   icon:'🎰', pick:()=>{ const r=Math.random(); return r<0.48?'banker':r<0.95?'player':'tie'; }, blurb:'七成莊三成閒，間中和', lines:['搏佢仲旺','莊閒都係賭','間中和一鋪發下夢'] },
-  granny:{ name:'保守婆',   icon:'👵', pick:(h)=>{ const l=h[h.length-1]; if(l==='B') return 'banker'; if(l==='P') return 'player'; return 'banker'; }, blurb:'細注永年，跟上一鋪', lines:['細細注唔會輸咁慘','上一鋪贏邊跟邊','婆乸都話穩陣先'] },
-  hot:{    name:'燥底哥',   icon:'🔥', pick:(h)=>{ const l=h[h.length-1]; return l==='B'?'player':l==='P'?'banker':'banker'; }, blurb:'專跟紅反買，旺邊轉淡', lines:['轉軚！旺完就冧','反手先贏','就係唔信你旺到龍'] },
-  pro:{    name:'算牌神',   icon:'🧠', pick:(h)=>{ let p=0,b=0; h.slice(-20).forEach(x=>{ if(x==='P')p++; else if(x==='B')b++; }); return p>b?'player':b>p?'banker':(['player','banker'][Math.floor(Math.random()*2)]); }, blurb:'計數講概率，偏少買多', lines:['概率話我知','數字唔會呃人','偏離均值就回歸'] },
-  million:{name:'大戶豪',   icon:'💎', pick:()=>'banker', blurb:'大注撐莊，氣勢凌人', lines:['大注先有feel','豪賭唔計較','莊大戶嘅首選'] },
-  rookie:{ name:'初哥仔',   icon:'🐣', pick:()=>(['player','banker','tie'][Math.floor(Math.random()*3)]), blurb:'亂買亂博，乜都試', lines:['點好㗎','亂買下睇吓先','阿叔教落亂博'] }
+  banker:{ name:'死忠莊', icon:'🏦', weights:{trend:1.5,pattern:0.3,emotion:0.5,crowd:0.2,memory:0.3},
+    blurb:'莊家抽水都贏，偏重莊但會跟趨勢', win:['莊！一早就話莊㗎啦','莊家不會令人失望','穩陣派萬歲'], lose:['抽水啫，下鋪贏返','莊都會斷？唔信','莊家回氣中'], tilt:['連莊都唔得？世界變','我嘅莊呢！！！','仲唔出莊我反枱'] },
+  player:{ name:'閒家膽', icon:'🎯', weights:{trend:1.5,pattern:0.3,emotion:0.5,crowd:0.2,memory:0.3},
+    blurb:'唔信莊抽水，偏重閒', win:['閒贏先叫贏！','唔抽水贏得舒服','閒家之光'], lose:['抽水抽到乾...','閒仲未返嚟','今日閒仔唔生性'], tilt:['做乜嘢啊閒！！','我就唔信一世莊','反手買莊？唔制！'] },
+  dragon:{ name:'追龍佬', icon:'🐉', weights:{trend:2,pattern:0.5,emotion:0.3,crowd:0.8,memory:0.6},
+    blurb:'龍唔斷就追到斷為止', win:['龍吔！跟龍發財','條龍仲未斷！','龍威不減'], lose:['龍斷咗...等新龍','轉龍信號出現','下一條龍就嚟'], tilt:['龍去咗邊？！','冇龍嘅世界好灰','我要嘅係龍！！'] },
+  road:{   name:'路單迷', icon:'📐', weights:{trend:0.8,pattern:2,emotion:0.2,crowd:0.3,memory:1.5},
+    blurb:'路單形態專家，偏重 pattern+記憶', win:['路單話事！贏到','形態睇得好準','數據不騙人'], lose:['形態轉變中...','呢個pattern唔work','路線需要重新分析'], tilt:['啲路亂晒大龍！','邊個搞亂我條路','重新畫過路單！'] },
+  gambler:{name:'賭徒膽', icon:'🎰', weights:{trend:1,pattern:0.8,emotion:1.5,crowd:0.6,memory:0.3},
+    blurb:'情緒主導，樂觀重注悲觀縮手', win:['搏到！感覺良好','就係呢種feel','繼續繼續！'], lose:['少少挫折啫','下鋪一定中','輸係贏嘅開始'], tilt:['成日都唔中！！','今日黑到爆','唔理照買！！'] },
+  granny:{ name:'保守婆', icon:'👵', weights:{trend:0.5,pattern:0.5,emotion:0.2,crowd:1.5,memory:1},
+    blurb:'細注永年，最鍾意跟大隊', win:['穩穩陣陣又贏','唔貪心最開心','婆婆話齋慢慢嚟'], lose:['慢慢嚟慢慢嚟','保住本金最重要','唔使急'], tilt:['人多就啱㗎喇...係咪','婆婆都畀你哋搞亂','冷靜啲啦後生仔'] },
+  hot:{    name:'燥底哥', icon:'🔥', weights:{trend:0.3,pattern:0.5,emotion:2,crowd:0.4,memory:0.2},
+    blurb:'情緒波動最大，反手買係常態', win:['🔥反手成功！','就係咁玩！','火到嚟就贏'], lose:['🔥🔥🔥！！','反手都唔得？','仲唔中？轉！'], tilt:['💥💥💥💥💥','我燥到爆炸！！','全部人同我反手！！'] },
+  pro:{    name:'算牌神', icon:'🧠', weights:{trend:1.2,pattern:1,emotion:0.1,crowd:0.3,memory:1.8},
+    blurb:'冷靜分析，最重記憶+趨勢', win:['概率計算正確','數據驗證成功','冷靜就是力量'], lose:['小概率事件...','置信區間內','模型需要調整'], tilt:['呢個概率不對路','數據異常重新校準','冷靜...冷靜...'] },
+  million:{name:'大戶豪', icon:'💎', weights:{trend:1,pattern:0.5,emotion:1.2,crowd:0,memory:0.5},
+    blurb:'獨立思考，唔跟人潮，大注氣勢', win:['大注就是霸氣','豪得起就贏得起','低調奢華'], lose:['區區小數...','豪客唔會皺眉','繼續！'], tilt:['我咁大注都唔中？','搞錯呀呢鋪','加重注！！'] },
+  rookie:{ name:'初哥仔', icon:'🐣', weights:{trend:0.3,pattern:0.2,emotion:1,crowd:1.8,memory:0},
+    blurb:'新手亂入，極度依賴跟風', win:['嘩！中咗！','我係咪有talent','新手運！'], lose:['啊...又輸...','跟邊個先啱','點解咁難㗎'], tilt:['我唔識玩啦！！','邊個救下我','全部人買咩我跟'] },
+  analyst:{name:'分析師', icon:'📊', weights:{trend:1.5,pattern:1.5,emotion:0.3,crowd:0.5,memory:1.5},
+    blurb:'全方位數據分析，模擬專業賭客', win:['分析命中！','指標全對齊','系統正常運作'], lose:['偏離預期值...','波動在可接受範圍','重新計算中'], tilt:['數據矛盾！！','邊個指標先啱','我需要更多數據'] },
+  rebel:{  name:'反叛者', icon:'🦹', weights:{trend:-1.5,pattern:-1,emotion:1,crowd:-2,memory:-0.5},
+    blurb:'專門反向操作，人買莊我買閒', win:['逆向才是王道','大眾錯我就對','反叛者不跟潮流'], lose:['大眾今次啱咗...','逆向失敗重新評估','就算錯都要反'], tilt:['全世界都錯！！','跟大隊嘅都係羊','我偏要反！！'] }
 };
 // 5種注碼方案
 const AI_PLANS={ flat:{name:'平注', fn:(ai)=>ai.baseBet}, martin:{name:'倍投', fn:(ai)=>ai.baseBet*Math.pow(2,Math.min(ai.step,4))}, seq1324:{name:'1-3-2-4', fn:(ai)=>ai.baseBet*[1,3,2,4][ai.step%4]}, fib:{name:'斐波那契', fn:(ai)=>ai.baseBet*[1,1,2,3,5,8][Math.min(ai.step,5)]}, kelly:{name:'凱利', fn:(ai)=>Math.max(ai.baseBet, Math.floor(ai.balance*0.12/1000)*1000)} };
-function aiPick(ai){ try{ return AI_PERSONAS[ai.persona].pick(ai.history); }catch(e){ return 'banker'; } }
+function aiPick(ai){ try{ return aiMultiFactor(ai); }catch(e){ return 'banker'; } }
 function aiBetAmount(ai){
   let unit; const p=AI_PLANS[ai.plan];
   if(p) unit=p.fn(ai); else unit=ai.baseBet;
+  if(ai.emotion>65) unit=Math.round(unit*1.2);
+  else if(ai.emotion<35) unit=Math.round(unit*0.7);
   unit=Math.min(unit, ai.balance);
   return Math.max(1000, Math.floor(unit/1000)*1000);
 }
-function aiPlaceBets(){   // 所有AI同局落注（供人類參考）
+function aiPlaceBets(){
   ais.forEach(ai=>{
     if(!ai || ai.balance<=0) return;
     const bet=aiBetAmount(ai);
@@ -1194,6 +1260,7 @@ function aiPlaceBets(){   // 所有AI同局落注（供人類參考）
   });
   updateBetDisplay(); updateAiBalances(); saveAiList();
 }
+
 /* ===================== AI 走馬燈對話 ===================== */
 function showMarquee(items){
   const track=document.getElementById('marqueeTrack');
@@ -1201,9 +1268,9 @@ function showMarquee(items){
   track.innerHTML='';
   if(!items.length){ box.classList.remove('show'); return; }
   items.forEach((text,i)=>{
-    if(i>=3) return;
+    if(i>=6) return;
     const el=document.createElement('div');
-    el.className='marquee-item ai-'+i;
+    el.className='marquee-item ai-'+(i%3);
     el.textContent=text;
     track.appendChild(el);
   });
@@ -1223,23 +1290,32 @@ function aiSettle(result){
     if(result===pick){
       if(pick==='player') payout=bet*2; else if(pick==='banker') payout=Math.round(bet*1.95); else if(pick==='tie') payout=bet*9;
       ai.balance+=payout; ai.step=0; ai.lastWin=true; win=true;
+      ai.emotion=Math.min(100, (ai.emotion||50)+8);
     } else if(result==='tie' && (pick==='player'||pick==='banker')){
-      // 和局時 Player/Banker 注退款
       ai.balance+=bet; ai.lastWin=null; win=false;
-    } else { ai.step++; ai.lastWin=false; win=false; }
+    } else { ai.step++; ai.lastWin=false; win=false;
+      ai.emotion=Math.max(0, (ai.emotion||50)-6);
+    }
     ai.history.push(result==='player'?'P':result==='banker'?'B':'T');
     if(ai.history.length>40) ai.history.shift();
-    // 收集對白（清 currentBet 之前）
-    const lines=AI_PERSONAS[ai.persona].lines;
-    if(ai.balance<=0) dialogues.push(ai.icon+' '+ai.name+'：破產囉…下次再戰');
-    else if(win) dialogues.push(ai.icon+' '+ai.name+'：「'+lines[Math.floor(Math.random()*lines.length)]+'」+'+fmt(bet));
-    else if(ai.step>=3) dialogues.push(ai.icon+' '+ai.name+'：「'+lines[Math.floor(Math.random()*lines.length)]+'」…連輸'+ai.step+'鋪'+(ai.plan==='martin'?'，倍投頂唔順':''));
+    const p=AI_PERSONAS[ai.persona];
+    let msg='';
+    if(ai.balance<=0){
+      msg=ai.icon+' '+ai.name+'：破產囉…下次再戰 💀';
+    } else if(win){
+      const arr=ai.emotion>70?(p.tilt||p.win):p.win;
+      msg=ai.icon+' '+ai.name+'：「'+arr[Math.floor(Math.random()*arr.length)]+'」'+'+'+fmt(bet);
+    } else if(!win && ai.step>=3){
+      const arr=ai.emotion<30?(p.tilt||p.lose):p.lose;
+      msg=ai.icon+' '+ai.name+'：「'+arr[Math.floor(Math.random()*arr.length)]+'」…連輸'+ai.step+'鋪'+(ai.plan==='martin'?'，倍投頂唔順':'');
+    }
+    if(msg) dialogues.push(msg);
     ai.currentBet=null;
   });
   if(dialogues.length) showMarquee(dialogues);
   updateBetDisplay(); updateAiBalances(); saveAiList();
 }
-function updateAiBalances(){   // 頂欄 2×2：你(人類)永遠第一格(左上) + 3個AI填第2/3/4格
+function updateAiBalances(){   // 頂欄橫向捲動：你(人類)永遠第一格 + 最多6個AI
   const box=document.getElementById('aiBalanceBox');
   if(ais.length===0){ box.style.display='none'; document.getElementById('btnAiSelect').style.display='none'; document.querySelector('.balance').style.display=''; return; }
   box.style.display='';
@@ -1433,7 +1509,7 @@ function renderAiList(){
   // 如果唔係編輯模式，自動填下一個預設名
   if(!editingAiId) setNextDefaultName();
 }
-const DEFAULT_NAMES=['阿龍','小美','阿強'];
+const DEFAULT_NAMES=['阿龍','小美','阿強','阿明','阿花','阿杰'];
 function setNextDefaultName(){
   const used=new Set(ais.map(a=>a.name));
   for(const n of DEFAULT_NAMES){ if(!used.has(n)){ document.getElementById('aiNameInput').value=n; return; } }
@@ -1442,7 +1518,7 @@ function setNextDefaultName(){
 function setAiSel(id,val){ const grp=document.getElementById(id); grp.querySelectorAll('.ai-chip').forEach(x=>x.classList.toggle('sel', x.dataset.v===val)); if(id==='aiPersona'){ aiSel.persona=val; refreshPersonaBlurb(); } }
 let editingAiId=null;
 document.getElementById('aiConfirm').addEventListener('click',()=>{
-  if(ais.length>=3 && !editingAiId){ showToast('最多 3 個 AI 陪玩'); return; }
+  if(ais.length>=6 && !editingAiId){ showToast('最多 6 個 AI 陪玩'); return; }
   const name=document.getElementById('aiNameInput').value.trim()||('AI'+(ais.length+1));
   const persona=aiSel.persona, plan=aiSel.plan;
   const bank=50000; // 新增/编辑一律固定5万，不显示本金选单
@@ -1453,7 +1529,7 @@ document.getElementById('aiConfirm').addEventListener('click',()=>{
     document.getElementById('aiModal').classList.remove('show'); updateAiBalances(); renderAiList(); saveAiList();
     showToast('💾 已更新「'+name+'」'); return;
   }
-  const ai={ id:'ai'+(Date.now())+'-'+ais.length, name, icon:AI_ICONS[ais.length], balance:bank, persona, plan, baseBet:Math.max(1000, Math.floor(bank/20/1000)*1000), step:0, history:[], currentBet:null };
+  const ai={ id:'ai'+(Date.now())+'-'+ais.length, name, icon:AI_ICONS[ais.length%6], balance:bank, persona, plan, baseBet:Math.max(1000, Math.floor(bank/20/1000)*1000), step:0, history:[], currentBet:null, emotion:50, weights:AI_PERSONAS[persona].weights };
   ais.push(ai);
   document.getElementById('aiModal').classList.remove('show'); updateAiBalances(); renderAiList(); saveAiList();
   showToast(ai.icon+' '+name+' 入枱！本金 '+fmt(ai.balance)+'（共'+ais.length+'個AI）');
