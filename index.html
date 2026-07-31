@@ -1424,7 +1424,8 @@ function autoTick(){
 }
 function startCountdown(sec){
   if(!autoTimer) return;
-  // 對話已由 autoTick 等待後自然消失，唔再強制清
+  // 滿60局或剩餘牌數少於8張 → 跳過倒數直接洗牌開新靴
+  if(shoeStats.round>=60 || shoeCut-shoeDrawn<8){ doShuffle().then(()=>startCountdown(sec)); return; }
   autoTimer._tick = sec;
   const b=document.getElementById('btnAuto');
   b.textContent='自動 '+sec+'s ▶'+sec; b.classList.add('on');
