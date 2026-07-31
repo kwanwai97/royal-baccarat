@@ -29,7 +29,7 @@
   }
   .brand{font-weight:800; letter-spacing:1px; color:var(--gold2);
     font-size:15px; text-shadow:0 0 8px rgba(212,175,55,.6); display:flex; align-items:center; gap:6px;}
-  .topright{display:flex; align-items:center; gap:10px;}
+  .topright{display:flex; align-items:center; gap:10px; flex-wrap:wrap;}
   .balance{font-size:12px; text-align:right;}
   .balance b{color:var(--gold2); font-size:18px; margin-left:4px;}
   .iconbtn{background:#1a1200; border:1px solid var(--goldd); color:var(--gold2); border-radius:8px; padding:6px 9px; font-size:13px; cursor:pointer;}
@@ -297,11 +297,9 @@
       <span class="streak-badge" id="streakBadge">🔥 連勝 0</span>
       <div class="balance"><small>餘額</small><div><b id="balance">1,000,000</b></div></div>
       <div class="ai-balances" id="aiBalanceBox" style="display:none;"></div>
-      <div class="iconbtn-stack">
-        <button class="iconbtn" id="btnAI" title="AI陪玩設定">🤖</button>
-        <button class="iconbtn" id="btnAiSelect" title="選擇AI陪玩" style="display:none;">👥</button>
-      </div>
-      <button class="iconbtn speed-btn" id="btnSpeed" title="節奏快慢">⏱中</button>
+      <button class="iconbtn" id="btnAI" title="AI陪玩設定">🤖</button>
+      <button class="iconbtn" id="btnAiSelect" title="選擇AI陪玩" style="display:none;">👥</button>
+      <button class="iconbtn speed-btn" id="btnSpeed" title="節奏快慢" style="flex-basis:100%;">⏱中</button>
     </div>
   </div>
 
