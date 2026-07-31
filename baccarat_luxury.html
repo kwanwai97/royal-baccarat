@@ -1126,9 +1126,8 @@ function settle(winner, playerPair, bankerPair, big, totalCards, pTotal, bTotal,
   if(winner==='player' && pTotal===7 && bTotal===6) resultDetail.luck7=true; // 幸運7
   const flashMap={player:'.bet.player',banker:'.bet.banker',tie:'.bet.tie',ppair:'.bet.ppair',bpair:'.bet.bpair',big:'.bet.big',small:'.bet.small',luck6:'.bet.luck6',luck7:'.bet.luck7'};
   for(const k in resultDetail){ const el=document.querySelector(flashMap[k]); if(el){ el.classList.add('win-pulse2'); setTimeout(()=>el.classList.remove('win-pulse2'),2500); } }
-  // 結算完成即刻清籌碼+開放下注；3秒後AI走馬燈
-  clearBets(true); saveRoads(); settled=false;
-  setTimeout(()=>{ if(ais.length) aiSettle(winner); }, 3000);
+  // 等5秒閃燈+籌碼消失後先清籌碼+開放下注+AI結算
+  setTimeout(()=>{ clearBets(true); saveRoads(); settled=false; if(ais.length) aiSettle(winner); }, 5000);
 }
 /* 結果文字：3行式 + 補牌提示 */
 function resultText(label, pTotal, bTotal, pp, bp, big, pCards, bCards){
