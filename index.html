@@ -1427,6 +1427,7 @@ function startCountdown(sec){
   if(!autoTimer) return;
   // 滿60局或剩餘牌數少於8張 → 跳過倒數直接洗牌開新靴
   if(shoeStats.round>=60 || shoeCut-shoeDrawn<8){ doShuffle().then(()=>startCountdown(sec)); return; }
+  sec=spd(10); // 每次重新計算，確保跟住當前速度
   autoTimer._tick = sec;
   const b=document.getElementById('btnAuto');
   b.textContent='自動 '+sec+'s ▶'+sec; b.classList.add('on');
