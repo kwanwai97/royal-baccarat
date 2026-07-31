@@ -954,7 +954,7 @@ async function deal(auto){
   if(shoeDrawn>=shoeCut || shoeStats.round>=60){
     await doShuffle();
   }
-  // 落注期：手動模式照舊8秒倒數；自動模式嘅AI落注已由 startCountdown 喺倒數第一秒做咗，呢度直接1.5秒緩衝開牌
+  // 落注期：手動模式10秒倒數；自動模式嘅AI落注已由 startCountdown 喺倒數第2秒做咗，呢度直接1.5秒緩衝開牌
   dealing=true; setControls(false);
   if(!auto && ais.length){ aiPlaceBets(); }
   if(auto){ await sleep(1500); }
