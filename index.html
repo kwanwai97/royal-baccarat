@@ -1098,7 +1098,7 @@ function settle(winner, playerPair, bankerPair, big, totalCards, pTotal, bTotal,
     stats.winAmt+=net;
     sndWin(); launchConfetti();
     let label = winner==='player'?'閒家贏':winner==='banker'?'莊家贏':'和局';
-    showMsg(resultText(label, pTotal, bTotal, playerPair, bankerPair, big, pCards, bCards), winner==='banker'?'#ffb3b3':winner==='player'?'#a9d2ff':'#8fe0ab');
+    showMsg(resultText(label, pTotal, bTotal, playerPair, bankerPair, big, pCards, bCards, net), winner==='banker'?'#ffb3b3':winner==='player'?'#a9d2ff':'#8fe0ab');
     let tip='🎉 贏 '+fmt(net);
     if(bonus>0) tip+=' ｜🔥連勝彩金 +'+fmt(bonus);
     showToast(tip);
@@ -1106,12 +1106,12 @@ function settle(winner, playerPair, bankerPair, big, totalCards, pTotal, bTotal,
     stats.streak=0; stats.lossAmt+=(-net);
     sndLose();
     let label = winner==='player'?'閒家贏':winner==='banker'?'莊家贏':'和局';
-    showMsg(resultText(label, pTotal, bTotal, playerPair, bankerPair, big, pCards, bCards), winner==='banker'?'#ffb3b3':winner==='player'?'#a9d2ff':'#8fe0ab');
+    showMsg(resultText(label, pTotal, bTotal, playerPair, bankerPair, big, pCards, bCards, net), winner==='banker'?'#ffb3b3':winner==='player'?'#a9d2ff':'#8fe0ab');
     showToast('💸 輸 '+fmt(-net));
   } else {
     sndTie();
     let label = winner==='player'?'閒家贏':winner==='banker'?'莊家贏':'和局';
-    showMsg(resultText(label, pTotal, bTotal, playerPair, bankerPair, big, pCards, bCards), winner==='banker'?'#ffb3b3':winner==='player'?'#a9d2ff':'#8fe0ab');
+    showMsg(resultText(label, pTotal, bTotal, playerPair, bankerPair, big, pCards, bCards, net), winner==='banker'?'#ffb3b3':winner==='player'?'#a9d2ff':'#8fe0ab');
     if(lastStaked>0) showToast('↔ 平手退還');
   }
   updateBalance(); updateAiBalances(); updateStreak();
@@ -1130,8 +1130,7 @@ function settle(winner, playerPair, bankerPair, big, totalCards, pTotal, bTotal,
   setTimeout(()=>{ clearBets(true); saveRoads(); settled=false; if(ais.length) aiSettle(winner); }, 5000);
 }
 /* 結果文字：3行式 + 補牌提示 */
-function resultText(label, pTotal, bTotal, pp, bp, big, pCards, bCards){
-  const net = balance - preBalance;
+function resultText(label, pTotal, bTotal, pp, bp, big, pCards, bCards, net){
   const d6 = fmt(Math.abs(net));
   let line1;
   if(net>0) line1='贏 '+d6;
