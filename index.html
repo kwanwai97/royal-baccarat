@@ -1128,7 +1128,7 @@ function settle(winner, playerPair, bankerPair, big, totalCards, pTotal, bTotal,
   if(winner==='banker' && bTotal===6) resultDetail.luck6=true; // 幸運6
   if(winner==='player' && pTotal===7 && bTotal===6) resultDetail.luck7=true; // 幸運7
   const flashMap={player:'.bet.player',banker:'.bet.banker',tie:'.bet.tie',ppair:'.bet.ppair',bpair:'.bet.bpair',big:'.bet.big',small:'.bet.small',luck6:'.bet.luck6',luck7:'.bet.luck7'};
-  for(const k in resultDetail){ const el=document.querySelector(flashMap[k]); if(el){ el.classList.add('win-pulse2'); setTimeout(()=>el.classList.remove('win-pulse2'),5000); } }
+  for(const k in resultDetail){ const el=document.querySelector(flashMap[k]); if(el){ el.classList.add('win-pulse2'); setTimeout(()=>el.classList.remove('win-pulse2'), spd(5)*1000); } }
   // 等5秒閃燈+籌碼消失後先清籌碼+開放下注+AI結算
   setTimeout(()=>{ clearBets(true); saveRoads(); settled=false; if(ais.length) aiSettle(winner); }, spd(5)*1000);
 }
@@ -1450,7 +1450,7 @@ document.getElementById('btnAuto').addEventListener('click',function(){
   const sec=spd(10);  // 根據節奏調整
   b.classList.add('on');
   showToast('▶ 自動開牌：10秒倒數（先2秒緩衝，之後 AI 落注），開牌後3秒清牌再倒數');
-  autoTimer={ _sec:spd(sec) };
+  autoTimer={ _sec:sec };
   startCountdown(sec);
 });
 document.getElementById('btnShuffle').addEventListener('click',()=>{ if(dealing) return; doShuffle().then(()=>showToast('🔀 已重新洗牌並清空路單')); });
