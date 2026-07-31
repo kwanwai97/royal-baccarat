@@ -1330,8 +1330,8 @@ let autoModes=[0,10], autoIdx=0, autoTimer=null;
 function autoTick(){
   if(dealing) return;                       // 發牌中跳過
   deal(true).then(function(){
-    // 開牌後等8秒(與showMarquee一致)再開始下一輪倒數
-    setTimeout(function(){ if(autoTimer) startCountdown(autoTimer._sec); }, 8000);
+    // 開牌後等10秒再開始下一輪倒數
+    setTimeout(function(){ if(autoTimer) startCountdown(autoTimer._sec); }, 10000);
   });
 }
 function startCountdown(sec){
