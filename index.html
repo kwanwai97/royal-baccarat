@@ -372,6 +372,10 @@
           <span class="ai-chip" data-v="seq1324">1-3-2-4</span>
           <span class="ai-chip" data-v="fib">斐波那契</span>
           <span class="ai-chip" data-v="kelly">凱利</span>
+          <span class="ai-chip" data-v="dale">達朗伯</span>
+          <span class="ai-chip" data-v="lab">拉比</span>
+          <span class="ai-chip" data-v="andr">安德魯</span>
+          <span class="ai-chip" data-v="osc">奧克斯</span>
         </div>
       </div>
       <div class="ai-opt" style="display:flex;gap:8px;align-items:flex-end;">
@@ -1173,8 +1177,8 @@ function saveStats(){
 }
 
 /* ===================== AI 陪玩 v2 · 多因子+情感+人生百態 ===================== */
-let ais=[];   // 多AI陣列，最多6個
-const AI_ICONS=['🤖','👽','🦊','🐲','🦉','🎭'];
+let ais=[];   // 多AI陣列，最多7個
+const AI_ICONS=['🤖','👽','🦊','🐲','🦉','🎭','🐙'];
 function saveAiList(){ try{ localStorage.setItem('bac_ai', JSON.stringify(ais)); }catch(e){} }
 function loadAiList(){ try{ const s=localStorage.getItem('bac_ai'); if(s){ const arr=JSON.parse(s); if(Array.isArray(arr)) ais=arr.map(ai=>({ ...ai, currentBet:null, emotion:ai.emotion||50, joy:ai.joy||0, rage:ai.rage||0 })); } }catch(e){} }
 
@@ -1252,8 +1256,18 @@ const AI_PERSONAS={
   rebel:{  name:'反叛者', icon:'🦹', weights:{trend:-1.5,pattern:-1,emotion:1,crowd:-2,memory:-0.5},
     blurb:'專門反向操作，人買莊我買閒', win:['逆向才是王道','大眾錯我就對','反叛者不跟潮流'], lose:['大眾今次啱咗...','逆向失敗重新評估','就算錯都要反'], tilt:['全世界都錯！！','跟大隊嘅都係羊','我偏要反！！'] }
 };
-// 5種注碼方案
-const AI_PLANS={ flat:{name:'平注', fn:(ai)=>ai.baseBet}, martin:{name:'倍投', fn:(ai)=>ai.baseBet*Math.pow(2,Math.min(ai.step,4))}, seq1324:{name:'1-3-2-4', fn:(ai)=>ai.baseBet*[1,3,2,4][ai.step%4]}, fib:{name:'斐波那契', fn:(ai)=>ai.baseBet*[1,1,2,3,5,8][Math.min(ai.step,5)]}, kelly:{name:'凱利', fn:(ai)=>Math.max(ai.baseBet, Math.floor(ai.balance*0.12/1000)*1000)} };
+// 9種注碼方案
+const AI_PLANS={
+  flat:{name:'平注', fn:(ai)=>ai.baseBet},
+  martin:{name:'倍投', fn:(ai)=>ai.baseBet*Math.pow(2,Math.min(ai.step,4))},
+  seq1324:{name:'1-3-2-4', fn:(ai)=>ai.baseBet*[1,3,2,4][ai.step%4]},
+  fib:{name:'斐波那契', fn:(ai)=>ai.baseBet*[1,1,2,3,5,8][Math.min(ai.step,5)]},
+  kelly:{name:'凱利', fn:(ai)=>Math.max(ai.baseBet, Math.floor(ai.balance*0.12/1000)*1000)},
+  dale:{name:'達朗伯', fn:(ai)=>{const d=ai.step>0?ai.step:0; return ai.baseBet*(1+d);}},
+  lab:{name:'拉比', fn:(ai)=>{const seq=[1,1,2,1,3,1,2,4]; return ai.baseBet*seq[Math.min(ai.step,7)];}},
+  andr:{name:'安德魯', fn:(ai)=>{const seq=[1,2,3,4,5,6,8,10,12,13]; return ai.baseBet*Math.min(seq[ai.step]||13,13);}},
+  osc:{name:'奧克斯', fn:(ai)=>{const seq=[1,1,2,4,7,13,24]; return ai.baseBet*seq[Math.min(ai.step,6)];}}
+};
 function aiPick(ai){ try{ return aiMultiFactor(ai); }catch(e){ return 'banker'; } }
 function aiBetAmount(ai){
   let unit; const p=AI_PLANS[ai.plan];
@@ -1546,7 +1560,7 @@ function setNextDefaultName(){
 function setAiSel(id,val){ const grp=document.getElementById(id); grp.querySelectorAll('.ai-chip').forEach(x=>x.classList.toggle('sel', x.dataset.v===val)); if(id==='aiPersona'){ aiSel.persona=val; refreshPersonaBlurb(); } }
 let editingAiId=null;
 document.getElementById('aiConfirm').addEventListener('click',()=>{
-  if(ais.length>=6 && !editingAiId){ showToast('最多 6 個 AI 陪玩'); return; }
+  if(ais.length>=7 && !editingAiId){ showToast('最多 7 個 AI 陪玩'); return; }
   const name=document.getElementById('aiNameInput').value.trim()||('AI'+(ais.length+1));
   const persona=aiSel.persona, plan=aiSel.plan;
   const bank=50000; // 新增/编辑一律固定5万，不显示本金选单
