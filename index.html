@@ -29,7 +29,7 @@
   }
   .brand{font-weight:800; letter-spacing:1px; color:var(--gold2);
     font-size:15px; text-shadow:0 0 8px rgba(212,175,55,.6); display:flex; align-items:center; gap:6px;}
-  .topright{display:flex; align-items:center; gap:10px; }
+  .topright{display:flex; align-items:center; gap:10px; flex-wrap:wrap;}
   .balance{font-size:12px; text-align:right;}
   .balance b{color:var(--gold2); font-size:18px; margin-left:4px;}
   .iconbtn{background:#1a1200; border:1px solid var(--goldd); color:var(--gold2); border-radius:8px; padding:6px 9px; font-size:13px; cursor:pointer;}
@@ -262,8 +262,8 @@
 
   .daily-tip{text-align:center; font-size:11px; color:var(--gold2); padding:0 10px 4px; min-height:14px;}
   /* AI 陪玩 · 3+1 顯示：上面2個AI + 下邊1個AI + 你最底 */
-  .ai-balances{display:flex; flex-wrap:wrap; gap:1px 4px; align-items:center; justify-content:flex-start; overflow-x:auto; max-width:100%;}
-  .ai-balances .aib{display:flex; flex-direction:column; line-height:1.1; padding:1px 5px; border-left:1px solid rgba(255,255,255,.15);}
+  .ai-balances{display:flex; flex-wrap:wrap; gap:1px 4px; align-items:center; justify-content:flex-start; overflow-x:auto; max-width:100%; flex-basis:100%; order:99;}
+  .ai-balances .aib{display:flex; flex-direction:row; align-items:center; gap:3px; line-height:1.1; padding:1px 5px; border-left:1px solid rgba(255,255,255,.15);}
   .ai-balances .aib small{font-size:8px; opacity:.75; white-space:nowrap;}
   .ai-balances .aib b{font-size:11px; color:var(--gold2); font-weight:800;}
   .ai-balances .aib.human{ border-left:1px solid rgba(255,255,255,.15); }   /* 你：同AI格一樣格式，4格對稱 */
