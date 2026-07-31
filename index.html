@@ -29,13 +29,12 @@
   }
   .brand{font-weight:800; letter-spacing:1px; color:var(--gold2);
     font-size:15px; text-shadow:0 0 8px rgba(212,175,55,.6); display:flex; align-items:center; gap:6px;}
-  .topright{display:flex; align-items:center; gap:10px; flex-wrap:wrap;}
+  .topright{display:flex; align-items:center; gap:10px; }
   .balance{font-size:12px; text-align:right;}
   .balance b{color:var(--gold2); font-size:18px; margin-left:4px;}
   .iconbtn{background:#1a1200; border:1px solid var(--goldd); color:var(--gold2); border-radius:8px; padding:6px 9px; font-size:13px; cursor:pointer;}
   .iconbtn:active{transform:scale(.92);}
-  .iconbtn-stack{display:flex; flex-direction:column; gap:3px;}
-  .speed-btn{font-size:10px; padding:4px 6px; min-width:32px; text-align:center;}
+
   .streak-badge{background:linear-gradient(90deg,#7b3ff2,#c77dff); color:#fff; border-radius:20px; padding:3px 10px; font-size:11px; font-weight:800; display:none;}
   .streak-badge.show{display:inline-block; animation:pop .4s;}
   @keyframes pop{0%{transform:scale(.5);}70%{transform:scale(1.2);}100%{transform:scale(1);}}
@@ -67,7 +66,7 @@
   .hand .label{display:block; font-weight:700; font-size:10px; letter-spacing:.5px; color:var(--gold2); opacity:.85; white-space:nowrap;}
   .hand .score{display:none;}
   /* 兩隻牌一行，第3隻補牌自動摺落下一行 */
-  .cards{display:flex; gap:4px; width:98px; min-height:64px; align-items:flex-start; justify-content:center; flex-wrap:wrap;}
+  .cards{display:flex; gap:4px; width:98px; min-height:64px; align-items:flex-start; justify-content:center; }
   .card{ width:47px; height:66px; border-radius:4px; background:#fff; color:#000; position:relative;
     box-shadow:0 3px 8px rgba(0,0,0,.5); font-weight:800; display:flex; align-items:center; justify-content:center;
     font-size:20px; transform:translateY(-6px) rotate(-4deg); opacity:0; transition:all .35s cubic-bezier(.2,.8,.3,1.2);
@@ -263,7 +262,7 @@
 
   .daily-tip{text-align:center; font-size:11px; color:var(--gold2); padding:0 10px 4px; min-height:14px;}
   /* AI 陪玩 · 3+1 顯示：上面2個AI + 下邊1個AI + 你最底 */
-  .ai-balances{display:flex; flex-wrap:wrap; gap:1px 4px; align-items:center; justify-content:flex-start; overflow-x:auto; max-width:100%;}
+  .ai-balances{display:flex;  gap:1px 4px; align-items:center; justify-content:flex-start; overflow-x:auto; max-width:100%;}
   .ai-balances .aib{display:flex; flex-direction:column; line-height:1.1; padding:1px 5px; border-left:1px solid rgba(255,255,255,.15);}
   .ai-balances .aib small{font-size:8px; opacity:.75; white-space:nowrap;}
   .ai-balances .aib b{font-size:11px; color:var(--gold2); font-weight:800;}
@@ -282,7 +281,7 @@
   .ai-modal-btns{display:flex; gap:8px; margin:14px 0 4px;}
   .ai-modal-btns .modal-close{margin:0; flex:1;}
   .ai-opt-label{font-size:12px; color:var(--gold2); margin-bottom:5px; font-weight:700;}
-  .ai-chips{display:flex; flex-wrap:wrap; gap:6px;}
+  .ai-chips{display:flex;  gap:6px;}
   .ai-chip{padding:6px 10px; border-radius:14px; background:#0d1f15; border:1px solid #2c5240; color:#cfe9d8; font-size:13px; cursor:pointer; user-select:none;}
   .ai-chip.sel{background:var(--goldd); color:#fff; border-color:var(--goldd); font-weight:800;}
   .bet.ai-bet{ outline:2px solid #ffd98a; outline-offset:1px; }
@@ -298,8 +297,7 @@
       <div class="balance"><small>餘額</small><div><b id="balance">1,000,000</b></div></div>
       <div class="ai-balances" id="aiBalanceBox" style="display:none;"></div>
       <button class="iconbtn" id="btnAI" title="AI陪玩設定">🤖</button>
-      <button class="iconbtn" id="btnAiSelect" title="選擇AI陪玩" style="display:none;">👥</button>
-      <button class="iconbtn speed-btn" id="btnSpeed" title="節奏快慢" style="flex-basis:100%;">⏱中</button>
+      <button class="iconbtn" id="btnSpeed" title="節奏快慢">⏱中</button>
     </div>
   </div>
 
@@ -1320,14 +1318,14 @@ function aiSettle(result){
 }
 function updateAiBalances(){   // 頂欄橫向捲動：你(人類)永遠第一格 + 最多6個AI
   const box=document.getElementById('aiBalanceBox');
-  if(ais.length===0){ box.style.display='none'; document.getElementById('btnAiSelect').style.display='none'; document.querySelector('.balance').style.display=''; return; }
+  if(ais.length===0){ box.style.display='none'; document.querySelector('.balance').style.display=''; return; }
   box.style.display='';
   document.querySelector('.balance').style.display='none'; // 有AI時隱藏頂部獨立餘額板（你嘅餘額已顯示喺2×2卡位內）
   // 你 永遠第一格；格式同AI完全一樣(icon+名+餘額) 確保4格對稱
   let html='<div class="aib human"><small>👤 你</small><b>'+fmt(balance)+'</b></div>';
   ais.forEach(ai=>{ html+='<div class="aib" data-ai="'+ai.id+'"><small>'+ai.icon+' '+ai.name+'</small><b>'+fmt(ai.balance)+'</b></div>'; });
   box.innerHTML=html;
-  document.getElementById('btnAiSelect').style.display = ais.length>0 ? '' : 'none';
+  
 }
 function updateAiBalance(){ updateAiBalances(); }
 function showAiBalanceBox(){ updateAiBalances(); }
@@ -1485,7 +1483,6 @@ function aiChipGroup(id, key, onChange){
 }
 function refreshPersonaBlurb(){ const p=AI_PERSONAS[aiSel.persona]; const b=document.getElementById('aiPersonaBlurb'); if(p&&b) b.textContent=p.blurb; }
 aiChipGroup('aiPersona','persona', refreshPersonaBlurb); aiChipGroup('aiPlan','plan');
-document.getElementById('btnAiSelect').addEventListener('click',()=>{ document.getElementById('aiModal').classList.add('show'); editingAiId=null; document.getElementById('aiConfirm').textContent='確認 · 新增 AI'; renderAiList(); document.getElementById('aiStop').style.display = ais.length? '' : 'none'; });
 document.getElementById('btnAI').addEventListener('click',()=>{
   document.getElementById('aiModal').classList.add('show'); editingAiId=null; document.getElementById('aiConfirm').textContent='確認 · 新增 AI';
   renderAiList();
