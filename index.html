@@ -236,8 +236,8 @@
   .win-pulse{animation:winp .8s ease;}
   @keyframes winp{0%{box-shadow:0 0 0 0 var(--gold2);}50%{box-shadow:0 0 0 6px rgba(244,217,123,.6);}100%{box-shadow:0 0 0 0 rgba(244,217,123,0);}}
   /* 按牌局結果閃（輸贏都閃），連續兩次 */
-  .win-pulse2{animation:winp2 2.5s ease;}
-  @keyframes winp2{0%{box-shadow:0 0 0 0 var(--gold2);}25%{box-shadow:0 0 0 7px rgba(244,217,123,.65);}50%{box-shadow:0 0 0 0 rgba(244,217,123,0);}75%{box-shadow:0 0 0 7px rgba(244,217,123,.65);}100%{box-shadow:0 0 0 0 rgba(244,217,123,0);}}
+  .win-pulse2{animation:winp2 5s ease;}
+  @keyframes winp2{0%{box-shadow:0 0 0 0 var(--gold2);}12.5%{box-shadow:0 0 0 7px rgba(244,217,123,.65);}25%{box-shadow:0 0 0 0 rgba(244,217,123,0);}37.5%{box-shadow:0 0 0 7px rgba(244,217,123,.65);}50%{box-shadow:0 0 0 0 rgba(244,217,123,0);}62.5%{box-shadow:0 0 0 7px rgba(244,217,123,.65);}75%{box-shadow:0 0 0 0 rgba(244,217,123,0);}87.5%{box-shadow:0 0 0 7px rgba(244,217,123,.65);}100%{box-shadow:0 0 0 0 rgba(244,217,123,0);}}
 
   .limitinfo{font-size:10px; opacity:.65; text-align:center; padding:4px 12px; line-height:1.5;}
   .hist{font-size:11px; padding:4px 7px; border-radius:5px; font-weight:700; flex:0 0 auto;}
@@ -1125,7 +1125,7 @@ function settle(winner, playerPair, bankerPair, big, totalCards, pTotal, bTotal,
   if(winner==='banker' && bTotal===6) resultDetail.luck6=true; // 幸運6
   if(winner==='player' && pTotal===7 && bTotal===6) resultDetail.luck7=true; // 幸運7
   const flashMap={player:'.bet.player',banker:'.bet.banker',tie:'.bet.tie',ppair:'.bet.ppair',bpair:'.bet.bpair',big:'.bet.big',small:'.bet.small',luck6:'.bet.luck6',luck7:'.bet.luck7'};
-  for(const k in resultDetail){ const el=document.querySelector(flashMap[k]); if(el){ el.classList.add('win-pulse2'); setTimeout(()=>el.classList.remove('win-pulse2'),2500); } }
+  for(const k in resultDetail){ const el=document.querySelector(flashMap[k]); if(el){ el.classList.add('win-pulse2'); setTimeout(()=>el.classList.remove('win-pulse2'),5000); } }
   // 等5秒閃燈+籌碼消失後先清籌碼+開放下注+AI結算
   setTimeout(()=>{ clearBets(true); saveRoads(); settled=false; if(ais.length) aiSettle(winner); }, 5000);
 }
