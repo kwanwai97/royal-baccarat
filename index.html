@@ -1479,7 +1479,6 @@ document.getElementById('btnAuto').addEventListener('click',function(){
   if(autoTimer){ if(autoTimer._iv) clearInterval(autoTimer._iv); autoTimer=null; b.textContent='自動:關'; b.classList.remove('on'); showToast('⏹ 自動開牌已停止'); return; }
   const sec=spd(10);  // 根據節奏調整
   b.classList.add('on');
-  showToast('▶ 自動開牌：10秒倒數（先2秒緩衝，之後 AI 落注），開牌後3秒清牌再倒數');
   autoTimer={ _sec:sec };
   startCountdown(sec);
 });
