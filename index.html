@@ -124,10 +124,11 @@
   .card.f3d .face{background:#fff;}
   .card.f3d .back{transform:rotateY(180deg);
     background:repeating-linear-gradient(45deg,#7a1f1f 0 6px,#932525 6px 12px); border:2px solid #d4af37;}
-  /* 開牌模式切換掣（大路右方） */
-  .dealmode-btn{position:static; transform:none; font-size:10px; font-weight:800; padding:3px 10px; border-radius:10px; cursor:pointer;
-    background:rgba(0,0,0,.45); color:var(--gold2); border:1px solid rgba(212,175,55,.5); letter-spacing:1px; flex:0 0 auto; align-self:center;}
-  .dealmode-btn:active{transform:scale(.94);}
+  /* 開牌模式切換掣（牌局中間） */
+  .dealmode-btn{position:absolute; top:4px; left:50%; transform:translateX(-50%); z-index:5;
+    font-size:10px; font-weight:800; padding:3px 10px; border-radius:10px; cursor:pointer;
+    background:rgba(0,0,0,.45); color:var(--gold2); border:1px solid rgba(212,175,55,.5); letter-spacing:1px;}
+  .dealmode-btn:active{transform:translateX(-50%) scale(.94);}
   .card .corner.tl{top:4px; left:5px;}
   .card .corner.br{bottom:4px; right:5px; transform:rotate(180deg);}
   .card .mid{font-size:24px;}
@@ -311,9 +312,8 @@
 
   <div class="roadpanel">
     <div class="road-section-title">🔝 大路 BIG ROAD</div>
-    <div class="road-big" style="display:flex; align-items:center; gap:8px;">
-      <canvas id="bigCanvas" width="540" height="110" style="flex:1;"></canvas>
-      <button class="dealmode-btn" id="btnDealMode">普通開牌 ▾</button>
+    <div class="road-big">
+      <canvas id="bigCanvas" width="540" height="110"></canvas>
     </div>
     <div class="road-lower">
       <div class="road-bead">
