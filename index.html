@@ -245,6 +245,8 @@
   .tablechat{display:none; margin:0 8px 4px; background:rgba(0,0,0,.35); border:1px solid rgba(212,175,55,.25); border-radius:8px; padding:4px 8px; flex-direction:column; max-height:88px;}
   .tablechat.show{display:flex;}
   .tc-title{font-size:9px; color:var(--gold2); opacity:.75; letter-spacing:1px; margin-bottom:2px;}
+  .tc-count{font-size:12.5px; font-weight:800; color:#6fffa6; line-height:1.3; min-height:16px; display:none;}
+  .tc-count.show{display:block;}
   .tc-body{overflow-y:auto; display:flex; flex-direction:column; gap:2px; max-height:68px;}
   .tc-bubble{font-size:12.5px; line-height:1.25; display:flex; gap:4px; align-items:baseline;}
   .tc-bubble .ic{flex:0 0 auto;}
@@ -377,6 +379,7 @@
   </div>
   <div class="tablechat" id="tableChat">
     <div class="tc-title">💬 枱邊閒聊</div>
+    <div class="tc-count" id="tcCount"></div>
     <div class="tc-body" id="tcBody"></div>
   </div>
   <div class="modal" id="aiModal">
@@ -860,13 +863,20 @@ let betting=false;
 function bettingPhase(sec){
   return new Promise(resolve=>{
     betting=true;
+    // 落注倒數同枱邊閒聊用同一格顯示（唔跳去第個位），倒數完先收框
+    showTableChat();
+    const cnt=document.getElementById('tcCount');
     const m=document.getElementById('centerMsg');
     let t=sec;
-    const tick=(speakIt)=>{ const txt='請下注，剩 '+t+' 秒（AI 已落注，可跟注）'; if(speakIt) dealerCall(txt,'#6fffa6'); else showMsg('⏳ '+txt,'#6fffa6'); };
+    const tick=(speakIt)=>{
+      const txt='🎙 請下注，剩 '+t+' 秒（AI 已落注，可跟注）';
+      cnt.textContent='⏳ '+txt; cnt.classList.add('show');
+      if(speakIt) speak(txt);
+    };
     tick(true);
     const iv=setInterval(()=>{
       t--;
-      if(t<=0){ clearInterval(iv); betting=false; m.classList.remove('show'); resolve(); }
+      if(t<=0){ clearInterval(iv); cnt.classList.remove('show'); betting=false; hideTableChat(); resolve(); }
       else tick(false);
     },1000);
   });
