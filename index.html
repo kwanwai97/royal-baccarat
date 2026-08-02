@@ -139,11 +139,11 @@
     font-size:14px; font-weight:800; line-height:1.2; color:var(--gold2); text-shadow:0 0 14px #000,0 2px 4px #000; opacity:0; transition:opacity .25s; pointer-events:none; text-align:center; white-space:nowrap;}
   .center-msg.show{opacity:1;}
 
-  /* 下注區 3x2 */
+  /* 下注區 3x3 */
   .bets{display:flex; flex-direction:column; gap:4px; padding:6px 10px 4px;}
-  .betrow{display:grid; gap:4px;}
+  .betrow{display:grid; gap:4px; grid-template-columns:repeat(3,1fr);}
   .betrow.top{grid-template-columns:repeat(3,1fr);}
-  .betrow.bottom{grid-template-columns:repeat(6,1fr);}
+  .betrow.bottom{grid-template-columns:repeat(3,1fr);}
   .bet{position:relative; border-radius:8px; padding:5px 3px 4px; text-align:center; cursor:pointer;
     border:2px solid; background:#0d1f16; transition:transform .12s, box-shadow .12s;}
   .bet:active{transform:scale(.96);}
@@ -165,9 +165,9 @@
   .bet .chips-stack .pc .v.h{color:#fff;}            /* 人類 */
   .bet .chips-stack .pc .v.a{color:#ffd98a;}          /* AI */
   .bet .chips-stack .pc .tag{font-size:7px; opacity:.8; margin-bottom:1px;}
-  /* 特別投注區（2×2 格局）：.bet.ppair/.bpair/.luck7/.luck6/.big/.small */
+  /* 特別投注區（3×3 統一格局，每格居中） */
   .betrow.bottom .bet{display:flex; flex-direction:column; justify-content:center;}
-  .betrow.bottom .bet .chips-stack{display:grid; grid-template-columns:repeat(2,1fr); grid-template-rows:repeat(2,1fr); gap:1px 3px; width:100%; margin-top:2px;}
+  .betrow.bottom .bet .chips-stack{display:flex; justify-content:center; align-items:center; gap:2px; flex-wrap:nowrap; min-height:18px; margin-top:3px;}
   .betrow.bottom .bet .chips-stack .pc{justify-self:center;}
   .bet.banker{border-color:var(--red); color:#ffb3b3;}
   .bet.player{border-color:var(--blue); color:#a9d2ff;}
@@ -408,12 +408,14 @@
       <div class="bet tie" data-bet="tie"><div class="bn">和 TIE</div><div class="od">1 : 8</div><div class="chips-stack" data-stack="tie"></div></div>
       <div class="bet banker" data-bet="banker"><div class="bn">莊 BANKER</div><div class="od">1 : 0.95</div><div class="chips-stack" data-stack="banker"></div></div>
     </div>
-    <div class="betrow bottom">
+    <div class="betrow mid">
       <div class="bet ppair" data-bet="ppair"><div class="bn">閒對</div><div class="od">1 : 11</div><div class="chips-stack" data-stack="ppair"></div></div>
-      <div class="bet bpair" data-bet="bpair"><div class="bn">莊對</div><div class="od">1 : 11</div><div class="chips-stack" data-stack="bpair"></div></div>
-      <div class="bet luck luck7" data-bet="luck7"><div class="bn">幸運7</div><div class="od">1:40/60/100</div><div class="chips-stack" data-stack="luck7"></div></div>
       <div class="bet luck luck6" data-bet="luck6"><div class="bn">幸運6</div><div class="od">1:12/20</div><div class="chips-stack" data-stack="luck6"></div></div>
+      <div class="bet bpair" data-bet="bpair"><div class="bn">莊對</div><div class="od">1 : 11</div><div class="chips-stack" data-stack="bpair"></div></div>
+    </div>
+    <div class="betrow bottom">
       <div class="bet big" data-bet="big"><div class="bn">大 BIG</div><div class="od">1 : 0.54</div><div class="chips-stack" data-stack="big"></div></div>
+      <div class="bet luck luck7" data-bet="luck7"><div class="bn">幸運7</div><div class="od">1:40/60/100</div><div class="chips-stack" data-stack="luck7"></div></div>
       <div class="bet small" data-bet="small"><div class="bn">小 SMALL</div><div class="od">1 : 1.5</div><div class="chips-stack" data-stack="small"></div></div>
     </div>
   </div>
