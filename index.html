@@ -739,6 +739,29 @@ function sndDeal(){ beep(320,0.05,'sawtooth',0.08); }
 function sndWin(){ [523,659,784,1047].forEach((f,i)=>beep(f,0.18,'triangle',0.18,i*0.09)); }
 function sndLose(){ beep(220,0.3,'sine',0.14); beep(160,0.4,'sine',0.12,0.12); }
 function sndTie(){ beep(440,0.2,'sine',0.14); beep(440,0.2,'sine',0.14,0.18); }
+/* 荷官語音：speechSynthesis zh-HK；跟 mute 掣 */
+let dealerVoice=null;
+function pickDealerVoice(){
+  if(!('speechSynthesis' in window)) return null;
+  const vs=speechSynthesis.getVoices();
+  return vs.find(v=>/zh[-_]HK/i.test(v.lang)) || vs.find(v=>/zh/i.test(v.lang)) || null;
+}
+if('speechSynthesis' in window){ speechSynthesis.onvoiceschanged=()=>{ dealerVoice=pickDealerVoice(); }; dealerVoice=pickDealerVoice(); }
+function speak(text){
+  if(mute) return;
+  if(!('speechSynthesis' in window) || !text) return;
+  try{
+    const u=new SpeechSynthesisUtterance(text);
+    const v=pickDealerVoice(); if(v) u.voice=v;
+    u.lang='zh-HK'; u.rate=1.05; u.pitch=1.0; u.volume=1.0;
+    speechSynthesis.cancel(); speechSynthesis.speak(u);
+  }catch(e){}
+}
+/* 荷官口播：大字 + 語音 */
+function dealerCall(text, color){
+  showMsg('🎙 '+text, color||'var(--gold2)');
+  speak(text.replace(/[🎙⏳🔥💥▶]/g,'').replace('請下注','請下注。').replace('請開牌','請開牌。').replace('補牌','補牌。'));
+}
 
 /* ===================== 彩帶 ===================== */
 const confCv=document.getElementById('confetti');
@@ -826,12 +849,12 @@ function bettingPhase(sec){
     betting=true;
     const m=document.getElementById('centerMsg');
     let t=sec;
-    const tick=()=>{ m.textContent='⏳ 落注倒數 '+t+' 秒（AI 已落注，可跟注）'; m.style.color='#6fffa6'; m.classList.add('show'); };
-    tick();
+    const tick=(speakIt)=>{ const txt='請下注，剩 '+t+' 秒（AI 已落注，可跟注）'; if(speakIt) dealerCall(txt,'#6fffa6'); else showMsg('⏳ '+txt,'#6fffa6'); };
+    tick(true);
     const iv=setInterval(()=>{
       t--;
       if(t<=0){ clearInterval(iv); betting=false; m.classList.remove('show'); resolve(); }
-      else tick();
+      else tick(false);
     },1000);
   });
 }
@@ -1058,6 +1081,7 @@ async function deal(auto){
   try{
 
   const dz=document.getElementById('dealzoneOverlay'); if(dz) dz.classList.add('show');
+  dealerCall('請開牌','#f4d97b');
   document.getElementById('bankerCards').innerHTML='';
   document.getElementById('playerCards').innerHTML='';
   document.getElementById('bankerScore').textContent='–';
@@ -1105,11 +1129,12 @@ async function deal(auto){
 
   if(p0<8 && b0<8){
     if(p0<=5){
+      dealerCall('閒家補牌','#a9d2ff');
       const pt=drawCard(); pc.push(pt); await appendCard('playerCards',pt); await revealThird('playerCards'); await sleep(500);
       if(dealMode!=='squeeze') updateScore('player',handTotal(pc));
-      if(bankerShouldDraw(b0,pt.value)){ const bt=drawCard(); bc.push(bt); await appendCard('bankerCards',bt); await revealThird('bankerCards'); await sleep(400); if(dealMode!=='squeeze') updateScore('banker',handTotal(bc)); }
+      if(bankerShouldDraw(b0,pt.value)){ dealerCall('莊家補牌','#ffb3b3'); const bt=drawCard(); bc.push(bt); await appendCard('bankerCards',bt); await revealThird('bankerCards'); await sleep(400); if(dealMode!=='squeeze') updateScore('banker',handTotal(bc)); }
     } else {
-      if(b0<=5){ const bt=drawCard(); bc.push(bt); await appendCard('bankerCards',bt); await revealThird('bankerCards'); await sleep(400); if(dealMode!=='squeeze') updateScore('banker',handTotal(bc)); }
+      if(b0<=5){ dealerCall('莊家補牌','#ffb3b3'); const bt=drawCard(); bc.push(bt); await appendCard('bankerCards',bt); await revealThird('bankerCards'); await sleep(400); if(dealMode!=='squeeze') updateScore('banker',handTotal(bc)); }
     }
   }
   await sleep(400);
@@ -1197,6 +1222,7 @@ function settle(winner, playerPair, bankerPair, big, totalCards, pTotal, bTotal,
     sndWin(); launchConfetti();
     let label = winner==='player'?'閒家贏':winner==='banker'?'莊家贏':'和局';
     showMsg(resultText(label, pTotal, bTotal, playerPair, bankerPair, big, pCards, bCards, net), winner==='banker'?'#ffb3b3':winner==='player'?'#a9d2ff':'#8fe0ab');
+    dealerCall((winner==='banker'?'莊家贏':'閒家贏')+'，'+(playerPair?'閒對 ':'')+(bankerPair?'莊對 ':'')+(big?'大牌':'小牌'), winner==='banker'?'#ffb3b3':winner==='player'?'#a9d2ff':'#8fe0ab');
     let tip='🎉 贏 '+fmt(net);
     if(bonus>0) tip+=' ｜🔥連勝彩金 +'+fmt(bonus);
     showToast(tip);
@@ -1205,11 +1231,13 @@ function settle(winner, playerPair, bankerPair, big, totalCards, pTotal, bTotal,
     sndLose();
     let label = winner==='player'?'閒家贏':winner==='banker'?'莊家贏':'和局';
     showMsg(resultText(label, pTotal, bTotal, playerPair, bankerPair, big, pCards, bCards, net), winner==='banker'?'#ffb3b3':winner==='player'?'#a9d2ff':'#8fe0ab');
+    dealerCall((winner==='banker'?'莊家贏':'閒家贏')+'，'+(playerPair?'閒對 ':'')+(bankerPair?'莊對 ':'')+(big?'大牌':'小牌'), winner==='banker'?'#ffb3b3':winner==='player'?'#a9d2ff':'#8fe0ab');
     showToast('💸 輸 '+fmt(-net));
   } else {
     sndTie();
     let label = winner==='player'?'閒家贏':winner==='banker'?'莊家贏':'和局';
     showMsg(resultText(label, pTotal, bTotal, playerPair, bankerPair, big, pCards, bCards, net), winner==='banker'?'#ffb3b3':winner==='player'?'#a9d2ff':'#8fe0ab');
+    dealerCall((winner==='banker'?'莊家贏':'閒家贏')+'，'+(playerPair?'閒對 ':'')+(bankerPair?'莊對 ':'')+(big?'大牌':'小牌'), winner==='banker'?'#ffb3b3':winner==='player'?'#a9d2ff':'#8fe0ab');
     if(lastStaked>0) showToast('↔ 平手退還');
   }
   updateBalance(); updateAiBalances(); updateStreak();
