@@ -59,7 +59,7 @@
   .info-strip .k{opacity:.55; font-size:8px;}
   .info-strip .v{font-weight:800; color:#fff;}
   .info-strip .v.p{color:#a9d2ff;} .info-strip .v.b{color:#ffb3b3;} .info-strip .v.t{color:#8fe0ab;} .info-strip .v.c{color:#ffd45e;}
-  .dealzone{position:absolute; inset:0; z-index:10; display:grid; grid-template-columns:1fr 1fr; align-items:start; justify-items:center; gap:18px; padding:2px 8px; border-radius:8px;
+  .dealzone{position:absolute; inset:0; z-index:10; display:grid; grid-template-columns:1fr 1fr; align-items:start; justify-items:center; gap:6px; padding:2px 8px; border-radius:8px;
     background:transparent; border:none; box-shadow:none;
     opacity:0; pointer-events:none; transition:opacity .25s ease;}
   .dealzone.show{opacity:1; pointer-events:auto; z-index:20;}
@@ -68,7 +68,7 @@
   .hand .label{display:block; font-weight:700; font-size:10px; letter-spacing:.5px; color:var(--gold2); opacity:.85; white-space:nowrap;}
   .hand .score{display:none;}
   /* 兩隻牌一行，第3隻補牌自動摺落下一行，固定高度避免發牌區跳動 */
-  .cards{display:flex; gap:4px; min-width:150px; min-height:80px; align-items:center; justify-content:center; flex-wrap:wrap;}
+  .cards{display:flex; gap:4px; min-width:150px; height:80px; min-height:0; align-items:center; justify-content:center; flex-wrap:wrap;}
   .card{ width:52px; height:72px; border-radius:4px; background:#fff; color:#000; position:relative;
     box-shadow:0 2px 6px rgba(0,0,0,.5); font-weight:800; display:flex; align-items:center; justify-content:center;
     font-size:22px; transform:translateY(-4px) rotate(-4deg); opacity:0; transition:all .3s cubic-bezier(.2,.8,.3,1.2);
