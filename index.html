@@ -1126,7 +1126,7 @@ async function deal(auto){
   if(total===0 && auto!==true && ais.length===0){ showToast('請先下注'); return; }
   if(shoeDrawn>=shoeCut || shoeStats.round>=60){ await doShuffle(); }
   dealing=true; setControls(false);
-  if(ais.length){ await tableChatPhase(spd(10)); aiPlaceBets(); }
+  if(ais.length){ await tableChatPhase(spd(10)+5); aiPlaceBets(); }
   if(auto){ await sleep(1500); }
   else { await bettingPhase(spd(10)); }
   preBalance=balance;
