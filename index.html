@@ -1040,8 +1040,8 @@ async function deal(auto){
       setTimeout(function(){ if(box) box.innerHTML=''; },520);
     });
   },3000);
-  // 牌淡出後收起發牌區
-  setTimeout(()=>{ const dz=document.getElementById('dealzoneOverlay'); if(dz) dz.classList.remove('show'); },4000);
+  // 牌淡出後收起發牌區 + 結果文字一齊消失（單人版/自動版共用，保持一致）
+  setTimeout(()=>{ const dz=document.getElementById('dealzoneOverlay'); if(dz) dz.classList.remove('show'); hideMsg(); },4000);
   } catch(err){
     console.error('deal() 錯誤已攔截:', err);
     showToast('⚠ 發牌異常，已自動重置');
