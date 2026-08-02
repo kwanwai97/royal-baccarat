@@ -1136,9 +1136,10 @@ async function deal(auto){
   if(total===0 && auto!==true && ais.length===0){ showToast('請先下注'); return; }
   if(shoeDrawn>=shoeCut || shoeStats.round>=60){ await doShuffle(); }
   dealing=true; setControls(false);
+  // 統一次序（自動/手動都一樣）：2秒緩衝 → 枱邊討論 → 落注倒數 → 開牌
+  await sleep(2000);
   if(ais.length){ await tableChatPhase(spd(10)+5); aiPlaceBets(); }
-  if(auto){ await sleep(1500); }
-  else { await bettingPhase(spd(10)); }
+  await bettingPhase(spd(10));
   preBalance=balance;
   try{
 
@@ -1675,41 +1676,25 @@ function cycleSpeed(){
 }
 function spd(base){ return Math.max(1, base + SPEED_OFFSET[speed]); }
 
-/* ===================== 自動開牌 (關→13秒單一) ===================== */
-let autoModes=[0,10], autoIdx=0, autoTimer=null;
+/* ===================== 自動開牌：同手動統一次序 ===================== */
+let autoTimer=null;
 function autoTick(){
-  if(dealing) return;                       // 發牌中跳過
+  if(dealing || !autoTimer) return;            // 發牌中或已停用就跳過
   deal(true).then(function(){
-    // 開牌後等 spd(10) 秒再開始下一輪倒數
-    setTimeout(function(){ if(autoTimer) startCountdown(spd(10)); }, spd(10)*1000);
+    // 開牌流程內已含 2秒→討論→倒數→開牌；開牌完等 spd(4) 秒再下一輪
+    setTimeout(function(){ if(autoTimer) autoTick(); }, spd(4)*1000);
   });
 }
-function startCountdown(sec){
-  if(!autoTimer) return;
-  // 滿60局或剩餘牌數少於8張 → 跳過倒數直接洗牌開新靴
-  if(shoeStats.round>=60 || shoeCut-shoeDrawn<8){ doShuffle().then(()=>startCountdown(spd(10))); return; }
-  sec=spd(10); // 每次重新計算，確保跟住當前速度
-  autoTimer._tick = sec;
-  const b=document.getElementById('btnAuto');
-  b.classList.add('on');
-  showMsg('▶ 自動開牌：'+sec+' 秒後開新局','#6fffa6');
-  if(autoTimer._iv) clearInterval(autoTimer._iv);
-  autoTimer._iv=setInterval(function(){
-    autoTimer._tick--;
-    if(autoTimer._tick<=0){ clearInterval(autoTimer._iv); autoTimer._iv=null; autoTick(); }
-    else {
-      b.textContent='自動 '+sec+'s ▶'+autoTimer._tick;
-      showMsg('▶ 自動開牌：剩 '+autoTimer._tick+' 秒','#6fffa6');
-    }
-  },1000);
+function startAuto(){
+  autoTimer={};
+  autoTick();
 }
 document.getElementById('btnAuto').addEventListener('click',function(){
   const b=this;
-  if(autoTimer){ if(autoTimer._iv) clearInterval(autoTimer._iv); autoTimer=null; b.textContent='自動:關'; b.classList.remove('on'); showToast('⏹ 自動開牌已停止'); return; }
-  const sec=spd(10);  // 根據節奏調整
+  if(autoTimer){ autoTimer=null; b.textContent='自動:關'; b.classList.remove('on'); hideTableChat(); showToast('⏹ 自動開牌已停止'); return; }
   b.classList.add('on');
-  autoTimer={ _sec:sec };
-  startCountdown(sec);
+  b.textContent='自動:開';
+  startAuto();
 });
 document.getElementById('btnShuffle').addEventListener('click',()=>{ if(dealing) return; doShuffle().then(()=>showToast('🔀 已重新洗牌並清空路單')); });
 document.getElementById('btnDaily').addEventListener('click',claimDaily);
