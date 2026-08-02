@@ -242,16 +242,14 @@
   .marquee-track{display:flex; flex-direction:column; gap:4px;}
 
   /* ===== ① 開局前枱邊閒聊 chat strip ===== */
-  .tablechat{display:none; margin:0 6px 4px; background:rgba(0,0,0,.4); border:1px solid rgba(212,175,55,.35); border-radius:8px; padding:5px 10px; flex-direction:column; max-height:210px;}
+  .tablechat{display:none; margin:0 8px 4px; background:rgba(0,0,0,.35); border:1px solid rgba(212,175,55,.25); border-radius:8px; padding:4px 8px; flex-direction:column; max-height:88px;}
   .tablechat.show{display:flex;}
-  .tc-title{font-size:10px; color:var(--gold2); opacity:.8; letter-spacing:1px; margin-bottom:3px;}
-  .tc-body{overflow-y:auto; display:flex; flex-direction:column; gap:4px; max-height:184px;}
-  .tc-bubble{font-size:12.5px; line-height:1.35; display:flex; gap:5px; align-items:baseline;}
+  .tc-title{font-size:9px; color:var(--gold2); opacity:.75; letter-spacing:1px; margin-bottom:2px;}
+  .tc-body{overflow-y:auto; display:flex; flex-direction:column; gap:2px; max-height:68px;}
+  .tc-bubble{font-size:12.5px; line-height:1.25; display:flex; gap:4px; align-items:baseline;}
   .tc-bubble .ic{flex:0 0 auto;}
   .tc-bubble .tx{color:#f0e8c8;}
   .tc-bubble .tx b{color:#fff; font-weight:800; margin-right:1px;}
-  .tc-bubble.me{ flex-direction:row-reverse; }
-  .tc-bubble.me .tx{ color:#fff; text-align:right; }
   .tc-bubble.ai-0 .tx{color:#ffd9a8;} .tc-bubble.ai-1 .tx{color:#a9d2ff;} .tc-bubble.ai-2 .tx{color:#8fe0ab;}
   .tc-bubble.ai-3 .tx{color:#e3bcff;} .tc-bubble.ai-4 .tx{color:#ffb3cd;} .tc-bubble.ai-5 .tx{color:#c4f0f8;}
 
@@ -860,7 +858,6 @@ function clearBets(force){ if(dealing && !betting && !force)return; if(!settled)
 /* 落注期：綠字倒數 N 秒，期間人類可落注；AI 已經先落好供參考 */
 let betting=false;
 function bettingPhase(sec){
-  hideTableChat();   // 落注開始先收起枱邊閒聊（討論期+落注前段都已睇到，現時整個紀錄留低）
   return new Promise(resolve=>{
     betting=true;
     const m=document.getElementById('centerMsg');
@@ -951,11 +948,11 @@ function genChatLine(ai, pickSide, ctx, prevTalker){
   if(p.pre && p.pre.length) return pick(p.pre);
   return p.blurb;
 }
-function addChatBubble(ai, msg, me){
+function addChatBubble(ai, msg){
   const body=document.getElementById('tcBody'); if(!body) return;
   const b=document.createElement('div');
-  b.className='tc-bubble '+(me?'me':'ai-'+(ais.indexOf(ai)%6));
-  b.innerHTML=(me?'<span class="ic">👤</span>':'<span class="ic">'+ai.icon+'</span>')+'<span class="tx"><b>'+(me?'你：':ai.name+'：')+'</b>'+msg+'</span>';
+  b.className='tc-bubble ai-'+(ais.indexOf(ai)%6);
+  b.innerHTML='<span class="ic">'+ai.icon+'</span><span class="tx"><b>'+ai.name+'：</b>'+msg+'</span>';
   body.appendChild(b);
   body.scrollTop=body.scrollHeight;
 }
@@ -982,7 +979,7 @@ async function tableChatPhase(sec){
       }
     };
     emit();
-    setTimeout(()=>{ resolve(); }, sec*1000);   // 唔喺度收起，留低成個討論等落注階段開頭先收，方便慢慢睇
+    setTimeout(()=>{ hideTableChat(); resolve(); }, sec*1000);
   });
 }
 
@@ -1825,8 +1822,10 @@ function playerEmote(em){
   if(ais.length===0){ showToast('先加 AI 陪玩先可以傾偈 😎'); return; }
   const icon=EMOTE_ICON[em]; if(!icon) return;
   showTableChat();
-  // 你嘅 bubble（靠右）
-  addChatBubble(null, icon, true);
+  // 你嘅 bubble（用 human 色）
+  const body=document.getElementById('tcBody');
+  if(body){ const b=document.createElement('div'); b.className='tc-bubble ai-0'; b.style.opacity='.95';
+    b.innerHTML='<span class="ic">👤</span><span class="tx"><b>你：</b>'+icon+'</span>'; body.appendChild(b); body.scrollTop=body.scrollHeight; }
   // 隨機 1-2 個 AI 按性格回應
   const pool=[...ais].sort(()=>Math.random()-0.5).slice(0, 1+Math.floor(Math.random()*2));
   pool.forEach((ai,idx)=>{
@@ -1835,9 +1834,9 @@ function playerEmote(em){
       if(reply) addChatBubble(ai, reply);
     }, 350+idx*450);
   });
-  // 自動收起（延長到 8 秒，方便慢慢睇）
+  // 自動收起（唔影響遊戲流程）
   clearTimeout(playerEmote._t);
-  playerEmote._t=setTimeout(hideTableChat, 8000);
+  playerEmote._t=setTimeout(hideTableChat, 6000);
 }
 document.querySelectorAll('.player-emotes .pe').forEach(el=>{
   el.addEventListener('click',()=>playerEmote(el.dataset.em));
