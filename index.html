@@ -241,6 +241,18 @@
   .marquee.show{opacity:1;}
   .marquee-track{display:flex; flex-direction:column; gap:4px;}
 
+  /* ===== ① 開局前枱邊閒聊 chat strip ===== */
+  .tablechat{display:none; margin:0 8px 4px; background:rgba(0,0,0,.35); border:1px solid rgba(212,175,55,.25); border-radius:8px; padding:4px 8px; flex-direction:column; max-height:88px;}
+  .tablechat.show{display:flex;}
+  .tc-title{font-size:9px; color:var(--gold2); opacity:.75; letter-spacing:1px; margin-bottom:2px;}
+  .tc-body{overflow-y:auto; display:flex; flex-direction:column; gap:2px; max-height:68px;}
+  .tc-bubble{font-size:10px; line-height:1.25; display:flex; gap:4px; align-items:baseline;}
+  .tc-bubble .ic{flex:0 0 auto;}
+  .tc-bubble .tx{color:#f0e8c8;}
+  .tc-bubble .tx b{color:#fff; font-weight:800; margin-right:1px;}
+  .tc-bubble.ai-0 .tx{color:#ffd9a8;} .tc-bubble.ai-1 .tx{color:#a9d2ff;} .tc-bubble.ai-2 .tx{color:#8fe0ab;}
+  .tc-bubble.ai-3 .tx{color:#e3bcff;} .tc-bubble.ai-4 .tx{color:#ffb3cd;} .tc-bubble.ai-5 .tx{color:#c4f0f8;}
+
   .win-pulse{animation:winp .8s ease;}
   @keyframes winp{0%{box-shadow:0 0 0 0 var(--gold2);}50%{box-shadow:0 0 0 6px rgba(244,217,123,.6);}100%{box-shadow:0 0 0 0 rgba(244,217,123,0);}}
   /* 按牌局結果閃（輸贏都閃），連續兩次 — duration由JS設 --flash-dur */
@@ -356,6 +368,10 @@
         <div class="score" id="bankerScore">–</div>
       </div>
     </div>
+  </div>
+  <div class="tablechat" id="tableChat">
+    <div class="tc-title">💬 枱邊閒聊</div>
+    <div class="tc-body" id="tcBody"></div>
   </div>
   <div class="modal" id="aiModal">
     <div class="modal-box" style="max-width:400px;">
@@ -824,6 +840,74 @@ function repeatBets(){ if(dealing||!lastBets)return; let total=0; for(const x in
   balance-=total; bets=Object.assign({},lastBets); updateBalance(); updateAiBalances(); updateBetDisplay(); sndChip();
 }
 
+/* ===================== ① 開局前枱邊閒聊 (pre-round table talk) ===================== */
+function roadState(){
+  const h=history;
+  if(!h || h.length===0) return {empty:true};
+  const last=h[h.length-1].winner;
+  let streakType=null, streakLen=0;
+  for(let i=h.length-1;i>=0;i--){
+    const w=h[i].winner;
+    if(w==='tie'){ if(streakLen===0) continue; else break; }
+    if(streakType===null){ streakType=w; streakLen=1; }
+    else if(w===streakType) streakLen++;
+    else break;
+  }
+  return {empty:false, last, streakType, streakLen, count:h.length};
+}
+function genChatLine(ai, pick, ctx){
+  const p=AI_PERSONAS[ai.persona];
+  const pickTxt = pick==='banker'?'莊':pick==='player'?'閒':'和';
+  if(ctx.empty) return '新靴開波，我睇'+pickTxt+'先';
+  const r=Math.random();
+  if(r<0.55){
+    let s;
+    if(ctx.streakLen>=3){
+      const t = ctx.streakType==='banker'?'莊':'閒';
+      s = '連'+ctx.streakLen+'手'+t+'！'+(pick===ctx.streakType?'跟條龍冇死':'但我偏反手'+pickTxt);
+    } else {
+      const lt = ctx.last==='banker'?'莊':ctx.last==='player'?'閒':'和';
+      s = '上鋪'+lt+'，呢鋪博'+pickTxt;
+    }
+    return s;
+  }
+  const arr = (p.pre && p.pre.length) ? p.pre : [p.blurb];
+  return arr[Math.floor(Math.random()*arr.length)];
+}
+function addChatBubble(ai, msg){
+  const body=document.getElementById('tcBody'); if(!body) return;
+  const b=document.createElement('div');
+  b.className='tc-bubble ai-'+(ais.indexOf(ai)%6);
+  b.innerHTML='<span class="ic">'+ai.icon+'</span><span class="tx"><b>'+ai.name+'：</b>'+msg+'</span>';
+  body.appendChild(b);
+  body.scrollTop=body.scrollHeight;
+}
+function showTableChat(){ const c=document.getElementById('tableChat'); if(!c)return; document.getElementById('tcBody').innerHTML=''; c.classList.add('show'); }
+function hideTableChat(){ const c=document.getElementById('tableChat'); if(c) c.classList.remove('show'); }
+async function tableChatPhase(sec){
+  return new Promise(resolve=>{
+    if(ais.length===0){ resolve(); return; }
+    showTableChat();
+    showMsg('💬 枱邊傾偈中…','#f4d97b');
+    const order=[...ais].sort(()=>Math.random()-0.5);
+    const ctx=roadState();
+    order.forEach(ai=>{ ai._prePick=aiPick(ai); });   // 先定好注，傾偈先至同落注一致
+    const total=order.length;
+    const stepMs=Math.max(900,(sec*1000)/(total+1));
+    let i=0;
+    const emit=()=>{
+      if(i<total){
+        const ai=order[i];
+        addChatBubble(ai, genChatLine(ai, ai._prePick, ctx));
+        i++;
+        setTimeout(emit, stepMs);
+      }
+    };
+    emit();
+    setTimeout(()=>{ hideTableChat(); resolve(); }, sec*1000);
+  });
+}
+
 /* ===================== 發牌流程 ===================== */
 let dealMode = localStorage.getItem('bac_dealmode') || '3d';  // '3d' | 'squeeze'
 if(dealMode!=='3d' && dealMode!=='squeeze') dealMode='3d';    // 舊值 normal 自動轉 3d
@@ -964,10 +1048,10 @@ function showMsg(txt,color){ const m=document.getElementById('centerMsg'); m.tex
 async function deal(auto){
   if(dealing) return;
   let total=0; for(const x in bets) total+=bets[x];
-  if(total===0 && auto!==true){ showToast('請先下注'); return; }
+  if(total===0 && auto!==true && ais.length===0){ showToast('請先下注'); return; }
   if(shoeDrawn>=shoeCut || shoeStats.round>=60){ await doShuffle(); }
   dealing=true; setControls(false);
-  if(!auto && ais.length){ aiPlaceBets(); }
+  if(ais.length){ await tableChatPhase(spd(10)); aiPlaceBets(); }
   if(auto){ await sleep(1500); }
   else { await bettingPhase(spd(10)); }
   preBalance=balance;
@@ -1277,7 +1361,7 @@ function aiPlaceBets(){
   ais.forEach(ai=>{
     if(!ai || ai.balance<=0) return;
     const bet=aiBetAmount(ai);
-    const pick=aiPick(ai);
+    const pick=ai._prePick||aiPick(ai); ai._prePick=null;
     if(pick==='tie' && bet>ai.balance*0.3) return;
     ai.currentBet={bet, pick};
     ai.balance-=bet;
@@ -1443,30 +1527,26 @@ let autoModes=[0,10], autoIdx=0, autoTimer=null;
 function autoTick(){
   if(dealing) return;                       // 發牌中跳過
   deal(true).then(function(){
-    // 開牌後等10秒再開始下一輪倒數
-    setTimeout(function(){ if(autoTimer) startCountdown(autoTimer._sec); }, spd(10)*1000);
+    // 開牌後等 spd(10) 秒再開始下一輪倒數
+    setTimeout(function(){ if(autoTimer) startCountdown(spd(10)); }, spd(10)*1000);
   });
 }
 function startCountdown(sec){
   if(!autoTimer) return;
   // 滿60局或剩餘牌數少於8張 → 跳過倒數直接洗牌開新靴
-  if(shoeStats.round>=60 || shoeCut-shoeDrawn<8){ doShuffle().then(()=>startCountdown(sec)); return; }
+  if(shoeStats.round>=60 || shoeCut-shoeDrawn<8){ doShuffle().then(()=>startCountdown(spd(10))); return; }
   sec=spd(10); // 每次重新計算，確保跟住當前速度
   autoTimer._tick = sec;
   const b=document.getElementById('btnAuto');
-  b.textContent='自動 '+sec+'s ▶'+sec; b.classList.add('on');
-  // 先倒數2秒（唔使即刻AI落注），等2秒過後先至AI落注，避免同上一鋪籌碼消失太貼近
-  showMsg('▶ 自動開牌：剩 '+sec+' 秒（2秒後 AI 落注）','#6fffa6');
+  b.classList.add('on');
+  showMsg('▶ 自動開牌：'+sec+' 秒後開新局','#6fffa6');
   if(autoTimer._iv) clearInterval(autoTimer._iv);
   autoTimer._iv=setInterval(function(){
     autoTimer._tick--;
     if(autoTimer._tick<=0){ clearInterval(autoTimer._iv); autoTimer._iv=null; autoTick(); }
     else {
       b.textContent='自動 '+sec+'s ▶'+autoTimer._tick;
-      // 中間綠字跟住底部一齊跳動倒數
-      showMsg('▶ 自動開牌：剩 '+autoTimer._tick+' 秒'+(autoTimer._tick<=sec-2?'（AI 已落注）':'（2秒後 AI 落注）'),'#6fffa6');
-      // 倒數到第2秒（即過咗2秒緩衝）先至 AI 落注
-      if(autoTimer._tick===sec-2 && ais.length && !ais.some(a=>a.currentBet)){ aiPlaceBets(); }
+      showMsg('▶ 自動開牌：剩 '+autoTimer._tick+' 秒','#6fffa6');
     }
   },1000);
 }
