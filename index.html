@@ -135,7 +135,7 @@
   .card.black{color:#111;}
   .center-msg{position:absolute; top:46px; left:50%; transform:translateX(-50%); z-index:25; max-width:96%;
     display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1px;
-    font-size:17px; font-weight:800; line-height:1.15; color:var(--gold2); text-shadow:0 0 14px #000,0 2px 4px #000; opacity:0; transition:opacity .25s; pointer-events:none; text-align:center; white-space:pre-line;}
+    font-size:14px; font-weight:800; line-height:1.2; color:var(--gold2); text-shadow:0 0 14px #000,0 2px 4px #000; opacity:0; transition:opacity .25s; pointer-events:none; text-align:center; white-space:nowrap;}
   .center-msg.show{opacity:1;}
 
   /* 下注區 3x2 */
@@ -1144,10 +1144,8 @@ function resultText(label, pTotal, bTotal, pp, bp, big, pCards, bCards, net){
   else if(net<0) line1='輸 '+d6;
   else if(lastStaked>0) line1='退還';
   else line1='自動開牌';
-  let line2 = label;
-  let line3 = '閒 '+pTotal+' : 莊 '+bTotal;
-  let line4 = (pp?'閒對 ':'')+(bp?'莊對 ':'')+(big?'大':'小');
-  return line1+'\n'+line2+'\n'+line3+'\n'+line4.trim();
+  let bonus = (pp?'閒對 ':'')+(bp?'莊對 ':'')+(big?'大':'小');
+  return line1+' ｜ '+label+' ｜ 閒 '+pTotal+' : 莊 '+bTotal+(bonus?' ｜ '+bonus.trim():'');
 }
 function extra(pp,bp,b){ let a=[]; if(pp)a.push('閒對'); if(bp)a.push('莊對'); a.push(b?'大':'小'); return a.join(' '); }
 
