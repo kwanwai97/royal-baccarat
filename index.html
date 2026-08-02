@@ -876,7 +876,7 @@ function bettingPhase(sec){
     tick(true);
     const iv=setInterval(()=>{
       t--;
-      if(t<=0){ clearInterval(iv); cnt.classList.remove('show'); betting=false; hideTableChat(); resolve(); }
+      if(t<=0){ clearInterval(iv); cnt.textContent=''; cnt.classList.remove('show'); betting=false; hideTableChat(); resolve(); }
       else tick(false);
     },1000);
   });
@@ -1680,9 +1680,9 @@ function spd(base){ return Math.max(1, base + SPEED_OFFSET[speed]); }
 let autoTimer=null;
 function autoTick(){
   if(dealing || !autoTimer) return;            // 發牌中或已停用就跳過
-  deal(true).then(function(){
-    // 開牌流程內已含 2秒→討論→倒數→開牌；開牌完等 spd(4) 秒再下一輪
-    setTimeout(function(){ if(autoTimer) autoTick(); }, spd(4)*1000);
+  deal(true).finally(function(){
+    // 無論開牌成功/異常都繼續下一輪；開牌流程內已含 2秒→討論→倒數→開牌
+    if(autoTimer) setTimeout(autoTick, spd(4)*1000);
   });
 }
 function startAuto(){
