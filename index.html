@@ -966,7 +966,7 @@ function addChatBubble(ai, msg){
   body.appendChild(b);
   body.scrollTop=body.scrollHeight;
 }
-function showTableChat(){ const c=document.getElementById('tableChat'); if(!c)return; document.getElementById('tcBody').innerHTML=''; c.classList.add('show'); }
+function showTableChat(){ const c=document.getElementById('tableChat'); if(!c)return; document.getElementById('tcBody').innerHTML=''; const cc=document.getElementById('tcCount'); if(cc){ cc.textContent=''; cc.classList.remove('show'); } c.classList.add('show'); }
 function hideTableChat(){ const c=document.getElementById('tableChat'); if(c) c.classList.remove('show'); }
 async function tableChatPhase(sec){
   return new Promise(resolve=>{
