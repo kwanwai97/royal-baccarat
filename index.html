@@ -150,8 +150,6 @@
   .bet.sel{box-shadow:inset 0 0 0 2px rgba(244,217,123,.28); background:rgba(212,175,55,.10);}
   .bet .bn{font-size:12px; font-weight:800; letter-spacing:.5px;}
   .bet .od{font-size:9px; opacity:.8; margin-top:1px;}
-  /* 幸運6/7 賠率上下疊（窄格用） */
-  .bet .od.luck-od{font-size:8px; line-height:1.15; margin-top:2px;}
   /* 頂列3格(閒/莊/和)：高度加大，籌碼疊上覆蓋賠率，籌碼間留空間，4+人自動分兩層 */
   .betrow.top .bet{position:relative; min-height:86px; padding:7px 3px 7px; display:flex; flex-direction:column; justify-content:flex-start; align-items:center;}
   .betrow.top .bet .od{position:relative; z-index:1;}
@@ -167,8 +165,10 @@
   .bet .chips-stack .pc .v.h{color:#fff;}            /* 人類 */
   .bet .chips-stack .pc .v.a{color:#ffd98a;}          /* AI */
   .bet .chips-stack .pc .tag{font-size:7px; opacity:.8; margin-bottom:1px;}
-  .betrow.mid .bet, .betrow.bottom .bet{padding:4px 2px 3px;}
-  .betrow.mid .bet .bn, .betrow.bottom .bet .bn{font-size:11px;}
+  /* 特別投注區（3×3 統一格局，每格居中） */
+  .betrow.bottom .bet{display:flex; flex-direction:column; justify-content:center;}
+  .betrow.bottom .bet .chips-stack{display:flex; justify-content:center; align-items:center; gap:2px; flex-wrap:nowrap; min-height:18px; margin-top:3px;}
+  .betrow.bottom .bet .chips-stack .pc{justify-self:center;}
   .bet.banker{border-color:var(--red); color:#ffb3b3;}
   .bet.player{border-color:var(--blue); color:#a9d2ff;}
   .bet.tie{border-color:var(--green); color:#8fe0ab;}
@@ -410,12 +410,12 @@
     </div>
     <div class="betrow mid">
       <div class="bet ppair" data-bet="ppair"><div class="bn">閒對</div><div class="od">1 : 11</div><div class="chips-stack" data-stack="ppair"></div></div>
-      <div class="bet luck luck6" data-bet="luck6"><div class="bn">幸運6</div><div class="od luck-od">1:12<br>1:20</div><div class="chips-stack" data-stack="luck6"></div></div>
-      <div class="bet bpair" data-bet="bpair"><div class="bn">莊對</div><div class="od">1 : 0.95</div><div class="chips-stack" data-stack="bpair"></div></div>
+      <div class="bet luck luck6" data-bet="luck6"><div class="bn">幸運6</div><div class="od">1:12/20</div><div class="chips-stack" data-stack="luck6"></div></div>
+      <div class="bet bpair" data-bet="bpair"><div class="bn">莊對</div><div class="od">1 : 11</div><div class="chips-stack" data-stack="bpair"></div></div>
     </div>
     <div class="betrow bottom">
       <div class="bet big" data-bet="big"><div class="bn">大 BIG</div><div class="od">1 : 0.54</div><div class="chips-stack" data-stack="big"></div></div>
-      <div class="bet luck luck7" data-bet="luck7"><div class="bn">幸運7</div><div class="od luck-od">1:40<br>1:60<br>1:100</div><div class="chips-stack" data-stack="luck7"></div></div>
+      <div class="bet luck luck7" data-bet="luck7"><div class="bn">幸運7</div><div class="od">1:40/60/100</div><div class="chips-stack" data-stack="luck7"></div></div>
       <div class="bet small" data-bet="small"><div class="bn">小 SMALL</div><div class="od">1 : 1.5</div><div class="chips-stack" data-stack="small"></div></div>
     </div>
   </div>
