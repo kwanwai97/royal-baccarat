@@ -40,8 +40,8 @@
   @keyframes pop{0%{transform:scale(.5);}70%{transform:scale(1.2);}100%{transform:scale(1);}}
 
   /* 整合路單面板 */
-  .roadpanel{margin:8px 8px 0; background:#06120c; border:1px solid #1c3a2a; border-radius:8px; overflow:hidden;}
-  .road-section-title{font-size:10px; color:var(--gold2); opacity:.8; padding:4px 8px; background:#0a1a12; border-bottom:1px solid #14241c; letter-spacing:1px;}
+  .roadpanel{margin:8px 8px 0; background:#06120c; border:1px solid #1c3a2a; border-radius:8px; overflow:visible; position:relative;}
+  .road-section-title{font-size:10px; color:var(--gold2); opacity:.8; padding:4px 8px; background:#0a1a12; border-bottom:1px solid #14241c; letter-spacing:1px; position:relative; z-index:11;}
   .road-big{position:relative;}
   #bigCanvas{width:100%; display:block; background:#02110a;}
   .road-lower{display:flex; gap:0; border-top:1px solid #14241c;}
@@ -59,36 +59,35 @@
   .info-strip .k{opacity:.55; font-size:8px;}
   .info-strip .v{font-weight:800; color:#fff;}
   .info-strip .v.p{color:#a9d2ff;} .info-strip .v.b{color:#ffb3b3;} .info-strip .v.t{color:#8fe0ab;} .info-strip .v.c{color:#ffd45e;}
-  .dealzone{position:relative; display:grid; grid-template-columns:1fr 1.2fr 1fr; align-items:start; gap:8px; margin:6px 10px 0; padding:4px 6px; height:158px; overflow:hidden; border-radius:10px;
-    background:radial-gradient(ellipse at 50% 20%, #0c2a1c, #06160e 70%, #04110a);
-    border:2px solid var(--gold); box-shadow:inset 0 0 30px rgba(0,0,0,.5), 0 0 14px rgba(212,175,55,.18);}
-  .hand{display:flex; flex-direction:column; align-items:center; gap:2px; min-width:0;}
+  .dealzone{position:absolute; inset:0; z-index:10; display:grid; grid-template-columns:1fr 1.2fr 1fr; align-items:center; justify-items:center; gap:6px; padding:6px 8px; border-radius:8px;
+    background:transparent; border:none; box-shadow:none;
+    opacity:0; pointer-events:none; transition:opacity .25s ease;}
+  .dealzone.show{opacity:1; pointer-events:auto; z-index:20;}
+  .dealzone.empty{display:none !important; opacity:0 !important; pointer-events:none !important;}
+  .hand{display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; min-width:0;}
   .hand .label{display:block; font-weight:700; font-size:10px; letter-spacing:.5px; color:var(--gold2); opacity:.85; white-space:nowrap;}
   .hand .score{display:none;}
-  /* 兩隻牌一行，第3隻補牌自動摺落下一行 */
-  .cards{display:flex; gap:4px; width:98px; min-height:64px; align-items:flex-start; justify-content:center; flex-wrap:wrap;}
-  .card{ width:47px; height:66px; border-radius:4px; background:#fff; color:#000; position:relative;
-    box-shadow:0 3px 8px rgba(0,0,0,.5); font-weight:800; display:flex; align-items:center; justify-content:center;
-    font-size:20px; transform:translateY(-6px) rotate(-4deg); opacity:0; transition:all .35s cubic-bezier(.2,.8,.3,1.2);
+  /* 兩隻牌一行，第3隻補牌自動摺落下一行，固定高度避免發牌區跳動 */
+  .cards{display:flex; gap:4px; min-width:150px; height:80px; min-height:0; align-items:center; justify-content:center; flex-wrap:wrap;}
+  .card{ width:52px; height:72px; border-radius:4px; background:#fff; color:#000; position:relative;
+    box-shadow:0 2px 6px rgba(0,0,0,.5); font-weight:800; display:flex; align-items:center; justify-content:center;
+    font-size:22px; transform:translateY(-4px) rotate(-4deg); opacity:0; transition:all .3s cubic-bezier(.2,.8,.3,1.2);
     border:1px solid #ccc; }
   .card.show{opacity:1; transform:translateY(0) rotate(0);}
   /* 第3隻補牌打橫擺（賭場慣例，慳位） */
   .cards .card:nth-child(3){margin:0 8px;}
   .cards .card:nth-child(3).show{transform:translateY(0) rotate(90deg);}
-  .card .corner{position:absolute; font-size:11px; line-height:1; font-weight:800;}
+  .card .corner{position:absolute; font-size:13px; line-height:1; font-weight:800;}
   /* 真實啤牌牌面：排點/公仔 */
-  .card .corner small{display:block; font-size:9px; text-align:center;}
+  .card .corner small{display:block; font-size:11px; text-align:center;}
   .pips{position:absolute; inset:6px 7px; }
-  .pips .pip{position:absolute; font-size:11px; line-height:1; transform:translate(-50%,-50%);}
+  .pips .pip{position:absolute; font-size:13px; line-height:1; transform:translate(-50%,-50%);}
   .pips .pip.inv{transform:translate(-50%,-50%) rotate(180deg);}
-  .pips.ace .pip{font-size:26px;}
-  /* 出牌時角落數字隱藏，翻牌完成後才顯示（靠 JS 添加 show-num class） */
-  .card .corner{opacity:0;}
-  .card.show-num .corner{opacity:1;}
+  .pips.ace .pip{font-size:30px;}
   .courtbox{position:absolute; inset:8px 9px; border:1.5px solid currentColor; border-radius:3px;
     display:flex; align-items:center; justify-content:center; flex-direction:column; opacity:.9;}
-  .courtbox .cl{font-size:16px; font-weight:900; line-height:1;}
-  .courtbox .cs{font-size:13px; line-height:1.1;}
+  .courtbox .cl{font-size:18px; font-weight:900; line-height:1;}
+  .courtbox .cs{font-size:14px; line-height:1.1;}
   /* ===== 3D 翻牌模式 ===== */
   .card.f3d{background:transparent; border:none; box-shadow:none; perspective:420px;}
   .card.f3d .cf{position:absolute; inset:0; transform-style:preserve-3d; transition:transform .55s cubic-bezier(.3,.7,.3,1); transform:rotateY(180deg); border-radius:4px;}
@@ -124,20 +123,19 @@
   .card.f3d .face{background:#fff;}
   .card.f3d .back{transform:rotateY(180deg);
     background:repeating-linear-gradient(45deg,#7a1f1f 0 6px,#932525 6px 12px); border:2px solid #d4af37;}
-  /* 開牌模式切換掣（牌局中間） */
-  .dealmode-btn{position:absolute; top:4px; left:50%; transform:translateX(-50%); z-index:5;
+  /* 開牌模式切換掣 */
+  .dealmode-btn{position:static; transform:none; z-index:auto;
     font-size:10px; font-weight:800; padding:3px 10px; border-radius:10px; cursor:pointer;
     background:rgba(0,0,0,.45); color:var(--gold2); border:1px solid rgba(212,175,55,.5); letter-spacing:1px;}
-  .dealmode-btn:active{transform:translateX(-50%) scale(.94);}
+  .dealmode-btn:active{transform:scale(.94);}
   .card .corner.tl{top:4px; left:5px;}
   .card .corner.br{bottom:4px; right:5px; transform:rotate(180deg);}
   .card .mid{font-size:24px;}
   .card.red{color:var(--red);}
   .card.black{color:#111;}
-  .center-msg{position:relative; align-self:end; justify-self:center; margin:0 4px 8px 4px; max-width:100%;
+  .center-msg{position:absolute; top:30px; left:50%; transform:translateX(-50%); z-index:25; max-width:96%;
     display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1px;
-    font-size:17px; font-weight:800; line-height:1.15; color:var(--gold2); text-shadow:0 0 14px #000,0 2px 4px #000; opacity:0; transition:opacity .25s; pointer-events:none; text-align:center; white-space:pre-line;
-    background:rgba(0,0,0,.55); padding:6px 14px; border-radius:12px; border:1px solid rgba(212,175,55,.4);}
+    font-size:17px; font-weight:800; line-height:1.15; color:var(--gold2); text-shadow:0 0 14px #000,0 2px 4px #000; opacity:0; transition:opacity .25s; pointer-events:none; text-align:center; white-space:pre-line;}
   .center-msg.show{opacity:1;}
 
   /* 下注區 3x2 */
@@ -311,10 +309,14 @@
   </div>
 
   <div class="roadpanel">
-    <div class="road-section-title">🔝 大路 BIG ROAD</div>
+    <div style="display:flex;align-items:center;padding:4px 8px;position:relative;">
+      <div class="road-section-title" style="border:none;background:none;padding:0;">🔝 大路 BIG ROAD</div>
+      <button class="dealmode-btn" id="btnDealMode" style="position:absolute;left:50%;transform:translateX(-50%);">普通開牌 ▾</button>
+    </div>
     <div class="road-big">
       <canvas id="bigCanvas" width="540" height="110"></canvas>
     </div>
+    <div class="center-msg" id="centerMsg"></div>
     <div class="road-lower">
       <div class="road-bead">
         <div class="road-section-title" style="font-size:8px;opacity:.55;padding:2px 6px;letter-spacing:0">珠盤路</div>
@@ -333,18 +335,19 @@
         </div>
       </div>
     </div>
-  </div>
-
-  <!-- 路單放大 modal -->
-  <div class="modal" id="roadModal">
-    <div class="modal-box" style="max-width:92vw;">
-      <h3 id="roadModalTitle">放大</h3>
-      <canvas id="roadModalCanvas" width="600" height="400" style="width:100%;background:#02110a;border:1px solid #1c3a2a;border-radius:6px;display:block;"></canvas>
-      <button class="modal-close" id="roadModalClose">關閉</button>
+    <div class="dealzone" id="dealzoneOverlay">
+      <div class="hand player">
+        <div class="label">🂡 閒家</div>
+        <div class="cards" id="playerCards"></div>
+        <div class="score" id="playerScore">–</div>
+      </div>
+      <div class="hand banker">
+        <div class="label">🂠 莊家</div>
+        <div class="cards" id="bankerCards"></div>
+        <div class="score" id="bankerScore">–</div>
+      </div>
     </div>
   </div>
-
-  <!-- AI 陪玩設定 modal -->
   <div class="modal" id="aiModal">
     <div class="modal-box" style="max-width:400px;">
       <h3>🤖 新增 AI 陪玩</h3>
@@ -387,21 +390,6 @@
         <button class="modal-close" id="aiStop" style="background:#7a2d2d;margin:0;display:none;">拆除全部 AI</button>
       </div>
       <div id="aiList" class="ai-list"></div>
-    </div>
-  </div>
-
-  <div class="dealzone">
-    <button class="dealmode-btn" id="btnDealMode">普通開牌 ▾</button>
-    <div class="hand player">
-      <div class="label">🂡 閒家</div>
-      <div class="cards" id="playerCards"></div>
-      <div class="score" id="playerScore">–</div>
-    </div>
-    <div class="center-msg" id="centerMsg"></div>
-    <div class="hand banker">
-      <div class="label">🂠 莊家</div>
-      <div class="cards" id="bankerCards"></div>
-      <div class="score" id="bankerScore">–</div>
     </div>
   </div>
 
@@ -883,7 +871,7 @@ function cardEl(card){
 /* ===== 手動搣牌系統 ===== */
 function sqTimerEl(){
   let t=document.querySelector('.sq-timer');
-  if(!t){ t=document.createElement('div'); t.className='sq-timer'; document.querySelector('.dealzone').appendChild(t); }
+  if(!t){ t=document.createElement('div'); t.className='sq-timer'; document.getElementById('dealzoneOverlay').appendChild(t); }
   return t;
 }
 function sqTimerShow(v){ sqTimerEl().textContent=v>0?('⏱ '+v+'秒'):''; }
@@ -906,8 +894,8 @@ function sqManualOpen(el, sec){
     if(!el || el.dataset.open){ res(); return; }
     el.dataset.open='1';
     const back=el.querySelector('.back');
-    // 升起移去 dealzone 正中心放大
-    const dz=document.querySelector('.dealzone').getBoundingClientRect();
+    // 升起移去 dealzoneOverlay 正中心放大
+    const dz=document.getElementById('dealzoneOverlay').getBoundingClientRect();
     const cr=el.getBoundingClientRect();
     const dx=(dz.left+dz.width/2)-(cr.left+cr.width/2);
     const dy=(dz.top+dz.height/2)-(cr.top+cr.height/2);
@@ -966,11 +954,7 @@ async function deal(auto){
   if(dealing) return;
   let total=0; for(const x in bets) total+=bets[x];
   if(total===0 && auto!==true){ showToast('請先下注'); return; }
-  // 洗牌檢查：抽到切牌卡(剩118張) 或 本靴滿60局 → 自動洗牌開新靴（清路單+燒牌）
-  if(shoeDrawn>=shoeCut || shoeStats.round>=60){
-    await doShuffle();
-  }
-  // 落注期：手動模式10秒倒數；自動模式嘅AI落注已由 startCountdown 喺倒數第2秒做咗，呢度直接1.5秒緩衝開牌
+  if(shoeDrawn>=shoeCut || shoeStats.round>=60){ await doShuffle(); }
   dealing=true; setControls(false);
   if(!auto && ais.length){ aiPlaceBets(); }
   if(auto){ await sleep(1500); }
@@ -978,6 +962,7 @@ async function deal(auto){
   preBalance=balance;
   try{
 
+  const dz=document.getElementById('dealzoneOverlay'); if(dz) dz.classList.add('show');
   document.getElementById('bankerCards').innerHTML='';
   document.getElementById('playerCards').innerHTML='';
   document.getElementById('bankerScore').textContent='–';
@@ -1055,6 +1040,8 @@ async function deal(auto){
       setTimeout(function(){ if(box) box.innerHTML=''; },520);
     });
   },3000);
+  // 牌淡出後收起發牌區
+  setTimeout(()=>{ const dz=document.getElementById('dealzoneOverlay'); if(dz) dz.classList.remove('show'); },4000);
   } catch(err){
     console.error('deal() 錯誤已攔截:', err);
     showToast('⚠ 發牌異常，已自動重置');
@@ -1583,56 +1570,6 @@ document.getElementById('aiExit').addEventListener('click',()=>{ document.getEle
 document.getElementById('btnMute').addEventListener('click',()=>{ mute=!mute; document.getElementById('btnMute').textContent=mute?'🔇':'🔊'; if(!mute) sndChip(); });
 document.getElementById('btnSpeed').addEventListener('click',()=>{ cycleSpeed(); showToast(SPEED_NAMES[speed]+'節奏'+(speed===1?'':speed===0?' (-3秒)':' (+3秒)') ); });
 
-/* 點擊路單放大 */
-const roadMeta={
-  bigCanvas:{title:'🔝 大路 BIG ROAD', fn:drawBigModal},
-  beadCanvas:{title:'珠盤路 6×10', fn:drawBeadModal},
-  beeCanvas:{title:'大眼仔', fn:()=>drawDerivedModal('beeCanvas',1)},
-  smallCanvas:{title:'小路', fn:()=>drawDerivedModal('smallCanvas',2)},
-  cockCanvas:{title:'蟑螂路', fn:()=>drawDerivedModal('cockCanvas',3)}
-};
-function drawBigModal(ctx,W,H){
-  const cw=Math.floor(W/30), ch=Math.floor(H/6);
-  drawGrid(ctx,W,H,cw,ch); ctx.font='bold 20px sans-serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
-  const maxCols=Math.floor(W/cw); const startCol=Math.max(0, bigCols.length-maxCols);
-  for(let c=startCol;c<bigCols.length;c++){ const gc=c-startCol; const col=bigCols[c];
-    for(let r=0;r<col.length;r++){ const node=col[r]; const x=gc*cw+cw/2,y=r*ch+ch/2;
-      if(node.t!=='T'){ dot(ctx,x,y,cw/2-4, node.t==='B'?'#e23b3b':'#2d7dd2'); }
-      if(node.tie>0){ dot(ctx,x+cw/2-9,y-ch/2+9,7,'#2faf5a'); } } }
-}
-function drawBeadModal(ctx,W,H){
-  const COLS=10,ROWS=6; const cw=Math.floor(W/COLS),ch=Math.floor(H/ROWS);
-  drawGrid(ctx,W,H,cw,ch); ctx.textAlign='center'; ctx.textBaseline='middle';
-  const total=history.length,maxCells=COLS*ROWS,start=Math.max(0,total-maxCells);
-  for(let i=start;i<total;i++){ const idx=i-start; const col=Math.floor(idx/ROWS),row=idx%ROWS; const h=history[i];
-    const x=col*cw+cw/2,y=row*ch+ch/2; const fill=h.winner==='banker'?'#e23b3b':h.winner==='player'?'#2d7dd2':'#2faf5a';
-    const r=Math.min(cw,ch)/2-3; dot(ctx,x,y,r,fill);
-    let txt=h.winner==='banker'?'莊':h.winner==='player'?'閒':'和'; ctx.fillStyle='#fff'; ctx.font='bold 15px sans-serif';
-    let d2=''; if(h.playerPair)d2+='•'; if(h.bankerPair)d2+='◦'; ctx.fillText(txt+d2,x,y); }
-}
-function drawDerivedModal(id,offset){
-  return function(ctx,W,H){
-    const cw=Math.floor(W/20),ch=Math.floor(H/6); drawGrid(ctx,W,H,cw,ch);
-    ctx.font='bold 16px sans-serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
-    const data=deriveRoad(offset);
-    data.forEach(d=>{ const tot=data.length?data[data.length-1].col+1:0; const shift=Math.max(0,tot-20); const gc=d.col-shift; if(gc<0)return; const x=gc*cw+cw/2,y=d.row*ch+ch/2; dot(ctx,x,y,cw/2-4,d.blue?'#2d7dd2':'#e23b3b'); });
-  };
-}
-function openRoadModal(id){
-  const m=roadMeta[id]; if(!m) return;
-  document.getElementById('roadModalTitle').textContent=m.title;
-  const cv=document.getElementById('roadModalCanvas'); const ctx=cv.getContext('2d');
-  ctx.clearRect(0,0,cv.width,cv.height);
-  m.fn(ctx,cv.width,cv.height);
-  document.getElementById('roadModal').classList.add('show');
-}
-['bigCanvas','beadCanvas','beeCanvas','smallCanvas','cockCanvas'].forEach(id=>{
-  const el=document.getElementById(id);
-  el.style.cursor='pointer';
-  el.addEventListener('click',()=>openRoadModal(id));
-});
-document.getElementById('roadModalClose').addEventListener('click',()=>document.getElementById('roadModal').classList.remove('show'));
-document.getElementById('roadModal').addEventListener('click',e=>{ if(e.target.id==='roadModal') document.getElementById('roadModal').classList.remove('show'); });
 
 loadStats(); loadRoads(); loadAiList(); updateAiBalances();
 try{ const s=localStorage.getItem('bac_speed'); if(s!==null) speed=+s; }catch(e){}
