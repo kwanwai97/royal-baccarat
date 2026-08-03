@@ -1,0 +1,10 @@
+發牌區 .dealzone 唔再獨立佔位，而係以 overlay 形式疊加喺第一區（大路 canvas + 珠盤路 + 下三路）上面。
+
+具體做法：
+
+.roadpanel 設 position:relative
+.dealzone 改成 position:absolute; inset:0; z-index:10; 疊加喺路單區之上
+預設冇牌時透明/隱形，唔阻下面路單顯示
+發牌時卡牌照常顯示，但係 floating 喺路單區上面
+完成後 fade out，恢復純路單顯示
+下注區 .bets 保持喺 .roadpanel 外面，唔變

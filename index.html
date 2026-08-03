@@ -59,12 +59,12 @@
   .info-strip .k{opacity:.55; font-size:8px;}
   .info-strip .v{font-weight:800; color:#fff;}
   .info-strip .v.p{color:#a9d2ff;} .info-strip .v.b{color:#ffb3b3;} .info-strip .v.t{color:#8fe0ab;} .info-strip .v.c{color:#ffd45e;}
-  .dealzone{position:absolute; inset:0; z-index:10; display:grid; grid-template-columns:1fr 1fr; align-items:start; justify-items:center; gap:6px; padding:2px 8px; border-radius:8px;
+  .dealzone{position:absolute; inset:0; z-index:10; display:grid; grid-template-columns:1fr 1fr; align-items:end; justify-items:center; gap:6px; padding:2px 8px 8px; border-radius:8px;
     background:transparent; border:none; box-shadow:none;
     opacity:0; pointer-events:none; transition:opacity .25s ease;}
   .dealzone.show{opacity:1; pointer-events:auto; z-index:20;}
   .dealzone.empty{display:none !important; opacity:0 !important; pointer-events:none !important;}
-  .hand{display:flex; flex-direction:column; align-items:center; justify-content:center; gap:7px; width:100%; min-width:0; min-height:152px;}
+  .hand{display:flex; flex-direction:column; align-items:center; justify-content:flex-start; gap:7px; width:100%; min-width:0; min-height:152px;}
   .hand-row{display:flex; flex-direction:row; align-items:center; justify-content:center; gap:6px;}
   .hand.player .hand-row{justify-content:flex-end;}
   .hand.banker .hand-row{justify-content:flex-start;}
@@ -86,7 +86,7 @@
   .cards .card:nth-child(3) .mid{display:none;}
   /* 第3隻牌打橫：牌身 rotate(90deg) 令整張橫置；角落數字唔做反向修正，繼承牌身旋轉 → 數字垂直。
      兩個數字放喺牌嘅右邊一條邊：un-rotated TL(top:4,left:5)→旋後可視右上角；un-rotated TR(top:4,right:5)→旋後可視右下角。 */
-  .cards .card:nth-child(3) .corner.tl{top:4px; left:5px; right:auto; bottom:auto; transform:none;}
+  .cards .card:nth-child(3) .corner.tl{bottom:4px; left:5px; right:auto; top:auto; transform:none;}
   .cards .card:nth-child(3) .corner.br{top:4px; right:5px; left:auto; bottom:auto; transform:none;}
   .cards .card:nth-child(3).show-num .corner{opacity:1;}
   .card .corner{position:absolute; font-size:13px; line-height:1; font-weight:800; opacity:0; transition:opacity .25s ease;}
@@ -1205,7 +1205,6 @@ async function deal(auto){
   if(dealMode==='squeeze'){
     // 手動搣牌流程：4隻牌背擺好 → 每輪5秒揀牌(點邊隻手動搣10秒) → 冇點就順序自動開
     await sleep(1600);
-    positionDealzone();
     const pk=document.getElementById('playerCards').children;
     const bk=document.getElementById('bankerCards').children;
     for(let round=0; round<2; round++){
@@ -1232,7 +1231,6 @@ async function deal(auto){
     await sleep(300);
   } else {
     await sleep(1600);
-    positionDealzone();
   }
   const p0=handTotal(pc), b0=handTotal(bc);
   if(dealMode!=='squeeze'){ updateScore('player',p0); updateScore('banker',b0); }
@@ -1241,11 +1239,11 @@ async function deal(auto){
   if(p0<8 && b0<8){
     if(p0<=5){
       dealerCall('閒家補牌','#a9d2ff');
-      const pt=drawCard(); pc.push(pt); await appendCard('playerCards',pt); positionDealzone(); await revealThird('playerCards'); await sleep(1000);
+      const pt=drawCard(); pc.push(pt); await appendCard('playerCards',pt); await revealThird('playerCards'); await sleep(1000);
       if(dealMode!=='squeeze') updateScore('player',handTotal(pc));
-      if(bankerShouldDraw(b0,pt.value)){ dealerCall('莊家補牌','#ffb3b3'); const bt=drawCard(); bc.push(bt); await appendCard('bankerCards',bt); positionDealzone(); await revealThird('bankerCards'); await sleep(900); if(dealMode!=='squeeze') updateScore('banker',handTotal(bc)); }
+      if(bankerShouldDraw(b0,pt.value)){ dealerCall('莊家補牌','#ffb3b3'); const bt=drawCard(); bc.push(bt); await appendCard('bankerCards',bt); await revealThird('bankerCards'); await sleep(900); if(dealMode!=='squeeze') updateScore('banker',handTotal(bc)); }
     } else {
-      if(b0<=5){ dealerCall('莊家補牌','#ffb3b3'); const bt=drawCard(); bc.push(bt); await appendCard('bankerCards',bt); positionDealzone(); await revealThird('bankerCards'); await sleep(900); if(dealMode!=='squeeze') updateScore('banker',handTotal(bc)); }
+      if(b0<=5){ dealerCall('莊家補牌','#ffb3b3'); const bt=drawCard(); bc.push(bt); await appendCard('bankerCards',bt); await revealThird('bankerCards'); await sleep(900); if(dealMode!=='squeeze') updateScore('banker',handTotal(bc)); }
     }
   }
   await sleep(1000);
