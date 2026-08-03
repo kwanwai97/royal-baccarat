@@ -71,7 +71,7 @@
   .hand-row.reverse{flex-direction:row-reverse;}
   .hand .label{display:block; font-weight:700; font-size:10px; letter-spacing:.5px; color:var(--gold2); opacity:.85; white-space:nowrap;}
   /* 結果點數：黃色數字，大路canvas底部，兩座卡牌中心 */
-  #playerScore,#bankerScore{position:absolute; top:90px; font-size:32px; font-weight:900; color:var(--gold2); text-shadow:0 0 10px #000,0 3px 6px #000; z-index:21; pointer-events:none; transition:color .3s;}
+  #playerScore,#bankerScore{position:absolute; top:120px; font-size:32px; font-weight:900; color:var(--gold2); text-shadow:0 0 10px #000,0 3px 6px #000; z-index:21; pointer-events:none; transition:color .3s;}
   #playerScore{left:25%; transform:translateX(-50%);}
   #bankerScore{left:75%; transform:translateX(-50%);}
   /* 兩隻牌一行；第3隻補牌自動摺落下一行(下方中心打橫)，固定高度避免發牌區跳動 */
@@ -404,9 +404,9 @@
           <div class="cards" id="bankerCards"></div>
         </div>
       </div>
-      <div class="score" id="playerScore">–</div>
-      <div class="score" id="bankerScore">–</div>
     </div>
+    <div class="score" id="playerScore">–</div>
+    <div class="score" id="bankerScore">–</div>
   </div>
   <div class="modal" id="aiModal">
     <div class="modal-box" style="max-width:400px;">
