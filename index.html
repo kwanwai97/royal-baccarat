@@ -82,11 +82,15 @@
   /* 第3隻補牌打橫擺喺兩張牌下方正中（賭場慣例），預留第2行格子令首兩張唔會向上跳 */
   .cards .card:nth-child(3){grid-column:1 / -1; justify-self:center; margin-top:6px; transform-origin:center;}
   .cards .card:nth-child(3).show{transform:translateY(0) rotate(90deg);}
-  /* 第3隻牌打橫：取消中間大點數；展開後喺視覺左上角顯示角落數字（同1、2隻一致、文字正向、真正角位），整張牌向下移 */
+  /* 第3隻牌打橫：取消中間大點數；角落數字隨牌身90°旋轉變垂直（同1、2隻一樣只顯數字rank） */
   .cards .card:nth-child(3) .mid{display:none;}
-  .cards .card:nth-child(3) .corner.br{display:none;}
-  .cards .card:nth-child(3).show-num .corner.tl{display:block; opacity:1;}
-  .cards .card:nth-child(3) .corner.tl{top:auto; bottom:5px; left:auto; right:13px; transform:rotate(-90deg); transform-origin:right top;}
+  /* 第3隻牌打橫：牌身 rotate(90deg) 令整張橫置；角落數字反向 rotate(-90deg) 保持正向可讀。
+     未旋前 top-right → 旋後可視左上角；未旋前 bottom-left → 旋後可視右下角。角落只顯示數字(rank)。 */
+  /* 第3隻牌打橫：牌身 rotate(90deg) 令整張橫置；角落數字唔做反向修正，繼承牌身90°旋轉 → 數字垂直。
+     未旋前 top-right → 旋後可視左上角；未旋前 bottom-left → 旋後可視右下角。角落只顯示數字(rank)。 */
+  .cards .card:nth-child(3) .corner.tl{top:4px; left:auto; right:5px; bottom:auto; transform:none;}
+  .cards .card:nth-child(3) .corner.br{bottom:4px; right:auto; left:5px; top:auto; transform:none;}
+  .cards .card:nth-child(3).show-num .corner{opacity:1;}
   .card .corner{position:absolute; font-size:13px; line-height:1; font-weight:800; opacity:0; transition:opacity .25s ease;}
   .card .mid{display:none;}
   .card.show-num .corner{opacity:1;}
@@ -1158,6 +1162,22 @@ function updateScore(who,val){ document.getElementById(who+'Score').textContent=
 function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
 function hideMsg(){ document.getElementById('centerMsg').classList.remove('show'); }
 function showMsg(txt,color){ const m=document.getElementById('centerMsg'); m.textContent=txt; m.style.color=color||'var(--gold2)'; m.classList.add('show'); }
+/* 卡牌下移：將 dealzone 整格內容向下移，令兩手牌中心對齊大路第6格(底行)中心；JS 計算適配手機/桌面 */
+function positionDealzone(){
+  const dz=document.getElementById('dealzoneOverlay');
+  const big=document.getElementById('bigCanvas');
+  if(!dz||!big) return;
+  const br=big.getBoundingClientRect();
+  const cellH=br.height/6;
+  const sixthCenterY=br.top + cellH*5 + cellH/2;
+  const dr=dz.getBoundingClientRect();
+  const cardsBox=document.querySelector('.cards');
+  const cb=cardsBox?cardsBox.getBoundingClientRect():dr;
+  const cardsCenterY=cb.top + cb.height/2;
+  const delta=sixthCenterY - cardsCenterY;
+  dz.style.transform = delta!==0 ? 'translateY('+delta+'px)' : '';
+  dz.dataset.dzShift=String(delta);
+}
 
 async function deal(auto){
   if(dealing) return;
@@ -1190,6 +1210,7 @@ async function deal(auto){
   if(dealMode==='squeeze'){
     // 手動搣牌流程：4隻牌背擺好 → 每輪5秒揀牌(點邊隻手動搣10秒) → 冇點就順序自動開
     await sleep(1600);
+    positionDealzone();
     const pk=document.getElementById('playerCards').children;
     const bk=document.getElementById('bankerCards').children;
     for(let round=0; round<2; round++){
@@ -1216,6 +1237,7 @@ async function deal(auto){
     await sleep(300);
   } else {
     await sleep(1600);
+    positionDealzone();
   }
   const p0=handTotal(pc), b0=handTotal(bc);
   if(dealMode!=='squeeze'){ updateScore('player',p0); updateScore('banker',b0); }
@@ -1224,11 +1246,11 @@ async function deal(auto){
   if(p0<8 && b0<8){
     if(p0<=5){
       dealerCall('閒家補牌','#a9d2ff');
-      const pt=drawCard(); pc.push(pt); await appendCard('playerCards',pt); await revealThird('playerCards'); await sleep(1000);
+      const pt=drawCard(); pc.push(pt); await appendCard('playerCards',pt); positionDealzone(); await revealThird('playerCards'); await sleep(1000);
       if(dealMode!=='squeeze') updateScore('player',handTotal(pc));
-      if(bankerShouldDraw(b0,pt.value)){ dealerCall('莊家補牌','#ffb3b3'); const bt=drawCard(); bc.push(bt); await appendCard('bankerCards',bt); await revealThird('bankerCards'); await sleep(900); if(dealMode!=='squeeze') updateScore('banker',handTotal(bc)); }
+      if(bankerShouldDraw(b0,pt.value)){ dealerCall('莊家補牌','#ffb3b3'); const bt=drawCard(); bc.push(bt); await appendCard('bankerCards',bt); positionDealzone(); await revealThird('bankerCards'); await sleep(900); if(dealMode!=='squeeze') updateScore('banker',handTotal(bc)); }
     } else {
-      if(b0<=5){ dealerCall('莊家補牌','#ffb3b3'); const bt=drawCard(); bc.push(bt); await appendCard('bankerCards',bt); await revealThird('bankerCards'); await sleep(900); if(dealMode!=='squeeze') updateScore('banker',handTotal(bc)); }
+      if(b0<=5){ dealerCall('莊家補牌','#ffb3b3'); const bt=drawCard(); bc.push(bt); await appendCard('bankerCards',bt); positionDealzone(); await revealThird('bankerCards'); await sleep(900); if(dealMode!=='squeeze') updateScore('banker',handTotal(bc)); }
     }
   }
   await sleep(1000);
