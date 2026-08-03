@@ -241,19 +241,22 @@
   .marquee.show{opacity:1;}
   .marquee-track{display:flex; flex-direction:column; gap:4px;}
 
-  /* ===== ① 開局前枱邊閒聊 chat strip ===== */
-  .tablechat{display:none; margin:0 8px 4px; background:rgba(0,0,0,.35); border:1px solid rgba(212,175,55,.25); border-radius:8px; padding:4px 8px; flex-direction:column; max-height:88px;}
-  .tablechat.show{display:flex;}
-  .tc-title{font-size:9px; color:var(--gold2); opacity:.75; letter-spacing:1px; margin-bottom:2px;}
+  /* ===== ① 開局前枱邊閒聊 chat strip（覆蓋珠盤路位置） ===== */
+  .tablechat{position:absolute; inset:0; z-index:15; margin:0; background:rgba(2,17,10,.88); border:none; border-radius:0; padding:6px 8px; display:flex; flex-direction:column; max-height:none; opacity:0; visibility:hidden; pointer-events:none; transition:opacity .35s ease, visibility .35s;}
+  .tablechat.show{opacity:1; visibility:visible;}
+  .tc-title{font-size:9px; color:var(--gold2); opacity:.85; letter-spacing:1px; margin-bottom:2px; flex:0 0 auto;}
   .tc-count{font-size:12.5px; font-weight:800; color:#6fffa6; line-height:1.3; min-height:16px; display:none;}
   .tc-count.show{display:block;}
-  .tc-body{overflow-y:auto; display:flex; flex-direction:column; gap:2px; max-height:68px;}
+  .tc-body{overflow-y:auto; display:flex; flex-direction:column; gap:2px; flex:1 1 auto; max-height:none;}
   .tc-bubble{font-size:12.5px; line-height:1.25; display:flex; gap:4px; align-items:baseline;}
   .tc-bubble .ic{flex:0 0 auto;}
   .tc-bubble .tx{color:#f0e8c8;}
   .tc-bubble .tx b{color:#fff; font-weight:800; margin-right:1px;}
   .tc-bubble.ai-0 .tx{color:#ffd9a8;} .tc-bubble.ai-1 .tx{color:#a9d2ff;} .tc-bubble.ai-2 .tx{color:#8fe0ab;}
-  .tc-bubble.ai-3 .tx{color:#e3bcff;} .tc-bubble.ai-4 .tx{color:#ffb3cd;} .tc-bubble.ai-5 .tx{color:#c4f0f8;}
+  .tc-bubble.ai-5 .tx{color:#c4f0f8;}
+  /* 落注倒數：顯示喺 3D 開牌掣下方、大路紅藍圖案上方（靜態行，唔彈跳） */
+  .bet-countdown{display:none; text-align:center; font-size:13px; font-weight:800; color:var(--gold2); padding:3px 0 5px; letter-spacing:1px; text-shadow:0 0 10px #000,0 2px 4px #000; white-space:nowrap;}
+  .bet-countdown.show{display:block;}
 
   .win-pulse{animation:winp .8s ease;}
   @keyframes winp{0%{box-shadow:0 0 0 0 var(--gold2);}50%{box-shadow:0 0 0 6px rgba(244,217,123,.6);}100%{box-shadow:0 0 0 0 rgba(244,217,123,0);}}
@@ -342,6 +345,7 @@
       <div class="road-section-title" style="border:none;background:none;padding:0;">🔝 大路 BIG ROAD</div>
       <button class="dealmode-btn" id="btnDealMode" style="position:absolute;left:50%;transform:translateX(-50%);">普通開牌 ▾</button>
     </div>
+    <div class="bet-countdown" id="betCountdown"></div>
     <div class="road-big">
       <canvas id="bigCanvas" width="540" height="110"></canvas>
     </div>
@@ -351,6 +355,11 @@
         <div class="road-section-title" style="font-size:8px;opacity:.55;padding:2px 6px;letter-spacing:0">珠盤路</div>
         <canvas id="beadCanvas" width="270" height="110"></canvas>
         <div class="info-strip" id="infoStrip"></div>
+        <div class="tablechat" id="tableChat">
+          <div class="tc-title">💬 枱邊閒聊</div>
+          <div class="tc-count" id="tcCount"></div>
+          <div class="tc-body" id="tcBody"></div>
+        </div>
       </div>
       <div class="road-derived">
         <div class="derived-row">
@@ -376,11 +385,6 @@
         <div class="score" id="bankerScore">–</div>
       </div>
     </div>
-  </div>
-  <div class="tablechat" id="tableChat">
-    <div class="tc-title">💬 枱邊閒聊</div>
-    <div class="tc-count" id="tcCount"></div>
-    <div class="tc-body" id="tcBody"></div>
   </div>
   <div class="modal" id="aiModal">
     <div class="modal-box" style="max-width:400px;">
@@ -863,20 +867,17 @@ let betting=false;
 function bettingPhase(sec){
   return new Promise(resolve=>{
     betting=true;
-    // 落注倒數同枱邊閒聊用同一格顯示（唔跳去第個位），倒數完先收框
-    showTableChat();
-    const cnt=document.getElementById('tcCount');
-    const m=document.getElementById('centerMsg');
+    const bc=document.getElementById('betCountdown');
     let t=sec;
     const tick=(speakIt)=>{
       const txt='🎙 請下注，剩 '+t+' 秒（AI 已落注，可跟注）';
-      cnt.textContent='⏳ '+txt; cnt.classList.add('show');
+      if(bc){ bc.textContent='⏳ '+txt; bc.classList.add('show'); }
       if(speakIt) speak(txt);
     };
     tick(true);
     const iv=setInterval(()=>{
       t--;
-      if(t<=0){ clearInterval(iv); cnt.textContent=''; cnt.classList.remove('show'); betting=false; hideTableChat(); resolve(); }
+      if(t<=0){ clearInterval(iv); if(bc){ bc.textContent=''; bc.classList.remove('show'); } betting=false; resolve(); }
       else tick(false);
     },1000);
   });
@@ -966,19 +967,20 @@ function addChatBubble(ai, msg){
   body.appendChild(b);
   body.scrollTop=body.scrollHeight;
 }
-function showTableChat(){ const c=document.getElementById('tableChat'); if(!c)return; document.getElementById('tcBody').innerHTML=''; const cc=document.getElementById('tcCount'); if(cc){ cc.textContent=''; cc.classList.remove('show'); } c.classList.add('show'); }
+function showTableChat(){ const c=document.getElementById('tableChat'); if(!c)return; const tt=c.querySelector('.tc-title'); if(tt) tt.textContent='💬 枱邊閒聊'; document.getElementById('tcBody').innerHTML=''; const cc=document.getElementById('tcCount'); if(cc){ cc.textContent=''; cc.classList.remove('show'); } c.classList.add('show'); }
 function hideTableChat(){ const c=document.getElementById('tableChat'); if(c) c.classList.remove('show'); }
 async function tableChatPhase(sec){
   return new Promise(resolve=>{
     if(ais.length===0){ resolve(); return; }
     showTableChat();
-    showMsg('💬 枱邊傾偈中…','#f4d97b');
     const order=[...ais].sort(()=>Math.random()-0.5);
     const ctx=roadState();
     order.forEach(ai=>{ ai._prePick=aiPick(ai); });   // 先定好注，傾偈先至同落注一致
     const total=order.length;
     const stepMs=Math.max(900,(sec*1000)/(total+1));
     let i=0, prev=null;
+    let chatDone=false;
+    const finish=()=>{ if(chatDone) return; chatDone=true; hideTableChat(); setTimeout(()=>resolve(), 400); };
     const emit=()=>{
       if(i<total){
         const ai=order[i];
@@ -986,10 +988,11 @@ async function tableChatPhase(sec){
         prev=ai;
         i++;
         setTimeout(emit, stepMs);
+      } else {
+        setTimeout(finish, 6000);   // 討論完畢，停留 6 秒先收起
       }
     };
     emit();
-    setTimeout(()=>{ hideTableChat(); resolve(); }, sec*1000);
   });
 }
 
@@ -1135,11 +1138,12 @@ async function deal(auto){
   let total=0; for(const x in bets) total+=bets[x];
   if(total===0 && auto!==true && ais.length===0){ showToast('請先下注'); return; }
   if(shoeDrawn>=shoeCut || shoeStats.round>=60){ await doShuffle(); }
-  dealing=true; setControls(false);
+  setControls(false);   // 禁 DEAL/清除/重複掣（唔設 dealing，等落注期人類照落得）
   // 統一次序（自動/手動都一樣）：2秒緩衝 → 枱邊討論 → 落注倒數 → 開牌
   await sleep(2000);
   if(ais.length){ await tableChatPhase(spd(10)+5); aiPlaceBets(); }
   await bettingPhase(spd(10));
+  dealing=true;          // 落注完、開牌前先鎖（呢刻起人類不可再落注）
   preBalance=balance;
   try{
 
@@ -1285,7 +1289,7 @@ function settle(winner, playerPair, bankerPair, big, totalCards, pTotal, bTotal,
     sndWin(); launchConfetti();
     let label = winner==='player'?'閒家贏':winner==='banker'?'莊家贏':'和局';
     showMsg(resultText(label, pTotal, bTotal, playerPair, bankerPair, big, pCards, bCards, net), winner==='banker'?'#ffb3b3':winner==='player'?'#a9d2ff':'#8fe0ab');
-    dealerCall((winner==='banker'?'莊家贏':'閒家贏')+'，'+(playerPair?'閒對 ':'')+(bankerPair?'莊對 ':'')+(big?'大牌':'小牌'), winner==='banker'?'#ffb3b3':winner==='player'?'#a9d2ff':'#8fe0ab');
+    dealerCall((winner==='banker'?'莊家贏':winner==='player'?'閒家贏':'和局')+'，'+(playerPair?'閒對 ':'')+(bankerPair?'莊對 ':'')+(big?'大牌':'小牌'), winner==='banker'?'#ffb3b3':winner==='player'?'#a9d2ff':'#8fe0ab');
     let tip='🎉 贏 '+fmt(net);
     if(bonus>0) tip+=' ｜🔥連勝彩金 +'+fmt(bonus);
     showToast(tip);
@@ -1294,13 +1298,13 @@ function settle(winner, playerPair, bankerPair, big, totalCards, pTotal, bTotal,
     sndLose();
     let label = winner==='player'?'閒家贏':winner==='banker'?'莊家贏':'和局';
     showMsg(resultText(label, pTotal, bTotal, playerPair, bankerPair, big, pCards, bCards, net), winner==='banker'?'#ffb3b3':winner==='player'?'#a9d2ff':'#8fe0ab');
-    dealerCall((winner==='banker'?'莊家贏':'閒家贏')+'，'+(playerPair?'閒對 ':'')+(bankerPair?'莊對 ':'')+(big?'大牌':'小牌'), winner==='banker'?'#ffb3b3':winner==='player'?'#a9d2ff':'#8fe0ab');
+    dealerCall((winner==='banker'?'莊家贏':winner==='player'?'閒家贏':'和局')+'，'+(playerPair?'閒對 ':'')+(bankerPair?'莊對 ':'')+(big?'大牌':'小牌'), winner==='banker'?'#ffb3b3':winner==='player'?'#a9d2ff':'#8fe0ab');
     showToast('💸 輸 '+fmt(-net));
   } else {
     sndTie();
     let label = winner==='player'?'閒家贏':winner==='banker'?'莊家贏':'和局';
     showMsg(resultText(label, pTotal, bTotal, playerPair, bankerPair, big, pCards, bCards, net), winner==='banker'?'#ffb3b3':winner==='player'?'#a9d2ff':'#8fe0ab');
-    dealerCall((winner==='banker'?'莊家贏':'閒家贏')+'，'+(playerPair?'閒對 ':'')+(bankerPair?'莊對 ':'')+(big?'大牌':'小牌'), winner==='banker'?'#ffb3b3':winner==='player'?'#a9d2ff':'#8fe0ab');
+    dealerCall((winner==='banker'?'莊家贏':winner==='player'?'閒家贏':'和局')+'，'+(playerPair?'閒對 ':'')+(bankerPair?'莊對 ':'')+(big?'大牌':'小牌'), winner==='banker'?'#ffb3b3':winner==='player'?'#a9d2ff':'#8fe0ab');
     if(lastStaked>0) showToast('↔ 平手退還');
   }
   updateBalance(); updateAiBalances(); updateStreak();
