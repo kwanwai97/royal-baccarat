@@ -84,12 +84,10 @@
   .cards .card:nth-child(3).show{transform:translateY(0) rotate(90deg);}
   /* 第3隻牌打橫：取消中間大點數；角落數字隨牌身90°旋轉變垂直（同1、2隻一樣只顯數字rank） */
   .cards .card:nth-child(3) .mid{display:none;}
-  /* 第3隻牌打橫：牌身 rotate(90deg) 令整張橫置；角落數字反向 rotate(-90deg) 保持正向可讀。
-     未旋前 top-right → 旋後可視左上角；未旋前 bottom-left → 旋後可視右下角。角落只顯示數字(rank)。 */
-  /* 第3隻牌打橫：牌身 rotate(90deg) 令整張橫置；角落數字唔做反向修正，繼承牌身90°旋轉 → 數字垂直。
-     未旋前 top-right → 旋後可視左上角；未旋前 bottom-left → 旋後可視右下角。角落只顯示數字(rank)。 */
-  .cards .card:nth-child(3) .corner.tl{top:4px; left:auto; right:5px; bottom:auto; transform:none;}
-  .cards .card:nth-child(3) .corner.br{bottom:4px; right:auto; left:5px; top:auto; transform:none;}
+  /* 第3隻牌打橫：牌身 rotate(90deg) 令整張橫置；角落數字唔做反向修正，繼承牌身旋轉 → 數字垂直。
+     兩個數字放喺牌嘅右邊一條邊：un-rotated TL(top:4,left:5)→旋後可視右上角；un-rotated TR(top:4,right:5)→旋後可視右下角。 */
+  .cards .card:nth-child(3) .corner.tl{top:4px; left:5px; right:auto; bottom:auto; transform:none;}
+  .cards .card:nth-child(3) .corner.br{top:4px; right:5px; left:auto; bottom:auto; transform:none;}
   .cards .card:nth-child(3).show-num .corner{opacity:1;}
   .card .corner{position:absolute; font-size:13px; line-height:1; font-weight:800; opacity:0; transition:opacity .25s ease;}
   .card .mid{display:none;}
@@ -1162,19 +1160,16 @@ function updateScore(who,val){ document.getElementById(who+'Score').textContent=
 function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
 function hideMsg(){ document.getElementById('centerMsg').classList.remove('show'); }
 function showMsg(txt,color){ const m=document.getElementById('centerMsg'); m.textContent=txt; m.style.color=color||'var(--gold2)'; m.classList.add('show'); }
-/* 卡牌下移：將 dealzone 整格內容向下移，令兩手牌中心對齊大路第6格(底行)中心；JS 計算適配手機/桌面 */
+/* 卡牌下移：第3隻牌(打橫，.cards 第3隻) 底部對齊 roadpanel 底部 → 貼住大路底、投注區上方；
+   dealzone 整體跟住下移，手機/桌面自動適配 */
 function positionDealzone(){
   const dz=document.getElementById('dealzoneOverlay');
-  const big=document.getElementById('bigCanvas');
-  if(!dz||!big) return;
-  const br=big.getBoundingClientRect();
-  const cellH=br.height/6;
-  const sixthCenterY=br.top + cellH*5 + cellH/2;
-  const dr=dz.getBoundingClientRect();
-  const cardsBox=document.querySelector('.cards');
-  const cb=cardsBox?cardsBox.getBoundingClientRect():dr;
-  const cardsCenterY=cb.top + cb.height/2;
-  const delta=sixthCenterY - cardsCenterY;
+  const panel=document.querySelector('.roadpanel');
+  if(!dz||!panel) return;
+  const pr=panel.getBoundingClientRect();
+  const third=document.querySelector('#playerCards > .card:nth-child(3), #bankerCards > .card:nth-child(3)');
+  const anchor = third ? third.getBoundingClientRect() : (document.querySelector('.cards')?.getBoundingClientRect() || dz.getBoundingClientRect());
+  const delta = pr.bottom - anchor.bottom;
   dz.style.transform = delta!==0 ? 'translateY('+delta+'px)' : '';
   dz.dataset.dzShift=String(delta);
 }
