@@ -68,15 +68,14 @@
   .hand .label{display:block; font-weight:700; font-size:10px; letter-spacing:.5px; color:var(--gold2); opacity:.85; white-space:nowrap;}
   .hand .score{display:block; font-size:20px; font-weight:900; margin-top:2px; color:var(--gold2); text-shadow:0 0 10px #000,0 2px 4px #000; min-height:22px; line-height:1; transition:color .3s;}
   /* 兩隻牌一行，第3隻補牌自動摺落下一行，固定高度避免發牌區跳動 */
-  .cards{display:flex; gap:4px; min-width:150px; height:80px; min-height:0; align-items:flex-start; justify-content:center; flex-wrap:wrap;}
+  .cards{display:flex; gap:4px; min-width:150px; min-height:80px; height:auto; align-items:flex-start; justify-content:center; flex-wrap:wrap;}
   .card{ width:52px; height:72px; border-radius:4px; background:#fff; color:#000; position:relative;
     box-shadow:0 2px 6px rgba(0,0,0,.5); font-weight:800; display:flex; align-items:center; justify-content:center;
     font-size:22px; transform:translateY(-4px) rotate(-4deg); opacity:0; transition:all .3s cubic-bezier(.2,.8,.3,1.2);
     border:1px solid #ccc; }
   .card.show{opacity:1; transform:translateY(0) rotate(0);}
-  /* 第3隻補牌打橫擺（賭場慣例，慳位） */
-  .cards .card:nth-child(3){margin:0 8px;}
-  .cards .card:nth-child(3).show{transform:translateY(0) rotate(90deg);}
+  /* 第3隻補牌自動摺落下一行（唔打橫，避免遮住牌面數字） */
+  .cards .card:nth-child(3){flex-basis:100%; margin:6px 0 0;}
   .card .corner{position:absolute; font-size:13px; line-height:1; font-weight:800; opacity:0; transition:opacity .25s ease;}
   .card.show-num .corner{opacity:1;}
   /* 真實啤牌牌面：排點/公仔 */
@@ -91,7 +90,7 @@
   .courtbox .cs{font-size:14px; line-height:1.1;}
   /* ===== 3D 翻牌模式 ===== */
   .card.f3d{background:transparent; border:none; box-shadow:none; perspective:420px;}
-  .card.f3d .cf{position:absolute; inset:0; transform-style:preserve-3d; transition:transform .85s cubic-bezier(.3,.7,.3,1); transform:rotateY(180deg); border-radius:4px;}
+  .card.f3d .cf{position:absolute; inset:0; transform-style:preserve-3d; transition:transform 1.1s cubic-bezier(.3,.7,.3,1); transform:rotateY(180deg); border-radius:4px;}
   .card.f3d.flip .cf{transform:rotateY(0deg);}
   /* 搣牌模式：牌背漸進掀開（真賭場捽牌），四方向隨機 */
   .card.f3d.sq .cf{transition:none; transform:none;}
@@ -1044,7 +1043,7 @@ function cardEl(card){
   d.className='card f3d '+(sq?'sq '+dir+' ':'')+(red?'red':'black');
   d.innerHTML='<div class="cf"><div class="face">'+inner+'</div><div class="back"></div></div>';
   if(!sq){ 
-    setTimeout(()=>d.classList.add('flip'), 600);
+    setTimeout(()=>d.classList.add('flip'), 800);
     // 3D模式：翻牌transition完成後顯示數字
     const cf=d.querySelector('.cf');
     cf.addEventListener('transitionend',function handler(e){
@@ -1116,7 +1115,7 @@ function sqManualOpen(el, sec){
       el.removeEventListener('touchstart',onDown); window.removeEventListener('touchmove',onMove); window.removeEventListener('touchend',onUp);
       if(auto && prog<0.5){ el.classList.add('flip'); }               // 超時：自動掀開動畫
       else { back.style.transition='clip-path .45s'; back.style.clipPath=clipFor(dir,1.01); }  // 手動：順住你嘅方向全開
-      setTimeout(()=>{ el.style.transform=''; el.style.zIndex=''; sndDeal(); res(); }, auto?3200:800);
+      setTimeout(()=>{ el.style.transform=''; el.style.zIndex=''; sndDeal(); res(); }, auto?4000:1000);
     }
     el.addEventListener('pointerdown',onDown); window.addEventListener('pointermove',onMove); window.addEventListener('pointerup',onUp);
     el.addEventListener('touchstart',onDown,{passive:false}); window.addEventListener('touchmove',onMove,{passive:false}); window.addEventListener('touchend',onUp);
@@ -1129,7 +1128,7 @@ async function revealThird(containerId){
   const el=kids[kids.length-1]; if(!el) return;
   const pick=await sqWaitClick([el],5);
   if(pick){ await sqManualOpen(pick,10); }
-  else { sqAutoOpen(el); await sleep(3200); }
+  else { sqAutoOpen(el); await sleep(4000); }
 }
 function renderCards(container, cards, delay){
   container.innerHTML='';
@@ -1173,7 +1172,7 @@ async function deal(auto){
 
   if(dealMode==='squeeze'){
     // 手動搣牌流程：4隻牌背擺好 → 每輪5秒揀牌(點邊隻手動搣10秒) → 冇點就順序自動開
-    await sleep(1200);
+    await sleep(1600);
     const pk=document.getElementById('playerCards').children;
     const bk=document.getElementById('bankerCards').children;
     for(let round=0; round<2; round++){
@@ -1187,19 +1186,19 @@ async function deal(auto){
         const isPlayer=pick.parentElement.id==='playerCards';
         const otherKids=isPlayer?bk:pk;
         const mate=[otherKids[0],otherKids[1]].filter(el=>el && !el.dataset.open)[0];
-        if(mate){ sqAutoOpen(mate); await sleep(3200); }
+        if(mate){ sqAutoOpen(mate); await sleep(4000); }
       } else {
         // 冇點：順序同時開兩隻（閒+莊各一）
         const a=order[0], b=order[1];
         sqAutoOpen(a); if(b) sqAutoOpen(b);
-        await sleep(3200);
+        await sleep(4000);
       }
     }
     // 保險：4隻牌全部開晒先計分
     [pk[0],pk[1],bk[0],bk[1]].forEach(el=>{ if(el&&!el.dataset.open) sqAutoOpen(el); });
     await sleep(300);
   } else {
-    await sleep(1200);
+    await sleep(1600);
   }
   const p0=handTotal(pc), b0=handTotal(bc);
   if(dealMode!=='squeeze'){ updateScore('player',p0); updateScore('banker',b0); }
@@ -1208,14 +1207,14 @@ async function deal(auto){
   if(p0<8 && b0<8){
     if(p0<=5){
       dealerCall('閒家補牌','#a9d2ff');
-      const pt=drawCard(); pc.push(pt); await appendCard('playerCards',pt); await revealThird('playerCards'); await sleep(700);
+      const pt=drawCard(); pc.push(pt); await appendCard('playerCards',pt); await revealThird('playerCards'); await sleep(1000);
       if(dealMode!=='squeeze') updateScore('player',handTotal(pc));
-      if(bankerShouldDraw(b0,pt.value)){ dealerCall('莊家補牌','#ffb3b3'); const bt=drawCard(); bc.push(bt); await appendCard('bankerCards',bt); await revealThird('bankerCards'); await sleep(600); if(dealMode!=='squeeze') updateScore('banker',handTotal(bc)); }
+      if(bankerShouldDraw(b0,pt.value)){ dealerCall('莊家補牌','#ffb3b3'); const bt=drawCard(); bc.push(bt); await appendCard('bankerCards',bt); await revealThird('bankerCards'); await sleep(900); if(dealMode!=='squeeze') updateScore('banker',handTotal(bc)); }
     } else {
-      if(b0<=5){ dealerCall('莊家補牌','#ffb3b3'); const bt=drawCard(); bc.push(bt); await appendCard('bankerCards',bt); await revealThird('bankerCards'); await sleep(600); if(dealMode!=='squeeze') updateScore('banker',handTotal(bc)); }
+      if(b0<=5){ dealerCall('莊家補牌','#ffb3b3'); const bt=drawCard(); bc.push(bt); await appendCard('bankerCards',bt); await revealThird('bankerCards'); await sleep(900); if(dealMode!=='squeeze') updateScore('banker',handTotal(bc)); }
     }
   }
-  await sleep(700);
+  await sleep(1000);
 
   const pTotal=handTotal(pc), bTotal=handTotal(bc);
   // 搣牌模式：全部開晒先一次過顯示點數（保持神秘感）
