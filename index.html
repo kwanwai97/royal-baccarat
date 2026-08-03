@@ -86,8 +86,8 @@
   .cards .card:nth-child(3) .mid{display:none;}
   /* 第3隻牌打橫：牌身 rotate(90deg) 令整張橫置；角落數字唔做反向修正，繼承牌身旋轉 → 數字垂直。
      兩個數字放喺牌嘅右邊一條邊：un-rotated TL(top:4,left:5)→旋後可視右上角；un-rotated TR(top:4,right:5)→旋後可視右下角。 */
-  .cards .card:nth-child(3) .corner.tl{bottom:4px; left:5px; right:auto; top:auto; transform:none;}
-  .cards .card:nth-child(3) .corner.br{top:4px; right:5px; left:auto; bottom:auto; transform:none;}
+  .cards .card:nth-child(3) .corner.tl{top:4px; left:5px; right:auto; bottom:auto; transform:none;}
+  .cards .card:nth-child(3) .corner.br{bottom:4px; right:5px; left:auto; top:auto; transform:none;}
   .cards .card:nth-child(3).show-num .corner{opacity:1;}
   .card .corner{position:absolute; font-size:13px; line-height:1; font-weight:800; opacity:0; transition:opacity .25s ease;}
   .card .mid{display:none;}
@@ -147,7 +147,7 @@
   .card .mid{font-size:24px;}
   .card.red{color:var(--red);}
   .card.black{color:#111;}
-  .center-msg{position:absolute; top:30px; left:50%; transform:translateX(-50%); z-index:25; max-width:96%;
+  .center-msg{position:absolute; bottom:4px; left:50%; transform:translateX(-50%); z-index:25; max-width:96%;
     display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1px;
     font-size:14px; font-weight:800; line-height:1.2; color:var(--gold2); text-shadow:0 0 14px #000,0 2px 4px #000; opacity:0; transition:opacity .25s; pointer-events:none; text-align:center; white-space:nowrap;}
   .center-msg.show{opacity:1;}
