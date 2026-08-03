@@ -244,14 +244,16 @@
   /* ===== ① 開局前枱邊閒聊 chat strip（覆蓋珠盤路位置） ===== */
   .tablechat{position:absolute; inset:0; z-index:15; margin:0; background:rgba(2,17,10,.88); border:none; border-radius:0; padding:6px 8px; display:flex; flex-direction:column; max-height:none; opacity:0; visibility:hidden; pointer-events:none; transition:opacity .35s ease, visibility .35s;}
   .tablechat.show{opacity:1; visibility:visible;}
-  .tc-title{font-size:9px; color:var(--gold2); opacity:.85; letter-spacing:1px; margin-bottom:2px; flex:0 0 auto;}
-  .tc-count{font-size:12.5px; font-weight:800; color:#6fffa6; line-height:1.3; min-height:16px; display:none;}
+  .tc-title{font-size:8px; color:var(--gold2); opacity:.85; letter-spacing:1px; margin-bottom:2px; flex:0 0 auto; display:flex; align-items:center; justify-content:space-between;}
+  .tc-close{font-size:12px; line-height:1; color:#f5f0d8; background:rgba(212,175,55,.18); border:1px solid rgba(212,175,55,.5); border-radius:6px; padding:1px 6px; cursor:pointer; pointer-events:auto;}
+  .tc-close:active{transform:scale(.9);}
+  .tc-count{font-size:10px; font-weight:800; color:#6fffa6; line-height:1.3; min-height:14px; display:none;}
   .tc-count.show{display:block;}
   .tc-body{overflow-y:auto; display:flex; flex-direction:column; gap:2px; flex:1 1 auto; max-height:none;}
-  .tc-bubble{font-size:12.5px; line-height:1.25; display:flex; gap:4px; align-items:baseline;}
-  .tc-bubble .ic{flex:0 0 auto;}
-  .tc-bubble .tx{color:#f0e8c8;}
-  .tc-bubble .tx b{color:#fff; font-weight:800; margin-right:1px;}
+  .tc-bubble{font-size:10px; line-height:1.2; display:flex; gap:4px; align-items:baseline;}
+  .tc-bubble .ic{flex:0 0 auto; font-size:11px;}
+  .tc-bubble .tx{color:#f0e8c8; font-size:10px;}
+  .tc-bubble .tx b{color:#fff; font-weight:800; margin-right:1px; font-size:10px;}
   .tc-bubble.ai-0 .tx{color:#ffd9a8;} .tc-bubble.ai-1 .tx{color:#a9d2ff;} .tc-bubble.ai-2 .tx{color:#8fe0ab;}
   .tc-bubble.ai-5 .tx{color:#c4f0f8;}
   /* 落注倒數：顯示喺 3D 開牌掣下方、大路紅藍圖案上方（靜態行，唔彈跳） */
@@ -356,7 +358,7 @@
         <canvas id="beadCanvas" width="270" height="110"></canvas>
         <div class="info-strip" id="infoStrip"></div>
         <div class="tablechat" id="tableChat">
-          <div class="tc-title">💬 枱邊閒聊</div>
+          <div class="tc-title">💬 枱邊閒聊 <span class="tc-close" id="tcClose">✕</span></div>
           <div class="tc-count" id="tcCount"></div>
           <div class="tc-body" id="tcBody"></div>
         </div>
@@ -969,6 +971,7 @@ function addChatBubble(ai, msg){
 }
 function showTableChat(){ const c=document.getElementById('tableChat'); if(!c)return; const tt=c.querySelector('.tc-title'); if(tt) tt.textContent='💬 枱邊閒聊'; document.getElementById('tcBody').innerHTML=''; const cc=document.getElementById('tcCount'); if(cc){ cc.textContent=''; cc.classList.remove('show'); } c.classList.add('show'); }
 function hideTableChat(){ const c=document.getElementById('tableChat'); if(c) c.classList.remove('show'); }
+document.getElementById('tcClose').addEventListener('click',()=>{ hideTableChat(); const f=window._tcFinish; if(f){ window._tcFinish(); window._tcFinish=null; } });
 async function tableChatPhase(sec){
   return new Promise(resolve=>{
     if(ais.length===0){ resolve(); return; }
@@ -981,6 +984,7 @@ async function tableChatPhase(sec){
     let i=0, prev=null;
     let chatDone=false;
     const finish=()=>{ if(chatDone) return; chatDone=true; hideTableChat(); setTimeout(()=>resolve(), 400); };
+    window._tcFinish=finish;   // 畀關閉掣用
     const emit=()=>{
       if(i<total){
         const ai=order[i];
@@ -1139,8 +1143,9 @@ async function deal(auto){
   if(total===0 && auto!==true && ais.length===0){ showToast('請先下注'); return; }
   if(shoeDrawn>=shoeCut || shoeStats.round>=60){ await doShuffle(); }
   setControls(false);   // 禁 DEAL/清除/重複掣（唔設 dealing，等落注期人類照落得）
-  // 統一次序（自動/手動都一樣）：2秒緩衝 → 枱邊討論 → 落注倒數 → 開牌
+  // 統一次序（自動/手動都一樣）：2秒緩衝 → 5秒局間緩衝 → 枱邊討論 → 落注倒數 → 開牌
   await sleep(2000);
+  await sleep(5000);   // 局結束後 5 秒緩衝先開始下一局討論
   if(ais.length){ await tableChatPhase(spd(10)+5); aiPlaceBets(); }
   await bettingPhase(spd(10));
   dealing=true;          // 落注完、開牌前先鎖（呢刻起人類不可再落注）
