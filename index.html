@@ -68,15 +68,22 @@
   .hand .label{display:block; font-weight:700; font-size:10px; letter-spacing:.5px; color:var(--gold2); opacity:.85; white-space:nowrap;}
   .hand .score{display:block; font-size:20px; font-weight:900; margin-top:2px; color:var(--gold2); text-shadow:0 0 10px #000,0 2px 4px #000; min-height:22px; line-height:1; transition:color .3s;}
   /* 兩隻牌一行，第3隻補牌自動摺落下一行，固定高度避免發牌區跳動 */
-  .cards{display:flex; gap:4px; min-width:108px; max-width:116px; min-height:80px; height:auto; align-items:flex-start; justify-content:center; flex-wrap:wrap;}
+  .cards{display:flex; gap:4px; min-width:150px; min-height:80px; height:auto; align-items:flex-start; justify-content:center; flex-wrap:nowrap;}
   .card{ width:52px; height:72px; border-radius:4px; background:#fff; color:#000; position:relative;
     box-shadow:0 2px 6px rgba(0,0,0,.5); font-weight:800; display:flex; align-items:center; justify-content:center;
     font-size:22px; transform:translateY(-4px) rotate(-4deg); opacity:0; transition:all .3s cubic-bezier(.2,.8,.3,1.2);
     border:1px solid #ccc; }
   .card.show{opacity:1; transform:translateY(0) rotate(0);}
-  /* 第3隻補牌自動摺落下一行（唔打橫，避免遮住牌面數字） */
-  .cards .card:nth-child(3){margin:6px 0 0;}
+  /* 第3隻補牌打橫擺（賭場慣例，唔佔垂直空間避免畫面彈動），點數顯示喺牌面正中 */
+  .cards .card:nth-child(3){margin:0 8px; transform-origin:center;}
+  .cards .card:nth-child(3).show{transform:translateY(0) rotate(90deg);}
+  /* 第3隻牌打橫：角落數字會跟住轉90度，改喺正中顯示大點數 */
+  .cards .card:nth-child(3) .corner{display:none;}
+  .cards .card:nth-child(3) .mid{display:flex; align-items:center; justify-content:center; position:absolute; inset:0;
+    font-size:30px; font-weight:900; color:inherit; opacity:0; transition:opacity .25s ease; z-index:3;}
+  .cards .card:nth-child(3).show-num .mid{opacity:1;}
   .card .corner{position:absolute; font-size:13px; line-height:1; font-weight:800; opacity:0; transition:opacity .25s ease;}
+  .card .mid{display:none;}
   .card.show-num .corner{opacity:1;}
   /* 真實啤牌牌面：排點/公仔 */
   .card .corner small{display:block; font-size:11px; text-align:center;}
@@ -1024,15 +1031,16 @@ const PIP_POS={
 function cardFaceHTML(card){
   const r=card.rank, s=card.suit;
   const corner='<span class="corner tl">'+r+'</span><span class="corner br">'+r+'</span>';
+  const mid='<span class="mid">'+r+'</span>';
   if(r==='J'||r==='Q'||r==='K'){
     const nm=r==='J'?'♞':r==='Q'?'♛':'♚';
-    return corner+'<div class="courtbox"><div class="cl">'+nm+'</div><div class="cs">'+s+'</div></div>';
+    return corner+mid+'<div class="courtbox"><div class="cl">'+nm+'</div><div class="cs">'+s+'</div></div>';
   }
   const n=r==='A'?1:parseInt(r,10);
   let pips='<div class="pips'+(n===1?' ace':'')+'">';
   (PIP_POS[n]||[]).forEach(p=>{ pips+='<span class="pip'+(p[2]?' inv':'')+'" style="left:'+p[0]+'%;top:'+p[1]+'%">'+s+'</span>'; });
   pips+='</div>';
-  return corner+pips;
+  return corner+mid+pips;
 }
 function cardEl(card){
   const red=(card.suit==='♥'||card.suit==='♦');
