@@ -82,11 +82,11 @@
   /* 第3隻補牌打橫擺喺兩張牌下方正中（賭場慣例），預留第2行格子令首兩張唔會向上跳 */
   .cards .card:nth-child(3){grid-column:1 / -1; justify-self:center; margin-top:6px; transform-origin:center;}
   .cards .card:nth-child(3).show{transform:translateY(0) rotate(90deg);}
-  /* 第3隻牌打橫：取消中間大點數，展開後顯示角落數字（同1、2隻一致，counter-rotate 正向），整張牌向下移 */
+  /* 第3隻牌打橫：取消中間大點數；展開後喺視覺左上角顯示角落數字（同1、2隻一致、文字正向、真正角位），整張牌向下移 */
   .cards .card:nth-child(3) .mid{display:none;}
-  .cards .card:nth-child(3).show-num .corner{display:block; opacity:1;}
-  .cards .card:nth-child(3) .corner.tl{top:3px; left:50%; transform:translateX(-50%) rotate(-90deg);}
-  .cards .card:nth-child(3) .corner.br{bottom:3px; right:auto; left:50%; transform:translateX(-50%) rotate(-90deg);}
+  .cards .card:nth-child(3) .corner.br{display:none;}
+  .cards .card:nth-child(3).show-num .corner.tl{display:block; opacity:1;}
+  .cards .card:nth-child(3) .corner.tl{top:auto; bottom:5px; left:auto; right:13px; transform:rotate(-90deg); transform-origin:right top;}
   .card .corner{position:absolute; font-size:13px; line-height:1; font-weight:800; opacity:0; transition:opacity .25s ease;}
   .card .mid{display:none;}
   .card.show-num .corner{opacity:1;}
