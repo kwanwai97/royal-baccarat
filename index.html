@@ -70,8 +70,8 @@
   .hand.banker .hand-row{justify-content:center;}
   .hand-row.reverse{flex-direction:row-reverse;}
   .hand .label{display:block; font-weight:700; font-size:10px; letter-spacing:.5px; color:var(--gold2); opacity:.85; white-space:nowrap;}
-  /* 結果點數：黃色數字，每側卡牌右邊垂直居中 */
-  #playerScore,#bankerScore{font-size:24px; font-weight:900; color:var(--gold2); text-shadow:0 0 10px #000,0 2px 5px #000; z-index:21; pointer-events:none; transition:color .3s; line-height:1; align-self:center; margin-left:6px;}
+  /* 結果點數：黃色數字，每側卡牌右邊 */
+  #playerScore,#bankerScore{font-size:28px; font-weight:900; color:var(--gold2); text-shadow:0 0 10px #000,0 2px 5px #000; z-index:21; pointer-events:none; transition:color .3s; line-height:1; align-self:center; margin-left:6px;}
   #bankerScore{margin-left:0; margin-right:6px;}
   /* 兩隻牌一行；第3隻補牌自動摺落下一行(下方中心打橫)，固定高度避免發牌區跳動 */
   /* 固定高度 Grid 預留第2行：首兩張永遠貼頂固定，第3張填落第2行 → 唔會向上跳 */
@@ -86,10 +86,10 @@
   .cards .card:nth-child(3).show{transform:translateY(0) rotate(90deg);}
   /* 第3隻牌打橫：取消中間大點數；角落數字隨牌身90°旋轉變垂直（同1、2隻一樣只顯數字rank） */
   .cards .card:nth-child(3) .mid{display:none;}
-  /* 第3隻牌打橫：牌身 rotate(90deg) 令整張橫置；角落數字唔做反向修正，繼承牌身旋轉 → 數字垂直。
-     兩個數字放喺牌嘅右邊一條邊：un-rotated TL(top:4,left:5)→旋後可視右上角；un-rotated TR(top:4,right:5)→旋後可視右下角。 */
-  .cards .card:nth-child(3) .corner.tl{top:4px; left:5px; right:auto; bottom:auto; transform:none;}
-  .cards .card:nth-child(3) .corner.br{bottom:4px; right:5px; left:auto; top:auto; transform:none;}
+  /* 第3隻牌打橫：牌身 rotate(90deg) 令整張橫置；角落數字反向 rotate(-90deg) 抵消牌身旋轉 → 數字保持企直可讀（6 唔會變 9）。
+     牌身 +90° 後 TL 角去到可視右上、BR 角去到可視左下，兩隻數字都反向轉 -90° 企返直。 */
+  .cards .card:nth-child(3) .corner.tl{top:4px; left:5px; right:auto; bottom:auto; transform:rotate(-90deg);}
+  .cards .card:nth-child(3) .corner.br{bottom:4px; right:5px; left:auto; top:auto; transform:rotate(-90deg);}
   .cards .card:nth-child(3).show-num .corner{opacity:1;}
   .card .corner{position:absolute; font-size:13px; line-height:1; font-weight:800; opacity:0; transition:opacity .25s ease;}
   .card .mid{display:none;}
