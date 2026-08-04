@@ -71,7 +71,8 @@
   .hand-row.reverse{flex-direction:row-reverse;}
   .hand .label{display:block; font-weight:700; font-size:10px; letter-spacing:.5px; color:var(--gold2); opacity:.85; white-space:nowrap;}
   /* 結果點數：黃色數字，每側卡牌右邊 */
-  #playerScore,#bankerScore{font-size:28px; font-weight:900; color:var(--gold2); text-shadow:0 0 10px #000,0 2px 5px #000; z-index:21; pointer-events:none; transition:color .3s; line-height:1; align-self:center; margin-left:6px;}
+  #playerScore,#bankerScore{font-size:28px; font-weight:900; color:var(--gold2); text-shadow:0 0 10px #000,0 2px 5px #000; z-index:21; pointer-events:none; transition:color .3s, opacity .35s ease; line-height:1; align-self:center; margin-left:6px; transform:translateY(-36px); opacity:0;}
+  #playerScore.show,#bankerScore.show{opacity:1;}
   #bankerScore{margin-left:0; margin-right:6px;}
   /* 兩隻牌一行；第3隻補牌自動摺落下一行(下方中心打橫)，固定高度避免發牌區跳動 */
   /* 固定高度 Grid 預留第2行：首兩張永遠貼頂固定，第3張填落第2行 → 唔會向上跳 */
@@ -1080,6 +1081,8 @@ function cardEl(card){
       if(e.propertyName==='clip-path'){ back.removeEventListener('transitionend',h); sqShowNum(); }
     });
   }
+  // 卡牌揭開後，喚醒卡面數字（.card.show-num 經已加；呢度保險：牌一現身即標記，實際顯示由 show-num 控制）
+  d.addEventListener('transitionend', function onShow(e){ if(e.propertyName==='all'||e.propertyName==='opacity'){ if(d.classList.contains('show')) d.classList.add('show-num'); } });
   return d;
 }
 /* ===== 手動搣牌系統 ===== */
@@ -1159,7 +1162,7 @@ function renderCards(container, cards, delay){
 function appendCard(containerId, c){
   return new Promise(res=>{ setTimeout(()=>{ const el=cardEl(c); document.getElementById(containerId).appendChild(el); requestAnimationFrame(()=>el.classList.add('show')); sndDeal(); res(); },0); });
 }
-function updateScore(who,val){ document.getElementById(who+'Score').textContent=val; }
+function updateScore(who,val){ const el=document.getElementById(who+'Score'); el.textContent=val; el.classList.add('show'); }
 function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
 function hideMsg(){ document.getElementById('centerMsg').classList.remove('show'); }
 function showMsg(txt,color){ const m=document.getElementById('centerMsg'); m.textContent=txt; m.style.color=color||'var(--gold2)'; m.classList.add('show'); }
@@ -1198,6 +1201,8 @@ async function deal(auto){
   document.getElementById('playerCards').innerHTML='';
   document.getElementById('bankerScore').textContent='–';
   document.getElementById('playerScore').textContent='–';
+  document.getElementById('bankerScore').classList.remove('show');
+  document.getElementById('playerScore').classList.remove('show');
   hideMsg();
 
   const pc=[drawCard(),drawCard()];
