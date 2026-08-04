@@ -259,16 +259,16 @@
   /* ===== ① 開局前枱邊閒聊 chat strip（覆蓋珠盤路位置） ===== */
   .tablechat{position:absolute; inset:0; z-index:15; margin:0; background:rgba(2,17,10,.88); border:none; border-radius:0; padding:6px 8px; display:flex; flex-direction:column; max-height:none; opacity:0; visibility:hidden; pointer-events:none; transition:opacity .35s ease, visibility .35s;}
   .tablechat.show{opacity:1; visibility:visible;}
-  .tc-title{font-size:11px; color:var(--gold2); opacity:.9; letter-spacing:1px; margin-bottom:3px; flex:0 0 auto; display:flex; align-items:center; justify-content:space-between;}
+  .tc-title{font-size:15px; color:var(--gold2); opacity:.9; letter-spacing:1px; margin-bottom:3px; flex:0 0 auto; display:flex; align-items:center; justify-content:space-between; order:2;}
   .tc-close{font-size:16px; line-height:1; color:#f5f0d8; background:rgba(212,175,55,.28); border:1px solid rgba(212,175,55,.7); border-radius:6px; padding:3px 9px; cursor:pointer; pointer-events:auto;}
   .tc-close:active{transform:scale(.9);}
   .tc-count{font-size:10px; font-weight:800; color:#6fffa6; line-height:1.3; min-height:14px; display:none;}
   .tc-count.show{display:block;}
-  .tc-body{overflow-y:auto; display:flex; flex-direction:column; gap:2px; flex:1 1 auto; max-height:none;}
-  .tc-bubble{font-size:14px; line-height:1.35; display:flex; gap:6px; align-items:baseline;}
-  .tc-bubble .ic{flex:0 0 auto; font-size:15px;}
-  .tc-bubble .tx{color:#f0e8c8; font-size:14px;}
-  .tc-bubble .tx b{color:#fff; font-weight:800; margin-right:1px; font-size:14px;}
+  .tc-body{overflow-y:auto; display:flex; flex-direction:column; gap:2px; flex:1 1 auto; max-height:none; justify-content:flex-end;}
+  .tc-bubble{font-size:10px; line-height:1.2; display:flex; gap:4px; align-items:baseline;}
+  .tc-bubble .ic{flex:0 0 auto; font-size:11px;}
+  .tc-bubble .tx{color:#f0e8c8; font-size:10px;}
+  .tc-bubble .tx b{color:#fff; font-weight:800; margin-right:1px; font-size:10px;}
   .tc-bubble.ai-0 .tx{color:#ffd9a8;} .tc-bubble.ai-1 .tx{color:#a9d2ff;} .tc-bubble.ai-2 .tx{color:#8fe0ab;}
   .tc-bubble.ai-5 .tx{color:#c4f0f8;}
   /* 落注倒數：顯示喺 3D 開牌掣下方、大路紅藍圖案上方（靜態行，唔彈跳） */
