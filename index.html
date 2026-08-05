@@ -1241,7 +1241,8 @@ async function deal(auto){
     await sleep(1600);
   }
   const p0=handTotal(pc), b0=handTotal(bc);
-  if(dealMode!=='squeeze'){ updateScore('player',p0); updateScore('banker',b0); }
+  // 兩隻牌揭完即刻顯示點數（3D 同搣牌都一樣）；搣牌模式補第3隻會由尾段再更新總點數
+  updateScore('player',p0); updateScore('banker',b0);
   await sleep(500);
 
   if(p0<8 && b0<8){
