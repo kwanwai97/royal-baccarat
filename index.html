@@ -74,8 +74,8 @@
   #playerScore,#bankerScore{font-size:28px; font-weight:900; color:var(--gold2); text-shadow:0 0 10px #000,0 2px 5px #000; z-index:21; pointer-events:none; transition:color .3s, opacity .35s ease; line-height:1; align-self:center; margin-left:6px; transform:translateY(-36px); opacity:0;}
   #playerScore.show,#bankerScore.show{opacity:1;}
   #bankerScore{margin-left:0; margin-right:6px;}
-  /* 手動搣牌放大第3隻牌期間：兩邊點數大字 pinned 到左右邊緣，保持可見但唔會飄喺放大牌上方 */
-  #playerScore.squeeze-pin, #bankerScore.squeeze-pin{ position:fixed; top:50%; transform:translateY(-50%); z-index:40; margin:0; }
+  /* 手動搣牌放大第3隻牌期間：兩邊點數大字 pinned 到左右邊緣，垂直留喺牌組原高度（唔去正中，避免同放大牌重疊） */
+  #playerScore.squeeze-pin, #bankerScore.squeeze-pin{ position:fixed; z-index:40; margin:0; }
   #playerScore.squeeze-pin{ left:4px; right:auto; }
   #bankerScore.squeeze-pin{ right:4px; left:auto; }
   /* 兩隻牌一行；第3隻補牌自動摺落下一行(下方中心打橫)，固定高度避免發牌區跳動 */
