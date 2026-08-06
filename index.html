@@ -65,13 +65,13 @@
   .dealzone.show{opacity:1; pointer-events:auto; z-index:20;}
   .dealzone.empty{display:none !important; opacity:0 !important; pointer-events:none !important;}
   .hand{display:flex; flex-direction:column; align-items:center; justify-content:flex-start; gap:7px; width:100%; min-width:0; min-height:152px;}
-  .hand-row{display:flex; flex-direction:row; align-items:center; justify-content:center; gap:0;}
+  .hand-row{display:flex; flex-direction:row; align-items:center; justify-content:center; gap:2px;}
   .hand.player .hand-row{justify-content:center;}
   .hand.banker .hand-row{justify-content:center;}
   .hand-row.reverse{flex-direction:row-reverse;}
   .hand .label{display:block; font-weight:700; font-size:10px; letter-spacing:.5px; color:var(--gold2); opacity:.85; white-space:nowrap;}
   /* 結果點數：黃色數字，每側卡牌右邊 */
-  #playerScore,#bankerScore{font-size:23px; font-weight:900; color:var(--gold2); text-shadow:0 0 10px #000,0 2px 5px #000; z-index:21; pointer-events:none; transition:color .3s, opacity .35s ease; line-height:1; align-self:center; margin-left:0; margin-right:0; transform:translateY(0); opacity:0;}
+  #playerScore,#bankerScore{font-size:23px; font-weight:900; color:var(--gold2); text-shadow:0 0 10px #000,0 2px 5px #000; z-index:21; pointer-events:none; transition:color .3s, opacity .35s ease; line-height:1; align-self:center; margin-left:0; margin-right:0; transform:translateY(-30px); opacity:0;}
   #playerScore.show,#bankerScore.show{opacity:1;}
   #bankerScore{margin-left:0; margin-right:0;}
   /* 手動搣牌放大第3隻牌期間：兩邊點數大字都 20px（統一），貼屏幕左右邊緣，垂直留牌組原高度 */
