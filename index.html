@@ -74,10 +74,9 @@
   #playerScore,#bankerScore{font-size:28px; font-weight:900; color:var(--gold2); text-shadow:0 0 10px #000,0 2px 5px #000; z-index:21; pointer-events:none; transition:color .3s, opacity .35s ease; line-height:1; align-self:center; margin-left:6px; transform:translateY(-36px); opacity:0;}
   #playerScore.show,#bankerScore.show{opacity:1;}
   #bankerScore{margin-left:0; margin-right:6px;}
-  /* 手動搣牌放大第3隻牌期間：兩邊點數大字 pinned 到左右邊緣，垂直留喺牌組原高度（唔去正中，避免同放大牌重疊）；微調縮細 */
-  #playerScore.squeeze-pin, #bankerScore.squeeze-pin{ position:fixed; z-index:40; font-size:20px; margin:0; }
-  #playerScore.squeeze-pin{ left:4px; right:auto; }
-  #bankerScore.squeeze-pin{ right:4px; left:auto; }
+  /* 手動搣牌放大第3隻牌期間：兩邊點數大字都 20px（統一），貼屏幕左右邊緣，垂直留牌組原高度 */
+  #playerScore.squeeze-pin{ position:fixed; z-index:40; font-size:20px; margin:0; left:4px; right:auto; }
+  #bankerScore.squeeze-pin{ position:fixed; z-index:40; font-size:20px; margin:0; right:4px; left:auto; }
   /* 兩隻牌一行；第3隻補牌自動摺落下一行(下方中心打橫)，固定高度避免發牌區跳動 */
   /* 固定高度 Grid 預留第2行：首兩張永遠貼頂固定，第3張填落第2行 → 唔會向上跳 */
   .cards{display:grid; grid-template-columns:repeat(2,52px); grid-auto-rows:72px; gap:4px; width:108px; height:152px; align-content:start; justify-content:center;}
@@ -156,7 +155,7 @@
   .card.black{color:#111;}
   .center-msg{position:absolute; top:30px; left:50%; transform:translateX(-50%); z-index:25; max-width:96%;
     display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1px;
-    font-size:20px; font-weight:800; line-height:1.2; color:var(--gold2); text-shadow:0 0 14px #000,0 2px 4px #000; opacity:0; transition:opacity .25s; pointer-events:none; text-align:center; white-space:nowrap;}
+    font-size:14px; font-weight:800; line-height:1.2; color:var(--gold2); text-shadow:0 0 14px #000,0 2px 4px #000; opacity:0; transition:opacity .25s; pointer-events:none; text-align:center; white-space:nowrap;}
   .center-msg.show{opacity:1;}
 
   /* 下注區 3x3 */
