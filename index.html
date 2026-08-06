@@ -242,8 +242,8 @@
   .btn.clear{background:#311; color:#fbb; border:1px solid #a44;}
   .btn:disabled{opacity:.4; filter:grayscale(.6);}
   .btn.shuffle{background:#222; color:var(--gold2); border:1px solid var(--goldd); flex:0 0 auto; padding:7px 10px;}
-  .btn.auto{background:#132; color:#8fe0ab; border:1px solid #2faf5a; flex:0 0 auto; padding:7px 7px; font-size:11px;}
-  .btn.auto.on{background:#2faf5a; color:#04110a; box-shadow:0 0 10px rgba(47,175,90,.5);}
+  .btn.auto{background:#2a2113; color:#e0b34a; border:1px solid #7a5a1a; flex:0 0 auto; padding:7px 7px; font-size:11px;}   /* 關：琥珀色，醒目「可按啟動」 */
+  .btn.auto.on{background:#2faf5a; color:#04110a; border-color:#2faf5a; box-shadow:0 0 10px rgba(47,175,90,.5);}             /* 開：綠色，進行中 */
 
   .toast{position:fixed; left:50%; top:42%; transform:translate(-50%,-50%); background:#000c; color:#ffd45e;
     padding:12px 22px; border-radius:22px; font-size:18px; font-weight:800; border:1px solid var(--gold); opacity:0; transition:opacity .3s; z-index:50; pointer-events:none; text-shadow:0 0 10px #000; box-shadow:0 0 18px rgba(212,175,55,.4);}
@@ -549,6 +549,7 @@ let currentChip=1000;
 let bets={player:0,banker:0,tie:0,ppair:0,bpair:0,big:0,small:0,luck6:0,luck7:0};
 let lastBets=null;
 let dealing=false;
+let autoOn=false;        // 自動進行中旗標（setControls 會保持 DEAL 掣停用）
 let settled=false; // settle已執行後clearBets唔再退款
 
 let stats={ total:0, pWin:0, bWin:0, tie:0, hit:0, betRounds:0, streak:0, maxStreak:0, winAmt:0, lossAmt:0, peak:50000 };
@@ -1189,7 +1190,9 @@ function positionDealzone(){
 }
 
 async function deal(auto){
-  if(dealing) return;
+  if(dealing) return;                 // 已經開緊牌就唔再開（防止重複發牌）
+  dealing=true;                       // 即時上鎖：doShuffle / 緩衝期間任何並發呼叫都擋到
+  try{
   let total=0; for(const x in bets) total+=bets[x];
   if(total===0 && auto!==true && ais.length===0){ showToast('請先下注'); return; }
   if(shoeDrawn>=shoeCut || shoeStats.round>=60){ await doShuffle(); }
@@ -1199,7 +1202,6 @@ async function deal(auto){
   await sleep(5000);   // 局結束後 5 秒緩衝先開始下一局討論
   if(ais.length){ await tableChatPhase(spd(10)+5); aiPlaceBets(); }
   await bettingPhase(spd(10));
-  dealing=true;          // 落注完、開牌前先鎖（呢刻起人類不可再落注）
   preBalance=balance;
   try{
 
@@ -1293,6 +1295,9 @@ async function deal(auto){
     showToast('⚠ 發牌異常，已自動重置');
   } finally {
     dealing=false; setControls(true);
+  }
+  } finally {
+    dealing=false; setControls(true);   // 外層：確保「請先下注」等早退都會解鎖，唔會卡死
   }
 }
 
@@ -1398,7 +1403,7 @@ function resultText(label, pTotal, bTotal, pp, bp, big, pCards, bCards, net){
 }
 function extra(pp,bp,b){ let a=[]; if(pp)a.push('閒對'); if(bp)a.push('莊對'); a.push(b?'大':'小'); return a.join(' '); }
 
-function setControls(en){ document.getElementById('btnDeal').disabled=!en; document.getElementById('btnClear').disabled=!en; document.getElementById('btnRepeat').disabled=!en; }
+function setControls(en){ document.getElementById('btnClear').disabled=!en; document.getElementById('btnRepeat').disabled=!en; document.getElementById('btnDeal').disabled= !en || autoOn; }
 
 /* ===================== 戰績 localStorage ===================== */
 function loadStats(){
@@ -1724,7 +1729,7 @@ document.querySelectorAll('.chip').forEach(c=>c.addEventListener('click',()=>sel
 document.querySelectorAll('.bet[data-bet]').forEach(b=>b.addEventListener('click',()=>placeBet(b.dataset.bet)));
 document.getElementById('btnClear').addEventListener('click',clearBets);
 document.getElementById('btnRepeat').addEventListener('click',repeatBets);
-document.getElementById('btnDeal').addEventListener('click',deal);
+document.getElementById('btnDeal').addEventListener('click',function(){ if(autoOn){ showToast('自動開牌進行中，請先按「自動」停止'); return; } deal(); });
 
 /* ===================== 節奏控制 ===================== */
 let speed=1; // 0=快(-3s) 1=中 2=慢(+3s)
@@ -1741,22 +1746,28 @@ function spd(base){ return Math.max(1, base + SPEED_OFFSET[speed]); }
 
 /* ===================== 自動開牌：同手動統一次序 ===================== */
 let autoTimer=null;
-function autoTick(){
-  if(dealing || !autoTimer) return;            // 發牌中或已停用就跳過
+let autoGen=0;          // 代號：每次開/停都 +1，確保舊循環唔會再排程（防止重複開牌）
+function autoTick(gen){
+  if(dealing || gen!==autoGen) return;          // 發牌中或已停用/換代就跳過
   deal(true).finally(function(){
     // 無論開牌成功/異常都繼續下一輪；開牌流程內已含 2秒→討論→倒數→開牌
-    if(autoTimer) setTimeout(autoTick, spd(4)*1000);
+    if(gen===autoGen) setTimeout(function(){ autoTick(gen); }, spd(4)*1000);
   });
 }
 function startAuto(){
-  autoTimer={};
-  autoTick();
+  autoGen++; autoOn=true;                        // 令之前任何在途循環失效，避免疊加多個 loop
+  const g=autoGen; autoTimer={};
+  autoTick(g);
+}
+function stopAuto(){
+  autoGen++; autoOn=false;                       // 失效所有在途循環
+  autoTimer=null;
+  const b=document.getElementById('btnAuto');
+  b.textContent='自動:關'; b.classList.remove('on'); hideTableChat();
 }
 document.getElementById('btnAuto').addEventListener('click',function(){
-  const b=this;
-  if(autoTimer){ autoTimer=null; b.textContent='自動:關'; b.classList.remove('on'); hideTableChat(); showToast('⏹ 自動開牌已停止'); return; }
-  b.classList.add('on');
-  b.textContent='自動:開';
+  if(autoTimer){ stopAuto(); showToast('⏹ 自動開牌已停止'); return; }
+  this.classList.add('on'); this.textContent='自動:開';
   startAuto();
 });
 document.getElementById('btnShuffle').addEventListener('click',()=>{ if(dealing) return; doShuffle().then(()=>showToast('🔀 已重新洗牌並清空路單')); });
