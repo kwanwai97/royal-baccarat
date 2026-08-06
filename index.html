@@ -1115,11 +1115,9 @@ function sqManualOpen(el, sec){
     if(!el || el.dataset.open){ res(); return; }
     el.dataset.open='1';
     const back=el.querySelector('.back');
-    // 手動搣牌放大中間期間，兩邊點數大字 pinned 到左右邊緣（保持可見，唔飄喺放大牌上方）；縮返後返原位
+    // 第3隻牌揭開時，點數維持喺卡牌組側邊（第1/2隻牌旁邊）緊貼，唔飛去屏幕邊緣
     const scoreEl = document.getElementById('playerScore');
     const scoreElB = document.getElementById('bankerScore');
-    if(scoreEl) scoreEl.classList.add('squeeze-pin');
-    if(scoreElB) scoreElB.classList.add('squeeze-pin');
     // 升起移去 dealzoneOverlay 正中心放大
     const dz=document.getElementById('dealzoneOverlay').getBoundingClientRect();
     const cr=el.getBoundingClientRect();
