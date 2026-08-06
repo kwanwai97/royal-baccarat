@@ -888,7 +888,7 @@ function flyChip(k){
 }
 
 function placeBet(k){
-  if(dealing||settled) return;   // 發牌中/結算中不可落注；結算完成即刻可落
+  if((dealing && !betting) || settled) return;   // 發牌中(非落注期)或結算中不可落注；落注倒數期(betting=true)人手可照落/跟注
   if(bets[k]+currentChip>LIMIT_MAX){ showToast('⚠ 單注超過限紅 '+fmt(LIMIT_MAX)); return; }
   let total=0; for(const x in bets) total+=bets[x];
   if(total+currentChip>TABLE_MAX){ showToast('⚠ 全桌注額超過 '+fmt(TABLE_MAX)); return; }
