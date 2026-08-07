@@ -925,6 +925,20 @@ function placeBet(k){
   balance -= currentChip; bets[k]+=currentChip; updateBalance(); updateAiBalances(); updateBetDisplay(); sndChip(); flyChip(k);
 }
 function clearBets(force){ if(dealing && !betting && !force)return; if(!settled){ const refund=Object.values(bets).reduce((a,b)=>a+b,0); balance+=refund; } bets={player:0,banker:0,tie:0,ppair:0,bpair:0,big:0,small:0,luck6:0,luck7:0}; updateBalance(); updateAiBalances(); updateBetDisplay(); }
+/* 等上一手輸贏對話 + 語音全部播完（走馬燈收起 + 語音隊列清空），最長 12s safety */
+function waitAudioIdle(){
+  return new Promise(res=>{
+    const marq=document.getElementById('dialogueMarquee');
+    let waited=0;
+    const iv=setInterval(()=>{
+      waited+=100;
+      const ttsEmpty=(typeof ttsQueue==='undefined')||ttsQueue.length===0;
+      const marqGone=!marq||!marq.classList.contains('show');
+      if(ttsEmpty && marqGone) { clearInterval(iv); setTimeout(res, 1500); }  // 播完再停 1.5s 先下一輪
+      else if(waited>12000) { clearInterval(iv); res(); }
+    },100);
+  });
+}
 /* 落注期：綠字倒數 N 秒，期間人類可落注；AI 已經先落好供參考 */
 let betting=false;
 function bettingPhase(sec){
@@ -1253,7 +1267,7 @@ async function deal(auto){
   setControls(false);   // 禁 DEAL/清除/重複掣（唔設 dealing，等落注期人類照落得）
   // 統一次序（自動/手動都一樣）：2秒緩衝 → 5秒局間緩衝 → 枱邊討論 → 落注倒數 → 開牌
   await sleep(2000);
-  await sleep(5000);   // 局結束後 5 秒緩衝先開始下一局討論
+  await waitAudioIdle();   // 等上一手輸贏對話 + 語音全部播完，先開枱邊聊天（唔用固定秒數）
   if(ais.length){ await tableChatPhase(spd(10)+5); aiPlaceBets(); }
   await bettingPhase(spd(10));
   preBalance=balance;
@@ -1446,7 +1460,7 @@ function settle(winner, playerPair, bankerPair, big, totalCards, pTotal, bTotal,
   for(const k in resultDetail){ const el=document.querySelector(flashMap[k]); if(el){
     el.classList.add(cls);
 } }
-  setTimeout(()=>{ clearBets(true); saveRoads(); settled=false; if(ais.length) aiSettle(winner, playerPair, bankerPair, big, pTotal, bTotal, pCards, bCards); }, dur);
+  setTimeout(async ()=>{ clearBets(true); await sleep(2000); saveRoads(); settled=false; if(ais.length) aiSettle(winner, playerPair, bankerPair, big, pTotal, bTotal, pCards, bCards); }, dur);
 }
 /* 結果文字：3行式 + 補牌提示 */
 function resultText(label, pTotal, bTotal, pp, bp, big, pCards, bCards, net){
@@ -1766,7 +1780,7 @@ function showMarquee(items){
   });
   box.classList.add('show');
   clearTimeout(showMarquee._t);
-  showMarquee._t=setTimeout(()=>hideMarquee(), spd(8)*1000);
+  showMarquee._t=setTimeout(()=>hideMarquee(), 10000);  // 固定 10 秒顯示，配合「等語音播完」先傾偈
 }
 function hideMarquee(){ document.getElementById('dialogueMarquee').classList.remove('show'); clearTimeout(showMarquee._t); }
 window.showMarquee=showMarquee; window.hideMarquee=hideMarquee;
