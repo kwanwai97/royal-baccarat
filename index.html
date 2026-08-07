@@ -585,8 +585,8 @@ function loadRoads(){
 
 function resetRoads(){ bigCols=[]; history=[]; shoeStats={ round:0, pWin:0, bWin:0, tie:0, ppair:0, bpair:0, luck6:0, luck7:0, lastCards:0 }; saveRoads(); }
 
-function addResult(winner, playerPair, bankerPair){
-  history.push({winner, playerPair, bankerPair});
+function addResult(winner, playerPair, bankerPair, totalCards){
+  history.push({winner, playerPair, bankerPair, totalCards});
   const t = winner==='player'?'P': winner==='banker'?'B':'T';
   if(bigCols.length===0){
     bigCols.push([{t, tie:0}]);
@@ -1293,7 +1293,7 @@ async function deal(auto){
   const big = totalCards>=5;
 
   settle(winner, playerPair, bankerPair, big, totalCards, pTotal, bTotal, pc.length, bc.length);
-  addResult(winner, playerPair, bankerPair);
+  addResult(winner, playerPair, bankerPair, totalCards);
   drawAllRoads();
   saveStats();
   // 開牌3秒後啤牌淡出消失，結果文字保留
@@ -1478,6 +1478,60 @@ function aiHesitate(ai, pick){
   if(Math.random()<b.flip){ return pick==='banker'?'player':pick==='player'?'banker':(Math.random()<0.5?'banker':'player'); }
   return pick;
 }
+// 性格 → 側注偏好（鍾意邊幾隻）、進場觸發感度
+const AI_SIDE_PREF={
+  banker:{pref:['bpair','big','small'], sens:0.5},
+  player:{pref:['ppair','big','small'], sens:0.5},
+  dragon:{pref:['big','ppair','bpair'], sens:0.6},
+  road:{  pref:['ppair','bpair','big','small'], sens:0.8},   // 睇路嘅，對子/大細都博
+  gambler:{pref:['luck6','luck7','bpair','ppair'], sens:0.9}, // 賭徒鍾意高賠率
+  granny:{pref:['big','small'], sens:0.3},                    // 保守婆只博大細（最穩）
+  hot:{    pref:['luck6','luck7','big'], sens:0.8},
+  pro:{    pref:['ppair','bpair','luck6','luck7'], sens:0.7},
+  million:{pref:['luck6','luck7','big'], sens:0.6},
+  rookie:{ pref:['big','small','ppair'], sens:0.4},
+  analyst:{pref:['ppair','bpair','big','small','luck6','luck7'], sens:0.85},
+  rebel:{  pref:['luck6','luck7','ppair','bpair'], sens:0.7}
+};
+// 內部數據機制：根據近8局 history 判斷邊隻側注「值得博」
+function aiSideSignals(){
+  const recent=history.slice(-8);
+  let pp=0, bp=0, big=0, small=0, threeCard=0, tie2=0;
+  for(let i=0;i<recent.length;i++){
+    const r=recent[i];
+    if(r.playerPair) pp++;
+    if(r.bankerPair) bp++;
+    if(r.totalCards>=5) big++; else if(r.totalCards>0) small++;
+    if(r.totalCards>=5) threeCard++;
+    if(r.winner==='tie') tie2++;
+  }
+  return {
+    ppair: pp>=2,            // 近8局≥2次閒對 → 對子叢生
+    bpair: bp>=2,            // 近8局≥2次莊對
+    big: big>=5,             // 大牌偏多
+    small: small>=6,         // 細牌偏多
+    luck6: threeCard>=4,     // 3張牌叢生（莊6點/閒7點機會高）
+    luck7: threeCard>=4,
+    tie: (recent.length>=4 && recent[recent.length-1].winner==='tie' && recent[recent.length-2].winner==='tie') || tie2>=2  // 連續和/近期和密
+  };
+}
+// 決定本局側注（數據觸發 + 性格偏好 + 固定細額）
+function aiSidePicks(ai){
+  const pref=AI_SIDE_PREF[ai.persona]||{pref:['big','small'],sens:0.5};
+  const sig=aiSideSignals();
+  const cand=pref.pref.filter(s=>sig[s]);   // 只有觸發嘅側注先入圍
+  if(!cand.length) return {};
+  // 手痕感度：sens 越高越易落（但必須有信號）
+  if(Math.random()>pref.sens) return {};
+  // 每鋪最多 1 隻（高賠率性格偶然 2 隻）
+  const maxPick=(pref.pref.indexOf('luck6')>=0 && Math.random()<0.2)?2:1;
+  const out={};
+  for(let i=0;i<Math.min(maxPick,cand.length);i++){
+    const s=cand[Math.floor(Math.random()*cand.length)];
+    if(!out[s]) out[s]=Math.max(1000, Math.floor((ai.baseBet*(0.2+Math.random()*0.2))/1000)*1000)); // 固定細額 1~3K (baseBet=5000 → 1000~2000)
+  }
+  return out;
+}
 
 function aiMultiFactor(ai){
   const h=ai.history; if(h.length===0) return Math.random()<0.55?'banker':'player';
@@ -1643,15 +1697,10 @@ function aiPlaceBets(){
     let pick=ai._prePick||aiPick(ai); ai._prePick=null;
     pick=aiHesitate(ai, pick);
     const bet=aiBetAmount(ai);
-    // 側注：按性格 side 機率 + 主注一齊落
-    const sides=[];
-    const b=aiBehavior(ai);
-    SIDE_BETS.forEach(s=>{ if(Math.random()<b.side) sides.push(s); });
-    // 側注注碼 = 主注嘅 0.3~0.6 (細注試探)
-    const sideBet=Math.max(1000, Math.floor(bet*0.4/1000)*1000);
+    // 側注：數據觸發制（aiSidePicks 內已 filter 只有信號嘅側注 + 固定細額）
+    const sideMap=aiSidePicks(ai);
     let total=bet;
-    const sideMap={};
-    sides.forEach(s=>{ if(ai.balance-total>=sideBet){ total+=sideBet; sideMap[s]=sideBet; } });
+    for(const s in sideMap){ if(ai.balance-total>=sideMap[s]) total+=sideMap[s]; else delete sideMap[s]; }
     if(total>ai.balance) return;            // 注唔起就唔落
     if(pick==='tie' && bet>ai.balance*0.3) return;
     ai.currentBet={bet, pick, sides:sideMap};
