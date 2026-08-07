@@ -1462,11 +1462,17 @@ function settle(winner, playerPair, bankerPair, big, totalCards, pTotal, bTotal,
 } }
   // 閃燈期間同步清籌碼：提前 1.5s 清走，閃燈完籌碼已無（避免卡住不清）
   const clearAt = Math.max(800, dur-1500);
-  setTimeout(()=>{ clearBets(true); }, clearAt);
+  setTimeout(()=>{
+    // 先 snapshot AI 注碼（畀 aiSettle 計派彩用），再清 currentBet → 人類+AI 籌碼同步消失
+    ais.forEach(ai=>{ if(ai) ai._lastBet=ai.currentBet||null; });
+    clearBets(true);
+    ais.forEach(ai=>{ if(ai) ai.currentBet=null; });   // 同步清 AI 籌碼顯示
+    updateBetDisplay();
+  }, clearAt);
   setTimeout(async ()=>{
     // 保險：若籌碼仲喺度（異常）強制再清一次
     let still=false; document.querySelectorAll('.chips-stack').forEach(s=>{ if(s.children.length) still=true; });
-    if(still) clearBets(true);
+    if(still){ ais.forEach(ai=>{ if(ai) ai._lastBet=ai.currentBet||null; }); clearBets(true); ais.forEach(ai=>{ if(ai) ai.currentBet=null; }); updateBetDisplay(); }
     await sleep(2000); saveRoads(); settled=false; if(ais.length) aiSettle(winner, playerPair, bankerPair, big, pTotal, bTotal, pCards, bCards);
   }, dur);
 }
@@ -1796,8 +1802,9 @@ window.showMarquee=showMarquee; window.hideMarquee=hideMarquee;
 function aiSettle(result, playerPair, bankerPair, big, pTotal, bTotal, pCards, bCards){
   const dialogues=[];
   ais.forEach(ai=>{
-    if(!ai || !ai.currentBet) return;
-    const {bet,pick,sides}=ai.currentBet;
+    if(!ai) return;
+    const b=ai._lastBet; if(!b) return;          // 用 snapshot（currentBet 已於閃燈期清空）
+    const {bet,pick,sides}=b;
     let payout=0, win=false, sideWin=false;
     const sNames=[];
     if(result===pick){
