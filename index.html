@@ -263,8 +263,8 @@
   /* ===== ① 開局前枱邊閒聊：拆兩層錨定 .road-lower（大路第6格底開始） ===== */
   /* 左層 #tableChatL 佔左半(珠盤路位)、右層 #tableChatR 佔右半(下三路位)；top:0 喺大路底，標題貼大路第6格底 */
   .tablechat{position:absolute; top:0; bottom:0; z-index:15; margin:0; background:rgba(2,17,10,.9); border:none; border-radius:0; padding:6px 8px; display:flex; flex-direction:column; max-height:none; opacity:0; visibility:hidden; pointer-events:none; transition:opacity .35s ease, visibility .35s;}
-  .tc-left{left:0; right:50%; top:-20px;}   /* 推上大路標題行高，貼實大路第6格底（同倒數同高） */
-  .tc-right{left:50%; right:0; top:-20px;}
+  .tc-left{left:0; right:50%;}     /* top 由 JS 動態設為大路區高-20px，貼大路第6格底；bottom:0 貼roadpanel底=按鈕頂 */
+  .tc-right{left:50%; right:0;}
   .tablechat.show{opacity:1; visibility:visible; pointer-events:auto;}
   .tc-title{font-size:14px; color:var(--gold2); opacity:.9; letter-spacing:1px; margin-bottom:3px; flex:0 0 auto; display:flex; align-items:center; justify-content:space-between;}
   .tc-close{font-size:16px; line-height:1; color:#f5f0d8; background:rgba(212,175,55,.28); border:1px solid rgba(212,175,55,.7); border-radius:6px; padding:3px 9px; cursor:pointer; pointer-events:auto;}
@@ -391,16 +391,16 @@
           <canvas id="cockCanvas" width="270" height="50"></canvas>
         </div>
       </div>
-      <div class="tablechat tc-left" id="tableChatL">
-        <div class="tc-title">💬 枱邊閒聊 <span class="tc-close" id="tcCloseL">✕</span></div>
-        <div class="tc-count" id="tcCountL"></div>
-        <div class="tc-body" id="tcBodyL"></div>
-      </div>
-      <div class="tablechat tc-right" id="tableChatR">
-        <div class="tc-title">💬 枱邊閒聊 <span class="tc-close" id="tcCloseR">✕</span></div>
-        <div class="tc-count" id="tcCountR"></div>
-        <div class="tc-body" id="tcBodyR"></div>
-      </div>
+    </div>
+    <div class="tablechat tc-left" id="tableChatL">
+      <div class="tc-title">💬 枱邊閒聊 <span class="tc-close" id="tcCloseL">✕</span></div>
+      <div class="tc-count" id="tcCountL"></div>
+      <div class="tc-body" id="tcBodyL"></div>
+    </div>
+    <div class="tablechat tc-right" id="tableChatR">
+      <div class="tc-title">💬 枱邊閒聊 <span class="tc-close" id="tcCloseR">✕</span></div>
+      <div class="tc-count" id="tcCountR"></div>
+      <div class="tc-body" id="tcBodyR"></div>
     </div>
     <div class="dealzone" id="dealzoneOverlay">
       <div class="hand player">
@@ -1081,8 +1081,11 @@ function addChatBubble(ai, msg){
   target.scrollTop=target.scrollHeight;
 }
 function showTableChat(){
+  const big=document.querySelector('.road-big');
+  const topPx = big ? (big.offsetHeight - 20) + 'px' : '90px';  // 貼大路第6格底（同倒數同高），直向手機跟big高自適應
   ['L','R'].forEach(s=>{
     const c=document.getElementById('tableChat'+s); if(!c) return;
+    c.style.top = topPx;   // 動態頂位，解直向手機空隙
     const tt=c.querySelector('.tc-title'); if(tt) tt.textContent='💬 枱邊閒聊';
     const body=document.getElementById('tcBody'+s); if(body) body.innerHTML='';
     const cc=document.getElementById('tcCount'+s); if(cc){ cc.textContent=''; cc.classList.remove('show'); }
