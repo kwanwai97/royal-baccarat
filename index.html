@@ -23,18 +23,14 @@
   /* 頂部 */
   .topbar{
     background:linear-gradient(180deg,#2a1d00,#1a1200);
-    border-bottom:2px solid var(--gold); padding:8px 10px;
+    border-bottom:2px solid var(--gold); padding:8px 12px;
+    display:flex; align-items:center; justify-content:space-between;
     box-shadow:0 2px 10px rgba(0,0,0,.6); position:sticky; top:0; z-index:30;
   }
-  .topgrid{display:grid; grid-template-columns:repeat(3,1fr); align-items:center; gap:6px 8px; justify-items:center;}
   .brand{font-weight:800; letter-spacing:1px; color:var(--gold2);
-    font-size:15px; text-shadow:0 0 8px rgba(212,175,55,.6); display:flex; align-items:center; gap:6px; justify-self:start;}
-  .topgrid .balance{justify-self:center; text-align:center;}
-  .balance{font-size:12px;}
-  .balance b{color:var(--gold2); font-size:18px; margin-left:4px;}
-  .topgrid .streak-badge{justify-self:end;}
-  .topgrid .iconbtn{justify-self:center;}
-  .topgrid #aiBalanceBox{grid-column:1 / -1; display:grid; grid-template-columns:repeat(3,1fr); gap:3px 8px; justify-items:start; width:100%;}
+    font-size:15px; text-shadow:0 0 8px rgba(212,175,55,.6); display:flex; align-items:center; gap:6px;}
+  .topright{display:flex; align-items:center; gap:10px;}
+  .balance{font-size:12px; text-align:right;}
   .balance b{color:var(--gold2); font-size:18px; margin-left:4px;}
   .iconbtn{background:#1a1200; border:1px solid var(--goldd); color:var(--gold2); border-radius:8px; padding:6px 9px; font-size:13px; cursor:pointer;}
   .iconbtn:active{transform:scale(.92);}
@@ -328,7 +324,7 @@
 
   .daily-tip{text-align:center; font-size:11px; color:var(--gold2); padding:0 10px 4px; min-height:14px;}
   /* AI 陪玩 · 3+1 顯示：上面2個AI + 下邊1個AI + 你最底 */
-  .ai-balances{display:flex; flex-wrap:wrap; gap:1px 4px; align-items:center; justify-content:flex-start; overflow-x:auto; max-width:100%;}
+  .ai-balances{display:grid; grid-template-columns:repeat(3,1fr); gap:2px 4px; align-items:center; justify-items:start; max-width:100%;}
   .ai-balances .aib{display:flex; flex-direction:column; line-height:1.1; padding:1px 5px; border-left:1px solid rgba(255,255,255,.15);}
   .ai-balances .aib small{font-size:8px; opacity:.75; white-space:nowrap;}
   .ai-balances .aib b{font-size:11px; color:var(--gold2); font-weight:800;}
@@ -357,14 +353,13 @@
 <body>
 <div class="app">
   <div class="topbar">
-    <div class="topgrid">
-      <div class="brand">♛ 百家樂</div>
-      <div class="balance"><small>餘額</small><div><b id="balance">1,000,000</b></div></div>
+    <div class="brand">♛ 百家樂</div>
+    <div class="topright">
       <span class="streak-badge" id="streakBadge">🔥 連勝 0</span>
+      <div class="balance"><small>餘額</small><div><b id="balance">1,000,000</b></div></div>
+      <div class="ai-balances" id="aiBalanceBox" style="display:none;"></div>
       <button class="iconbtn" id="btnAI" title="AI陪玩設定">🤖</button>
       <button class="iconbtn" id="btnSpeed" title="節奏快慢">⏱中</button>
-      <div class="cell-empty"></div>
-      <div class="ai-balances" id="aiBalanceBox" style="display:none;"></div>
     </div>
   </div>
 
@@ -905,6 +900,10 @@ let betting=false;
 function bettingPhase(sec){
   return new Promise(resolve=>{
     betting=true;
+    // 落注窗口：啟用清除/重複掣（人類可改注/重複/清除）；DEAL 照舊（autoOn 或發牌中禁用）
+    document.getElementById('btnClear').disabled=false;
+    document.getElementById('btnRepeat').disabled=false;
+    document.getElementById('btnDeal').disabled=autoOn || dealing;
     const bc=document.getElementById('betCountdown');
     let t=sec;
     const tick=(speakIt)=>{
@@ -915,12 +914,21 @@ function bettingPhase(sec){
     tick(true);
     const iv=setInterval(()=>{
       t--;
-      if(t<=0){ clearInterval(iv); if(bc){ bc.textContent=''; bc.classList.remove('show'); } betting=false; resolve(); }
+      if(t<=0){
+        clearInterval(iv);
+        if(bc){ bc.textContent=''; bc.classList.remove('show'); }
+        betting=false;
+        // 落注結束→開牌：禁用清除/重複/發牌（未發牌前永遠可改，呢度係發牌一刻先鎖）
+        document.getElementById('btnClear').disabled=true;
+        document.getElementById('btnRepeat').disabled=true;
+        document.getElementById('btnDeal').disabled=true;
+        resolve();
+      }
       else tick(false);
     },1000);
   });
 }
-function repeatBets(){ if(dealing||!lastBets)return; let total=0; for(const x in lastBets) total+=lastBets[x];
+function repeatBets(){ if((dealing && !betting)||!lastBets)return; let total=0; for(const x in lastBets) total+=lastBets[x];
   if(total>TABLE_MAX||balance<total){ showToast('⚠ 餘額不足重複'); return; }
   balance-=total; bets=Object.assign({},lastBets); updateBalance(); updateAiBalances(); updateBetDisplay(); sndChip();
 }
@@ -1418,8 +1426,8 @@ function saveStats(){
 }
 
 /* ===================== AI 陪玩 v2 · 多因子+情感+人生百態 ===================== */
-let ais=[];   // 多AI陣列，最多7個
-const AI_ICONS=['🤖','👽','🦊','🐲','🦉','🎭','🐙'];
+let ais=[];   // 多AI陣列，最多8個
+const AI_ICONS=['🤖','👽','🦊','🐲','🦉','🎭','🐙','🐯'];
 function saveAiList(){ try{ localStorage.setItem('bac_ai', JSON.stringify(ais)); }catch(e){} }
 function loadAiList(){ try{ const s=localStorage.getItem('bac_ai'); if(s){ const arr=JSON.parse(s); if(Array.isArray(arr)) ais=arr.map(ai=>({ ...ai, currentBet:null, emotion:ai.emotion||50, joy:ai.joy||0, rage:ai.rage||0 })); } }catch(e){} }
 
@@ -1849,7 +1857,7 @@ function setNextDefaultName(){
 function setAiSel(id,val){ const grp=document.getElementById(id); grp.querySelectorAll('.ai-chip').forEach(x=>x.classList.toggle('sel', x.dataset.v===val)); if(id==='aiPersona'){ aiSel.persona=val; refreshPersonaBlurb(); } }
 let editingAiId=null;
 document.getElementById('aiConfirm').addEventListener('click',()=>{
-  if(ais.length>=7 && !editingAiId){ showToast('最多 7 個 AI 陪玩'); return; }
+  if(ais.length>=8 && !editingAiId){ showToast('最多 8 個 AI 陪玩'); return; }
   const name=document.getElementById('aiNameInput').value.trim()||('AI'+(ais.length+1));
   const persona=aiSel.persona, plan=aiSel.plan;
   const bank=50000; // 新增/编辑一律固定5万，不显示本金选单
