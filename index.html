@@ -260,18 +260,16 @@
   .marquee.show{opacity:1;}
   .marquee-track{display:flex; flex-direction:column; gap:4px;}
 
-  /* ===== ① 開局前枱邊閒聊 chat strip（覆蓋珠盤路位置） ===== */
-  /* 遮罩錨定 .road-bead（珠盤路格）：bottom:0 蓋住成個珠盤路；top:-20px 向上伸入大路最底第6格，
-     令「枱邊閒聊」標題落到大路第6格、珠盤路上方，對話由嗰度往下排落珠盤路 */
-  .tablechat{position:absolute; top:-20px; bottom:0; left:0; right:0; z-index:15; margin:0; background:rgba(2,17,10,.88); border:none; border-radius:0; padding:6px 8px; display:flex; flex-direction:column; max-height:none; opacity:0; visibility:hidden; pointer-events:none; transition:opacity .35s ease, visibility .35s;}
-  .tablechat.show{opacity:1; visibility:visible;}
+  /* ===== ① 開局前枱邊閒聊：拆兩個錨定層（珠盤路格=左 / 下三路格=右） ===== */
+  .tablechat{position:absolute; top:0; bottom:0; left:0; right:0; z-index:15; margin:0; background:rgba(2,17,10,.9); border:none; border-radius:0; padding:6px 8px; display:flex; flex-direction:column; max-height:none; opacity:0; visibility:hidden; pointer-events:none; transition:opacity .35s ease, visibility .35s;}
+  .tablechat.show{opacity:1; visibility:visible; pointer-events:auto;}
   .tc-title{font-size:15px; color:var(--gold2); opacity:.9; letter-spacing:1px; margin-bottom:3px; flex:0 0 auto; display:flex; align-items:center; justify-content:space-between;}
   .tc-close{font-size:16px; line-height:1; color:#f5f0d8; background:rgba(212,175,55,.28); border:1px solid rgba(212,175,55,.7); border-radius:6px; padding:3px 9px; cursor:pointer; pointer-events:auto;}
   .tc-close:active{transform:scale(.9);}
   .tc-count{font-size:10px; font-weight:800; color:#6fffa6; line-height:1.3; min-height:14px; display:none;}
   .tc-count.show{display:block;}
   .tc-body{overflow-y:auto; display:flex; flex-direction:column; gap:2px; flex:1 1 auto; max-height:none; justify-content:flex-start;}
-  .tc-bubble{font-size:10px; line-height:1.2; display:flex; gap:4px; align-items:baseline;}
+  .tc-bubble{font-size:10px; line-height:1.2; display:flex; gap:4px; align-items:baseline;}  /* 暫時10px，確認結構無錯再考慮放大 */
   .tc-bubble .ic{flex:0 0 auto; font-size:11px;}
   .tc-bubble .tx{color:#f0e8c8; font-size:10px;}
   .tc-bubble .tx b{color:#fff; font-weight:800; margin-right:1px; font-size:10px;}
@@ -378,13 +376,18 @@
         <div class="road-section-title" style="font-size:8px;opacity:.55;padding:2px 6px;letter-spacing:0">珠盤路</div>
         <canvas id="beadCanvas" width="270" height="110"></canvas>
         <div class="info-strip" id="infoStrip"></div>
-        <div class="tablechat" id="tableChat">
-          <div class="tc-title">💬 枱邊閒聊 <span class="tc-close" id="tcClose">✕</span></div>
-          <div class="tc-count" id="tcCount"></div>
-          <div class="tc-body" id="tcBody"></div>
+        <div class="tablechat" id="tableChatL">
+          <div class="tc-title">💬 枱邊閒聊 <span class="tc-close" id="tcCloseL">✕</span></div>
+          <div class="tc-count" id="tcCountL"></div>
+          <div class="tc-body" id="tcBodyL"></div>
         </div>
       </div>
       <div class="road-derived">
+        <div class="tablechat" id="tableChatR">
+          <div class="tc-title">💬 枱邊閒聊 <span class="tc-close" id="tcCloseR">✕</span></div>
+          <div class="tc-count" id="tcCountR"></div>
+          <div class="tc-body" id="tcBodyR"></div>
+        </div>
         <div class="derived-row">
           <canvas id="beeCanvas" width="270" height="50"></canvas>
         </div>
@@ -1064,16 +1067,28 @@ function genChatLine(ai, pickSide, ctx, prevTalker){
   return p.blurb;
 }
 function addChatBubble(ai, msg){
-  const body=document.getElementById('tcBody'); if(!body) return;
+  const L=document.getElementById('tcBodyL'), R=document.getElementById('tcBodyR'); if(!L||!R) return;
+  const total=L.childElementCount + R.childElementCount;   // 已顯示總數
+  if(total>=8) return;   // 封頂：每邊4個，共8句，第9起唔顯示
   const b=document.createElement('div');
   b.className='tc-bubble ai-'+(ais.indexOf(ai)%6);
   b.innerHTML='<span class="ic">'+ai.icon+'</span><span class="tx"><b>'+ai.name+'：</b>'+msg+'</span>';
-  body.appendChild(b);
-  body.scrollTop=body.scrollHeight;
+  const target = (total<4) ? L : R;   // 頭4個去珠盤路格(左)，第5~8個去下三路格(右)
+  target.appendChild(b);
+  target.scrollTop=target.scrollHeight;
 }
-function showTableChat(){ const c=document.getElementById('tableChat'); if(!c)return; const tt=c.querySelector('.tc-title'); if(tt) tt.textContent='💬 枱邊閒聊'; document.getElementById('tcBody').innerHTML=''; const cc=document.getElementById('tcCount'); if(cc){ cc.textContent=''; cc.classList.remove('show'); } c.classList.add('show'); }
-function hideTableChat(){ const c=document.getElementById('tableChat'); if(c) c.classList.remove('show'); }
-document.getElementById('tcClose').addEventListener('click',()=>{ hideTableChat(); const f=window._tcFinish; if(f){ window._tcFinish(); window._tcFinish=null; } });
+function showTableChat(){
+  ['L','R'].forEach(s=>{
+    const c=document.getElementById('tableChat'+s); if(!c) return;
+    const tt=c.querySelector('.tc-title'); if(tt) tt.textContent='💬 枱邊閒聊';
+    const body=document.getElementById('tcBody'+s); if(body) body.innerHTML='';
+    const cc=document.getElementById('tcCount'+s); if(cc){ cc.textContent=''; cc.classList.remove('show'); }
+    c.classList.add('show');
+  });
+}
+function hideTableChat(){ ['L','R'].forEach(s=>{ const c=document.getElementById('tableChat'+s); if(c) c.classList.remove('show'); }); }
+document.getElementById('tcCloseL').addEventListener('click',()=>{ hideTableChat(); const f=window._tcFinish; if(f){ window._tcFinish(); window._tcFinish=null; } });
+document.getElementById('tcCloseR').addEventListener('click',()=>{ hideTableChat(); const f=window._tcFinish; if(f){ window._tcFinish(); window._tcFinish=null; } });
 async function tableChatPhase(sec){
   return new Promise(resolve=>{
     if(ais.length===0){ resolve(); return; }
@@ -2130,9 +2145,11 @@ function playerEmote(em){
   const icon=EMOTE_ICON[em]; if(!icon) return;
   showTableChat();
   // 你嘅 bubble（用 human 色）
-  const body=document.getElementById('tcBody');
-  if(body){ const b=document.createElement('div'); b.className='tc-bubble ai-0'; b.style.opacity='.95';
-    b.innerHTML='<span class="ic">👤</span><span class="tx"><b>你：</b>'+icon+'</span>'; body.appendChild(b); body.scrollTop=body.scrollHeight; }
+  // 你嘅 bubble（用 human 色），同 addChatBubble 一致分流：頭4左、第5+右
+  const L=document.getElementById('tcBodyL'), R=document.getElementById('tcBodyR');
+  const total=(L?L.childElementCount:0)+(R?R.childElementCount:0);
+  if(total<8){ const target=(total<4)?L:R; if(target){ const b=document.createElement('div'); b.className='tc-bubble ai-0'; b.style.opacity='.95';
+    b.innerHTML='<span class="ic">👤</span><span class="tx"><b>你：</b>'+icon+'</span>'; target.appendChild(b); target.scrollTop=target.scrollHeight; } }
   // 隨機 1-2 個 AI 按性格回應
   const pool=[...ais].sort(()=>Math.random()-0.5).slice(0, 1+Math.floor(Math.random()*2));
   pool.forEach((ai,idx)=>{
