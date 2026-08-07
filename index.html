@@ -787,7 +787,7 @@ function sndDeal(){ beep(320,0.05,'sawtooth',0.08); }
 function sndWin(){ [523,659,784,1047].forEach((f,i)=>beep(f,0.18,'triangle',0.18,i*0.09)); }
 function sndLose(){ beep(220,0.3,'sine',0.14); beep(160,0.4,'sine',0.12,0.12); }
 function sndTie(){ beep(440,0.2,'sine',0.14); beep(440,0.2,'sine',0.14,0.18); }
-/* 荷官語音：speechSynthesis zh-HK；跟 mute 掣 */
+/* 荷官語音：speechSynthesis zh-HK；跟 mute 掣；串行隊列避免緩衝/撞聲 */
 let dealerVoice=null;
 function pickDealerVoice(){
   if(!('speechSynthesis' in window)) return null;
@@ -795,15 +795,38 @@ function pickDealerVoice(){
   return vs.find(v=>/zh[-_]HK/i.test(v.lang)) || vs.find(v=>/zh/i.test(v.lang)) || null;
 }
 if('speechSynthesis' in window){ speechSynthesis.onvoiceschanged=()=>{ dealerVoice=pickDealerVoice(); }; dealerVoice=pickDealerVoice(); }
-function speak(text){
-  if(mute) return;
-  if(!('speechSynthesis' in window) || !text) return;
+// 串行語音隊列（解決 Chrome 首句緩衝 + 多句撞聲卡死）
+let ttsQueue=[], ttsBusy=false, ttsWarmed=false;
+function ttsWarmup(){
+  if(ttsWarmed || !('speechSynthesis' in window)) return;
+  ttsWarmed=true;
+  try{ const u=new SpeechSynthesisUtterance(''); u.volume=0; speechSynthesis.speak(u); }catch(e){}
+}
+if('speechSynthesis' in window){
+  window.addEventListener('pointerdown', ttsWarmup);
+  window.addEventListener('keydown', ttsWarmup);
+}
+function ttsProcess(){
+  if(ttsBusy || ttsQueue.length===0) return;
+  if(!('speechSynthesis' in window)){ ttsQueue=[]; return; }
+  const text=ttsQueue.shift();
+  ttsBusy=true;
   try{
     const u=new SpeechSynthesisUtterance(text);
     const v=pickDealerVoice(); if(v) u.voice=v;
     u.lang='zh-HK'; u.rate=1.05; u.pitch=1.0; u.volume=1.0;
-    speechSynthesis.cancel(); speechSynthesis.speak(u);
-  }catch(e){}
+    u.onend=()=>{ ttsBusy=false; setTimeout(ttsProcess, 140); };
+    u.onerror=()=>{ ttsBusy=false; setTimeout(ttsProcess, 140); };
+    speechSynthesis.speak(u);
+  }catch(e){ ttsBusy=false; }
+}
+function speak(text){
+  if(mute || !text) return;
+  if(!('speechSynthesis' in window)) return;
+  ttsWarmup();
+  ttsQueue.push(text);
+  if(ttsQueue.length>4) ttsQueue.shift();   // 限制隊列，避免一次讀太多
+  ttsProcess();
 }
 /* 荷官口播：大字 + 語音 */
 function dealerCall(text, color){
