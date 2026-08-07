@@ -925,38 +925,6 @@ function placeBet(k){
   balance -= currentChip; bets[k]+=currentChip; updateBalance(); updateAiBalances(); updateBetDisplay(); sndChip(); flyChip(k);
 }
 function clearBets(force){ if(dealing && !betting && !force)return; if(!settled){ const refund=Object.values(bets).reduce((a,b)=>a+b,0); balance+=refund; } bets={player:0,banker:0,tie:0,ppair:0,bpair:0,big:0,small:0,luck6:0,luck7:0}; updateBalance(); updateAiBalances(); updateBetDisplay(); }
-
-/* 等上一手結算完全完成（settled 轉 false = 籌碼已清、aiSettle 已跑） */
-function waitSettled(){
-  return new Promise(res=>{
-    if(!settled){ res(); return; }
-    let waited=0;
-    const iv=setInterval(()=>{
-      waited+=100;
-      if(!settled){ clearInterval(iv); res(); }
-      else if(waited>9000){ clearInterval(iv); res(); }
-    },100);
-  });
-}
-/* 智能時序：等語音隊列空 + 走馬燈收起 + 最少 minBuf 毫秒，再 resolve（最長 9s safety） */
-function waitIdle(minBuf){
-  minBuf=minBuf||0;
-  return new Promise(res=>{
-    let done=false;
-    const finish=()=>{ if(done) return; done=true; clearTimeout(tSafety); clearInterval(iv); setTimeout(res, minBuf); };
-    const marq=document.getElementById('dialogueMarquee');
-    const marqueeShown=marq && marq.classList.contains('show');
-    let waited=0;
-    const iv=setInterval(()=>{
-      waited+=100;
-      const ttsEmpty = (typeof ttsQueue==='undefined') || ttsQueue.length===0;
-      const marqGone = !marqueeShown || (marq && !marq.classList.contains('show'));
-      if(ttsEmpty && marqGone) finish();
-      else if(waited>9000) finish();
-    },100);
-    const tSafety=setTimeout(finish, 9000);
-  });
-}
 /* 落注期：綠字倒數 N 秒，期間人類可落注；AI 已經先落好供參考 */
 let betting=false;
 function bettingPhase(sec){
@@ -1283,12 +1251,10 @@ async function deal(auto){
   if(total===0 && auto!==true && ais.length===0){ showToast('請先下注'); return; }
   if(shoeDrawn>=shoeCut || shoeStats.round>=60){ await doShuffle(); }
   setControls(false);   // 禁 DEAL/清除/重複掣（唔設 dealing，等落注期人類照落得）
-  // 智能時序：等上一手完全結算（閃燈→籌碼消失→輸贏對話全部完成）+ 2秒 buffer，先開枱邊聊天
-  await waitSettled();                    // 等上一手籌碼清走、aiSettle 跑完
-  await sleep(1000);                      // 牌面穩定緩衝
-  await waitIdle(2000);                   // 等語音/走馬燈播完 + 2秒（講完先傾偈）
+  // 統一次序（自動/手動都一樣）：2秒緩衝 → 5秒局間緩衝 → 枱邊討論 → 落注倒數 → 開牌
+  await sleep(2000);
+  await sleep(5000);   // 局結束後 5 秒緩衝先開始下一局討論
   if(ais.length){ await tableChatPhase(spd(10)+5); aiPlaceBets(); }
-  await waitIdle(2000);                   // 傾偈完 + 2秒 buffer 先落注
   await bettingPhase(spd(10));
   preBalance=balance;
   try{
@@ -1480,11 +1446,7 @@ function settle(winner, playerPair, bankerPair, big, totalCards, pTotal, bTotal,
   for(const k in resultDetail){ const el=document.querySelector(flashMap[k]); if(el){
     el.classList.add(cls);
 } }
-  setTimeout(async ()=>{
-    clearBets(true);
-    saveRoads(); settled=false;
-    if(ais.length) aiSettle(winner, playerPair, bankerPair, big, pTotal, bTotal, pCards, bCards);  // AI 走馬燈+語音（結算對話）
-  }, dur);
+  setTimeout(()=>{ clearBets(true); saveRoads(); settled=false; if(ais.length) aiSettle(winner, playerPair, bankerPair, big, pTotal, bTotal, pCards, bCards); }, dur);
 }
 /* 結果文字：3行式 + 補牌提示 */
 function resultText(label, pTotal, bTotal, pp, bp, big, pCards, bCards, net){
@@ -1990,7 +1952,7 @@ function autoTick(gen){
   if(dealing || gen!==autoGen) return;          // 發牌中或已停用/換代就跳過
   deal(true).finally(function(){
     // 無論開牌成功/異常都繼續下一輪；開牌流程內已含 2秒→討論→倒數→開牌
-    if(gen===autoGen) setTimeout(function(){ autoTick(gen); }, spd(1)*1000);
+    if(gen===autoGen) setTimeout(function(){ autoTick(gen); }, spd(4)*1000);
   });
 }
 function startAuto(){
