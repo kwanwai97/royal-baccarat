@@ -260,9 +260,11 @@
   .marquee.show{opacity:1;}
   .marquee-track{display:flex; flex-direction:column; gap:4px;}
 
-  /* ===== ① 開局前枱邊閒聊：底部浮動小窗（唔遮路單） ===== */
-  .tablechat{position:fixed; left:8px; right:8px; bottom:8px; z-index:30; margin:0; max-height:38vh; background:rgba(2,17,10,.92); border:1px solid rgba(212,175,55,.5); border-radius:10px; padding:6px 8px; display:flex; flex-direction:column; opacity:0; visibility:hidden; pointer-events:none; transition:opacity .35s ease, visibility .35s; box-shadow:0 6px 24px rgba(0,0,0,.5);}
-  .tablechat.show{opacity:1; visibility:visible; pointer-events:auto;}
+  /* ===== ① 開局前枱邊閒聊 chat strip（覆蓋珠盤路位置） ===== */
+  /* 遮罩錨定 .road-bead（珠盤路格）：bottom:0 蓋住成個珠盤路；top:-20px 向上伸入大路最底第6格，
+     令「枱邊閒聊」標題落到大路第6格、珠盤路上方，對話由嗰度往下排落珠盤路 */
+  .tablechat{position:absolute; top:-20px; bottom:0; left:0; right:0; z-index:15; margin:0; background:rgba(2,17,10,.88); border:none; border-radius:0; padding:6px 8px; display:flex; flex-direction:column; max-height:none; opacity:0; visibility:hidden; pointer-events:none; transition:opacity .35s ease, visibility .35s;}
+  .tablechat.show{opacity:1; visibility:visible;}
   .tc-title{font-size:15px; color:var(--gold2); opacity:.9; letter-spacing:1px; margin-bottom:3px; flex:0 0 auto; display:flex; align-items:center; justify-content:space-between;}
   .tc-close{font-size:16px; line-height:1; color:#f5f0d8; background:rgba(212,175,55,.28); border:1px solid rgba(212,175,55,.7); border-radius:6px; padding:3px 9px; cursor:pointer; pointer-events:auto;}
   .tc-close:active{transform:scale(.9);}
@@ -385,6 +387,14 @@
         <div class="road-section-title" style="font-size:8px;opacity:.55;padding:2px 6px;letter-spacing:0">珠盤路</div>
         <canvas id="beadCanvas" width="270" height="110"></canvas>
         <div class="info-strip" id="infoStrip"></div>
+        <div class="tablechat" id="tableChat">
+          <div class="tc-title">💬 枱邊閒聊 <span class="tc-close" id="tcClose">✕</span></div>
+          <div class="tc-count" id="tcCount"></div>
+          <div class="tc-cols">
+            <div class="tc-col tc-col-l"><div class="tc-body" id="tcBodyL"></div></div>
+            <div class="tc-col tc-col-r"><div class="tc-body" id="tcBodyR"></div></div>
+          </div>
+        </div>
       </div>
       <div class="road-derived">
         <div class="derived-row">
@@ -508,14 +518,6 @@
 
 <div class="toast" id="toast"></div>
 <div class="marquee" id="dialogueMarquee"><div class="marquee-track" id="marqueeTrack"></div></div>
-<div class="tablechat" id="tableChat">
-  <div class="tc-title">💬 枱邊閒聊 <span class="tc-close" id="tcClose">✕</span></div>
-  <div class="tc-count" id="tcCount"></div>
-  <div class="tc-cols">
-    <div class="tc-col tc-col-l"><div class="tc-body" id="tcBodyL"></div></div>
-    <div class="tc-col tc-col-r"><div class="tc-body" id="tcBodyR"></div></div>
-  </div>
-</div>
 <canvas id="confetti"></canvas>
 
 <div class="shuffle-overlay" id="shuffleOverlay">
