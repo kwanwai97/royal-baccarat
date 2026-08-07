@@ -260,22 +260,16 @@
   .marquee.show{opacity:1;}
   .marquee-track{display:flex; flex-direction:column; gap:4px;}
 
-  /* ===== ① 開局前枱邊閒聊 chat strip（覆蓋珠盤路位置） ===== */
-  /* 遮罩錨定 .road-bead（珠盤路格）：bottom:0 蓋住成個珠盤路；top:-20px 向上伸入大路最底第6格，
-     令「枱邊閒聊」標題落到大路第6格、珠盤路上方，對話由嗰度往下排落珠盤路 */
-  .tablechat{position:absolute; top:-20px; bottom:0; left:0; right:0; z-index:15; margin:0; background:rgba(2,17,10,.88); border:none; border-radius:0; padding:6px 8px; display:flex; flex-direction:column; max-height:none; opacity:0; visibility:hidden; pointer-events:none; transition:opacity .35s ease, visibility .35s;}
-  .tablechat.show{opacity:1; visibility:visible;}
+  /* ===== ① 開局前枱邊閒聊：拆兩個錨定層 ===== */
+  /* 左層 #tableChatL 錨定 .road-bead（珠盤路格，左下）；右層 #tableChatR 錨定 .road-derived（下三路格，右下） */
+  .tablechat{position:absolute; top:0; bottom:0; left:0; right:0; z-index:15; margin:0; background:rgba(2,17,10,.9); border:none; border-radius:0; padding:6px 8px; display:flex; flex-direction:column; max-height:none; opacity:0; visibility:hidden; pointer-events:none; transition:opacity .35s ease, visibility .35s;}
+  .tablechat.show{opacity:1; visibility:visible; pointer-events:auto;}
   .tc-title{font-size:15px; color:var(--gold2); opacity:.9; letter-spacing:1px; margin-bottom:3px; flex:0 0 auto; display:flex; align-items:center; justify-content:space-between;}
   .tc-close{font-size:16px; line-height:1; color:#f5f0d8; background:rgba(212,175,55,.28); border:1px solid rgba(212,175,55,.7); border-radius:6px; padding:3px 9px; cursor:pointer; pointer-events:auto;}
   .tc-close:active{transform:scale(.9);}
   .tc-count{font-size:10px; font-weight:800; color:#6fffa6; line-height:1.3; min-height:14px; display:none;}
   .tc-count.show{display:block;}
   .tc-body{overflow-y:auto; display:flex; flex-direction:column; gap:2px; flex:1 1 auto; max-height:none; justify-content:flex-start;}
-  /* 枱邊閒聊拆左右兩欄：左欄頭4個、右欄(下半部)第5+個；兩邊字體都放大 14px */
-  .tc-cols{display:flex; flex:1 1 auto; gap:8px; min-height:0;}
-  .tc-col{flex:1 1 0; display:flex; flex-direction:column; min-height:0; overflow:hidden;}
-  .tc-col-r{align-self:flex-end; justify-content:flex-end;}   /* 右欄貼落下半部（蓋下三路） */
-  .tc-col-r .tc-body{align-items:flex-start;}
   .tc-bubble{font-size:14px; line-height:1.35; display:flex; gap:4px; align-items:baseline;}  /* 兩邊都放大 14px */
   .tc-bubble .ic{flex:0 0 auto; font-size:15px;}
   .tc-bubble .tx{color:#f0e8c8; font-size:14px;}
@@ -383,16 +377,18 @@
         <div class="road-section-title" style="font-size:8px;opacity:.55;padding:2px 6px;letter-spacing:0">珠盤路</div>
         <canvas id="beadCanvas" width="270" height="110"></canvas>
         <div class="info-strip" id="infoStrip"></div>
-        <div class="tablechat" id="tableChat">
-          <div class="tc-title">💬 枱邊閒聊 <span class="tc-close" id="tcClose">✕</span></div>
-          <div class="tc-count" id="tcCount"></div>
-          <div class="tc-cols">
-            <div class="tc-col tc-col-l"><div class="tc-body" id="tcBodyL"></div></div>
-            <div class="tc-col tc-col-r"><div class="tc-body" id="tcBodyR"></div></div>
-          </div>
+        <div class="tablechat tc-left" id="tableChatL">
+          <div class="tc-title">💬 枱邊閒聊 <span class="tc-close" id="tcCloseL">✕</span></div>
+          <div class="tc-count" id="tcCountL"></div>
+          <div class="tc-body" id="tcBodyL"></div>
         </div>
       </div>
       <div class="road-derived">
+        <div class="tablechat tc-right" id="tableChatR">
+          <div class="tc-title">💬 枱邊閒聊 <span class="tc-close" id="tcCloseR">✕</span></div>
+          <div class="tc-count" id="tcCountR"></div>
+          <div class="tc-body" id="tcBodyR"></div>
+        </div>
         <div class="derived-row">
           <canvas id="beeCanvas" width="270" height="50"></canvas>
         </div>
@@ -1081,9 +1077,18 @@ function addChatBubble(ai, msg){
   target.appendChild(b);
   target.scrollTop=target.scrollHeight;
 }
-function showTableChat(){ const c=document.getElementById('tableChat'); if(!c)return; const tt=c.querySelector('.tc-title'); if(tt) tt.textContent='💬 枱邊閒聊'; const L=document.getElementById('tcBodyL'), R=document.getElementById('tcBodyR'); if(L) L.innerHTML=''; if(R) R.innerHTML=''; const cc=document.getElementById('tcCount'); if(cc){ cc.textContent=''; cc.classList.remove('show'); } c.classList.add('show'); }
-function hideTableChat(){ const c=document.getElementById('tableChat'); if(c) c.classList.remove('show'); }
-document.getElementById('tcClose').addEventListener('click',()=>{ hideTableChat(); const f=window._tcFinish; if(f){ window._tcFinish(); window._tcFinish=null; } });
+function showTableChat(){
+  ['L','R'].forEach(s=>{
+    const c=document.getElementById('tableChat'+s); if(!c) return;
+    const tt=c.querySelector('.tc-title'); if(tt) tt.textContent='💬 枱邊閒聊';
+    const body=document.getElementById('tcBody'+s); if(body) body.innerHTML='';
+    const cc=document.getElementById('tcCount'+s); if(cc){ cc.textContent=''; cc.classList.remove('show'); }
+    c.classList.add('show');
+  });
+}
+function hideTableChat(){ ['L','R'].forEach(s=>{ const c=document.getElementById('tableChat'+s); if(c) c.classList.remove('show'); }); }
+document.getElementById('tcCloseL').addEventListener('click',()=>{ hideTableChat(); const f=window._tcFinish; if(f){ window._tcFinish(); window._tcFinish=null; } });
+document.getElementById('tcCloseR').addEventListener('click',()=>{ hideTableChat(); const f=window._tcFinish; if(f){ window._tcFinish(); window._tcFinish=null; } });
 async function tableChatPhase(sec){
   return new Promise(resolve=>{
     if(ais.length===0){ resolve(); return; }
