@@ -271,15 +271,6 @@
   .tc-count{font-size:10px; font-weight:800; color:#6fffa6; line-height:1.3; min-height:14px; display:none;}
   .tc-count.show{display:block;}
   .tc-body{overflow-y:auto; display:flex; flex-direction:column; gap:2px; flex:1 1 auto; max-height:none; justify-content:flex-start;}
-  /* 枱邊閒聊拆左右兩欄：左欄頭4個、右欄(下半部)第5~8個放大字體 */
-  .tc-cols{display:flex; flex:1 1 auto; gap:8px; min-height:0;}
-  .tc-col{flex:1 1 0; display:flex; flex-direction:column; min-height:0; overflow:hidden;}
-  .tc-col-r{align-self:flex-end; justify-content:flex-end;}   /* 右欄貼落下半部 */
-  .tc-col-r .tc-body{align-items:flex-start;}
-  .tc-col-r .tc-bubble{font-size:14px; line-height:1.35;}      /* 右欄放大 */
-  .tc-col-r .tc-bubble .ic{font-size:15px;}
-  .tc-col-r .tc-bubble .tx{font-size:14px;}
-  .tc-col-r .tc-bubble .tx b{font-size:14px;}
   .tc-bubble{font-size:10px; line-height:1.2; display:flex; gap:4px; align-items:baseline;}
   .tc-bubble .ic{flex:0 0 auto; font-size:11px;}
   .tc-bubble .tx{color:#f0e8c8; font-size:10px;}
@@ -390,10 +381,7 @@
         <div class="tablechat" id="tableChat">
           <div class="tc-title">💬 枱邊閒聊 <span class="tc-close" id="tcClose">✕</span></div>
           <div class="tc-count" id="tcCount"></div>
-          <div class="tc-cols">
-            <div class="tc-col tc-col-l"><div class="tc-body" id="tcBodyL"></div></div>
-            <div class="tc-col tc-col-r"><div class="tc-body" id="tcBodyR"></div></div>
-          </div>
+          <div class="tc-body" id="tcBody"></div>
         </div>
       </div>
       <div class="road-derived">
@@ -1076,16 +1064,14 @@ function genChatLine(ai, pickSide, ctx, prevTalker){
   return p.blurb;
 }
 function addChatBubble(ai, msg){
-  const L=document.getElementById('tcBodyL'), R=document.getElementById('tcBodyR'); if(!L||!R) return;
-  const total=L.childElementCount + R.childElementCount;   // 已顯示總數
+  const body=document.getElementById('tcBody'); if(!body) return;
   const b=document.createElement('div');
   b.className='tc-bubble ai-'+(ais.indexOf(ai)%6);
   b.innerHTML='<span class="ic">'+ai.icon+'</span><span class="tx"><b>'+ai.name+'：</b>'+msg+'</span>';
-  const target = (total<4) ? L : R;   // 頭4個去左欄，第5個起去右欄下半部
-  target.appendChild(b);
-  target.scrollTop=target.scrollHeight;
+  body.appendChild(b);
+  body.scrollTop=body.scrollHeight;
 }
-function showTableChat(){ const c=document.getElementById('tableChat'); if(!c)return; const tt=c.querySelector('.tc-title'); if(tt) tt.textContent='💬 枱邊閒聊'; const L=document.getElementById('tcBodyL'), R=document.getElementById('tcBodyR'); if(L) L.innerHTML=''; if(R) R.innerHTML=''; const cc=document.getElementById('tcCount'); if(cc){ cc.textContent=''; cc.classList.remove('show'); } c.classList.add('show'); }
+function showTableChat(){ const c=document.getElementById('tableChat'); if(!c)return; const tt=c.querySelector('.tc-title'); if(tt) tt.textContent='💬 枱邊閒聊'; document.getElementById('tcBody').innerHTML=''; const cc=document.getElementById('tcCount'); if(cc){ cc.textContent=''; cc.classList.remove('show'); } c.classList.add('show'); }
 function hideTableChat(){ const c=document.getElementById('tableChat'); if(c) c.classList.remove('show'); }
 document.getElementById('tcClose').addEventListener('click',()=>{ hideTableChat(); const f=window._tcFinish; if(f){ window._tcFinish(); window._tcFinish=null; } });
 async function tableChatPhase(sec){
@@ -2144,11 +2130,9 @@ function playerEmote(em){
   const icon=EMOTE_ICON[em]; if(!icon) return;
   showTableChat();
   // 你嘅 bubble（用 human 色）
-  const L=document.getElementById('tcBodyL'), R=document.getElementById('tcBodyR');
-  const total=(L?L.childElementCount:0)+(R?R.childElementCount:0);
-  const target=(total<4)?L:R;   // 同 addChatBubble 一致：頭4左、第5+右
-  if(target){ const b=document.createElement('div'); b.className='tc-bubble ai-0'; b.style.opacity='.95';
-    b.innerHTML='<span class="ic">👤</span><span class="tx"><b>你：</b>'+icon+'</span>'; target.appendChild(b); target.scrollTop=target.scrollHeight; }
+  const body=document.getElementById('tcBody');
+  if(body){ const b=document.createElement('div'); b.className='tc-bubble ai-0'; b.style.opacity='.95';
+    b.innerHTML='<span class="ic">👤</span><span class="tx"><b>你：</b>'+icon+'</span>'; body.appendChild(b); body.scrollTop=body.scrollHeight; }
   // 隨機 1-2 個 AI 按性格回應
   const pool=[...ais].sort(()=>Math.random()-0.5).slice(0, 1+Math.floor(Math.random()*2));
   pool.forEach((ai,idx)=>{
