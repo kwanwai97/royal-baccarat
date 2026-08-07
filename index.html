@@ -1460,7 +1460,15 @@ function settle(winner, playerPair, bankerPair, big, totalCards, pTotal, bTotal,
   for(const k in resultDetail){ const el=document.querySelector(flashMap[k]); if(el){
     el.classList.add(cls);
 } }
-  setTimeout(async ()=>{ clearBets(true); await sleep(2000); saveRoads(); settled=false; if(ais.length) aiSettle(winner, playerPair, bankerPair, big, pTotal, bTotal, pCards, bCards); }, dur);
+  // 閃燈期間同步清籌碼：提前 1.5s 清走，閃燈完籌碼已無（避免卡住不清）
+  const clearAt = Math.max(800, dur-1500);
+  setTimeout(()=>{ clearBets(true); }, clearAt);
+  setTimeout(async ()=>{
+    // 保險：若籌碼仲喺度（異常）強制再清一次
+    let still=false; document.querySelectorAll('.chips-stack').forEach(s=>{ if(s.children.length) still=true; });
+    if(still) clearBets(true);
+    await sleep(2000); saveRoads(); settled=false; if(ais.length) aiSettle(winner, playerPair, bankerPair, big, pTotal, bTotal, pCards, bCards);
+  }, dur);
 }
 /* 結果文字：3行式 + 補牌提示 */
 function resultText(label, pTotal, bTotal, pp, bp, big, pCards, bCards, net){
