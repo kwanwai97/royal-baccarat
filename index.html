@@ -1528,7 +1528,7 @@ function aiSidePicks(ai){
   const out={};
   for(let i=0;i<Math.min(maxPick,cand.length);i++){
     const s=cand[Math.floor(Math.random()*cand.length)];
-    if(!out[s]) out[s]=Math.max(1000, Math.floor((ai.baseBet*(0.2+Math.random()*0.2))/1000)*1000)); // 固定細額 1~3K (baseBet=5000 → 1000~2000)
+    if(!out[s]) out[s]=Math.max(1000, Math.floor((ai.baseBet*(0.2+Math.random()*0.2))/1000)*1000); // 固定細額 1~3K (baseBet=5000 → 1000~2000)
   }
   return out;
 }
