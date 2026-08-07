@@ -544,6 +544,7 @@ function bankerShouldDraw(bt,pt){ if(bt>=7)return false; if(bt===6)return pt===6
 let shoe=[], shoeDrawn=0;
 let balance=50000;
 let preBalance=0, lastStaked=0;
+let lastHumanWon=false;   // 你上局主注有冇中（AI 對話用：針對你）
 let currentChip=1000;
 let bets={player:0,banker:0,tie:0,ppair:0,bpair:0,big:0,small:0,luck6:0,luck7:0};
 let lastBets=null;
@@ -990,6 +991,20 @@ function genChatLine(ai, pickSide, ctx, prevTalker){
     const rel=relOf(ai, prevTalker);
     if(rel!=='neutral' && Math.random()<0.7){ return p.react[rel]; }
   }
+  // 情緒連貫：根據上局佢贏輸 + 你贏佢輸/佢贏你輸
+  const ws=ai.winStreak||0, ls=ai.loseStreak||0;
+  if(ws>=3){
+    const brag=['連贏'+ws+'鋪，你哋跟唔跟？','旺到飛起，我繼續冇得輸','一早就話我睇得準'];
+    if(!lastHumanWon) brag.push('你上鋪輸咗囉，學下我啦');    // 佢贏你輸，踩多句
+    return pick(brag);
+  }
+  if(ls>=3){
+    const tilt=['連輸'+ls+'鋪…今日黑到冇朋友','輸到唔想講嘢，但唔服','你上鋪係咪贏咗？咪窒我'];
+    if(lastHumanWon) tilt.push('你贏緊喎，等我追返你');        // 你贏佢輸，記仇
+    return pick(tilt);
+  }
+  if(ls>=1 && !lastHumanWon && Math.random()<0.4) return '你上鋪都輸，我哋同是天涯淪落人';
+  if(ws>=1 && lastHumanWon && Math.random()<0.4) return '你贏我又贏，今日我哋旺到一齊';
   if(ctx.empty) return '新靴開波，我睇'+pickTxt+'先';
   const r=Math.random();
   if(r<0.40){
@@ -1349,6 +1364,7 @@ function settle(winner, playerPair, bankerPair, big, totalCards, pTotal, bTotal,
 
   // 戰績統計 + 連勝 (以主注是否中獎判斷)
   const mainWin = (winner==='player'&&bets.player>0) || (winner==='banker'&&bets.banker>0) || (winner==='tie'&&bets.tie>0);
+  lastHumanWon=mainWin;   // 記低你上局主注中冇中，畀 AI 對話用
   stats.total++; stats.betRounds++;
   if(winner==='player')stats.pWin++; else if(winner==='banker')stats.bWin++; else stats.tie++;
   // 這一靴牌統計（資訊條用）
@@ -1370,6 +1386,7 @@ function settle(winner, playerPair, bankerPair, big, totalCards, pTotal, bTotal,
     let label = winner==='player'?'閒家贏':winner==='banker'?'莊家贏':'和局';
     showMsg(resultText(label, pTotal, bTotal, playerPair, bankerPair, big, pCards, bCards, net), winner==='banker'?'#ffb3b3':winner==='player'?'#a9d2ff':'#8fe0ab');
     announceResult(winner, playerPair, bankerPair, big, pTotal, bTotal);
+    if(!mute) setTimeout(()=>speak('你贏咗 '+fmt(net)+'蚊，叻仔'), 700);
     let tip='🎉 贏 '+fmt(net);
     if(bonus>0) tip+=' ｜🔥連勝彩金 +'+fmt(bonus);
     showToast(tip);
@@ -1379,12 +1396,14 @@ function settle(winner, playerPair, bankerPair, big, totalCards, pTotal, bTotal,
     let label = winner==='player'?'閒家贏':winner==='banker'?'莊家贏':'和局';
     showMsg(resultText(label, pTotal, bTotal, playerPair, bankerPair, big, pCards, bCards, net), winner==='banker'?'#ffb3b3':winner==='player'?'#a9d2ff':'#8fe0ab');
     announceResult(winner, playerPair, bankerPair, big, pTotal, bTotal);
+    if(!mute) setTimeout(()=>speak('你輸咗 '+fmt(-net)+'蚊，唔緊要，下鋪翻本'), 700);
     showToast('💸 輸 '+fmt(-net));
   } else {
     sndTie();
     let label = winner==='player'?'閒家贏':winner==='banker'?'莊家贏':'和局';
     showMsg(resultText(label, pTotal, bTotal, playerPair, bankerPair, big, pCards, bCards, net), winner==='banker'?'#ffb3b3':winner==='player'?'#a9d2ff':'#8fe0ab');
     announceResult(winner, playerPair, bankerPair, big, pTotal, bTotal);
+    if(!mute && lastStaked>0) setTimeout(()=>speak('平手，錢退返畀你'), 700);
     if(lastStaked>0) showToast('↔ 平手退還');
   }
   updateBalance(); updateAiBalances(); updateStreak();
@@ -1768,13 +1787,25 @@ function aiSettle(result, playerPair, bankerPair, big, pTotal, bTotal, pCards, b
     if(ai.history.length>40) ai.history.shift();
     const p=AI_PERSONAS[ai.persona];
     let msg='';
+    const ws=ai.winStreak||0, ls=ai.loseStreak||0;
     if(ai.balance<=0){
       msg=ai.icon+' '+ai.name+'：破產囉…下次再戰 💀';
+    } else if(win && ws>=3){
+      const brag=['連贏'+ws+'鋪！我係呢枱王','旺到飛起，誰與爭鋒','一早話咗我睇得準'];
+      if(!lastHumanWon) brag.push('你輸緊喎，跟住我啦');
+      msg=ai.icon+' '+ai.name+'：「'+pick(brag)+'」+'+fmt(bet)+(sNames.length?' 側注中'+sNames.join('/')+'！':'');
     } else if(win){
       const arr=ai.emotion>70?(p.tilt||p.win):p.win;
-      msg=ai.icon+' '+ai.name+'：「'+arr[Math.floor(Math.random()*arr.length)]+'」'+'+'+fmt(bet)+(sNames.length?' 側注中'+sNames.join('/')+'！':'');
+      let m='「'+arr[Math.floor(Math.random()*arr.length)]+'」+'+fmt(bet);
+      if(sNames.length) m+=' 側注中'+sNames.join('/')+'！🔥';
+      if(lastHumanWon) m+='（你都贏，我哋旺到一齊）';
+      msg=ai.icon+' '+ai.name+'：'+m;
     } else if(sideWin){
-      msg=ai.icon+' '+ai.name+'：主注輸咗，但側注中 '+sNames.join('/')+'！+'+fmt(payout-bet);
+      msg=ai.icon+' '+ai.name+'：主注輸咗，但側注中 '+sNames.join('/')+'！+'+fmt(payout-bet)+' 🎯';
+    } else if(!win && ls>=3){
+      const tilt=['連輸'+ls+'鋪…不甘心','今日黑到冇朋友','輸到唔服，但繼續'];
+      if(lastHumanWon) tilt.push('你贏緊喎，等我追返你');
+      msg=ai.icon+' '+ai.name+'：「'+pick(tilt)+'」';
     } else if(!win && ai.step>=3){
       const mood=tableMood();
       const arr=ai.emotion<30?(p.tilt||p.lose):p.lose;
@@ -1782,7 +1813,11 @@ function aiSettle(result, playerPair, bankerPair, big, pTotal, bTotal, pCards, b
       if(mood==='cold' && Math.random()<0.5) tail+='，全枱都黑';
       msg=ai.icon+' '+ai.name+'：「'+arr[Math.floor(Math.random()*arr.length)]+'」'+tail;
     }
-    if(msg) dialogues.push(msg);
+    if(msg){
+      dialogues.push(msg);
+      // AI 語音口播（同 mute 掣 / zh-HK；win 或 sideWin 先出聲，避免太嘈）
+      if((win||sideWin) && !mute) setTimeout(()=>speak(ai.name+(sNames.length?('中咗'+sNames.join('同')+'！'):'贏咗')), 600+Math.random()*800);
+    }
     ai.currentBet=null;
   });
   if(dialogues.length) showMarquee(dialogues);
