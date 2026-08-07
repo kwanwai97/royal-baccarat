@@ -1814,6 +1814,7 @@ aiChipGroup('aiPersona','persona', refreshPersonaBlurb); aiChipGroup('aiPlan','p
 document.getElementById('btnAI').addEventListener('click',()=>{
   document.getElementById('aiModal').classList.add('show'); editingAiId=null; document.getElementById('aiConfirm').textContent='確認 · 新增 AI';
   renderAiList();
+  if(ais.length<8) randomizeNewAi();   // 新增模式：自動隨機配性格+注碼（編輯模式唔 call）
   document.getElementById('aiStop').style.display = ais.length? '' : 'none';
 });
 /* 列出所有AI，逐個可改/刪（唔再只刪最後一個） */
@@ -1854,7 +1855,14 @@ function setNextDefaultName(){
   for(const n of DEFAULT_NAMES){ if(!used.has(n)){ document.getElementById('aiNameInput').value=n; return; } }
   document.getElementById('aiNameInput').value='AI'+(ais.length+1);
 }
-function setAiSel(id,val){ const grp=document.getElementById(id); grp.querySelectorAll('.ai-chip').forEach(x=>x.classList.toggle('sel', x.dataset.v===val)); if(id==='aiPersona'){ aiSel.persona=val; refreshPersonaBlurb(); } }
+function setAiSel(id,val){ const grp=document.getElementById(id); if(!grp) return; grp.querySelectorAll('.ai-chip').forEach(x=>x.classList.toggle('sel', x.dataset.v===val)); if(id==='aiPersona'){ aiSel.persona=val; refreshPersonaBlurb(); } else if(id==='aiPlan'){ aiSel.plan=val; } }
+/* 新增模式：隨機性格 + 注碼方案配搭（UI 同步 highlight，用家可手動改） */
+function randomizeNewAi(){
+  const personas=Object.keys(AI_PERSONAS);
+  const plans=Object.keys(AI_PLANS);
+  setAiSel('aiPersona', personas[Math.floor(Math.random()*personas.length)]);
+  setAiSel('aiPlan', plans[Math.floor(Math.random()*plans.length)]);
+}
 let editingAiId=null;
 document.getElementById('aiConfirm').addEventListener('click',()=>{
   if(ais.length>=8 && !editingAiId){ showToast('最多 8 個 AI 陪玩'); return; }
