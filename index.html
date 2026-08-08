@@ -803,6 +803,7 @@ function pickDealerVoice(){
 if('speechSynthesis' in window){ speechSynthesis.onvoiceschanged=()=>{ dealerVoice=pickDealerVoice(); }; dealerVoice=pickDealerVoice(); }
 // 串行語音隊列（解決 Chrome 首句緩衝 + 多句撞聲卡死）
 let ttsQueue=[], ttsBusy=false, ttsWarmed=false;
+let ttsVoice={lang:'zh-HK', pitch:1.0, rate:1.05};   // 當前聲線參數（speakAs 設定，speak 用預設）
 function ttsWarmup(){
   if(ttsWarmed || !('speechSynthesis' in window)) return;
   ttsWarmed=true;
@@ -815,23 +816,23 @@ if('speechSynthesis' in window){
 function ttsProcess(){
   if(ttsBusy || ttsQueue.length===0) return;
   if(!('speechSynthesis' in window)){ ttsQueue=[]; return; }
-  const item=ttsQueue.shift();
+  const text=ttsQueue.shift();
   ttsBusy=true;
+  let safety=null;
   try{
-    // speakAs 推送 JSON {text,lang,pitch,rate}；普通 speak 推送純字串
-    let text=item, lang='zh-HK', pitch=1.0, rate=1.05, voice=null;
-    if(typeof item==='string' && item[0]==='{'){
-      try{ const o=JSON.parse(item); text=o.text; lang=o.lang||'zh-HK'; pitch=o.pitch!=null?o.pitch:1.0; rate=o.rate!=null?o.rate:1.05; }catch(e){}
-    }
+    const v=ttsVoice;
     const u=new SpeechSynthesisUtterance(text);
-    if(lang==='zh-TW'){ voice=pickVoiceByLang('zh-TW')||pickDealerVoice(); }
+    let voice=null;
+    if(v.lang==='zh-TW'){ voice=pickVoiceByLang('zh-TW')||pickDealerVoice(); }
     else { voice=pickDealerVoice(); }
     if(voice) u.voice=voice;
-    u.lang=lang; u.rate=rate; u.pitch=pitch; u.volume=1.0;
-    u.onend=()=>{ ttsBusy=false; setTimeout(ttsProcess, 140); };
-    u.onerror=()=>{ ttsBusy=false; setTimeout(ttsProcess, 140); };
+    u.lang=v.lang; u.rate=v.rate; u.pitch=v.pitch; u.volume=1.0;
+    u.onend=()=>{ if(safety) clearTimeout(safety); ttsBusy=false; ttsVoice={lang:'zh-HK', pitch:1.0, rate:1.05}; setTimeout(ttsProcess, 140); };
+    u.onerror=()=>{ if(safety) clearTimeout(safety); ttsBusy=false; ttsVoice={lang:'zh-HK', pitch:1.0, rate:1.05}; setTimeout(ttsProcess, 140); };
     speechSynthesis.speak(u);
-  }catch(e){ ttsBusy=false; }
+    // 安全 timer：手機 onend 有時唔觸發，8秒強制解鎖，避免全局卡死冇聲
+    safety=setTimeout(()=>{ ttsBusy=false; ttsVoice={lang:'zh-HK', pitch:1.0, rate:1.05}; ttsProcess(); }, 8000);
+  }catch(e){ if(safety) clearTimeout(safety); ttsBusy=false; }
 }
 /* 揀指定 lang 嘅聲線（granny 國語女聲用） */
 function pickVoiceByLang(lang){
@@ -843,6 +844,7 @@ function speak(text){
   if(mute || !text) return;
   if(!('speechSynthesis' in window)) return;
   ttsWarmup();
+  ttsVoice={lang:'zh-HK', pitch:1.0, rate:1.05};   // 重置為預設荷官聲
   ttsQueue.push(text);
   if(ttsQueue.length>4) ttsQueue.shift();   // 限制隊列，避免一次讀太多
   ttsProcess();
@@ -852,10 +854,8 @@ function speakAs(ai, text){
   if(mute || !text || !ai) return;
   if(!('speechSynthesis' in window)) return;
   const v=ai.voice||{};
-  const lang=v.lang||'zh-HK';
-  const p=(v.pitch!=null)?v.pitch:1.0;
-  const r=(v.rate!=null)?v.rate:1.0;
-  ttsQueue.push(JSON.stringify({text, lang, pitch:p, rate:r}));
+  ttsVoice={ lang:v.lang||'zh-HK', pitch:(v.pitch!=null)?v.pitch:1.0, rate:(v.rate!=null)?v.rate:1.05 };
+  ttsQueue.push(text);
   ttsProcess();
 }
 /* 荷官口播：大字 + 語音 */
@@ -1103,10 +1103,13 @@ function addChatBubble(ai, msg){
   const target = (total<4) ? L : R;   // 頭4個去珠盤路格(左)，第5~8個去下三路格(右)
   target.appendChild(b);
   target.scrollTop=target.scrollHeight;
-  // 部分出聲：搶戲角色(speak:true)先出聲，其餘靜音，避免連續讀太長
-  if(ai && ai.speak) speakAs(ai, ai.name+'話：'+msg);
+  // 部分出聲：搶戲角色(speak:true)先出聲，但全枱最多 3 句出聲，避免手機連續讀太長卡死
+  if(ai && ai.speak){
+    if((window._chatSpoken||0) < 3){ window._chatSpoken=(window._chatSpoken||0)+1; speakAs(ai, ai.name+'話：'+msg); }
+  }
 }
 function showTableChat(){
+  window._chatSpoken=0;   // 每局重置出聲句數（最多3句）
   ['L','R'].forEach(s=>{
     const c=document.getElementById('tableChat'+s); if(!c) return;
     const tt=c.querySelector('.tc-title'); if(tt) tt.textContent='💬 枱邊閒聊';
