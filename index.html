@@ -942,8 +942,9 @@ function waitAudioIdle(){
       waited+=100;
       const ttsEmpty=(typeof ttsQueue==='undefined')||ttsQueue.length===0;
       const marqGone=!marq||!marq.classList.contains('show');
-      if(ttsEmpty && marqGone) { clearInterval(iv); setTimeout(res, 1500); }  // 播完再停 1.5s 先下一輪
-      else if(waited>12000) { clearInterval(iv); res(); }
+      if(ttsEmpty && marqGone) { clearInterval(iv); setTimeout(res, 2000); }  // 文字+語音都完結 → 停2秒 → 先下一輪
+      else if(ttsEmpty && !marqGone){ hideMarquee(); }   // 語音播完但走馬燈仲喺 → 收走馬燈（取消10秒硬limit，智能收）
+      else if(waited>15000) { clearInterval(iv); hideMarquee(); res(); }  // 安全網：15秒強制走
     },100);
   });
 }
@@ -1836,8 +1837,7 @@ function showMarquee(items){
     track.appendChild(el);
   });
   box.classList.add('show');
-  clearTimeout(showMarquee._t);
-  showMarquee._t=setTimeout(()=>hideMarquee(), 10000);  // 固定 10 秒顯示，配合「等語音播完」先傾偈
+  // 取消 10 秒硬 limit：改由 waitAudioIdle 智能收（等語音播完先收走馬燈）
 }
 function hideMarquee(){ document.getElementById('dialogueMarquee').classList.remove('show'); clearTimeout(showMarquee._t); }
 window.showMarquee=showMarquee; window.hideMarquee=hideMarquee;
