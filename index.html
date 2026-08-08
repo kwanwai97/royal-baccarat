@@ -1081,11 +1081,9 @@ function addChatBubble(ai, msg){
   const target = (total<4) ? L : R;   // 頭4個去珠盤路格(左)，第5~8個去下三路格(右)
   target.appendChild(b);
   target.scrollTop=target.scrollHeight;
-  // 枱邊出聲：最多4句（出聲+出字，照穩定做法），避免太吵
-  if(!mute && (window._chatSpoken||0)<4){ window._chatSpoken=(window._chatSpoken||0)+1; speak(ai.name+'話：'+msg, 1.15); }
+  // 注意：出聲由 tableChatPhase 嘅 voiceSet 控制，呢度唔 call speak（避免雙重出聲）
 }
 function showTableChat(){
-  window._chatSpoken=0;   // 每局重置枱邊出聲計數（最多4句）
   ['L','R'].forEach(s=>{
     const c=document.getElementById('tableChat'+s); if(!c) return;
     const tt=c.querySelector('.tc-title'); if(tt) tt.textContent='💬 枱邊閒聊';
@@ -1106,8 +1104,8 @@ async function tableChatPhase(sec) {
         const shuffled = [...ais].sort(() => Math.random() - 0.5);
         shuffled.forEach(ai => { ai._prePick = aiPick(ai); });
 
-        // 從打亂後的順序中，選取最多 3 個作為語音發言者
-        const voiceSpeakers = shuffled.slice(0, Math.min(3, shuffled.length));
+        // 從打亂後的順序中，選取最多 4 個作為語音發言者（枱邊出聲 +1）
+        const voiceSpeakers = shuffled.slice(0, Math.min(4, shuffled.length));
         const voiceSet = new Set(voiceSpeakers.map(ai => ai.id));
 
         const ctx = roadState();
