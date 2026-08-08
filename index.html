@@ -266,16 +266,16 @@
   .tc-left{left:0; right:50%; top:-20px;}   /* 推上大路標題行高，貼實大路第6格底（同倒數同高） */
   .tc-right{left:50%; right:0; top:-20px;}
   .tablechat.show{opacity:1; visibility:visible; pointer-events:auto;}
-  .tc-title{font-size:14px; color:var(--gold2); opacity:.9; letter-spacing:1px; margin-bottom:3px; flex:0 0 auto; display:flex; align-items:center; justify-content:space-between;}
+  .tc-title{font-size:13px; color:var(--gold2); opacity:.9; letter-spacing:1px; margin-bottom:3px; flex:0 0 auto; display:flex; align-items:center; justify-content:space-between;}
   .tc-close{font-size:16px; line-height:1; color:#f5f0d8; background:rgba(212,175,55,.28); border:1px solid rgba(212,175,55,.7); border-radius:6px; padding:3px 9px; cursor:pointer; pointer-events:auto;}
   .tc-close:active{transform:scale(.9);}
   .tc-count{font-size:10px; font-weight:800; color:#6fffa6; line-height:1.3; min-height:14px; display:none;}
   .tc-count.show{display:block;}
   .tc-body{overflow-y:auto; display:flex; flex-direction:column; gap:2px; flex:1 1 auto; max-height:none; justify-content:flex-start;}
-  .tc-bubble{font-size:12px; line-height:1.3; display:flex; gap:4px; align-items:baseline;}  /* 放大12px */
-  .tc-bubble .ic{flex:0 0 auto; font-size:13px;}
-  .tc-bubble .tx{color:#f0e8c8; font-size:12px;}
-  .tc-bubble .tx b{color:#fff; font-weight:800; margin-right:1px; font-size:12px;}
+  .tc-bubble{font-size:11px; line-height:1.25; display:flex; gap:4px; align-items:baseline;}  /* 對話11px */
+  .tc-bubble .ic{flex:0 0 auto; font-size:12px;}
+  .tc-bubble .tx{color:#f0e8c8; font-size:11px;}
+  .tc-bubble .tx b{color:#fff; font-weight:800; margin-right:1px; font-size:11px;}
   .tc-bubble.ai-0 .tx{color:#ffd9a8;} .tc-bubble.ai-1 .tx{color:#a9d2ff;} .tc-bubble.ai-2 .tx{color:#8fe0ab;}
   .tc-bubble.ai-5 .tx{color:#c4f0f8;}
   /* 落注倒數：顯示喺 3D 開牌掣下方、大路紅藍圖案上方（靜態行，唔彈跳） */
@@ -1065,6 +1065,41 @@ function genChatLine(ai, pickSide, ctx, prevTalker){
   }
   // 評路
   if(p.road && Math.random()<0.35) return pick(p.road);
+  // 全局 trash talk 池：職業賭徒口吻 / 警告勸戒 / 鼓勵打氣 / 踩人諸如此類
+  if(Math.random()<0.45){
+    const trash = [
+      // 職業賭徒口吻
+      '賭嘢最緊要係bankroll管理，唔好all-in',
+      '莊抽水5%，長遠跟莊先係正路',
+      '路單睇勢，唔好睇心',
+      '連輸三鋪就收手，呢條係鐵律',
+      '我賭咗廿年，最信嘅係數學',
+      '注碼要按勝率調，唔係按情緒',
+      '大路出長龍，跟到尾就發達',
+      '下注前要問自己：呢鋪值搏率有幾高',
+      // 警告 / 勸戒
+      '警告：連贏最容易飄，飄就死',
+      '你注碼越落越大，小心崩盤',
+      '追龍追到斷，最慘係溝注',
+      '聽明唔好聽興，冇策略就唔好落注',
+      '賭場唔會執笠，因為多數人冇紀律',
+      '見好就收，呢四個字值百萬',
+      // 鼓勵 / 打氣
+      '頂住，下一鋪就返生',
+      '输少當贏，留得青山在',
+      '我哋一齊追，唔使惊',
+      '新手運過後先係真功夫，練好佢',
+      '贏錢嗰陣最危險，保持冷靜',
+      // 踩人 / 諸如此類
+      '你哋啲注碼係玩泥沙咩',
+      '信莊嘅都發達，信感覺嘅都執咗',
+      '我賭錢你哋賭命？',
+      '跟風跟到溝晒注，笑死',
+      '輸到面青咗仲要加注，勇者無敵',
+      '呢張枱我話事，你哋跟住就得',
+    ];
+    return pick(trash);
+  }
   // pre（開枱前諗法）
   if(p.pre && p.pre.length) return pick(p.pre);
   return p.blurb;
@@ -1285,7 +1320,8 @@ async function deal(auto){
   setControls(false);   // 禁 DEAL/清除/重複掣（唔設 dealing，等落注期人類照落得）
   // 統一次序（自動/手動都一樣）：2秒緩衝 → 5秒局間緩衝 → 枱邊討論 → 落注倒數 → 開牌
   await sleep(2000);
-  await waitAudioIdle();   // 等上一手輸贏對話 + 語音全部播完，先開枱邊聊天（唔用固定秒數）
+  await waitAudioIdle();   // 等上一手輸贏對話 + 語音全部播完
+  await sleep(2000);       // 語音播完再停 2 秒，先開枱邊聊天
   if(ais.length){ await tableChatPhase(spd(10)+5); aiPlaceBets(); }
   await bettingPhase(spd(10));
   preBalance=balance;
@@ -1440,7 +1476,6 @@ function settle(winner, playerPair, bankerPair, big, totalCards, pTotal, bTotal,
     sndWin(); launchConfetti();
     let label = winner==='player'?'閒家贏':winner==='banker'?'莊家贏':'和局';
     showMsg(resultText(label, pTotal, bTotal, playerPair, bankerPair, big, pCards, bCards, net), winner==='banker'?'#ffb3b3':winner==='player'?'#a9d2ff':'#8fe0ab');
-    announceResult(winner, playerPair, bankerPair, big, pTotal, bTotal);
     if(!mute) setTimeout(()=>speak('你贏咗 '+fmt(net)+'蚊，叻仔'), 700);
     let tip='🎉 贏 '+fmt(net);
     if(bonus>0) tip+=' ｜🔥連勝彩金 +'+fmt(bonus);
@@ -1450,14 +1485,12 @@ function settle(winner, playerPair, bankerPair, big, totalCards, pTotal, bTotal,
     sndLose();
     let label = winner==='player'?'閒家贏':winner==='banker'?'莊家贏':'和局';
     showMsg(resultText(label, pTotal, bTotal, playerPair, bankerPair, big, pCards, bCards, net), winner==='banker'?'#ffb3b3':winner==='player'?'#a9d2ff':'#8fe0ab');
-    announceResult(winner, playerPair, bankerPair, big, pTotal, bTotal);
     if(!mute) setTimeout(()=>speak('你輸咗 '+fmt(-net)+'蚊，唔緊要，下鋪翻本'), 700);
     showToast('💸 輸 '+fmt(-net));
   } else {
     sndTie();
     let label = winner==='player'?'閒家贏':winner==='banker'?'莊家贏':'和局';
     showMsg(resultText(label, pTotal, bTotal, playerPair, bankerPair, big, pCards, bCards, net), winner==='banker'?'#ffb3b3':winner==='player'?'#a9d2ff':'#8fe0ab');
-    announceResult(winner, playerPair, bankerPair, big, pTotal, bTotal);
     if(!mute && lastStaked>0) setTimeout(()=>speak('平手，錢退返畀你'), 700);
     if(lastStaked>0) showToast('↔ 平手退還');
   }
