@@ -1490,6 +1490,7 @@ function settle(winner, playerPair, bankerPair, big, totalCards, pTotal, bTotal,
     if(lastStaked>0) showToast('↔ 平手退還');
   }
   updateBalance(); updateAiBalances(); updateStreak();
+  setTimeout(()=>hideMsg(), 4000);   // 結算大字4秒後自動收，唔等下一局deal先收（解決結算後無收起）
 
   // 按牌局結果閃相關區域
   const resultDetail={};
