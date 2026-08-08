@@ -818,14 +818,17 @@ function ttsProcess(){
   if(!('speechSynthesis' in window)){ ttsQueue=[]; return; }
   const text=ttsQueue.shift();
   ttsBusy=true;
+  let safety=null;
   try{
     const u=new SpeechSynthesisUtterance(text);
     const v=pickDealerVoice(); if(v) u.voice=v;
     u.lang='zh-HK'; u.rate=ttsRate; u.pitch=1.0; u.volume=1.0;
-    u.onend=()=>{ ttsBusy=false; setTimeout(ttsProcess, 140); };
-    u.onerror=()=>{ ttsBusy=false; setTimeout(ttsProcess, 140); };
+    u.onend=()=>{ if(safety) clearTimeout(safety); ttsBusy=false; setTimeout(ttsProcess, 140); };
+    u.onerror=()=>{ if(safety) clearTimeout(safety); ttsBusy=false; setTimeout(ttsProcess, 140); };
     speechSynthesis.speak(u);
-  }catch(e){ ttsBusy=false; }
+    // 安全 timer：手機 onend 有時唔觸發，8秒強制解鎖，避免全局卡死冇聲
+    safety=setTimeout(()=>{ ttsBusy=false; ttsProcess(); }, 8000);
+  }catch(e){ if(safety) clearTimeout(safety); ttsBusy=false; }
 }
 function speak(text, rate){
   if(mute || !text) return;
@@ -944,7 +947,7 @@ function waitAudioIdle(){
       const marqGone=!marq||!marq.classList.contains('show');
       if(ttsEmpty && marqGone) { clearInterval(iv); setTimeout(res, 3000); }  // 文字+語音都完結 → 停3秒 → 先下一輪
       else if(ttsEmpty && !marqGone){ hideMarquee(); }   // 語音播完但走馬燈仲喺 → 收走馬燈（取消10秒硬limit，智能收）
-      else if(waited>15000) { clearInterval(iv); hideMarquee(); res(); }  // 安全網：15秒強制走
+      else if(waited>8000) { clearInterval(iv); hideMarquee(); res(); }  // 安全網：8秒強制走（同ttsProcess安全timer對齊）
     },100);
   });
 }
@@ -1415,7 +1418,6 @@ async function deal(auto){
 /* ===================== 結算 ===================== */
 function settle(winner, playerPair, bankerPair, big, totalCards, pTotal, bTotal, pCards, bCards){
   settled=true;
-  window._settleSpoken=0;   // 每局重置結算後出聲計數（最多3個）
   lastBets=Object.assign({},bets);  // 記錄本局投注供重複按鈕用
   let payout=0;
   const winDetail={};
@@ -1909,13 +1911,7 @@ function aiSettle(result, playerPair, bankerPair, big, pTotal, bTotal, pCards, b
       msg=ai.icon+' '+ai.name+'：「'+arr[Math.floor(Math.random()*arr.length)]+'」'+tail;
     }
     if(msg){
-      dialogues.push(msg);
-      // AI 語音口播（同 mute 掣 / zh-HK；win 或 sideWin 先出聲，避免太嘈）
-      // AI 語音口播：最多3個出聲（唔再限制只贏錢）
-      if(!mute && (window._settleSpoken||0)<3){
-        window._settleSpoken=(window._settleSpoken||0)+1;
-        setTimeout(()=>speak(ai.name+(sNames.length?('中咗'+sNames.join('同')+'！'):'贏咗'), 1.15), 600+Math.random()*800);
-      }
+      dialogues.push(msg);   // 只出文字走馬燈，結算後 AI 唔出聲（語音係亂源，放棄避免卡死）
     }
     ai.currentBet=null;
   });
