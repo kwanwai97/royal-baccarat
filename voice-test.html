@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>聲線診斷</title>
+<style>body{font-family:sans-serif;background:#111;color:#eee;padding:12px;font-size:14px} button{margin:4px;padding:8px} pre{white-space:pre-wrap;border:1px solid #444;padding:8px;background:#000}</style>
+</head>
+<body>
+<h3>聲線診斷（喺你手機開呢頁）</h3>
+<button onclick="listVoices()">列出所有聲線</button>
+<button onclick="testHK()">試講一句廣東話</button>
+<div id="out"></div>
+<script>
+function listVoices(){
+  const vs=speechSynthesis.getVoices();
+  const o=document.getElementById('out');
+  if(!vs.length){ o.innerHTML='<pre>暫時0隻，等1秒再撳（voiceschanged未觸發）</pre>'; return; }
+  let txt='總數: '+vs.length+'\n\n';
+  vs.forEach((v,i)=>{ txt+=(i)+'. ['+v.lang+'] '+v.name+(v.default?' (預設)':'')+'\n'; });
+  o.innerHTML='<pre>'+txt+'</pre>';
+}
+if('speechSynthesis' in window){ speechSynthesis.onvoiceschanged=listVoices; }
+function testHK(){
+  const vs=speechSynthesis.getVoices();
+  const hk=vs.find(v=>/zh[-_]HK/i.test(v.lang))||vs.find(v=>/zh/i.test(v.lang))||vs[0];
+  const u=new SpeechSynthesisUtterance('我係死忠莊，莊係王道');
+  if(hk){ u.voice=hk; u.lang=hk.lang; }
+  u.rate=1.0; u.pitch=1.0;
+  speechSynthesis.cancel(); speechSynthesis.speak(u);
+}
+</script>
+</body>
+</html>
