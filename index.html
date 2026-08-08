@@ -803,6 +803,7 @@ function pickDealerVoice(){
 if('speechSynthesis' in window){ speechSynthesis.onvoiceschanged=()=>{ dealerVoice=pickDealerVoice(); }; dealerVoice=pickDealerVoice(); }
 // 串行語音隊列（解決 Chrome 首句緩衝 + 多句撞聲卡死）
 let ttsQueue=[], ttsBusy=false, ttsWarmed=false;
+let ttsRate=1.15;   // 聊天/結算後語音速度（快少少）；開牌 dealerCall 用 1.05
 function ttsWarmup(){
   if(ttsWarmed || !('speechSynthesis' in window)) return;
   ttsWarmed=true;
@@ -820,16 +821,17 @@ function ttsProcess(){
   try{
     const u=new SpeechSynthesisUtterance(text);
     const v=pickDealerVoice(); if(v) u.voice=v;
-    u.lang='zh-HK'; u.rate=1.05; u.pitch=1.0; u.volume=1.0;
+    u.lang='zh-HK'; u.rate=ttsRate; u.pitch=1.0; u.volume=1.0;
     u.onend=()=>{ ttsBusy=false; setTimeout(ttsProcess, 140); };
     u.onerror=()=>{ ttsBusy=false; setTimeout(ttsProcess, 140); };
     speechSynthesis.speak(u);
   }catch(e){ ttsBusy=false; }
 }
-function speak(text){
+function speak(text, rate){
   if(mute || !text) return;
   if(!('speechSynthesis' in window)) return;
   ttsWarmup();
+  ttsRate = (rate!=null) ? rate : 1.15;   // 聊天/結算後預設1.15（快少少）；開牌傳1.05
   ttsQueue.push(text);
   if(ttsQueue.length>4) ttsQueue.shift();   // 限制隊列，避免一次讀太多
   ttsProcess();
@@ -837,7 +839,7 @@ function speak(text){
 /* 荷官口播：大字 + 語音 */
 function dealerCall(text, color){
   showMsg('🎙 '+text, color||'var(--gold2)');
-  speak(text.replace(/[🎙⏳🔥💥▶]/g,'').replace('請下注','請下注。').replace('請開牌','請開牌。').replace('補牌','補牌。'));
+  speak(text.replace(/[🎙⏳🔥💥▶]/g,'').replace('請下注','請下注。').replace('請開牌','請開牌。').replace('補牌','補牌。'), 1.05);  // 開牌速度1.05唔改
 }
 /* 結算結果語音：只講（唔覆蓋大字），帶雙方點數 + 對子/大細 */
 function announceResult(winner, playerPair, bankerPair, big, pTotal, bTotal){
@@ -1092,31 +1094,52 @@ function showTableChat(){
 function hideTableChat(){ ['L','R'].forEach(s=>{ const c=document.getElementById('tableChat'+s); if(c) c.classList.remove('show'); }); }
 document.getElementById('tcCloseL').addEventListener('click',()=>{ hideTableChat(); const f=window._tcFinish; if(f){ window._tcFinish(); window._tcFinish=null; } });
 document.getElementById('tcCloseR').addEventListener('click',()=>{ hideTableChat(); const f=window._tcFinish; if(f){ window._tcFinish(); window._tcFinish=null; } });
-async function tableChatPhase(sec){
-  return new Promise(resolve=>{
-    if(ais.length===0){ resolve(); return; }
-    showTableChat();
-    const order=[...ais].sort(()=>Math.random()-0.5);
-    const ctx=roadState();
-    order.forEach(ai=>{ ai._prePick=aiPick(ai); });   // 先定好注，傾偈先至同落注一致
-    const total=order.length;
-    const stepMs=Math.max(900,(sec*1000)/(total+1));
-    let i=0, prev=null;
-    let chatDone=false;
-    const finish=()=>{ if(chatDone) return; chatDone=true; hideTableChat(); setTimeout(()=>resolve(), 400); };
-    window._tcFinish=finish;   // 畀關閉掣用
-    const emit=()=>{
-      if(i<total){
-        const ai=order[i];
-        addChatBubble(ai, genChatLine(ai, ai._prePick, ctx, prev));
-        prev=ai;
-        i++;
-        if(i<total) setTimeout(emit, stepMs);   // 仲有下一個 buddy 先排下一輪
-        else setTimeout(finish, 5000);           // 最後一個 buddy 講完 5 秒立即收起
-      }
-    };
-    emit();
-  });
+async function tableChatPhase(sec) {
+    return new Promise(resolve => {
+        if (ais.length === 0) { resolve(); return; }
+        showTableChat();
+
+        // 隨機打亂全部 AI，預先決定下注
+        const shuffled = [...ais].sort(() => Math.random() - 0.5);
+        shuffled.forEach(ai => { ai._prePick = aiPick(ai); });
+
+        // 從打亂後的順序中，選取最多 3 個作為語音發言者
+        const voiceSpeakers = shuffled.slice(0, Math.min(3, shuffled.length));
+        const voiceSet = new Set(voiceSpeakers.map(ai => ai.id));
+
+        const ctx = roadState();
+        const total = shuffled.length;          // 全部 AI 都出文字
+        const stepMs = Math.max(600, (sec * 1000) / (total + 1));
+        let i = 0, prev = null;
+        let chatDone = false;
+
+        const finish = () => {
+            if (chatDone) return;
+            chatDone = true;
+            hideTableChat();
+            setTimeout(() => resolve(), 400);
+        };
+        window._tcFinish = finish;
+
+        const emit = () => {
+            if (i < total) {
+                const ai = shuffled[i];
+                const msg = genChatLine(ai, ai._prePick, ctx, prev);
+                addChatBubble(ai, msg);
+
+                // ✅ 只有被選中的 AI 才播放語音
+                if (!mute && msg && voiceSet.has(ai.id)) {
+                    speak(ai.name + '：' + msg);
+                }
+
+                prev = ai;
+                i++;
+                if (i < total) setTimeout(emit, stepMs);
+                else setTimeout(finish, 4000);
+            }
+        };
+        emit();
+    });
 }
 
 /* ===================== 發牌流程 ===================== */
