@@ -800,18 +800,10 @@ function pickDealerVoice(){
   const vs=speechSynthesis.getVoices();
   return vs.find(v=>/zh[-_]HK/i.test(v.lang)) || vs.find(v=>/zh/i.test(v.lang)) || null;
 }
-/* 揀指定 lang 聲線（國語角色用）：zh-TW 搵國語，冇就 fallback 粵語 */
-function pickVoiceByLang(lang){
-  if(!('speechSynthesis' in window)) return null;
-  const vs=speechSynthesis.getVoices();
-  const pat = lang==='zh-TW' ? /zh[-_]TW/i : /zh[-_]HK/i;
-  return vs.find(v=>pat.test(v.lang)) || vs.find(v=>/zh/i.test(v.lang)) || null;
-}
 if('speechSynthesis' in window){ speechSynthesis.onvoiceschanged=()=>{ dealerVoice=pickDealerVoice(); }; dealerVoice=pickDealerVoice(); }
 // 串行語音隊列（解決 Chrome 首句緩衝 + 多句撞聲卡死）
 let ttsQueue=[], ttsBusy=false, ttsWarmed=false;
 let ttsRate=1.15;   // 聊天/結算後語音速度（快少少）；開牌 dealerCall 用 1.05
-let ttsLang='zh-HK'; // 語音語言（國語角色用 zh-TW）
 function ttsWarmup(){
   if(ttsWarmed || !('speechSynthesis' in window)) return;
   ttsWarmed=true;
@@ -828,20 +820,18 @@ function ttsProcess(){
   ttsBusy=true;
   try{
     const u=new SpeechSynthesisUtterance(text);
-    const v=(ttsLang==='zh-TW')? (pickVoiceByLang('zh-TW')||pickDealerVoice()) : pickDealerVoice();
-    if(v) u.voice=v;
-    u.lang=ttsLang; u.rate=ttsRate; u.pitch=1.0; u.volume=1.0;
+    const v=pickDealerVoice(); if(v) u.voice=v;
+    u.lang='zh-HK'; u.rate=ttsRate; u.pitch=1.0; u.volume=1.0;
     u.onend=()=>{ ttsBusy=false; setTimeout(ttsProcess, 140); };
     u.onerror=()=>{ ttsBusy=false; setTimeout(ttsProcess, 140); };
     speechSynthesis.speak(u);
   }catch(e){ ttsBusy=false; }
 }
-function speak(text, rate, lang){
+function speak(text, rate){
   if(mute || !text) return;
   if(!('speechSynthesis' in window)) return;
   ttsWarmup();
   ttsRate = (rate!=null) ? rate : 1.15;   // 聊天/結算後預設1.15（快少少）；開牌傳1.05
-  ttsLang = lang || 'zh-HK';              // 國語角色傳 'zh-TW'
   ttsQueue.push(text);
   if(ttsQueue.length>4) ttsQueue.shift();   // 限制隊列，避免一次讀太多
   ttsProcess();
@@ -1077,8 +1067,6 @@ function genChatLine(ai, pickSide, ctx, prevTalker){
   }
   // 評路
   if(p.road && Math.random()<0.35) return pick(p.road);
-  // 抵死池（隨機抽，增加搞笑度）
-  if(Math.random()<0.3) return pick(TRASH_DEAD);
   // pre（開枱前諗法）
   if(p.pre && p.pre.length) return pick(p.pre);
   return p.blurb;
@@ -1425,7 +1413,6 @@ async function deal(auto){
 /* ===================== 結算 ===================== */
 function settle(winner, playerPair, bankerPair, big, totalCards, pTotal, bTotal, pCards, bCards){
   settled=true;
-  window._settleSpoken=0;   // 每局重置結算後出聲計數（最多4個）
   lastBets=Object.assign({},bets);  // 記錄本局投注供重複按鈕用
   let payout=0;
   const winDetail={};
@@ -1703,58 +1690,6 @@ function aiMultiFactor(ai){
   return Math.random()<0.05?'tie':(scoreB>=scoreP?'banker':'player');
 }
 
-// === 抵死池：隨機抽，增加賭場 trash talk 搞笑度（不碰核心邏輯） ===
-const TRASH_DEAD=[
-  '你啲注碼同我零用錢差唔多',
-  '莊閒都好，總之唔好係你贏',
-  '我賭大啲，你賭細啲啦，唔係你輸晒會喊',
-  '贏咗就瘋狂，輸咗就話娛樂下咋，熟悉嘅配方',
-  '你個樣好似輸咗三個月糧咁',
-  '我話莊你就買閒，我話閒你就買莊，你係咪專登跟我對住幹',
-  '呢鋪唔跟我就後悔啦，信我呀阿叔',
-  '輸錢就話手感唔好，贏錢就話實力，呵呵',
-  '你贏嗰鋪係我讓你㗎咋',
-  '跟莊跟到癲，莊斷咗你仲跟？',
-  '閒家都唔掂，你仲買閒？',
-  '我啲錢係用嚟玩嘅，你啲錢係用嚟還債嘅啩',
-  '下鋪我買大，你買細，我哋睇下邊個喊',
-  '你個注碼咁細，唔好出嚟丟架啦',
-  '莊家抽水抽到你內褲都冇，仲買莊？',
-  '輸咗就鬧莊，贏咗就拜神，你係人形矛盾',
-  '我嘅直覺話莊，你信唔信關我咩事',
-  '你個人好特別，特別冇錢',
-  '呢鋪你買咩我都買相反，多謝晒你幫襯',
-  '贏咗少少就影相位，輸咗就唔見人',
-  '我賭係興趣，你賭係生計，好慘',
-  '你啲分析好叻，叻到輸錢',
-  '莊閒和都買，嘅確好公平，公平咁輸',
-  '我睇路單睇到眼花，你睇路單睇到發達？',
-  '你跟住我買啦，我保證你輸得慢啲',
-  '輸錢嗰陣你最靚女/靚仔，因為你面青青',
-];
-// === 結算後重複搞笑池（加重複句，令 AI 講嘢更搞笑） ===
-const SETTLE_QUIPS=[
-  '哈哈哈我又贏，你哋係來湊熱鬧嘅？',
-  '莊家抽水都抽唔走我嘅運氣',
-  '你輸咗唔使喊，下次請我飲奶茶',
-  '贏少少啫，低調低調',
-  '呢鋪係我直覺，信唔信？',
-  '你跟莊我就贏，感謝你幫襯',
-  '輸咗？正常，十賭九輸嘛',
-  '我話過莊旺啦，冇人信我',
-  '嘩，差一格就輸，嚇死我',
-  '這把運氣好，下把再說',
-  '你們輸的钱都进我口袋了嘻嘻',
-  '贏錢嘅感覺，好似食咗糖',
-  '莊家今日係我細佬嚟嘅',
-  '跟住我買啦，包你發達（假的）',
-  '唉，又赢，悶咗啲',
-  '你哋啲表情好精彩，影低先',
-  '這牌路，老天都幫我',
-  '輸贏平常心，我贏你輸咋',
-  '下次帶多啲錢嚟輸啦',
-  '我贏嘅原因？帥囉',
-];
 // === 12種人物性格 v3：pre(開枱前諗法)/react(接別人句)/road(評路)+win/lose/tilt + rel(盟友/宿敵傾向) ===
 const AI_PERSONAS={
   banker:{ name:'死忠莊', icon:'🏦', weights:{trend:1.5,pattern:0.3,emotion:0.5,crowd:0.2,memory:0.3},
@@ -1840,21 +1775,7 @@ const AI_PERSONAS={
     road:['路單旺邊我就反邊'],
     react:{ally:'同道中人就係反到底',rival:'你跟大隊？我偏反你'},
     rel:{ally:[],rival:['granny','rookie','dragon','gambler','million']},
-    win:['逆向才是王道','大眾錯我就對','反叛者不跟潮流'], lose:['大眾今次啱咗...','逆向失敗重新評估','就算錯都要反'], tilt:['全世界都錯！！','跟大隊嘅都係羊','我偏要反！！'] },
-  northerner:{  name:'北佬', icon:'🥟', weights:{trend:1.2,pattern:0.8,emotion:0.6,crowd:0.5,memory:0.6}, lang:'zh-TW',
-    blurb:'北京大爺，國語開口就係「你們南方人不懂」',
-    pre:['我從北方來，手氣都比你們旺','你們香港人賭得太小氣','我這把年紀見的牌比你們吃的米多'],
-    road:['路單？我一眼就看出莊要旺','這路子，跟莊穩'],
-    react:{ally:'兄弟你識貨',rival:'你們南方人就是保守'},
-    rel:{ally:[],rival:[]},
-    win:['看吧，北方人就是準','這把贏得舒坦','我跟的莊從來不會錯'], lose:['邪門，北方從來不輸','這牌路不對勁','南方的桌子克我'], tilt:['氣死我了，再來一把大的','你們南方風水不行','我回北京再戰'] },
-  taiwan:{  name:'台客', icon:'🍜', weights:{trend:1.0,pattern:1.0,emotion:0.7,crowd:0.6,memory:0.5}, lang:'zh-TW',
-    blurb:'台灣鄉民，國語帶台式酸味，愛碎念',
-    pre:['欸欸欸，這鋪我壓閒啦','我跟你說，莊家有鬼','賭這種小注沒意思啦'],
-    road:['這路單亂七八糟','跟著我壓就對了啦'],
-    react:{ally:'你也懂喔',rival:'你這人很扯欸'},
-    rel:{ally:[],rival:[]},
-    win:['我就說吧，台灣之光','這把賺到了嘻嘻','運氣好到我自己都怕'], lose:['幹，又被莊家電','輸到懷疑人生','這什麼鬼牌路'], tilt:['不玩了啦（下一鋪繼續）','莊家你是不是針對我','我阿公說過莊會斷的'] }
+    win:['逆向才是王道','大眾錯我就對','反叛者不跟潮流'], lose:['大眾今次啱咗...','逆向失敗重新評估','就算錯都要反'], tilt:['全世界都錯！！','跟大隊嘅都係羊','我偏要反！！'] }
 };
 
 const AI_PLANS={
@@ -1987,13 +1908,8 @@ function aiSettle(result, playerPair, bankerPair, big, pTotal, bTotal, pCards, b
     }
     if(msg){
       dialogues.push(msg);
-      // AI 語音口播：最多4個出聲（唔再限制只贏錢），用重複搞笑池，國語角色用 zh-TW
-      if(!mute && (window._settleSpoken||0)<4){
-        window._settleSpoken=(window._settleSpoken||0)+1;
-        const lang=(p&&p.lang)||'zh-HK';
-        const quip=ai.name+'話：'+pick(SETTLE_QUIPS);
-        setTimeout(()=>speak(quip, 1.15, lang), 600+Math.random()*800);
-      }
+      // AI 語音口播（同 mute 掣 / zh-HK；win 或 sideWin 先出聲，避免太嘈）
+      if((win||sideWin) && !mute) setTimeout(()=>speak(ai.name+(sNames.length?('中咗'+sNames.join('同')+'！'):'贏咗')), 600+Math.random()*800);
     }
     ai.currentBet=null;
   });
