@@ -803,7 +803,6 @@ function pickDealerVoice(){
 if('speechSynthesis' in window){ speechSynthesis.onvoiceschanged=()=>{ dealerVoice=pickDealerVoice(); }; dealerVoice=pickDealerVoice(); }
 // 串行語音隊列（解決 Chrome 首句緩衝 + 多句撞聲卡死）
 let ttsQueue=[], ttsBusy=false, ttsWarmed=false;
-let ttsRate=1.15;   // 聊天/結算後語音速度（快少少）；開牌 dealerCall 用 1.05
 function ttsWarmup(){
   if(ttsWarmed || !('speechSynthesis' in window)) return;
   ttsWarmed=true;
@@ -818,23 +817,19 @@ function ttsProcess(){
   if(!('speechSynthesis' in window)){ ttsQueue=[]; return; }
   const text=ttsQueue.shift();
   ttsBusy=true;
-  let safety=null;
   try{
     const u=new SpeechSynthesisUtterance(text);
     const v=pickDealerVoice(); if(v) u.voice=v;
-    u.lang='zh-HK'; u.rate=ttsRate; u.pitch=1.0; u.volume=1.0;
-    u.onend=()=>{ if(safety) clearTimeout(safety); ttsBusy=false; setTimeout(ttsProcess, 140); };
-    u.onerror=()=>{ if(safety) clearTimeout(safety); ttsBusy=false; setTimeout(ttsProcess, 140); };
+    u.lang='zh-HK'; u.rate=1.05; u.pitch=1.0; u.volume=1.0;
+    u.onend=()=>{ ttsBusy=false; setTimeout(ttsProcess, 140); };
+    u.onerror=()=>{ ttsBusy=false; setTimeout(ttsProcess, 140); };
     speechSynthesis.speak(u);
-    // 安全 timer：手機 onend 有時唔觸發，8秒強制解鎖，避免全局卡死冇聲
-    safety=setTimeout(()=>{ ttsBusy=false; ttsProcess(); }, 8000);
-  }catch(e){ if(safety) clearTimeout(safety); ttsBusy=false; }
+  }catch(e){ ttsBusy=false; }
 }
-function speak(text, rate){
+function speak(text){
   if(mute || !text) return;
   if(!('speechSynthesis' in window)) return;
   ttsWarmup();
-  ttsRate = (rate!=null) ? rate : 1.15;   // 聊天/結算後預設1.15（快少少）；開牌傳1.05
   ttsQueue.push(text);
   if(ttsQueue.length>4) ttsQueue.shift();   // 限制隊列，避免一次讀太多
   ttsProcess();
@@ -842,7 +837,7 @@ function speak(text, rate){
 /* 荷官口播：大字 + 語音 */
 function dealerCall(text, color){
   showMsg('🎙 '+text, color||'var(--gold2)');
-  speak(text.replace(/[🎙⏳🔥💥▶]/g,'').replace('請下注','請下注。').replace('請開牌','請開牌。').replace('補牌','補牌。'), 1.05);  // 開牌速度1.05唔改
+  speak(text.replace(/[🎙⏳🔥💥▶]/g,'').replace('請下注','請下注。').replace('請開牌','請開牌。').replace('補牌','補牌。'));
 }
 /* 結算結果語音：只講（唔覆蓋大字），帶雙方點數 + 對子/大細 */
 function announceResult(winner, playerPair, bankerPair, big, pTotal, bTotal){
@@ -945,9 +940,8 @@ function waitAudioIdle(){
       waited+=100;
       const ttsEmpty=(typeof ttsQueue==='undefined')||ttsQueue.length===0;
       const marqGone=!marq||!marq.classList.contains('show');
-      if(ttsEmpty && marqGone) { clearInterval(iv); setTimeout(res, 3000); }  // 文字+語音都完結 → 停3秒 → 先下一輪
-      else if(ttsEmpty && !marqGone){ hideMarquee(); }   // 語音播完但走馬燈仲喺 → 收走馬燈（取消10秒硬limit，智能收）
-      else if(waited>8000) { clearInterval(iv); hideMarquee(); res(); }  // 安全網：8秒強制走（同ttsProcess安全timer對齊）
+      if(ttsEmpty && marqGone) { clearInterval(iv); setTimeout(res, 1500); }  // 播完再停 1.5s 先下一輪
+      else if(waited>12000) { clearInterval(iv); res(); }
     },100);
   });
 }
@@ -1085,7 +1079,6 @@ function addChatBubble(ai, msg){
   const target = (total<4) ? L : R;   // 頭4個去珠盤路格(左)，第5~8個去下三路格(右)
   target.appendChild(b);
   target.scrollTop=target.scrollHeight;
-  // 注意：出聲由 tableChatPhase 嘅 voiceSet 控制，呢度唔 call speak（避免雙重出聲）
 }
 function showTableChat(){
   ['L','R'].forEach(s=>{
@@ -1108,8 +1101,8 @@ async function tableChatPhase(sec) {
         const shuffled = [...ais].sort(() => Math.random() - 0.5);
         shuffled.forEach(ai => { ai._prePick = aiPick(ai); });
 
-        // 從打亂後的順序中，選取最多 4 個作為語音發言者（枱邊出聲 +1）
-        const voiceSpeakers = shuffled.slice(0, Math.min(4, shuffled.length));
+        // 從打亂後的順序中，選取最多 3 個作為語音發言者
+        const voiceSpeakers = shuffled.slice(0, Math.min(3, shuffled.length));
         const voiceSet = new Set(voiceSpeakers.map(ai => ai.id));
 
         const ctx = roadState();
@@ -1311,9 +1304,9 @@ async function deal(auto){
   if(total===0 && auto!==true && ais.length===0){ showToast('請先下注'); return; }
   if(shoeDrawn>=shoeCut || shoeStats.round>=60){ await doShuffle(); }
   setControls(false);   // 禁 DEAL/清除/重複掣（唔設 dealing，等落注期人類照落得）
-  // 統一次序（自動/手動都一樣）：閃燈消失→0.5秒緩衝 → 等語音文字完→3秒 → 枱邊討論 → 落注倒數 → 開牌
-  await sleep(500);
-  await waitAudioIdle();   // 等上一手輸贏對話 + 語音全部播完（內部再停3秒），先開枱邊聊天
+  // 統一次序（自動/手動都一樣）：2秒緩衝 → 5秒局間緩衝 → 枱邊討論 → 落注倒數 → 開牌
+  await sleep(2000);
+  await waitAudioIdle();   // 等上一手輸贏對話 + 語音全部播完，先開枱邊聊天（唔用固定秒數）
   if(ais.length){ await tableChatPhase(spd(10)+5); aiPlaceBets(); }
   await bettingPhase(spd(10));
   preBalance=balance;
@@ -1490,7 +1483,6 @@ function settle(winner, playerPair, bankerPair, big, totalCards, pTotal, bTotal,
     if(lastStaked>0) showToast('↔ 平手退還');
   }
   updateBalance(); updateAiBalances(); updateStreak();
-  setTimeout(()=>hideMsg(), 4000);   // 結算大字4秒後自動收，唔等下一局deal先收（解決結算後無收起）
 
   // 按牌局結果閃相關區域
   const resultDetail={};
@@ -1840,7 +1832,8 @@ function showMarquee(items){
     track.appendChild(el);
   });
   box.classList.add('show');
-  // 取消 10 秒硬 limit：改由 waitAudioIdle 智能收（等語音播完先收走馬燈）
+  clearTimeout(showMarquee._t);
+  showMarquee._t=setTimeout(()=>hideMarquee(), 10000);  // 固定 10 秒顯示，配合「等語音播完」先傾偈
 }
 function hideMarquee(){ document.getElementById('dialogueMarquee').classList.remove('show'); clearTimeout(showMarquee._t); }
 window.showMarquee=showMarquee; window.hideMarquee=hideMarquee;
@@ -1912,7 +1905,9 @@ function aiSettle(result, playerPair, bankerPair, big, pTotal, bTotal, pCards, b
       msg=ai.icon+' '+ai.name+'：「'+arr[Math.floor(Math.random()*arr.length)]+'」'+tail;
     }
     if(msg){
-      dialogues.push(msg);   // 只出文字走馬燈，結算後 AI 唔出聲（語音係亂源，放棄避免卡死）
+      dialogues.push(msg);
+      // AI 語音口播（同 mute 掣 / zh-HK；win 或 sideWin 先出聲，避免太嘈）
+      if((win||sideWin) && !mute) setTimeout(()=>speak(ai.name+(sNames.length?('中咗'+sNames.join('同')+'！'):'贏咗')), 600+Math.random()*800);
     }
     ai.currentBet=null;
   });
