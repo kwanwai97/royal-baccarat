@@ -815,16 +815,29 @@ if('speechSynthesis' in window){
 function ttsProcess(){
   if(ttsBusy || ttsQueue.length===0) return;
   if(!('speechSynthesis' in window)){ ttsQueue=[]; return; }
-  const text=ttsQueue.shift();
+  const item=ttsQueue.shift();
   ttsBusy=true;
   try{
+    // speakAs 推送 JSON {text,lang,pitch,rate}；普通 speak 推送純字串
+    let text=item, lang='zh-HK', pitch=1.0, rate=1.05, voice=null;
+    if(typeof item==='string' && item[0]==='{'){
+      try{ const o=JSON.parse(item); text=o.text; lang=o.lang||'zh-HK'; pitch=o.pitch!=null?o.pitch:1.0; rate=o.rate!=null?o.rate:1.05; }catch(e){}
+    }
     const u=new SpeechSynthesisUtterance(text);
-    const v=pickDealerVoice(); if(v) u.voice=v;
-    u.lang='zh-HK'; u.rate=1.05; u.pitch=1.0; u.volume=1.0;
+    if(lang==='zh-TW'){ voice=pickVoiceByLang('zh-TW')||pickDealerVoice(); }
+    else { voice=pickDealerVoice(); }
+    if(voice) u.voice=voice;
+    u.lang=lang; u.rate=rate; u.pitch=pitch; u.volume=1.0;
     u.onend=()=>{ ttsBusy=false; setTimeout(ttsProcess, 140); };
     u.onerror=()=>{ ttsBusy=false; setTimeout(ttsProcess, 140); };
     speechSynthesis.speak(u);
   }catch(e){ ttsBusy=false; }
+}
+/* 揀指定 lang 嘅聲線（granny 國語女聲用） */
+function pickVoiceByLang(lang){
+  if(!('speechSynthesis' in window)) return null;
+  const vs=speechSynthesis.getVoices();
+  return vs.find(v=>new RegExp(lang.replace('-','[-_]'),'i').test(v.lang)) || null;
 }
 function speak(text){
   if(mute || !text) return;
@@ -832,6 +845,17 @@ function speak(text){
   ttsWarmup();
   ttsQueue.push(text);
   if(ttsQueue.length>4) ttsQueue.shift();   // 限制隊列，避免一次讀太多
+  ttsProcess();
+}
+/* 角色聲線：用該 persona 嘅 pitch/rate（偽裝唔同人），granny 優先用國語女聲 */
+function speakAs(ai, text){
+  if(mute || !text || !ai) return;
+  if(!('speechSynthesis' in window)) return;
+  const v=ai.voice||{};
+  const lang=v.lang||'zh-HK';
+  const p=(v.pitch!=null)?v.pitch:1.0;
+  const r=(v.rate!=null)?v.rate:1.0;
+  ttsQueue.push(JSON.stringify({text, lang, pitch:p, rate:r}));
   ttsProcess();
 }
 /* 荷官口播：大字 + 語音 */
@@ -1079,6 +1103,8 @@ function addChatBubble(ai, msg){
   const target = (total<4) ? L : R;   // 頭4個去珠盤路格(左)，第5~8個去下三路格(右)
   target.appendChild(b);
   target.scrollTop=target.scrollHeight;
+  // 部分出聲：搶戲角色(speak:true)先出聲，其餘靜音，避免連續讀太長
+  if(ai && ai.speak) speakAs(ai, ai.name+'話：'+msg);
 }
 function showTableChat(){
   ['L','R'].forEach(s=>{
@@ -1669,84 +1695,84 @@ function aiMultiFactor(ai){
 
 // === 12種人物性格 v3：pre(開枱前諗法)/react(接別人句)/road(評路)+win/lose/tilt + rel(盟友/宿敵傾向) ===
 const AI_PERSONAS={
-  banker:{ name:'死忠莊', icon:'🏦', weights:{trend:1.5,pattern:0.3,emotion:0.5,crowd:0.2,memory:0.3},
+  banker:{ name:'死忠莊', icon:'🏦', voice:{pitch:0.8, rate:1.0}, speak:true, weights:{trend:1.5,pattern:0.3,emotion:0.5,crowd:0.2,memory:0.3},
     blurb:'莊家抽水都贏，偏重莊但會跟趨勢',
     pre:['莊係王道，我準備就緒','抽水？抽水都係贏','呢鋪又是莊嘅天下'],
     road:['路單話莊旺，跟莊冇死','莊線企得穩，博佢'],
     react:{ally:'你都係莊友，我哋一齊信莊',rival:'你買閒？莊會教你點做'},
     rel:{ally:['player'],rival:[]},
     win:['莊！一早就話莊㗎啦','莊家不會令人失望','穩陣派萬歲'], lose:['抽水啫，下鋪贏返','莊都會斷？唔信','莊家回氣中'], tilt:['連莊都唔得？世界變','我嘅莊呢！！！','仲唔出莊我反枱'] },
-  player:{ name:'閒家膽', icon:'🎯', weights:{trend:1.5,pattern:0.3,emotion:0.5,crowd:0.2,memory:0.3},
+  player:{ name:'閒家膽', icon:'🎯', voice:{pitch:1.1, rate:1.05}, speak:true, weights:{trend:1.5,pattern:0.3,emotion:0.5,crowd:0.2,memory:0.3},
     blurb:'唔信莊抽水，偏重閒',
     pre:['抽水抽到厭，閒先係真','我嘅心永遠向閒','閒贏先叫贏'],
     road:['閒線靚，跟閒冇煙'],
     react:{ally:'莊友？我哋各執一邊啫',rival:'你都係閒膽，我哋一齊撐閒'},
     rel:{ally:['banker'],rival:[]},
     win:['閒贏先叫贏！','唔抽水贏得舒服','閒家之光'], lose:['抽水抽到乾...','閒仲未返嚟','今日閒仔唔生性'], tilt:['做乜嘢啊閒！！','我就唔信一世莊','反手買莊？唔制！'] },
-  dragon:{ name:'追龍佬', icon:'🐉', weights:{trend:2,pattern:0.5,emotion:0.3,crowd:0.8,memory:0.6},
+  dragon:{ name:'追龍佬', icon:'🐉', voice:{pitch:0.95, rate:1.1}, speak:false, weights:{trend:2,pattern:0.5,emotion:0.3,crowd:0.8,memory:0.6},
     blurb:'龍唔斷就追到斷為止',
     pre:['見龍就追，無得輸','邊度有龍我邊度出現'],
     road:['條龍仲未斷，追落去','路單現龍形，跟！'],
     react:{ally:'同追龍？我哋係龍之隊',rival:'你唔追龍嘅？咁冇癮'},
     rel:{ally:['road'],rival:[]},
     win:['龍吔！跟龍發財','條龍仲未斷！','龍威不減'], lose:['龍斷咗...等新龍','轉龍信號出現','下一條龍就嚟'], tilt:['龍去咗邊？！','冇龍嘅世界好灰','我要嘅係龍！！'] },
-  road:{   name:'路單迷', icon:'📐', weights:{trend:0.8,pattern:2,emotion:0.2,crowd:0.3,memory:1.5},
+  road:{   name:'路單迷', icon:'📐', voice:{pitch:1.0, rate:0.95}, speak:false, weights:{trend:0.8,pattern:2,emotion:0.2,crowd:0.3,memory:1.5},
     blurb:'路單形態專家，偏重 pattern+記憶',
     pre:['等我畫條路先','路單唔會呃人'],
     road:['大路出雙線，跟紅','珠盤顯示單跳，博反向'],
     react:{ally:'你都睇路？難得嘅知己',rival:'你不睇路嘅？亂買㗎'},
     rel:{ally:['analyst','pro'],rival:[]},
     win:['路單話事！贏到','形態睇得好準','數據不騙人'], lose:['形態轉變中...','呢個pattern唔work','路線需要重新分析'], tilt:['啲路亂晒大龍！','邊個搞亂我條路','重新畫過路單！'] },
-  gambler:{name:'賭徒膽', icon:'🎰', weights:{trend:1,pattern:0.8,emotion:1.5,crowd:0.6,memory:0.3},
+  gambler:{name:'賭徒膽', icon:'🎰', voice:{pitch:1.2, rate:1.15}, speak:true, weights:{trend:1,pattern:0.8,emotion:1.5,crowd:0.6,memory:0.3},
     blurb:'情緒主導，樂觀重注悲觀縮手',
     pre:['感覺嚟嘅！重注！','搏一搏單車變摩托'],
     road:['路唔路冇所謂，feel 最緊要'],
     react:{ally:'賭徒同心，搏到盡',rival:'你太保守啦，唔夠癮'},
     rel:{ally:['hot','million'],rival:['granny','pro']},
     win:['搏到！感覺良好','就係呢種feel','繼續繼續！'], lose:['少少挫折啫','下鋪一定中','輸係贏嘅開始'], tilt:['成日都唔中！！','今日黑到爆','唔理照買！！'] },
-  granny:{ name:'保守婆', icon:'👵', weights:{trend:0.5,pattern:0.5,emotion:0.2,crowd:1.5,memory:1},
+  granny:{ name:'保守婆', icon:'👵', voice:{pitch:1.5, rate:0.85, lang:'zh-TW'}, speak:true, weights:{trend:0.5,pattern:0.5,emotion:0.2,crowd:1.5,memory:1},
     blurb:'細注永年，最鍾意跟大隊',
     pre:['我細細注慢慢嚟','大家買咩我買咩'],
     road:['路單邊邊旺我就跟邊邊'],
     react:{ally:'後生仔跟埋我，穩陣㗎',rival:'你咁博命？婆婆話你冷靜啲'},
     rel:{ally:['rookie'],rival:['gambler','hot']},
     win:['穩穩陣陣又贏','唔貪心最開心','婆婆話齋慢慢嚟'], lose:['慢慢嚟慢慢嚟','保住本金最重要','唔使急'], tilt:['人多就啱㗎喇...係咪','婆婆都畀你哋搞亂','冷靜啲啦後生仔'] },
-  hot:{    name:'燥底哥', icon:'🔥', weights:{trend:0.3,pattern:0.5,emotion:2,crowd:0.4,memory:0.2},
+  hot:{    name:'燥底哥', icon:'🔥', voice:{pitch:1.35, rate:1.25}, speak:true, weights:{trend:0.3,pattern:0.5,emotion:2,crowd:0.4,memory:0.2},
     blurb:'情緒波動最大，反手買係常態',
     pre:['火到就出手，冇得忍','我而家好燥，博佢！'],
     road:['路單？我唔睇，跟心'],
     react:{ally:'你都燥？我哋一齊反！',rival:'你冷靜過我？唔信'},
     rel:{ally:['gambler'],rival:['pro','analyst']},
     win:['🔥反手成功！','就係咁玩！','火到嚟就贏'], lose:['🔥🔥🔥！！','反手都唔得？','仲唔中？轉！'], tilt:['💥💥💥💥💥','我燥到爆炸！！','全部人同我反手！！'] },
-  pro:{    name:'算牌神', icon:'🧠', weights:{trend:1.2,pattern:1,emotion:0.1,crowd:0.3,memory:1.8},
+  pro:{    name:'算牌神', icon:'🧠', voice:{pitch:0.9, rate:1.0}, speak:true, weights:{trend:1.2,pattern:1,emotion:0.1,crowd:0.3,memory:1.8},
     blurb:'冷靜分析，最重記憶+趨勢',
     pre:['根據概率，我買呢邊','計過數，信心爆棚'],
     road:['期望值顯示跟紅較優','記憶庫匹配：跟莊'],
     react:{ally:'專業嘅共鳴，難得',rival:'你憑感覺？科學啲啦'},
     rel:{ally:['analyst','road'],rival:['hot','gambler']},
     win:['概率計算正確','數據驗證成功','冷靜就是力量'], lose:['小概率事件...','置信區間內','模型需要調整'], tilt:['呢個概率不對路','數據異常重新校準','冷靜...冷靜...'] },
-  million:{name:'大戶豪', icon:'💎', weights:{trend:1,pattern:0.5,emotion:1.2,crowd:0,memory:0.5},
+  million:{name:'大戶豪', icon:'💎', voice:{pitch:0.85, rate:0.95}, speak:true, weights:{trend:1,pattern:0.5,emotion:1.2,crowd:0,memory:0.5},
     blurb:'獨立思考，唔跟人潮，大注氣勢',
     pre:['大注氣勢，唔跟人潮','我買我嘅，唔理你哋'],
     road:['路係畀睇嘅，我自有判斷'],
     react:{ally:'豪客之間，惺惺相惜',rival:'你跟大隊？我偏不'},
     rel:{ally:['gambler'],rival:['granny','rookie']},
     win:['大注就是霸氣','豪得起就贏得起','低調奢華'], lose:['區區小數...','豪客唔會皺眉','繼續！'], tilt:['我咁大注都唔中？','搞錯呀呢鋪','加重注！！'] },
-  rookie:{ name:'初哥仔', icon:'🐣', weights:{trend:0.3,pattern:0.2,emotion:1,crowd:1.8,memory:0},
+  rookie:{ name:'初哥仔', icon:'🐣', voice:{pitch:1.7, rate:1.1}, speak:false, weights:{trend:0.3,pattern:0.2,emotion:1,crowd:1.8,memory:0},
     blurb:'新手亂入，極度依賴跟風',
     pre:['我唔識呀…跟邊個好？','大家買咩我就買咩'],
     road:['路單好難睇…我信人哋'],
     react:{ally:'婆婆教我嘅，跟妳冇死',rival:'你咁叻，但係我驚呀'},
     rel:{ally:['granny'],rival:['million']},
     win:['嘩！中咗！','我係咪有talent','新手運！'], lose:['啊...又輸...','跟邊個先啱','點解咁難㗎'], tilt:['我唔識玩啦！！','邊個救下我','全部人買咩我跟'] },
-  analyst:{name:'分析師', icon:'📊', weights:{trend:1.5,pattern:1.5,emotion:0.3,crowd:0.5,memory:1.5},
+  analyst:{name:'分析師', icon:'📊', voice:{pitch:1.0, rate:1.0}, speak:false, weights:{trend:1.5,pattern:1.5,emotion:0.3,crowd:0.5,memory:1.5},
     blurb:'全方位數據分析，模擬專業賭客',
     pre:['指標整合中，準備落注','系統建議買呢邊'],
     road:['大路+珠盤+下三路，綜合跟紅'],
     react:{ally:'睇數據嘅人，難得共識',rival:'你靠直覺？我靠模型'},
     rel:{ally:['pro','road'],rival:['hot']},
     win:['分析命中！','指標全對齊','系統正常運作'], lose:['偏離預期值...','波動在可接受範圍','重新計算中'], tilt:['數據矛盾！！','邊個指標先啱','我需要更多數據'] },
-  rebel:{  name:'反叛者', icon:'🦹', weights:{trend:-1.5,pattern:-1,emotion:1,crowd:-2,memory:-0.5},
+  rebel:{  name:'反叛者', icon:'🦹', voice:{pitch:1.15, rate:1.2}, speak:false, weights:{trend:-1.5,pattern:-1,emotion:1,crowd:-2,memory:-0.5},
     blurb:'專門反向操作，人買莊我買閒',
     pre:['你哋買咩我買相反','大眾錯，我先啱'],
     road:['路單旺邊我就反邊'],
@@ -2152,7 +2178,9 @@ function playerEmote(em){
   const L=document.getElementById('tcBodyL'), R=document.getElementById('tcBodyR');
   const total=(L?L.childElementCount:0)+(R?R.childElementCount:0);
   if(total<8){ const target=(total<4)?L:R; if(target){ const b=document.createElement('div'); b.className='tc-bubble ai-0'; b.style.opacity='.95';
-    b.innerHTML='<span class="ic">👤</span><span class="tx"><b>你：</b>'+icon+'</span>'; target.appendChild(b); target.scrollTop=target.scrollHeight; } }
+    b.innerHTML='<span class="ic">👤</span><span class="tx"><b>你：</b>'+icon+'</span>'; target.appendChild(b); target.scrollTop=target.scrollHeight;
+    speakAs({name:'你', voice:{pitch:1.0, rate:1.0, lang:'zh-HK'}}, '你話：'+icon);  // 人類出聲
+  } }
   // 隨機 1-2 個 AI 按性格回應
   const pool=[...ais].sort(()=>Math.random()-0.5).slice(0, 1+Math.floor(Math.random()*2));
   pool.forEach((ai,idx)=>{
