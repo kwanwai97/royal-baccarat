@@ -1081,8 +1081,11 @@ function addChatBubble(ai, msg){
   const target = (total<4) ? L : R;   // 頭4個去珠盤路格(左)，第5~8個去下三路格(右)
   target.appendChild(b);
   target.scrollTop=target.scrollHeight;
+  // 枱邊出聲：最多4句（出聲+出字，照穩定做法），避免太吵
+  if(!mute && (window._chatSpoken||0)<4){ window._chatSpoken=(window._chatSpoken||0)+1; speak(ai.name+'話：'+msg, 1.15); }
 }
 function showTableChat(){
+  window._chatSpoken=0;   // 每局重置枱邊出聲計數（最多4句）
   ['L','R'].forEach(s=>{
     const c=document.getElementById('tableChat'+s); if(!c) return;
     const tt=c.querySelector('.tc-title'); if(tt) tt.textContent='💬 枱邊閒聊';
@@ -1413,6 +1416,7 @@ async function deal(auto){
 /* ===================== 結算 ===================== */
 function settle(winner, playerPair, bankerPair, big, totalCards, pTotal, bTotal, pCards, bCards){
   settled=true;
+  window._settleSpoken=0;   // 每局重置結算後出聲計數（最多3個）
   lastBets=Object.assign({},bets);  // 記錄本局投注供重複按鈕用
   let payout=0;
   const winDetail={};
@@ -1909,7 +1913,11 @@ function aiSettle(result, playerPair, bankerPair, big, pTotal, bTotal, pCards, b
     if(msg){
       dialogues.push(msg);
       // AI 語音口播（同 mute 掣 / zh-HK；win 或 sideWin 先出聲，避免太嘈）
-      if((win||sideWin) && !mute) setTimeout(()=>speak(ai.name+(sNames.length?('中咗'+sNames.join('同')+'！'):'贏咗')), 600+Math.random()*800);
+      // AI 語音口播：最多3個出聲（唔再限制只贏錢）
+      if(!mute && (window._settleSpoken||0)<3){
+        window._settleSpoken=(window._settleSpoken||0)+1;
+        setTimeout(()=>speak(ai.name+(sNames.length?('中咗'+sNames.join('同')+'！'):'贏咗'), 1.15), 600+Math.random()*800);
+      }
     }
     ai.currentBet=null;
   });
