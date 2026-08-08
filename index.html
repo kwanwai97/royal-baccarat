@@ -942,7 +942,7 @@ function waitAudioIdle(){
       waited+=100;
       const ttsEmpty=(typeof ttsQueue==='undefined')||ttsQueue.length===0;
       const marqGone=!marq||!marq.classList.contains('show');
-      if(ttsEmpty && marqGone) { clearInterval(iv); setTimeout(res, 2000); }  // 文字+語音都完結 → 停2秒 → 先下一輪
+      if(ttsEmpty && marqGone) { clearInterval(iv); setTimeout(res, 3000); }  // 文字+語音都完結 → 停3秒 → 先下一輪
       else if(ttsEmpty && !marqGone){ hideMarquee(); }   // 語音播完但走馬燈仲喺 → 收走馬燈（取消10秒硬limit，智能收）
       else if(waited>15000) { clearInterval(iv); hideMarquee(); res(); }  // 安全網：15秒強制走
     },100);
@@ -1308,9 +1308,9 @@ async function deal(auto){
   if(total===0 && auto!==true && ais.length===0){ showToast('請先下注'); return; }
   if(shoeDrawn>=shoeCut || shoeStats.round>=60){ await doShuffle(); }
   setControls(false);   // 禁 DEAL/清除/重複掣（唔設 dealing，等落注期人類照落得）
-  // 統一次序（自動/手動都一樣）：2秒緩衝 → 5秒局間緩衝 → 枱邊討論 → 落注倒數 → 開牌
-  await sleep(2000);
-  await waitAudioIdle();   // 等上一手輸贏對話 + 語音全部播完，先開枱邊聊天（唔用固定秒數）
+  // 統一次序（自動/手動都一樣）：閃燈消失→0.5秒緩衝 → 等語音文字完→3秒 → 枱邊討論 → 落注倒數 → 開牌
+  await sleep(500);
+  await waitAudioIdle();   // 等上一手輸贏對話 + 語音全部播完（內部再停3秒），先開枱邊聊天
   if(ais.length){ await tableChatPhase(spd(10)+5); aiPlaceBets(); }
   await bettingPhase(spd(10));
   preBalance=balance;
