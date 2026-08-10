@@ -1025,60 +1025,81 @@ function relOf(aiA, aiB){
   return 'neutral';
 }
 function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
-function genChatLine(ai, pickSide, ctx, prevTalker){
-  const p=AI_PERSONAS[ai.persona];
-  const pickTxt = pickSide==='banker'?'莊':pickSide==='player'?'閒':'和';
-  const mood=tableMood();
-  // 接龍：若前面有人講過，按 rel 接
-  if(prevTalker && prevTalker.persona!==ai.persona && p.react){
-    const rel=relOf(ai, prevTalker);
-    if(rel!=='neutral' && Math.random()<0.7){ return p.react[rel]; }
-  }
-  // 情緒連貫：根據上局佢贏輸 + 你贏佢輸/佢贏你輸
-  const ws=ai.winStreak||0, ls=ai.loseStreak||0;
-  if(ws>=3){
-    const brag=['連贏'+ws+'鋪，你哋跟唔跟？','旺到飛起，我繼續冇得輸','一早就話我睇得準'];
-    if(!lastHumanWon) brag.push('你上鋪輸咗囉，學下我啦');    // 佢贏你輸，踩多句
-    return pick(brag);
-  }
-  if(ls>=3){
-    const tilt=['連輸'+ls+'鋪…今日黑到冇朋友','輸到唔想講嘢，但唔服','你上鋪係咪贏咗？咪窒我'];
-    if(lastHumanWon) tilt.push('你贏緊喎，等我追返你');        // 你贏佢輸，記仇
-    return pick(tilt);
-  }
-  if(ls>=1 && !lastHumanWon && Math.random()<0.4) return '你上鋪都輸，我哋同是天涯淪落人';
-  if(ws>=1 && lastHumanWon && Math.random()<0.4) return '你贏我又贏，今日我哋旺到一齊';
-  if(ctx.empty) return '新靴開波，我睇'+pickTxt+'先';
-  const r=Math.random();
-  if(r<0.40){
-    let s;
-    if(ctx.streakLen>=3){
-      const t = ctx.streakType==='banker'?'莊':'閒';
-      s = '連'+ctx.streakLen+'手'+t+'！'+(pickSide===ctx.streakType?'跟條龍冇死':'但我偏反手'+pickTxt);
-    } else {
-      const lt = ctx.last==='banker'?'莊':ctx.last==='player'?'閒':'和';
-      s = '上鋪'+lt+'，呢鋪博'+pickTxt;
+function genChatLine(ai, pickSide, ctx, prevTalker) {
+  const p = AI_PERSONAS[ai.persona];
+  const pickTxt = pickSide === 'banker' ? '莊' : pickSide === 'player' ? '閒' : '和';
+  const mood = tableMood();
+
+  // 生成一句候选句子的函数
+  function generateCandidate() {
+    if (prevTalker && prevTalker.persona !== ai.persona && p.react) {
+      const rel = relOf(ai, prevTalker);
+      if (rel !== 'neutral' && Math.random() < 0.7) {
+        return pick(p.react[rel]);
+      }
     }
-    if(mood==='hot' && Math.random()<0.5) s+='，趁旺開大！';
-    if(mood==='cold' && Math.random()<0.5) s+='，輸到怕，縮細注先';
-    return s;
+    const ws = ai.winStreak || 0, ls = ai.loseStreak || 0;
+    if (ws >= 3) {
+      const brag = ['連贏' + ws + '鋪，你哋跟唔跟？', '旺到飛起，我繼續冇得輸', '一早就話我睇得準'];
+      if (!lastHumanWon) brag.push('你上鋪輸咗囉，學下我啦');
+      return pick(brag);
+    }
+    if (ls >= 3) {
+      const tilt = ['連輸' + ls + '鋪…今日黑到冇朋友', '輸到唔想講嘢，但唔服', '你上鋪係咪贏咗？咪窒我'];
+      if (lastHumanWon) tilt.push('你贏緊喎，等我追返你');
+      return pick(tilt);
+    }
+    if (ls >= 1 && !lastHumanWon && Math.random() < 0.4) return '你上鋪都輸，我哋同是天涯淪落人';
+    if (ws >= 1 && lastHumanWon && Math.random() < 0.4) return '你贏我又贏，今日我哋旺到一齊';
+    if (ctx.empty) return '新靴開波，我睇' + pickTxt + '先';
+    const r = Math.random();
+    if (r < 0.40) {
+      let s;
+      if (ctx.streakLen >= 3) {
+        const t = ctx.streakType === 'banker' ? '莊' : '閒';
+        s = '連' + ctx.streakLen + '手' + t + '！' + (pickSide === ctx.streakType ? '跟條龍冇死' : '但我偏反手' + pickTxt);
+      } else {
+        const lt = ctx.last === 'banker' ? '莊' : ctx.last === 'player' ? '閒' : '和';
+        s = '上鋪' + lt + '，呢鋪博' + pickTxt;
+      }
+      if (mood === 'hot' && Math.random() < 0.5) s += '，趁旺開大！';
+      if (mood === 'cold' && Math.random() < 0.5) s += '，輸到怕，縮細注先';
+      return s;
+    }
+    if (p.road && Math.random() < 0.35) return pick(p.road);
+    if (p.pre && p.pre.length) return pick(p.pre);
+    return p.blurb;
   }
-  // 評路
-  if(p.road && Math.random()<0.35) return pick(p.road);
-  // pre（開枱前諗法）
-  if(p.pre && p.pre.length) return pick(p.pre);
-  return p.blurb;
+
+  // 去重嘗試：最多 5 次，若重複則重新生成
+  let attempts = 0;
+  let candidate;
+  do {
+    candidate = generateCandidate();
+    attempts++;
+  } while (attempts < 5 && ai.recentChats && ai.recentChats.includes(candidate));
+
+  return candidate;
 }
-function addChatBubble(ai, msg){
-  const L=document.getElementById('tcBodyL'), R=document.getElementById('tcBodyR'); if(!L||!R) return;
-  const total=L.childElementCount + R.childElementCount;   // 已顯示總數
-  if(total>=8) return;   // 封頂：每邊4個，共8句，第9起唔顯示
-  const b=document.createElement('div');
-  b.className='tc-bubble ai-'+(ais.indexOf(ai)%6);
-  b.innerHTML='<span class="ic">'+ai.icon+'</span><span class="tx"><b>'+ai.name+'：</b>'+msg+'</span>';
-  const target = (total<4) ? L : R;   // 頭4個去珠盤路格(左)，第5~8個去下三路格(右)
+function addChatBubble(ai, msg) {
+  const L = document.getElementById('tcBodyL'), R = document.getElementById('tcBodyR');
+  if (!L || !R) return;
+  const total = L.childElementCount + R.childElementCount;
+  if (total >= 8) return;
+
+  // 更新 AI 最近聊天記錄（去重用）
+  if (ai) {
+    if (!ai.recentChats) ai.recentChats = [];
+    ai.recentChats.push(msg);
+    if (ai.recentChats.length > 8) ai.recentChats.shift();
+  }
+
+  const b = document.createElement('div');
+  b.className = 'tc-bubble ai-' + (ais.indexOf(ai) % 6);
+  b.innerHTML = '<span class="ic">' + ai.icon + '</span><span class="tx"><b>' + ai.name + '：</b>' + msg + '</span>';
+  const target = (total < 4) ? L : R;
   target.appendChild(b);
-  target.scrollTop=target.scrollHeight;
+  target.scrollTop = target.scrollHeight;
 }
 function showTableChat(){
   ['L','R'].forEach(s=>{
@@ -1544,7 +1565,26 @@ function saveStats(){
 let ais=[];   // 多AI陣列，最多8個
 const AI_ICONS=['🤖','👽','🦊','🐲','🦉','🎭','🐙','🐯'];
 function saveAiList(){ try{ localStorage.setItem('bac_ai', JSON.stringify(ais)); }catch(e){} }
-function loadAiList(){ try{ const s=localStorage.getItem('bac_ai'); if(s){ const arr=JSON.parse(s); if(Array.isArray(arr)) ais=arr.map(ai=>({ ...ai, currentBet:null, emotion:ai.emotion||50, joy:ai.joy||0, rage:ai.rage||0, winStreak:ai.winStreak||0, loseStreak:ai.loseStreak||0 })); } }catch(e){} }
+function loadAiList(){ 
+  try{ 
+    const s=localStorage.getItem('bac_ai'); 
+    if(s){ 
+      const arr=JSON.parse(s); 
+      if(Array.isArray(arr)) {
+        ais = arr.map(ai => ({ 
+          ...ai, 
+          currentBet: null, 
+          emotion: ai.emotion || 50, 
+          joy: ai.joy || 0, 
+          rage: ai.rage || 0, 
+          winStreak: ai.winStreak || 0, 
+          loseStreak: ai.loseStreak || 0,
+          recentChats: ai.recentChats || []   // 兼容舊存檔
+        }));
+      }
+    } 
+  } catch(e){}
+}
 
 // === 多因子決策引擎：每個AI根據性格權重分析5個維度 ===
 /* ===================== AI 真人化下注行為層 ===================== */
@@ -1587,7 +1627,7 @@ function aiHesitate(ai, pick){
   if(Math.random()<b.flip){ return pick==='banker'?'player':pick==='player'?'banker':(Math.random()<0.5?'banker':'player'); }
   return pick;
 }
-// 性格 → 側注偏好（鍾意邊幾隻）、進場觸發感度
+// 性格 → 側注偏好（鍾意邊隻）、進場觸發感度
 const AI_SIDE_PREF={
   banker:{pref:['bpair','big','small'], sens:0.5},
   player:{pref:['ppair','big','small'], sens:0.5},
@@ -2135,7 +2175,7 @@ document.getElementById('aiConfirm').addEventListener('click',()=>{
     document.getElementById('aiModal').classList.remove('show'); updateAiBalances(); renderAiList(); saveAiList();
     showToast('💾 已更新「'+name+'」'); return;
   }
-  const ai={ id:'ai'+(Date.now())+'-'+ais.length, name, icon:AI_ICONS[ais.length%6], balance:bank, persona, plan, baseBet:Math.max(1000, Math.floor(bank/20/1000)*1000), step:0, history:[], currentBet:null, emotion:50, winStreak:0, loseStreak:0, weights:AI_PERSONAS[persona].weights };
+  const ai={ id:'ai'+(Date.now())+'-'+ais.length, name, icon:AI_ICONS[ais.length%6], balance:bank, persona, plan, baseBet:Math.max(1000, Math.floor(bank/20/1000)*1000), step:0, history:[], currentBet:null, emotion:50, winStreak:0, loseStreak:0, weights:AI_PERSONAS[persona].weights, recentChats:[] };
   ais.push(ai);
   document.getElementById('aiModal').classList.remove('show'); updateAiBalances(); renderAiList(); saveAiList();
   showToast(ai.icon+' '+name+' 入枱！本金 '+fmt(ai.balance)+'（共'+ais.length+'個AI）');
