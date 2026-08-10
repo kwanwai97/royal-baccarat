@@ -1519,8 +1519,8 @@ function settle(winner, playerPair, bankerPair, big, totalCards, pTotal, bTotal,
   if(winner==='banker' && bTotal===6) resultDetail.luck6=true; // 幸運6
   if(winner==='player' && pTotal===7 && bTotal===6) resultDetail.luck7=true; // 幸運7
   const flashMap={player:'.bet.player',banker:'.bet.banker',tie:'.bet.tie',ppair:'.bet.ppair',bpair:'.bet.bpair',big:'.bet.big',small:'.bet.small',luck6:'.bet.luck6',luck7:'.bet.luck7'};
-  const dur=FLASH_DUR[speed]*1000; // 闪灯+筹码消失同步：快3s(2次)/中5s(4次)/慢6s(4次)
-  const cls = speed===0?'win-pulse-fast':speed===1?'win-pulse-med':'win-pulse-slow';
+  const dur=6000; // 閃燈統一慢板：快/中/慢都用 6 秒（不理 speed 設定）
+  const cls = 'win-pulse-slow';
   document.querySelectorAll('.bet').forEach(el=>el.classList.remove('win-pulse-fast','win-pulse-med','win-pulse-slow'));
   for(const k in resultDetail){ const el=document.querySelector(flashMap[k]); if(el){
     el.classList.add(cls);
