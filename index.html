@@ -817,35 +817,39 @@ if('speechSynthesis' in window){
 function ttsProcess(){
   if(ttsBusy || ttsQueue.length===0) return;
   if(!('speechSynthesis' in window)){ ttsQueue=[]; return; }
-  const text=ttsQueue.shift();
+  const item=ttsQueue.shift();
+  const text=item.text;
   ttsBusy=true;
   try{
     const u=new SpeechSynthesisUtterance(text);
     const v=pickDealerVoice(); if(v) u.voice=v;
-    u.lang='zh-HK'; u.rate=1.05; u.pitch=1.0; u.volume=1.0;
+    u.lang='zh-HK'; u.rate=item.rate||TTS_RATE_NORMAL; u.pitch=1.0; u.volume=1.0;
     u.onend=()=>{ ttsBusy=false; setTimeout(ttsProcess, 140); };
     u.onerror=()=>{ ttsBusy=false; setTimeout(ttsProcess, 140); };
     speechSynthesis.speak(u);
   }catch(e){ ttsBusy=false; }
 }
-function speak(text){
+// 語音速率：普通（枱邊聊天/結果/贏輸/AI）1.18；開牌流程（請開牌+補牌+結果播報）1.10
+const TTS_RATE_NORMAL=1.18;
+const TTS_RATE_DEAL=1.10;
+function speak(text, rate){
   if(mute || !text) return;
   if(!('speechSynthesis' in window)) return;
   ttsWarmup();
-  ttsQueue.push(text);
+  ttsQueue.push({text, rate: rate||TTS_RATE_NORMAL});
   if(ttsQueue.length>4) ttsQueue.shift();   // 限制隊列，避免一次讀太多
   ttsProcess();
 }
 /* 荷官口播：大字 + 語音 */
 function dealerCall(text, color){
   showMsg('🎙 '+text, color||'var(--gold2)');
-  speak(text.replace(/[🎙⏳🔥💥▶]/g,'').replace('請下注','請下注。').replace('請開牌','請開牌。').replace('補牌','補牌。'));
+  speak(text.replace(/[🎙⏳🔥💥▶]/g,'').replace('請下注','請下注。').replace('請開牌','請開牌。').replace('補牌','補牌。'), TTS_RATE_DEAL);
 }
 /* 結算結果語音：只講（唔覆蓋大字），帶雙方點數 + 對子/大細 */
 function announceResult(winner, playerPair, bankerPair, big, pTotal, bTotal){
   const who = winner==='banker'?'莊家贏':winner==='player'?'閒家贏':'和局';
   const extra = (playerPair?'閒對，':'')+(bankerPair?'莊對，':'')+(big?'大牌':'小牌');
-  speak(who+'，閒 '+pTotal+' 點，莊 '+bTotal+' 點'+(extra?'，'+extra:''));
+  speak(who+'，閒 '+pTotal+' 點，莊 '+bTotal+' 點'+(extra?'，'+extra:''), TTS_RATE_DEAL);
 }
 
 /* ===================== 彩帶 ===================== */
