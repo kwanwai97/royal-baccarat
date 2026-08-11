@@ -531,7 +531,6 @@
     <div class="stat-row"><span>總輸額</span><span id="sLossAmt">0</span></div>
     <div class="stat-row"><span>淨盈虧</span><span id="sNet">0</span></div>
     <div class="stat-row"><span>最高餘額</span><span id="sPeak">0</span></div>
-    <div class="stat-row"><span>本場淨贏/輸</span><span id="sSession">0</span></div>
     <button class="modal-close" id="btnClearStats" style="background:#7a2626; margin-bottom:6px;">🗑 清除歷史記錄</button>
     <button class="modal-close" id="btnCloseStats">關閉</button>
   </div>
@@ -560,7 +559,6 @@ let autoOn=false;        // 自動進行中旗標（setControls 會保持 DEAL �
 let settled=false; // settle已執行後clearBets唔再退款
 
 let stats={ total:0, pWin:0, bWin:0, tie:0, hit:0, betRounds:0, streak:0, maxStreak:0, winAmt:0, lossAmt:0, peak:50000 };
-let sessionStartBalance=50000;
 /* 這一靴牌的統計（非戰績累計）：每次洗牌開新靴清零，一啟動未派牌全0 */
 let shoeStats={ round:0, pWin:0, bWin:0, tie:0, ppair:0, bpair:0, luck6:0, luck7:0, lastCards:0 };
 let mute=false;
@@ -817,39 +815,35 @@ if('speechSynthesis' in window){
 function ttsProcess(){
   if(ttsBusy || ttsQueue.length===0) return;
   if(!('speechSynthesis' in window)){ ttsQueue=[]; return; }
-  const item=ttsQueue.shift();
-  const text=item.text;
+  const text=ttsQueue.shift();
   ttsBusy=true;
   try{
     const u=new SpeechSynthesisUtterance(text);
     const v=pickDealerVoice(); if(v) u.voice=v;
-    u.lang='zh-HK'; u.rate=item.rate||TTS_RATE_NORMAL; u.pitch=1.0; u.volume=1.0;
+    u.lang='zh-HK'; u.rate=1.05; u.pitch=1.0; u.volume=1.0;
     u.onend=()=>{ ttsBusy=false; setTimeout(ttsProcess, 140); };
     u.onerror=()=>{ ttsBusy=false; setTimeout(ttsProcess, 140); };
     speechSynthesis.speak(u);
   }catch(e){ ttsBusy=false; }
 }
-// 語音速率：普通（枱邊聊天/結果/贏輸/AI）1.18；開牌流程（請開牌+補牌+結果播報）1.10
-const TTS_RATE_NORMAL=1.18;
-const TTS_RATE_DEAL=1.10;
-function speak(text, rate){
+function speak(text){
   if(mute || !text) return;
   if(!('speechSynthesis' in window)) return;
   ttsWarmup();
-  ttsQueue.push({text, rate: rate||TTS_RATE_NORMAL});
+  ttsQueue.push(text);
   if(ttsQueue.length>4) ttsQueue.shift();   // 限制隊列，避免一次讀太多
   ttsProcess();
 }
 /* 荷官口播：大字 + 語音 */
 function dealerCall(text, color){
   showMsg('🎙 '+text, color||'var(--gold2)');
-  speak(text.replace(/[🎙⏳🔥💥▶]/g,'').replace('請下注','請下注。').replace('請開牌','請開牌。').replace('補牌','補牌。'), TTS_RATE_DEAL);
+  speak(text.replace(/[🎙⏳🔥💥▶]/g,'').replace('請下注','請下注。').replace('請開牌','請開牌。').replace('補牌','補牌。'));
 }
 /* 結算結果語音：只講（唔覆蓋大字），帶雙方點數 + 對子/大細 */
 function announceResult(winner, playerPair, bankerPair, big, pTotal, bTotal){
   const who = winner==='banker'?'莊家贏':winner==='player'?'閒家贏':'和局';
   const extra = (playerPair?'閒對，':'')+(bankerPair?'莊對，':'')+(big?'大牌':'小牌');
-  speak(who+'，閒 '+pTotal+' 點，莊 '+bTotal+' 點'+(extra?'，'+extra:''), TTS_RATE_DEAL);
+  speak(who+'，閒 '+pTotal+' 點，莊 '+bTotal+' 點'+(extra?'，'+extra:''));
 }
 
 /* ===================== 彩帶 ===================== */
@@ -884,7 +878,7 @@ function launchConfetti(){
 }
 
 /* ===================== UI 互動 ===================== */
-function showToast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(t._tm); t._tm=setTimeout(()=>t.classList.remove('show'),1000); }
+function showToast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(t._tm); t._tm=setTimeout(()=>t.classList.remove('show'),5000); }
 function fmt(n){ return Math.round(n).toLocaleString('en-US'); }
 function fmtK(n){ n=Math.round(n); if(n>=1000) return (n/1000)+'k'; return ''+n; }
 function updateBalance(){ document.getElementById('balance').textContent=fmt(balance); if(balance>stats.peak) stats.peak=balance; }
@@ -933,12 +927,11 @@ function placeBet(k){
   if(bets[k]+currentChip>LIMIT_MAX){ showToast('⚠ 單注超過限紅 '+fmt(LIMIT_MAX)); return; }
   let total=0; for(const x in bets) total+=bets[x];
   if(total+currentChip>TABLE_MAX){ showToast('⚠ 全桌注額超過 '+fmt(TABLE_MAX)); return; }
-  if(balance<currentChip){ showToast('⚠ 餘額不足（剩 '+fmt(balance)+'）'); return; }
+  if(balance<currentChip){ showToast('⚠ 餘額不足'); return; }
   balance -= currentChip; bets[k]+=currentChip; updateBalance(); updateAiBalances(); updateBetDisplay(); sndChip(); flyChip(k);
 }
 function clearBets(force){ if(dealing && !betting && !force)return; if(!settled){ const refund=Object.values(bets).reduce((a,b)=>a+b,0); balance+=refund; } bets={player:0,banker:0,tie:0,ppair:0,bpair:0,big:0,small:0,luck6:0,luck7:0}; updateBalance(); updateAiBalances(); updateBetDisplay(); }
-/* 等上一手輸贏對話 + 語音全部播完（走馬燈收起 + 語音隊列清空），最長 18s safety
-   注意：上一局 aiSettle 走馬燈顯示 10s（收於約16s），故上限必須 > 16s 以免下一局閒聊同舊走馬燈重疊 */
+/* 等上一手輸贏對話 + 語音全部播完（走馬燈收起 + 語音隊列清空），最長 12s safety */
 function waitAudioIdle(){
   return new Promise(res=>{
     const marq=document.getElementById('dialogueMarquee');
@@ -948,7 +941,7 @@ function waitAudioIdle(){
       const ttsEmpty=(typeof ttsQueue==='undefined')||ttsQueue.length===0;
       const marqGone=!marq||!marq.classList.contains('show');
       if(ttsEmpty && marqGone) { clearInterval(iv); setTimeout(res, 1500); }  // 播完再停 1.5s 先下一輪
-      else if(waited>18000) { clearInterval(iv); res(); }   // 18s 安全上限（> 上一局走馬燈16s）
+      else if(waited>12000) { clearInterval(iv); res(); }
     },100);
   });
 }
@@ -986,7 +979,7 @@ function bettingPhase(sec){
   });
 }
 function repeatBets(){ if((dealing && !betting)||!lastBets)return; let total=0; for(const x in lastBets) total+=lastBets[x];
-  if(total>TABLE_MAX||balance<total){ showToast('⚠ 餘額不足重複（剩 '+fmt(balance)+'）'); return; }
+  if(total>TABLE_MAX||balance<total){ showToast('⚠ 餘額不足重複'); return; }
   balance-=total; bets=Object.assign({},lastBets); updateBalance(); updateAiBalances(); updateBetDisplay(); sndChip();
 }
 
@@ -1006,24 +999,22 @@ function roadState(){
   return {empty:false, last, streakType, streakLen, count:h.length};
 }
 function tableMood(){
-  // 根據全枱最近走勢算枱面氣氛：連勝/連輸 → hot/cold，否則 normal
-  // 用全枱珠盤 history（每局一筆 winner）倒推最近連續非和局同向手數
-  const h=history;
-  if(!h || h.length===0) return 'normal';
-  let streakWin=0, streakLose=0;  // 連續「閒」或連續「莊」視為旺門；連續反轉視為冷
-  // 旺：最近 3+ 局同一邊（P 或 B）連開
-  let sameSide=0, sideType=null;
-  for(let i=h.length-1;i>=0;i--){
-    const w=h[i].winner;
-    if(w==='tie'){ if(sideType===null) continue; else break; }
-    if(sideType===null){ sideType=w; sameSide=1; }
-    else if(w===sideType) sameSide++;
-    else break;
+  // 根據全桌近況算枱面氣氛：連勝/連輸 → hot/cold，否則 normal
+  let streakWin=0, streakLose=0;
+  for(let i=ais.length-1, c=0; i>=0 && c<10; i--, c++){
+    const a=ais[i]; if(!a||!a.history) continue;
+    const last=a.history[a.history.length-1];
+    if(last==='P'||last==='B'){ streakWin++; } else break;
   }
-  if(sameSide>=3) streakWin=sameSide;
-  // 冷：最近 3+ 局旺門連輸（你主注連輸）——用 stats 連輸
+  let lose=0;
+  for(let i=ais.length-1, c=0; i>=0 && c<10; i--, c++){
+    const a=ais[i]; if(!a||!a.history) continue;
+    const last=a.history[a.history.length-1];
+    if(last && last!=='P' && last!=='B') continue;
+    if(a.lastWin===false){ lose++; } else break;
+  }
+  if(stats.streak>=3 || lose>=3) return 'cold';
   if(streakWin>=3) return 'hot';
-  if(stats.streak<=-3 || stats.streak===0 && stats.lossAmt>stats.winAmt && stats.betRounds>=6) return 'cold';
   return 'normal';
 }
 function relOf(aiA, aiB){
@@ -1125,7 +1116,6 @@ document.getElementById('tcCloseR').addEventListener('click',()=>{ hideTableChat
 async function tableChatPhase(sec) {
     return new Promise(resolve => {
         if (ais.length === 0) { resolve(); return; }
-        hideMarquee();   // 雙重保險：開新局閒聊前，強制收走上一局 AI 走馬燈，避免兩套對話重疊混亂
         showTableChat();
 
         // 隨機打亂全部 AI，預先決定下注
@@ -1473,7 +1463,6 @@ function settle(winner, playerPair, bankerPair, big, totalCards, pTotal, bTotal,
   const mainWin = (winner==='player'&&bets.player>0) || (winner==='banker'&&bets.banker>0) || (winner==='tie'&&bets.tie>0);
   lastHumanWon=mainWin;   // 記低你上局主注中冇中，畀 AI 對話用
   stats.total++; stats.betRounds++;
-  if(mainWin && lastStaked>0) stats.hit++;   // 準確命中率：有落主注且主注中獎
   if(winner==='player')stats.pWin++; else if(winner==='banker')stats.bWin++; else stats.tie++;
   // 這一靴牌統計（資訊條用）
   shoeStats.round++;
@@ -1525,8 +1514,8 @@ function settle(winner, playerPair, bankerPair, big, totalCards, pTotal, bTotal,
   if(winner==='banker' && bTotal===6) resultDetail.luck6=true; // 幸運6
   if(winner==='player' && pTotal===7 && bTotal===6) resultDetail.luck7=true; // 幸運7
   const flashMap={player:'.bet.player',banker:'.bet.banker',tie:'.bet.tie',ppair:'.bet.ppair',bpair:'.bet.bpair',big:'.bet.big',small:'.bet.small',luck6:'.bet.luck6',luck7:'.bet.luck7'};
-  const dur=6000; // 閃燈統一慢板：快/中/慢都用 6 秒（不理 speed 設定）
-  const cls = 'win-pulse-slow';
+  const dur=FLASH_DUR[speed]*1000; // 闪灯+筹码消失同步：快3s(2次)/中5s(4次)/慢6s(4次)
+  const cls = speed===0?'win-pulse-fast':speed===1?'win-pulse-med':'win-pulse-slow';
   document.querySelectorAll('.bet').forEach(el=>el.classList.remove('win-pulse-fast','win-pulse-med','win-pulse-slow'));
   for(const k in resultDetail){ const el=document.querySelector(flashMap[k]); if(el){
     el.classList.add(cls);
@@ -1981,19 +1970,14 @@ function showAiBalanceBox(){ updateAiBalances(); }
 function showStats(){
   document.getElementById('sTotal').textContent=stats.total;
   document.getElementById('sWins').textContent=stats.pWin+' / '+stats.bWin+' / '+stats.tie;
-  // 準確命中率：主注中獎局 / 有落注局（含和局退還唔計中獎）
-  const hitRate = stats.betRounds>0 ? Math.round(stats.hit/stats.betRounds*100) : 0;
-  document.getElementById('sHit').textContent = hitRate+'%';
+  const hit = stats.betRounds>0? Math.round(stats.maxStreak*0+ (stats.pWin+stats.bWin)*0) :0; // 簡化
+  document.getElementById('sHit').textContent = stats.total>0? Math.round((stats.pWin+stats.bWin)/stats.total*100)+'%' : '0%';
   document.getElementById('sStreak').textContent=stats.streak;
   document.getElementById('sMaxStreak').textContent=stats.maxStreak;
   document.getElementById('sWinAmt').textContent=fmt(stats.winAmt);
   document.getElementById('sLossAmt').textContent=fmt(stats.lossAmt);
   document.getElementById('sNet').textContent=fmt(stats.winAmt-stats.lossAmt);
   document.getElementById('sPeak').textContent=fmt(stats.peak);
-  // 本 session 淨贏（相對開局餘額）
-  const sessionNet = balance - sessionStartBalance;
-  const sSess=document.getElementById('sSession');
-  if(sSess) sSess.textContent = (sessionNet>=0?'+':'')+fmt(sessionNet);
   document.getElementById('statsModal').classList.add('show');
 }
 
@@ -2249,7 +2233,6 @@ document.querySelectorAll('.player-emotes .pe').forEach(el=>{
 
 
 loadStats(); loadRoads(); loadAiList(); updateAiBalances();
-sessionStartBalance=balance;   // 記低開局餘額，畀「本場淨贏/輸」用
 try{ const s=localStorage.getItem('bac_speed'); if(s!==null) speed=+s; }catch(e){}
 document.getElementById('btnSpeed').textContent=SPEED_NAMES[speed];
 resetShoe(); updateBalance(); updateBetDisplay(); checkDaily(); drawAllRoads();
