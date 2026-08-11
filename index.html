@@ -1308,7 +1308,7 @@ async function deal(auto){
   await sleep(2000);
   await waitAudioIdle();   // 等上一手輸贏對話 + 語音全部播完，先開枱邊聊天（唔用固定秒數）
   if(ais.length){ await tableChatPhase(spd(10)+5); aiPlaceBets(); }
-  await bettingPhase(BET_COUNT[speed]);   // 落注倒數：快10/中13/慢18秒（只改倒數）
+  await bettingPhase(spd(10));
   preBalance=balance;
   try{
 
@@ -2001,11 +2001,10 @@ document.getElementById('btnRepeat').addEventListener('click',repeatBets);
 document.getElementById('btnDeal').addEventListener('click',function(){ if(autoOn){ showToast('自動開牌進行中，請先按「自動」停止'); return; } deal(); });
 
 /* ===================== 節奏控制 ===================== */
-let speed=1; // 0=快 1=中 2=慢
+let speed=1; // 0=快(-3s) 1=中 2=慢(+3s)
 const SPEED_NAMES=['⏱快','⏱中','⏱慢'];
 const SPEED_OFFSET=[-3,0,3];
 const FLASH_DUR=[3,5,6]; // 閃燈+籌碼消失同步：快3s(2次)/中5s(4次)/慢6s(4次)
-const BET_COUNT=[10,13,18]; // 落注倒數：快10/中13/慢18秒（只改倒數，聊天時長spd(10)+5不變）
 
 function cycleSpeed(){
   speed=(speed+1)%3;
