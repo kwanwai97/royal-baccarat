@@ -1827,16 +1827,7 @@ function showMarquee(items){
     el.textContent=text;
     track.appendChild(el);
   });
-  box.classList.add('show');
-  clearTimeout(showMarquee._t); clearInterval(showMarquee._iv);
-  // 收起時機跟「語音全部播完 → 3秒」：輪詢 ttsQueue 空 + 唔 busy，再等3秒收；最長15秒 safety 硬收
-  let waited=0;
-  showMarquee._iv=setInterval(()=>{
-    waited+=100;
-    const ttsIdle=(typeof ttsQueue==='undefined')||(ttsQueue.length===0 && !ttsBusy);
-    if(ttsIdle){ clearInterval(showMarquee._iv); showMarquee._t=setTimeout(()=>hideMarquee(), 3000); }
-    else if(waited>15000){ clearInterval(showMarquee._iv); hideMarquee(); }
-  },100);
+  box.classList.add('show');   // 純顯示；收起時機由 aiSettle 控制（語音播完→等3秒→hideMarquee）
 }
 function hideMarquee(){ document.getElementById('dialogueMarquee').classList.remove('show'); clearTimeout(showMarquee._t); }
 window.showMarquee=showMarquee; window.hideMarquee=hideMarquee;
@@ -1919,15 +1910,17 @@ async function aiSettle(result, playerPair, bankerPair, big, pTotal, bTotal, pCa
     // 人類有下注：只報人類，AI 唔出聲
     const ht = net>0 ? '👤 你：贏咗 '+fmt(net)+'蚊 🎉' : net<0 ? '👤 你：輸咗 '+fmt(-net)+'蚊' : '👤 你：平手，錢退返';
     showMarquee([ht]);
-    if(!mute) speak('你'+(net>0?'贏咗 '+fmt(net)+'蚊':(net<0?'輸咗 '+fmt(-net)+'蚊':'平手，錢退返')));
+    if(!mute){ speak('你'+(net>0?'贏咗 '+fmt(net)+'蚊':'輸咗 '+fmt(-net)+'蚊':(humanStaked?'平手，錢退返':''))); await waitAudioIdle(); }
   } else {
-    // 人類冇下注：走馬燈播最多 3 個 AI 結果，逐句排隊播（每段播完等3秒），唔疊聲
+    // 人類冇下注：走馬燈播最多 3 個 AI 結果，逐句排隊播（每段播完等下句），唔疊聲
     const top = dialogues.slice(0,3);
     if(top.length){
       showMarquee(top);
-      for(const d of top){ if(!mute){ speak(d); await waitAudioIdle(); await sleep(3000); } }
+      for(const d of top){ if(!mute){ speak(d); await waitAudioIdle(); } }
     }
   }
+  await sleep(3000);   // 語音全部播完 → 等 3 秒
+  hideMarquee();       // 收起走馬燈
   updateBetDisplay(); updateAiBalances(); saveAiList();
 }
 function updateAiBalances(){   // 頂欄橫向捲動：你(人類)永遠第一格 + 最多6個AI
