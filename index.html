@@ -285,11 +285,13 @@
   .win-pulse{animation:winp .8s ease;}
   @keyframes winp{0%{box-shadow:0 0 0 0 var(--gold2);}50%{box-shadow:0 0 0 6px rgba(244,217,123,.6);}100%{box-shadow:0 0 0 0 rgba(244,217,123,0);}}
   /* 按牌局結果閃（輸贏都閃），連續兩次 — duration由JS設 --flash-dur */
-  /* 快/中/慢 統一：1.5秒間隔 × 4次 = 6秒 */
-.win-pulse-fast{animation:winpFast 6s ease;}
-@keyframes winpFast{0%{box-shadow:0 0 0 0 var(--gold2);}12.5%{box-shadow:0 0 0 7px rgba(244,217,123,.65);}25%{box-shadow:0 0 0 0 rgba(244,217,123,0);}37.5%{box-shadow:0 0 0 7px rgba(244,217,123,.65);}50%{box-shadow:0 0 0 0 rgba(244,217,123,0);}62.5%{box-shadow:0 0 0 7px rgba(244,217,123,.65);}75%{box-shadow:0 0 0 0 rgba(244,217,123,0);}87.5%{box-shadow:0 0 0 7px rgba(244,217,123,.65);}100%{box-shadow:0 0 0 0 rgba(244,217,123,0);}}
-.win-pulse-med{animation:winpMed 6s ease;}
+  /* 快：2次閃 (1.5s間隔) */
+.win-pulse-fast{animation:winpFast 3s ease;}
+@keyframes winpFast{0%{box-shadow:0 0 0 0 var(--gold2);}25%{box-shadow:0 0 0 7px rgba(244,217,123,.65);}50%{box-shadow:0 0 0 0 rgba(244,217,123,0);}75%{box-shadow:0 0 0 7px rgba(244,217,123,.65);}100%{box-shadow:0 0 0 0 rgba(244,217,123,0);}}
+/* 中：4次閃 (1.25s間隔) */
+.win-pulse-med{animation:winpMed 5s ease;}
 @keyframes winpMed{0%{box-shadow:0 0 0 0 var(--gold2);}12.5%{box-shadow:0 0 0 7px rgba(244,217,123,.65);}25%{box-shadow:0 0 0 0 rgba(244,217,123,0);}37.5%{box-shadow:0 0 0 7px rgba(244,217,123,.65);}50%{box-shadow:0 0 0 0 rgba(244,217,123,0);}62.5%{box-shadow:0 0 0 7px rgba(244,217,123,.65);}75%{box-shadow:0 0 0 0 rgba(244,217,123,0);}87.5%{box-shadow:0 0 0 7px rgba(244,217,123,.65);}100%{box-shadow:0 0 0 0 rgba(244,217,123,0);}}
+/* 慢：4次閃 (1.5s間隔) */
 .win-pulse-slow{animation:winpSlow 6s ease;}
 @keyframes winpSlow{0%{box-shadow:0 0 0 0 var(--gold2);}12.5%{box-shadow:0 0 0 7px rgba(244,217,123,.65);}25%{box-shadow:0 0 0 0 rgba(244,217,123,0);}37.5%{box-shadow:0 0 0 7px rgba(244,217,123,.65);}50%{box-shadow:0 0 0 0 rgba(244,217,123,0);}62.5%{box-shadow:0 0 0 7px rgba(244,217,123,.65);}75%{box-shadow:0 0 0 0 rgba(244,217,123,0);}87.5%{box-shadow:0 0 0 7px rgba(244,217,123,.65);}100%{box-shadow:0 0 0 0 rgba(244,217,123,0);}}
 .win-pulse2{animation:winp2 var(--flash-dur,5s) ease;}
@@ -943,8 +945,6 @@ function waitAudioIdle(){
     },100);
   });
 }
-/* 只等語音播完(ttsQueue空+唔busy)，唔理走馬燈收起 —— 畀 aiSettle 內部排隊播用，避免同走馬燈收起死結 */
-function waitTtsOnly(){ return new Promise(res=>{ let w=0; const iv=setInterval(()=>{ w+=100; const empty=(typeof ttsQueue==='undefined')||(ttsQueue.length===0 && !ttsBusy); if(empty){ clearInterval(iv); res(); } else if(w>12000){ clearInterval(iv); res(); } },100); }); }
 /* 落注期：綠字倒數 N 秒，期間人類可落注；AI 已經先落好供參考 */
 let betting=false;
 function bettingPhase(sec){
@@ -1133,7 +1133,7 @@ async function tableChatPhase(sec) {
                 prev = ai;
                 i++;
                 if (i < total) setTimeout(emit, stepMs);
-                else waitAudioIdle().then(finish);   // 最後一句講完，等語音播完（唔好寫死秒數）→ 先收，避免同落注倒數語音重疊
+                else setTimeout(finish, 4000);
             }
         };
         emit();
@@ -1307,9 +1307,8 @@ async function deal(auto){
   // 統一次序（自動/手動都一樣）：2秒緩衝 → 5秒局間緩衝 → 枱邊討論 → 落注倒數 → 開牌
   await sleep(2000);
   await waitAudioIdle();   // 等上一手輸贏對話 + 語音全部播完，先開枱邊聊天（唔用固定秒數）
-  if(ais.length){ await tableChatPhase(15); aiPlaceBets(); }   // 枱邊聊天返去10+5=15秒手感（語音聊天速度），唔隨快慢變
-  await waitAudioIdle();   // 雙重保險：確保枱邊聊天語音播完先落注倒數（唔會疊音）
-  await bettingPhase(BET_COUNT[speed]);   // 只有倒數隨快慢：快10/中13/慢18秒
+  if(ais.length){ await tableChatPhase(spd(10)+5); aiPlaceBets(); }
+  await bettingPhase(spd(10));
   preBalance=balance;
   try{
 
@@ -1462,7 +1461,8 @@ function settle(winner, playerPair, bankerPair, big, totalCards, pTotal, bTotal,
     sndWin(); launchConfetti();
     let label = winner==='player'?'閒家贏':winner==='banker'?'莊家贏':'和局';
     showMsg(resultText(label, pTotal, bTotal, playerPair, bankerPair, big, pCards, bCards, net), winner==='banker'?'#ffb3b3':winner==='player'?'#a9d2ff':'#8fe0ab');
-    // 人類語音改由走馬燈(aiSettle)統一播，呢度唔重複播
+    announceResult(winner, playerPair, bankerPair, big, pTotal, bTotal);
+    if(!mute) setTimeout(()=>speak('你贏咗 '+fmt(net)+'蚊，叻仔'), 700);
     let tip='🎉 贏 '+fmt(net);
     if(bonus>0) tip+=' ｜🔥連勝彩金 +'+fmt(bonus);
     showToast(tip);
@@ -1471,13 +1471,15 @@ function settle(winner, playerPair, bankerPair, big, totalCards, pTotal, bTotal,
     sndLose();
     let label = winner==='player'?'閒家贏':winner==='banker'?'莊家贏':'和局';
     showMsg(resultText(label, pTotal, bTotal, playerPair, bankerPair, big, pCards, bCards, net), winner==='banker'?'#ffb3b3':winner==='player'?'#a9d2ff':'#8fe0ab');
-    // 人類語音改由走馬燈(aiSettle)統一播，呢度唔重複播
+    announceResult(winner, playerPair, bankerPair, big, pTotal, bTotal);
+    if(!mute) setTimeout(()=>speak('你輸咗 '+fmt(-net)+'蚊，唔緊要，下鋪翻本'), 700);
     showToast('💸 輸 '+fmt(-net));
   } else {
     sndTie();
     let label = winner==='player'?'閒家贏':winner==='banker'?'莊家贏':'和局';
     showMsg(resultText(label, pTotal, bTotal, playerPair, bankerPair, big, pCards, bCards, net), winner==='banker'?'#ffb3b3':winner==='player'?'#a9d2ff':'#8fe0ab');
-    // 人類語音改由走馬燈(aiSettle)統一播，呢度唔重複播
+    announceResult(winner, playerPair, bankerPair, big, pTotal, bTotal);
+    if(!mute && lastStaked>0) setTimeout(()=>speak('平手，錢退返畀你'), 700);
     if(lastStaked>0) showToast('↔ 平手退還');
   }
   updateBalance(); updateAiBalances(); updateStreak();
@@ -1510,7 +1512,7 @@ function settle(winner, playerPair, bankerPair, big, totalCards, pTotal, bTotal,
     // 保險：若籌碼仲喺度（異常）強制再清一次
     let still=false; document.querySelectorAll('.chips-stack').forEach(s=>{ if(s.children.length) still=true; });
     if(still){ ais.forEach(ai=>{ if(ai) ai._lastBet=ai.currentBet||null; }); clearBets(true); ais.forEach(ai=>{ if(ai) ai.currentBet=null; }); updateBetDisplay(); }
-    await sleep(2000); saveRoads(); settled=false; if(ais.length || lastStaked>0) await aiSettle(winner, playerPair, bankerPair, big, pTotal, bTotal, pCards, bCards, net, lastStaked>0);
+    await sleep(2000); saveRoads(); settled=false; if(ais.length) aiSettle(winner, playerPair, bankerPair, big, pTotal, bTotal, pCards, bCards);
   }, dur);
 }
 /* 結果文字：3行式 + 補牌提示 */
@@ -1829,12 +1831,14 @@ function showMarquee(items){
     el.textContent=text;
     track.appendChild(el);
   });
-  box.classList.add('show');   // 純顯示；收起時機由 aiSettle 控制（語音播完→等3秒→hideMarquee）
+  box.classList.add('show');
+  clearTimeout(showMarquee._t);
+  showMarquee._t=setTimeout(()=>hideMarquee(), 10000);  // 固定 10 秒顯示，配合「等語音播完」先傾偈
 }
 function hideMarquee(){ document.getElementById('dialogueMarquee').classList.remove('show'); clearTimeout(showMarquee._t); }
 window.showMarquee=showMarquee; window.hideMarquee=hideMarquee;
 
-async function aiSettle(result, playerPair, bankerPair, big, pTotal, bTotal, pCards, bCards, net, humanStaked){
+function aiSettle(result, playerPair, bankerPair, big, pTotal, bTotal, pCards, bCards){
   const dialogues=[];
   ais.forEach(ai=>{
     if(!ai) return;
@@ -1902,27 +1906,12 @@ async function aiSettle(result, playerPair, bankerPair, big, pTotal, bTotal, pCa
     }
     if(msg){
       dialogues.push(msg);
-      // AI 語音唔喺呢度播，留返走馬燈結尾統一逐句排隊播（最多3段）
+      // AI 語音口播（同 mute 掣 / zh-HK；win 或 sideWin 先出聲，避免太嘈）
+      if((win||sideWin) && !mute) setTimeout(()=>speak(ai.name+(sNames.length?('中咗'+sNames.join('同')+'！'):'贏咗')), 600+Math.random()*800);
     }
     ai.currentBet=null;
   });
-  // ===== 統一走馬燈 + 語音（按人類有冇下注；只播最多3段）=====
-  await sleep(1000);   // 閃燈/籌碼消失後等 1 秒先啟動走馬燈
-  if(humanStaked){
-    // 人類有下注：只報人類，AI 唔出聲
-    const ht = net>0 ? '👤 你：贏咗 '+fmt(net)+'蚊 🎉' : net<0 ? '👤 你：輸咗 '+fmt(-net)+'蚊' : '👤 你：平手，錢退返';
-    showMarquee([ht]);
-    if(!mute){ speak('你'+((net>0)?'贏咗 '+fmt(net)+'蚊':(net<0)?'輸咗 '+fmt(-net)+'蚊':(humanStaked?'平手，錢退返':''))); await waitTtsOnly(); }
-  } else {
-    // 人類冇下注：走馬燈播最多 3 個 AI 結果，逐句排隊播（每段播完等下句），唔疊聲
-    const top = dialogues.slice(0,3);
-    if(top.length){
-      showMarquee(top);
-      for(const d of top){ if(!mute){ speak(d); await waitTtsOnly(); } }
-    }
-  }
-  await sleep(3000);   // 語音全部播完 → 等 3 秒
-  hideMarquee();       // 收起走馬燈
+  if(dialogues.length) showMarquee(dialogues);
   updateBetDisplay(); updateAiBalances(); saveAiList();
 }
 function updateAiBalances(){   // 頂欄橫向捲動：你(人類)永遠第一格 + 最多6個AI
@@ -2012,11 +2001,10 @@ document.getElementById('btnRepeat').addEventListener('click',repeatBets);
 document.getElementById('btnDeal').addEventListener('click',function(){ if(autoOn){ showToast('自動開牌進行中，請先按「自動」停止'); return; } deal(); });
 
 /* ===================== 節奏控制 ===================== */
-let speed=1; // 0=快 1=中 2=慢
+let speed=1; // 0=快(-3s) 1=中 2=慢(+3s)
 const SPEED_NAMES=['⏱快','⏱中','⏱慢'];
-const SPEED_OFFSET=[-5,-2,3];   // 僅自動開牌間隔用
-const BET_COUNT=[10,13,18];      // 倒數時間(請下注倒數)：快10/中13/慢18 秒，只有倒數隨快慢變
-const FLASH_DUR=[6,6,6]; // 閃燈統一：快/中/慢 一律 1.5秒×4次=6秒（籌碼消失同步跟6秒）
+const SPEED_OFFSET=[-3,0,3];
+const FLASH_DUR=[3,5,6]; // 閃燈+籌碼消失同步：快3s(2次)/中5s(4次)/慢6s(4次)
 
 function cycleSpeed(){
   speed=(speed+1)%3;
@@ -2158,7 +2146,7 @@ document.getElementById('aiStop').addEventListener('click',()=>{
 });
 document.getElementById('aiExit').addEventListener('click',()=>{ document.getElementById('aiModal').classList.remove('show'); });
 document.getElementById('btnMute').addEventListener('click',()=>{ mute=!mute; document.getElementById('btnMute').textContent=mute?'🔇':'🔊'; if(!mute) sndChip(); });
-document.getElementById('btnSpeed').addEventListener('click',()=>{ cycleSpeed(); showToast(SPEED_NAMES[speed]+'節奏'+(speed===1?'':speed===0?' (-3秒)':' (+5秒)') ); });
+document.getElementById('btnSpeed').addEventListener('click',()=>{ cycleSpeed(); showToast(SPEED_NAMES[speed]+'節奏'+(speed===1?'':speed===0?' (-3秒)':' (+3秒)') ); });
 
 /* ===================== ⑤ 玩家快捷表情：你發，AI 回 ===================== */
 const EMOTE_ICON={laugh:'😂',money:'💰',wow:'😮',fire:'🔥'};
