@@ -937,7 +937,8 @@ function placeBet(k){
   balance -= currentChip; bets[k]+=currentChip; updateBalance(); updateAiBalances(); updateBetDisplay(); sndChip(); flyChip(k);
 }
 function clearBets(force){ if(dealing && !betting && !force)return; if(!settled){ const refund=Object.values(bets).reduce((a,b)=>a+b,0); balance+=refund; } bets={player:0,banker:0,tie:0,ppair:0,bpair:0,big:0,small:0,luck6:0,luck7:0}; updateBalance(); updateAiBalances(); updateBetDisplay(); }
-/* 等上一手輸贏對話 + 語音全部播完（走馬燈收起 + 語音隊列清空），最長 12s safety */
+/* 等上一手輸贏對話 + 語音全部播完（走馬燈收起 + 語音隊列清空），最長 18s safety
+   注意：上一局 aiSettle 走馬燈顯示 10s（收於約16s），故上限必須 > 16s 以免下一局閒聊同舊走馬燈重疊 */
 function waitAudioIdle(){
   return new Promise(res=>{
     const marq=document.getElementById('dialogueMarquee');
@@ -947,7 +948,7 @@ function waitAudioIdle(){
       const ttsEmpty=(typeof ttsQueue==='undefined')||ttsQueue.length===0;
       const marqGone=!marq||!marq.classList.contains('show');
       if(ttsEmpty && marqGone) { clearInterval(iv); setTimeout(res, 1500); }  // 播完再停 1.5s 先下一輪
-      else if(waited>12000) { clearInterval(iv); res(); }
+      else if(waited>18000) { clearInterval(iv); res(); }   // 18s 安全上限（> 上一局走馬燈16s）
     },100);
   });
 }
@@ -1124,6 +1125,7 @@ document.getElementById('tcCloseR').addEventListener('click',()=>{ hideTableChat
 async function tableChatPhase(sec) {
     return new Promise(resolve => {
         if (ais.length === 0) { resolve(); return; }
+        hideMarquee();   // 雙重保險：開新局閒聊前，強制收走上一局 AI 走馬燈，避免兩套對話重疊混亂
         showTableChat();
 
         // 隨機打亂全部 AI，預先決定下注
