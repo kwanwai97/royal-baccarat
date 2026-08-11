@@ -1133,7 +1133,7 @@ async function tableChatPhase(sec) {
                 prev = ai;
                 i++;
                 if (i < total) setTimeout(emit, stepMs);
-                else setTimeout(finish, 4000);
+                else waitAudioIdle().then(finish);   // 最後一句講完，等語音播完（唔好寫死秒數）→ 先收，避免同落注倒數語音重疊
             }
         };
         emit();
@@ -1308,6 +1308,7 @@ async function deal(auto){
   await sleep(2000);
   await waitAudioIdle();   // 等上一手輸贏對話 + 語音全部播完，先開枱邊聊天（唔用固定秒數）
   if(ais.length){ await tableChatPhase(spd(10)+5); aiPlaceBets(); }
+  await waitAudioIdle();   // 雙重保險：確保枱邊聊天語音播完先落注倒數（唔會疊音）
   await bettingPhase(spd(10));
   preBalance=balance;
   try{
