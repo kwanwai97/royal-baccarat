@@ -1460,8 +1460,7 @@ function settle(winner, playerPair, bankerPair, big, totalCards, pTotal, bTotal,
     sndWin(); launchConfetti();
     let label = winner==='player'?'閒家贏':winner==='banker'?'莊家贏':'和局';
     showMsg(resultText(label, pTotal, bTotal, playerPair, bankerPair, big, pCards, bCards, net), winner==='banker'?'#ffb3b3':winner==='player'?'#a9d2ff':'#8fe0ab');
-    announceResult(winner, playerPair, bankerPair, big, pTotal, bTotal);
-    if(!mute) setTimeout(()=>speak('你贏咗 '+fmt(net)+'蚊，叻仔'), 700);
+    // 人類語音改由走馬燈(aiSettle)統一播，呢度唔重複播
     let tip='🎉 贏 '+fmt(net);
     if(bonus>0) tip+=' ｜🔥連勝彩金 +'+fmt(bonus);
     showToast(tip);
@@ -1470,15 +1469,13 @@ function settle(winner, playerPair, bankerPair, big, totalCards, pTotal, bTotal,
     sndLose();
     let label = winner==='player'?'閒家贏':winner==='banker'?'莊家贏':'和局';
     showMsg(resultText(label, pTotal, bTotal, playerPair, bankerPair, big, pCards, bCards, net), winner==='banker'?'#ffb3b3':winner==='player'?'#a9d2ff':'#8fe0ab');
-    announceResult(winner, playerPair, bankerPair, big, pTotal, bTotal);
-    if(!mute) setTimeout(()=>speak('你輸咗 '+fmt(-net)+'蚊，唔緊要，下鋪翻本'), 700);
+    // 人類語音改由走馬燈(aiSettle)統一播，呢度唔重複播
     showToast('💸 輸 '+fmt(-net));
   } else {
     sndTie();
     let label = winner==='player'?'閒家贏':winner==='banker'?'莊家贏':'和局';
     showMsg(resultText(label, pTotal, bTotal, playerPair, bankerPair, big, pCards, bCards, net), winner==='banker'?'#ffb3b3':winner==='player'?'#a9d2ff':'#8fe0ab');
-    announceResult(winner, playerPair, bankerPair, big, pTotal, bTotal);
-    if(!mute && lastStaked>0) setTimeout(()=>speak('平手，錢退返畀你'), 700);
+    // 人類語音改由走馬燈(aiSettle)統一播，呢度唔重複播
     if(lastStaked>0) showToast('↔ 平手退還');
   }
   updateBalance(); updateAiBalances(); updateStreak();
@@ -1511,7 +1508,7 @@ function settle(winner, playerPair, bankerPair, big, totalCards, pTotal, bTotal,
     // 保險：若籌碼仲喺度（異常）強制再清一次
     let still=false; document.querySelectorAll('.chips-stack').forEach(s=>{ if(s.children.length) still=true; });
     if(still){ ais.forEach(ai=>{ if(ai) ai._lastBet=ai.currentBet||null; }); clearBets(true); ais.forEach(ai=>{ if(ai) ai.currentBet=null; }); updateBetDisplay(); }
-    await sleep(2000); saveRoads(); settled=false; if(ais.length) aiSettle(winner, playerPair, bankerPair, big, pTotal, bTotal, pCards, bCards);
+    await sleep(2000); saveRoads(); settled=false; if(ais.length) await aiSettle(winner, playerPair, bankerPair, big, pTotal, bTotal, pCards, bCards, net, lastStaked>0);
   }, dur);
 }
 /* 結果文字：3行式 + 補牌提示 */
@@ -1844,7 +1841,7 @@ function showMarquee(items){
 function hideMarquee(){ document.getElementById('dialogueMarquee').classList.remove('show'); clearTimeout(showMarquee._t); }
 window.showMarquee=showMarquee; window.hideMarquee=hideMarquee;
 
-function aiSettle(result, playerPair, bankerPair, big, pTotal, bTotal, pCards, bCards){
+async function aiSettle(result, playerPair, bankerPair, big, pTotal, bTotal, pCards, bCards, net, humanStaked){
   const dialogues=[];
   ais.forEach(ai=>{
     if(!ai) return;
@@ -1912,12 +1909,25 @@ function aiSettle(result, playerPair, bankerPair, big, pTotal, bTotal, pCards, b
     }
     if(msg){
       dialogues.push(msg);
-      // AI 語音口播（同 mute 掣 / zh-HK；win 或 sideWin 先出聲，避免太嘈）
-      if((win||sideWin) && !mute) setTimeout(()=>speak(ai.name+(sNames.length?('中咗'+sNames.join('同')+'！'):'贏咗')), 600+Math.random()*800);
+      // AI 語音唔喺呢度播，留返走馬燈結尾統一逐句排隊播（最多3段）
     }
     ai.currentBet=null;
   });
-  if(dialogues.length) showMarquee(dialogues);
+  // ===== 統一走馬燈 + 語音（按人類有冇下注；只播最多3段）=====
+  await sleep(1000);   // 閃燈/籌碼消失後等 1 秒先啟動走馬燈
+  if(humanStaked){
+    // 人類有下注：只報人類，AI 唔出聲
+    const ht = net>0 ? '👤 你：贏咗 '+fmt(net)+'蚊 🎉' : net<0 ? '👤 你：輸咗 '+fmt(-net)+'蚊' : '👤 你：平手，錢退返';
+    showMarquee([ht]);
+    if(!mute) speak('你'+(net>0?'贏咗 '+fmt(net)+'蚊':(net<0?'輸咗 '+fmt(-net)+'蚊':'平手，錢退返')));
+  } else {
+    // 人類冇下注：走馬燈播最多 3 個 AI 結果，逐句排隊播（每段播完等3秒），唔疊聲
+    const top = dialogues.slice(0,3);
+    if(top.length){
+      showMarquee(top);
+      for(const d of top){ if(!mute){ speak(d); await waitAudioIdle(); await sleep(3000); } }
+    }
+  }
   updateBetDisplay(); updateAiBalances(); saveAiList();
 }
 function updateAiBalances(){   // 頂欄橫向捲動：你(人類)永遠第一格 + 最多6個AI
