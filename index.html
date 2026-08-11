@@ -1912,7 +1912,7 @@ async function aiSettle(result, playerPair, bankerPair, big, pTotal, bTotal, pCa
     // 人類有下注：只報人類，AI 唔出聲
     const ht = net>0 ? '👤 你：贏咗 '+fmt(net)+'蚊 🎉' : net<0 ? '👤 你：輸咗 '+fmt(-net)+'蚊' : '👤 你：平手，錢退返';
     showMarquee([ht]);
-    if(!mute){ speak('你'+(net>0?'贏咗 '+fmt(net)+'蚊':'輸咗 '+fmt(-net)+'蚊':(humanStaked?'平手，錢退返':''))); await waitTtsOnly(); }
+    if(!mute){ speak('你'+((net>0)?'贏咗 '+fmt(net)+'蚊':(net<0)?'輸咗 '+fmt(-net)+'蚊':(humanStaked?'平手，錢退返':''))); await waitTtsOnly(); }
   } else {
     // 人類冇下注：走馬燈播最多 3 個 AI 結果，逐句排隊播（每段播完等下句），唔疊聲
     const top = dialogues.slice(0,3);
