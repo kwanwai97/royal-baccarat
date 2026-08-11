@@ -1185,7 +1185,7 @@ async function deal(auto){
   // 統一次序（自動/手動都一樣）：2秒緩衝 → 5秒局間緩衝 → 枱邊討論 → 落注倒數 → 開牌
   await sleep(2000);
   await sleep(5000);   // 局結束後 5 秒緩衝先開始下一局討論
-  if(ais.length){ await tableChatPhase(10); aiPlaceBets(); }   // 枱邊聊天固定10秒，唔隨快慢變
+  if(ais.length){ await tableChatPhase(15); aiPlaceBets(); }   // 枱邊聊天返去10+5=15秒手感（語音聊天速度），唔隨快慢變
   await waitAudioIdle();   // 雙重保險：確保枱邊聊天語音播完先落注倒數（唔會疊音）
   await bettingPhase(BET_COUNT[speed]);   // 只有倒數隨快慢：快10/中13/慢18秒
   dealing=true;          // 落注完、開牌前先鎖（呢刻起人類不可再落注）
