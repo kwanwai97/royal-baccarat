@@ -943,6 +943,8 @@ function waitAudioIdle(){
     },100);
   });
 }
+/* 只等語音播完(ttsQueue空+唔busy)，唔理走馬燈收起 —— 畀 aiSettle 內部排隊播用，避免同走馬燈收起死結 */
+function waitTtsOnly(){ return new Promise(res=>{ let w=0; const iv=setInterval(()=>{ w+=100; const empty=(typeof ttsQueue==='undefined')||(ttsQueue.length===0 && !ttsBusy); if(empty){ clearInterval(iv); res(); } else if(w>12000){ clearInterval(iv); res(); } },100); }); }
 /* 落注期：綠字倒數 N 秒，期間人類可落注；AI 已經先落好供參考 */
 let betting=false;
 function bettingPhase(sec){
@@ -1910,13 +1912,13 @@ async function aiSettle(result, playerPair, bankerPair, big, pTotal, bTotal, pCa
     // 人類有下注：只報人類，AI 唔出聲
     const ht = net>0 ? '👤 你：贏咗 '+fmt(net)+'蚊 🎉' : net<0 ? '👤 你：輸咗 '+fmt(-net)+'蚊' : '👤 你：平手，錢退返';
     showMarquee([ht]);
-    if(!mute){ speak('你'+(net>0?'贏咗 '+fmt(net)+'蚊':'輸咗 '+fmt(-net)+'蚊':(humanStaked?'平手，錢退返':''))); await waitAudioIdle(); }
+    if(!mute){ speak('你'+(net>0?'贏咗 '+fmt(net)+'蚊':'輸咗 '+fmt(-net)+'蚊':(humanStaked?'平手，錢退返':''))); await waitTtsOnly(); }
   } else {
     // 人類冇下注：走馬燈播最多 3 個 AI 結果，逐句排隊播（每段播完等下句），唔疊聲
     const top = dialogues.slice(0,3);
     if(top.length){
       showMarquee(top);
-      for(const d of top){ if(!mute){ speak(d); await waitAudioIdle(); } }
+      for(const d of top){ if(!mute){ speak(d); await waitTtsOnly(); } }
     }
   }
   await sleep(3000);   // 語音全部播完 → 等 3 秒
