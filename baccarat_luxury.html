@@ -1583,8 +1583,15 @@ function showMarquee(items){
     track.appendChild(el);
   });
   box.classList.add('show');
-  clearTimeout(showMarquee._t);
-  showMarquee._t=setTimeout(()=>hideMarquee(), spd(8)*1000);
+  clearTimeout(showMarquee._t); clearInterval(showMarquee._iv);
+  // 收起時機跟「語音全部播完 → 3秒」：輪詢 ttsQueue 空 + 唔 busy，再等3秒收；最長15秒 safety 硬收
+  let waited=0;
+  showMarquee._iv=setInterval(()=>{
+    waited+=100;
+    const ttsIdle=(typeof ttsQueue==='undefined')||(typeof ttsBusy==='undefined')||(ttsQueue.length===0 && !ttsBusy);
+    if(ttsIdle){ clearInterval(showMarquee._iv); showMarquee._t=setTimeout(()=>hideMarquee(), 3000); }
+    else if(waited>15000){ clearInterval(showMarquee._iv); hideMarquee(); }
+  },100);
 }
 function hideMarquee(){ document.getElementById('dialogueMarquee').classList.remove('show'); clearTimeout(showMarquee._t); }
 window.showMarquee=showMarquee; window.hideMarquee=hideMarquee;
