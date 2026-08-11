@@ -878,7 +878,7 @@ function launchConfetti(){
 }
 
 /* ===================== UI 互動 ===================== */
-function showToast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(t._tm); t._tm=setTimeout(()=>t.classList.remove('show'),5000); }
+function showToast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(t._tm); const dur=(msg&&msg.indexOf('⚠')>=0)?1000:5000; t._tm=setTimeout(()=>t.classList.remove('show'),dur); }
 function fmt(n){ return Math.round(n).toLocaleString('en-US'); }
 function fmtK(n){ n=Math.round(n); if(n>=1000) return (n/1000)+'k'; return ''+n; }
 function updateBalance(){ document.getElementById('balance').textContent=fmt(balance); if(balance>stats.peak) stats.peak=balance; }
