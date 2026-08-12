@@ -339,6 +339,14 @@
   .ai-balances .aib small{font-size:8px; opacity:.75; white-space:nowrap;}
   .ai-balances .aib b{font-size:11px; color:var(--gold2); font-weight:800;}
   .ai-balances .aib.hot{ border-left:2px solid #ffb347; background:rgba(255,179,71,.18); border-radius:3px;}
+  /* 升級⑦ AI情緒動畫 */
+  .ai-balances .aib.em-hot small{ color:#ffd479; }
+  .ai-balances .aib.em-cold{ opacity:.7; }
+  .ai-balances .aib.em-cold small{ color:#9fb3c8; }
+  @keyframes emWinFlash{ 0%{ background:rgba(255,215,121,.0);} 30%{ background:rgba(255,215,121,.55); transform:scale(1.06);} 100%{ background:rgba(255,215,121,0); transform:scale(1);} }
+  @keyframes emLoseFlash{ 0%{ background:rgba(120,140,160,0);} 30%{ background:rgba(120,140,160,.45); filter:grayscale(.7);} 100%{ background:rgba(120,140,160,0); filter:grayscale(0);} }
+  .ai-balances .aib.em-flash-win{ animation:emWinFlash 1.5s ease; }
+  .ai-balances .aib.em-flash-lose{ animation:emLoseFlash 1.5s ease; }
   /* AI 管理列表 modal */
   .ai-list{margin:10px 0; display:flex; flex-direction:column; gap:5px;}
   .ai-empty{font-size:12px; opacity:.6; text-align:center; padding:6px;}
@@ -1934,6 +1942,7 @@ window.showMarquee=showMarquee; window.hideMarquee=hideMarquee;
 function aiSettle(result, playerPair, bankerPair, big, pTotal, bTotal, pCards, bCards){
   // 注意：依用家要求，發牌完畢後「AI 走馬燈 + AI 語音對話」全部刪除，只保留 AI 派彩/統計（數字照更新）。
   // 人類輸贏報導語音（settle 內 announceResult + 你贏/輸/平手）不受影響。
+  const wonIds=[], lostIds=[];
   for(const ai of ais){
     if(!ai) continue;
     const b=ai._lastBet;
@@ -1972,9 +1981,13 @@ function aiSettle(result, playerPair, bankerPair, big, pTotal, bTotal, pCards, b
     ai.history.push(result==='player'?'P':result==='banker'?'B':'T');
     if(ai.history.length>40) ai.history.shift();
     // —— 以下對話/語音已按用家要求刪除（唔再 showMarquee / speak） ——
+    if(win) wonIds.push(ai.id); else if(ai.lastWin===false) lostIds.push(ai.id);
     ai.currentBet=null;
   }
   updateBetDisplay(); updateAiBalances(); saveAiList();
+  // 升級⑦ 情緒動畫：贏錢飄金 / 輸錢變灰（短暫1.5s）
+  wonIds.forEach(id=>{ const el=document.querySelector('.aib[data-ai="'+id+'"]'); if(el){ el.classList.add('em-flash-win'); setTimeout(()=>el.classList.remove('em-flash-win'),1500); } });
+  lostIds.forEach(id=>{ const el=document.querySelector('.aib[data-ai="'+id+'"]'); if(el){ el.classList.add('em-flash-lose'); setTimeout(()=>el.classList.remove('em-flash-lose'),1500); } });
 }
 function updateAiBalances(){   // 頂欄橫向捲動：你(人類)永遠第一格 + 最多6個AI
   const box=document.getElementById('aiBalanceBox');
@@ -1988,7 +2001,11 @@ function updateAiBalances(){   // 頂欄橫向捲動：你(人類)永遠第一�
   let html='<div class="aib human"><small>👤 你</small><b>'+fmt(balance)+'</b></div>';
   ais.forEach(ai=>{
     const hot = ai.id===hotId ? ' 🔥連勝'+ai.streak : '';
-    html+='<div class="aib'+(ai.id===hotId?' hot':'')+'" data-ai="'+ai.id+'"><small>'+ai.icon+' '+ai.name+hot+'</small><b>'+fmt(ai.balance)+'</b></div>';
+    // 升級⑦ AI情緒：根據 emotion 顯示表情 + 狀態class
+    const em=ai.emotion||50;
+    const face = em>65?'😄': em<35?'😢':'😐';
+    const emCls = em>65?' em-hot': em<35?' em-cold':' em-normal';
+    html+='<div class="aib'+(ai.id===hotId?' hot':'')+emCls+'" data-ai="'+ai.id+'"><small>'+ai.icon+' '+ai.name+face+hot+'</small><b>'+fmt(ai.balance)+'</b></div>';
   });
   box.innerHTML=html;
   
