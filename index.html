@@ -258,6 +258,7 @@
   .btn.clear{background:#311; color:#fbb; border:1px solid #a44;}
   .btn:disabled{opacity:.4; filter:grayscale(.6);}
   .btn.shuffle{background:#222; color:var(--gold2); border:1px solid var(--goldd); flex:0 0 auto; padding:7px 10px;}
+  .btn.follow{background:linear-gradient(180deg,#ffd479,#e6a417); color:#241a00; border:1px solid #ffb347; flex:0 0 auto; padding:7px 10px; font-weight:800; box-shadow:0 3px 0 #7a5a00;}
   .btn.auto{background:#2a2113; color:#e0b34a; border:1px solid #7a5a1a; flex:0 0 auto; padding:7px 7px; font-size:11px;}   /* 關：琥珀色，醒目「可按啟動」 */
   .btn.auto.on{background:#2faf5a; color:#04110a; border-color:#2faf5a; box-shadow:0 0 10px rgba(47,175,90,.5);}             /* 開：綠色，進行中 */
 
@@ -507,6 +508,7 @@
 
   <div class="controls">
     <button class="btn shuffle" id="btnShuffle" title="重新洗牌">洗牌</button>
+    <button class="btn follow" id="btnFollow" title="跟旺AI">跟旺AI</button>
     <button class="btn auto" id="btnAuto" title="自動開牌">自動:關</button>
     <button class="btn clear" id="btnClear">清除</button>
     <button class="btn repeat" id="btnRepeat">重複</button>
@@ -1025,6 +1027,23 @@ function bettingPhase(sec){
 function repeatBets(){ if((dealing && !betting)||!lastBets)return; let total=0; for(const x in lastBets) total+=lastBets[x];
   if(total>TABLE_MAX||balance<total){ showToast('⚠ 餘額不足重複（剩 '+fmt(balance)+'）'); return; }
   balance-=total; bets=Object.assign({},lastBets); updateBalance(); updateAiBalances(); updateBetDisplay(); sndChip();
+}
+// 升級⑨ 跟旺AI：搵連勝最高嘅AI，你跟佢主注邊+同樣注額（落注期用）
+function followHotAI(){
+  if(dealing && !betting){ showToast('⚠ 開牌中唔可以跟'); return; }
+  let hot=null, best=-1;
+  ais.forEach(ai=>{ if(ai && ai.currentBet && ai.streak>best){ best=ai.streak; hot=ai; } });
+  if(!hot){ showToast('⚠ 暫時無旺AI可跟（等佢哋落注）'); return; }
+  const b=hot.currentBet;
+  const amt=Math.min(b.bet, balance);
+  if(amt<=0){ showToast('⚠ 餘額不足跟注'); return; }
+  clearBets(true);
+  if(b.pick==='player') bets.player=amt;
+  else if(b.pick==='banker') bets.banker=amt;
+  else if(b.pick==='tie') bets.tie=amt;
+  balance-=amt;
+  updateBalance(); updateBetDisplay(); sndChip();
+  showToast('🔥 跟旺AI「'+hot.name+'」('+b.pick+' '+fmt(amt)+')');
 }
 
 /* ===================== ① 開局前枱邊閒聊 (pre-round table talk) ===================== */
@@ -2137,6 +2156,7 @@ document.querySelectorAll('.bet[data-bet]').forEach(b=>b.addEventListener('click
 document.getElementById('btnClear').addEventListener('click',clearBets);
 document.getElementById('btnRepeat').addEventListener('click',repeatBets);
 document.getElementById('btnDeal').addEventListener('click',function(){ if(autoOn){ showToast('自動開牌進行中，請先按「自動」停止'); return; } deal(); });
+document.getElementById('btnFollow').addEventListener('click', followHotAI);
 
 /* ===================== 自動開牌：同手動統一次序 ===================== */
 let autoTimer=null;
