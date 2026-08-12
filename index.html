@@ -360,7 +360,7 @@
       <div class="balance"><small>餘額</small><div><b id="balance">1,000,000</b></div></div>
       <div class="ai-balances" id="aiBalanceBox" style="display:none;"></div>
       <button class="iconbtn" id="btnAI" title="AI陪玩設定">🤖</button>
-      <button class="iconbtn" id="btnSpeed" title="節奏快慢">⏱中</button>
+      <button class="iconbtn" id="btnSpeed" title="節奏快慢">⏱中慢</button>
     </div>
   </div>
 
@@ -805,6 +805,7 @@ function pickDealerVoice(){
 if('speechSynthesis' in window){ speechSynthesis.onvoiceschanged=()=>{ dealerVoice=pickDealerVoice(); }; dealerVoice=pickDealerVoice(); }
 // 串行語音隊列（解決 Chrome 首句緩衝 + 多句撞聲卡死）
 let ttsQueue=[], ttsBusy=false, ttsWarmed=false;
+let ttsRate=1.15;   // 聊天/結算後語音速度（快少少）；開牌 dealerCall 用 1.05
 function ttsWarmup(){
   if(ttsWarmed || !('speechSynthesis' in window)) return;
   ttsWarmed=true;
@@ -822,16 +823,17 @@ function ttsProcess(){
   try{
     const u=new SpeechSynthesisUtterance(text);
     const v=pickDealerVoice(); if(v) u.voice=v;
-    u.lang='zh-HK'; u.rate=1.05; u.pitch=1.0; u.volume=1.0;
+    u.lang='zh-HK'; u.rate=ttsRate; u.pitch=1.0; u.volume=1.0;
     u.onend=()=>{ ttsBusy=false; setTimeout(ttsProcess, 140); };
     u.onerror=()=>{ ttsBusy=false; setTimeout(ttsProcess, 140); };
     speechSynthesis.speak(u);
   }catch(e){ ttsBusy=false; }
 }
-function speak(text){
+function speak(text, rate){
   if(mute || !text) return;
   if(!('speechSynthesis' in window)) return;
   ttsWarmup();
+  ttsRate = (rate!=null) ? rate : 1.15;   // 聊天/結算後預設1.15（快少少）；開牌傳1.05
   ttsQueue.push(text);
   if(ttsQueue.length>4) ttsQueue.shift();   // 限制隊列，避免一次讀太多
   ttsProcess();
@@ -839,7 +841,7 @@ function speak(text){
 /* 荷官口播：大字 + 語音 */
 function dealerCall(text, color){
   showMsg('🎙 '+text, color||'var(--gold2)');
-  speak(text.replace(/[🎙⏳🔥💥▶]/g,'').replace('請下注','請下注。').replace('請開牌','請開牌。').replace('補牌','補牌。'));
+  speak(text.replace(/[🎙⏳🔥💥▶]/g,'').replace('請下注','請下注。').replace('請開牌','請開牌。').replace('補牌','補牌。'), 1.05);  // 開牌速度1.05唔改
 }
 /* 結算結果語音：只講（唔覆蓋大字），帶雙方點數 + 對子/大細 */
 function announceResult(winner, playerPair, bankerPair, big, pTotal, bTotal){
@@ -1104,6 +1106,7 @@ function addChatBubble(ai, msg) {
   const target = (total < 4) ? L : R;
   target.appendChild(b);
   target.scrollTop = target.scrollHeight;
+  // 注意：出聲由 tableChatPhase 嘅 voiceSet 控制，呢度唔 call speak（避免雙重出聲）
 }
 function showTableChat(){
   ['L','R'].forEach(s=>{
@@ -1126,8 +1129,8 @@ async function tableChatPhase(sec) {
         const shuffled = [...ais].sort(() => Math.random() - 0.5);
         shuffled.forEach(ai => { ai._prePick = aiPick(ai); });
 
-        // 從打亂後的順序中，選取最多 3 個作為語音發言者
-        const voiceSpeakers = shuffled.slice(0, Math.min(3, shuffled.length));
+        // 從打亂後的順序中，選取最多 4 個作為語音發言者（枱邊出聲 +1）
+        const voiceSpeakers = shuffled.slice(0, Math.min(4, shuffled.length));
         const voiceSet = new Set(voiceSpeakers.map(ai => ai.id));
 
         const ctx = roadState();
@@ -1436,6 +1439,7 @@ async function deal(auto){
 /* ===================== 結算 ===================== */
 function settle(winner, playerPair, bankerPair, big, totalCards, pTotal, bTotal, pCards, bCards){
   settled=true;
+  window._settleSpoken=0;   // 每局重置結算後出聲計數（最多3個）
   lastBets=Object.assign({},bets);  // 記錄本局投注供重複按鈕用
   let payout=0;
   const winDetail={};
@@ -1519,8 +1523,8 @@ function settle(winner, playerPair, bankerPair, big, totalCards, pTotal, bTotal,
   if(winner==='banker' && bTotal===6) resultDetail.luck6=true; // 幸運6
   if(winner==='player' && pTotal===7 && bTotal===6) resultDetail.luck7=true; // 幸運7
   const flashMap={player:'.bet.player',banker:'.bet.banker',tie:'.bet.tie',ppair:'.bet.ppair',bpair:'.bet.bpair',big:'.bet.big',small:'.bet.small',luck6:'.bet.luck6',luck7:'.bet.luck7'};
-  const dur=FLASH_DUR[speed]*1000; // 闪灯+筹码消失同步：快3s(2次)/中5s(4次)/慢6s(4次)
-  const cls = speed===0?'win-pulse-fast':speed===1?'win-pulse-med':'win-pulse-slow';
+  const dur=FLASH_DUR[speed]*1000; // 闪灯+筹码消失同步：快3s(2次)/中慢6s(4次)
+  const cls = speed===0?'win-pulse-fast':'win-pulse-slow';
   document.querySelectorAll('.bet').forEach(el=>el.classList.remove('win-pulse-fast','win-pulse-med','win-pulse-slow'));
   for(const k in resultDetail){ const el=document.querySelector(flashMap[k]); if(el){
     el.classList.add(cls);
@@ -1952,7 +1956,11 @@ function aiSettle(result, playerPair, bankerPair, big, pTotal, bTotal, pCards, b
     if(msg){
       dialogues.push(msg);
       // AI 語音口播（同 mute 掣 / zh-HK；win 或 sideWin 先出聲，避免太嘈）
-      if((win||sideWin) && !mute) setTimeout(()=>speak(ai.name+(sNames.length?('中咗'+sNames.join('同')+'！'):'贏咗')), 600+Math.random()*800);
+      // AI 語音口播：最多3個出聲（唔再限制只贏錢）
+      if(!mute && (window._settleSpoken||0)<3){
+        window._settleSpoken=(window._settleSpoken||0)+1;
+        setTimeout(()=>speak(ai.name+(sNames.length?('中咗'+sNames.join('同')+'！'):'贏咗'), 1.15), 600+Math.random()*800);
+      }
     }
     ai.currentBet=null;
   });
@@ -2051,13 +2059,13 @@ document.getElementById('btnRepeat').addEventListener('click',repeatBets);
 document.getElementById('btnDeal').addEventListener('click',function(){ if(autoOn){ showToast('自動開牌進行中，請先按「自動」停止'); return; } deal(); });
 
 /* ===================== 節奏控制 ===================== */
-let speed=1; // 0=快(-3s) 1=中 2=慢(+3s)
-const SPEED_NAMES=['⏱快','⏱中','⏱慢'];
-const SPEED_OFFSET=[-3,0,3];
-const FLASH_DUR=[3,5,6]; // 閃燈+籌碼消失同步：快3s(2次)/中5s(4次)/慢6s(4次)
+let speed=1; // 0=快(-3s) 1=中慢(+3s)
+const SPEED_NAMES=['⏱快','⏱中慢'];
+const SPEED_OFFSET=[-3,3];
+const FLASH_DUR=[3,6]; // 閃燈+籌碼消失同步：快3s(2次)/中慢6s(4次)
 
 function cycleSpeed(){
-  speed=(speed+1)%3;
+  speed=(speed+1)%2;
   document.getElementById('btnSpeed').textContent=SPEED_NAMES[speed];
   localStorage.setItem('bac_speed', speed);
 }
@@ -2196,7 +2204,7 @@ document.getElementById('aiStop').addEventListener('click',()=>{
 });
 document.getElementById('aiExit').addEventListener('click',()=>{ document.getElementById('aiModal').classList.remove('show'); });
 document.getElementById('btnMute').addEventListener('click',()=>{ mute=!mute; document.getElementById('btnMute').textContent=mute?'🔇':'🔊'; if(!mute) sndChip(); });
-document.getElementById('btnSpeed').addEventListener('click',()=>{ cycleSpeed(); showToast(SPEED_NAMES[speed]+'節奏'+(speed===1?'':speed===0?' (-3秒)':' (+3秒)') ); });
+document.getElementById('btnSpeed').addEventListener('click',()=>{ cycleSpeed(); showToast(SPEED_NAMES[speed]+'節奏'+(speed===1?' (+3秒)':speed===0?' (-3秒)':'')); });
 
 /* ===================== ⑤ 玩家快捷表情：你發，AI 回 ===================== */
 const EMOTE_ICON={laugh:'😂',money:'💰',wow:'😮',fire:'🔥'};
@@ -2244,9 +2252,10 @@ document.querySelectorAll('.player-emotes .pe').forEach(el=>{
 
 loadStats(); loadRoads(); loadAiList(); updateAiBalances();
 sessionStartBalance=balance;   // 記低開局餘額，畀「本場淨贏/輸」用
-try{ const s=localStorage.getItem('bac_speed'); if(s!==null) speed=+s; }catch(e){}
+try{ const s=localStorage.getItem('bac_speed'); if(s!==null) speed=(+s)%2; }catch(e){}
 document.getElementById('btnSpeed').textContent=SPEED_NAMES[speed];
 resetShoe(); updateBalance(); updateBetDisplay(); checkDaily(); drawAllRoads();
 </script>
 </body>
 </html>
+
