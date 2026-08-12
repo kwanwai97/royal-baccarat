@@ -207,6 +207,8 @@
   .chip{width:30px; height:30px; flex:0 0 auto; border-radius:50%; border:2px dashed #fff; display:flex; align-items:center; justify-content:center;
     font-size:8px; font-weight:800; color:#fff; cursor:pointer; box-shadow:0 2px 4px rgba(0,0,0,.5); position:relative; transition:transform .12s;}
   .shoe-info{flex:0 0 auto; font-size:11px; font-weight:700; color:#06243f !important; background:rgba(169,210,255,.9); padding:2px 8px; border-radius:10px; white-space:nowrap; text-align:right;}
+  .odds-info{flex:0 0 auto; font-size:11px; font-weight:700; color:#06243f; background:rgba(255,236,179,.95); padding:3px 8px; border-radius:10px; white-space:nowrap; text-align:left; line-height:1.45; border:1px solid #e6b54a;}
+  .odds-info b{color:#7a3d00;}
   .chip.active{transform:scale(1.12); border-color:#fff;}
   .chip-icon{width:30px; height:30px; flex:0 0 auto; border-radius:8px; border:1px solid rgba(212,175,55,.4); background:linear-gradient(180deg,#1a2f24,#0d1a12); display:flex; align-items:center; justify-content:center; font-size:13px; color:#f5f0d8; cursor:pointer;}
   .chip-icon:hover{background:linear-gradient(180deg,#26402f,#142318);}
@@ -484,6 +486,7 @@
       <button class="iconbtn chip-icon" id="btnMute" title="音效">🔊</button>
     </div>
     <div class="shoe-info" id="shoeInfo"></div>
+    <div class="odds-info" id="oddsInfo">真實機率：洗牌中…</div>
   </div>
 
   <div class="controls">
@@ -972,6 +975,7 @@ function bettingPhase(sec){
       if(speakIt) speak(txt);
     };
     tick(true);
+    updateOdds();
     const iv=setInterval(()=>{
       t--;
       if(t<=0){
@@ -1990,7 +1994,31 @@ function burnCard(){ // 切牌卡燒牌：切牌卡下面第一張決定燒幾�
   return n;
 }
 function drawCard(){ const c=shoe[shoeDrawn++]; updateShoeInfo(); return c; }
-function updateShoeInfo(){ const el=document.getElementById('shoeInfo'); if(!el) return; const playable=Math.max(0,shoeCut-shoeDrawn); el.textContent=shoe.length+'張｜剩'+playable+'張後洗牌'; }
+function updateShoeInfo(){ const el=document.getElementById('shoeInfo'); if(!el) return; const playable=Math.max(0,shoeCut-shoeDrawn); el.textContent=shoe.length+'張｜剩'+playable+'張後洗牌'; updateOdds(); }
+// 即時勝率：根據牌靴剩餘張數做蒙特卡洛模擬 (2000手)，算真實莊/閒/和/對子機率
+function simulateOneHand(pool){
+  const used=[];
+  const draw=()=>{ if(used.length>=pool.length) return null; let i; do{ i=Math.floor(Math.random()*pool.length); }while(used.indexOf(i)>=0); used.push(i); return pool[i]; };
+  const pc=[draw(),draw()], bc=[draw(),draw()];
+  if(!pc[0]||!pc[1]||!bc[0]||!bc[1]) return null;
+  const p0=handTotal(pc), b0=handTotal(bc);
+  if(p0<8 && b0<8){
+    if(p0<=5){ const pt=draw(); pc.push(pt); if(bankerShouldDraw(b0, pt.value)){ const bt=draw(); bc.push(bt); } }
+    else { if(b0<=5){ const bt=draw(); bc.push(bt); } }
+  }
+  const pT=handTotal(pc), bT=handTotal(bc);
+  const w = pT>bT?'player': bT>pT?'banker':'tie';
+  return { w, pp: pc[0].rank===pc[1].rank, bp: bc[0].rank===bc[1].rank };
+}
+function updateOdds(){
+  const el=document.getElementById('oddsInfo'); if(!el) return;
+  const pool=shoe.slice(shoeDrawn);
+  if(pool.length<6){ el.innerHTML='真實機率｜牌靴將盡'; return; }
+  const N=2000; let bp=0,bk=0,tie=0,pp=0,bpp=0;
+  for(let i=0;i<N;i++){ const r=simulateOneHand(pool); if(!r) continue; if(r.w==='player')bp++; else if(r.w==='banker')bk++; else tie++; if(r.pp)pp++; if(r.bp)bpp++; }
+  const pct=x=>(100*x/N).toFixed(1);
+  el.innerHTML='真實機率｜莊 <b>'+pct(bk)+'%</b> 閒 <b>'+pct(bp)+'%</b> 和 <b>'+pct(tie)+'%</b><br>莊對 <b>'+pct(bpp)+'%</b> 閒對 <b>'+pct(pp)+'%</b>';
+}
 async function doShuffle(){
   const ov=document.getElementById('shuffleOverlay');
   if(ov){ ov.querySelector('.title').textContent='🔀 洗牌中…'; ov.classList.add('show'); }
