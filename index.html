@@ -338,7 +338,7 @@
   .ai-balances .aib{display:flex; flex-direction:column; line-height:1.1; padding:1px 5px; border-left:1px solid rgba(255,255,255,.15);}
   .ai-balances .aib small{font-size:8px; opacity:.75; white-space:nowrap;}
   .ai-balances .aib b{font-size:11px; color:var(--gold2); font-weight:800;}
-  .ai-balances .aib.human{ border-left:1px solid rgba(255,255,255,.15); }   /* 你：同AI格一樣格式，4格對稱 */
+  .ai-balances .aib.hot{ border-left:2px solid #ffb347; background:rgba(255,179,71,.18); border-radius:3px;}
   /* AI 管理列表 modal */
   .ai-list{margin:10px 0; display:flex; flex-direction:column; gap:5px;}
   .ai-empty{font-size:12px; opacity:.6; text-align:center; padding:6px;}
@@ -508,7 +508,7 @@
 
   <div class="controls">
     <button class="btn shuffle" id="btnShuffle" title="重新洗牌">洗牌</button>
-    <button class="btn follow" id="btnFollow" title="跟旺AI">跟旺AI</button>
+    <button class="btn follow" id="btnFollow" title="跟旺AI：跟連勝最高的AI（頂欄🔥標記嗰個），跟佢主注邊+同注額">跟旺AI</button>
     <button class="btn auto" id="btnAuto" title="自動開牌">自動:關</button>
     <button class="btn clear" id="btnClear">清除</button>
     <button class="btn repeat" id="btnRepeat">重複</button>
@@ -1981,9 +1981,15 @@ function updateAiBalances(){   // 頂欄橫向捲動：你(人類)永遠第一�
   if(ais.length===0){ box.style.display='none'; document.querySelector('.balance').style.display=''; return; }
   box.style.display='';
   document.querySelector('.balance').style.display='none'; // 有AI時隱藏頂部獨立餘額板（你嘅餘額已顯示喺2×2卡位內）
+  // 旺AI定義：連勝(streak)最高 且 有落注(currentBet)嘅AI
+  let hotId=null, best=-1;
+  ais.forEach(ai=>{ if(ai && ai.currentBet && ai.streak>best){ best=ai.streak; hotId=ai.id; } });
   // 你 永遠第一格；格式同AI完全一樣(icon+名+餘額) 確保4格對稱
   let html='<div class="aib human"><small>👤 你</small><b>'+fmt(balance)+'</b></div>';
-  ais.forEach(ai=>{ html+='<div class="aib" data-ai="'+ai.id+'"><small>'+ai.icon+' '+ai.name+'</small><b>'+fmt(ai.balance)+'</b></div>'; });
+  ais.forEach(ai=>{
+    const hot = ai.id===hotId ? ' 🔥連勝'+ai.streak : '';
+    html+='<div class="aib'+(ai.id===hotId?' hot':'')+'" data-ai="'+ai.id+'"><small>'+ai.icon+' '+ai.name+hot+'</small><b>'+fmt(ai.balance)+'</b></div>';
+  });
   box.innerHTML=html;
   
 }
