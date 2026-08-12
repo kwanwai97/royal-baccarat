@@ -1430,6 +1430,7 @@ async function deal(auto){
   addResult(winner, playerPair, bankerPair, totalCards);
   drawAllRoads();
   saveStats();
+  updateOdds();   // 系統紀錄完成(路單push+draw)後先出機率/路單預測，唔早一步
   // 開牌3秒後啤牌淡出消失，結果文字保留
   setTimeout(function(){
     ['playerCards','bankerCards'].forEach(function(id){
@@ -1560,7 +1561,6 @@ function settle(winner, playerPair, bankerPair, big, totalCards, pTotal, bTotal,
     if(still){ ais.forEach(ai=>{ if(ai) ai._lastBet=ai.currentBet||null; }); clearBets(true); ais.forEach(ai=>{ if(ai) ai.currentBet=null; }); updateBetDisplay(); }
     await sleep(2000); saveRoads(); settled=false;   // 結算已即時完成，呢度只留清籌碼保險 + 落注解鎖
   }, dur);
-  updateOdds();   // 結算後即時刷新機率/路單意見(開牌聊天時出，唔等落注倒數)
 }
 /* 結果文字：3行式 + 補牌提示 */
 function resultText(label, pTotal, bTotal, pp, bp, big, pCards, bCards, net){
