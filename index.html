@@ -833,7 +833,7 @@ function speak(text){
   if(!('speechSynthesis' in window)) return;
   ttsWarmup();
   ttsQueue.push(text);
-  if(ttsQueue.length>8) ttsQueue.shift();   // 放宽队列，避免一次读太多被丢声
+  if(ttsQueue.length>4) ttsQueue.shift();   // 限制隊列，避免一次讀太多
   ttsProcess();
 }
 /* 荷官口播：大字 + 語音 */
@@ -1487,6 +1487,8 @@ function settle(winner, playerPair, bankerPair, big, totalCards, pTotal, bTotal,
     sndWin(); launchConfetti();
     let label = winner==='player'?'閒家贏':winner==='banker'?'莊家贏':'和局';
     showMsg(resultText(label, pTotal, bTotal, playerPair, bankerPair, big, pCards, bCards, net), winner==='banker'?'#ffb3b3':winner==='player'?'#a9d2ff':'#8fe0ab');
+    announceResult(winner, playerPair, bankerPair, big, pTotal, bTotal);
+    if(!mute) setTimeout(()=>speak('你贏咗 '+fmt(net)+'蚊，叻仔'), 700);
     let tip='🎉 贏 '+fmt(net);
     if(bonus>0) tip+=' ｜🔥連勝彩金 +'+fmt(bonus);
     showToast(tip);
@@ -1495,11 +1497,15 @@ function settle(winner, playerPair, bankerPair, big, totalCards, pTotal, bTotal,
     sndLose();
     let label = winner==='player'?'閒家贏':winner==='banker'?'莊家贏':'和局';
     showMsg(resultText(label, pTotal, bTotal, playerPair, bankerPair, big, pCards, bCards, net), winner==='banker'?'#ffb3b3':winner==='player'?'#a9d2ff':'#8fe0ab');
+    announceResult(winner, playerPair, bankerPair, big, pTotal, bTotal);
+    if(!mute) setTimeout(()=>speak('你輸咗 '+fmt(-net)+'蚊，唔緊要，下鋪翻本'), 700);
     showToast('💸 輸 '+fmt(-net));
   } else {
     sndTie();
     let label = winner==='player'?'閒家贏':winner==='banker'?'莊家贏':'和局';
     showMsg(resultText(label, pTotal, bTotal, playerPair, bankerPair, big, pCards, bCards, net), winner==='banker'?'#ffb3b3':winner==='player'?'#a9d2ff':'#8fe0ab');
+    announceResult(winner, playerPair, bankerPair, big, pTotal, bTotal);
+    if(!mute && lastStaked>0) setTimeout(()=>speak('平手，錢退返畀你'), 700);
     if(lastStaked>0) showToast('↔ 平手退還');
   }
   updateBalance(); updateAiBalances(); updateStreak();
@@ -1532,7 +1538,7 @@ function settle(winner, playerPair, bankerPair, big, totalCards, pTotal, bTotal,
     // 保險：若籌碼仲喺度（異常）強制再清一次
     let still=false; document.querySelectorAll('.chips-stack').forEach(s=>{ if(s.children.length) still=true; });
     if(still){ ais.forEach(ai=>{ if(ai) ai._lastBet=ai.currentBet||null; }); clearBets(true); ais.forEach(ai=>{ if(ai) ai.currentBet=null; }); updateBetDisplay(); }
-    await sleep(1500); saveRoads(); settled=false; aiSettle(winner, playerPair, bankerPair, big, pTotal, bTotal, pCards, bCards, net, staked);
+    await sleep(2000); saveRoads(); settled=false; if(ais.length) aiSettle(winner, playerPair, bankerPair, big, pTotal, bTotal, pCards, bCards);
   }, dur);
 }
 /* 結果文字：3行式 + 補牌提示 */
@@ -1871,19 +1877,13 @@ function showMarquee(items){
     track.appendChild(el);
   });
   box.classList.add('show');
-  clearTimeout(showMarquee._t); clearInterval(showMarquee._iv);
-  let waited=0;
-  showMarquee._iv=setInterval(()=>{
-    waited+=100;
-    const ttsIdle=(typeof ttsQueue==='undefined')||(ttsQueue.length===0 && !ttsBusy);
-    if(ttsIdle){ clearInterval(showMarquee._iv); showMarquee._t=setTimeout(()=>hideMarquee(), 3000); }
-    else if(waited>15000){ clearInterval(showMarquee._iv); hideMarquee(); }
-  },100);
+  clearTimeout(showMarquee._t);
+  showMarquee._t=setTimeout(()=>hideMarquee(), 10000);  // 固定 10 秒顯示，配合「等語音播完」先傾偈
 }
 function hideMarquee(){ document.getElementById('dialogueMarquee').classList.remove('show'); clearTimeout(showMarquee._t); }
 window.showMarquee=showMarquee; window.hideMarquee=hideMarquee;
 
-function aiSettle(result, playerPair, bankerPair, big, pTotal, bTotal, pCards, bCards, humanNet, humanStaked){
+function aiSettle(result, playerPair, bankerPair, big, pTotal, bTotal, pCards, bCards){
   const dialogues=[];
   ais.forEach(ai=>{
     if(!ai) return;
@@ -1956,30 +1956,7 @@ function aiSettle(result, playerPair, bankerPair, big, pTotal, bTotal, pCards, b
     }
     ai.currentBet=null;
   });
-
-  // ===== 統一報道：閃燈完 +1.5秒，語音同文字同時出，順暢唔會時有時無 =====
-  // 規則：人類有投注 → 淨報人類（唔報 AI / 唔報荷官）；人類無投注 → 荷官報結果 + 最多 2 個贏家 AI
-  const lines=[];
-  if(humanStaked>0 && humanNet!==undefined){
-    const hWho = result==='banker'?'莊家贏':result==='player'?'閒家贏':'和局';
-    const hExtra = (playerPair?' 閒對': '')+(bankerPair?' 莊對':'')+(big?' 大牌':' 小牌');
-    const hNet = (humanNet>0?'＋'+fmt(humanNet):humanNet<0?'－'+fmt(-humanNet):'平手退還');
-    lines.push({who:'你', text:'你：'+hWho+hExtra+'，你'+hNet+(humanNet>0?'，叻仔 🎉':humanNet<0?'，下鋪翻本 💪':''), voice:('你'+(humanNet>0?'贏咗 '+fmt(humanNet)+'蚊，叻仔':humanNet<0?'輸咗 '+fmt(-humanNet)+'蚊，唔緊要，下鋪翻本':'平手，錢退返畀你'))});
-  } else {
-    // 人類無投注：荷官報結果（必出，語音+文字）
-    const dWho = result==='banker'?'莊家贏':result==='player'?'閒家贏':'和局';
-    const dExtra = (playerPair?' 閒對': '')+(bankerPair?' 莊對':'')+(big?' 大牌':' 小牌');
-    lines.push({who:'荷官', text:'荷官：'+dWho+dExtra+'（閒 '+pTotal+' 莊 '+bTotal+'）', voice:(dWho+'，閒 '+pTotal+' 點，莊 '+bTotal+' 點'+dExtra)});
-    // 最多 2 個贏家 AI 報道
-    const winners=dialogues.filter(d=>/贏|中/.test(d)).slice(0,2);
-    winners.forEach(w=>lines.push({who:'', text:w, voice:null}));
-  }
-
-  // 同時出語音 + 走馬燈：語音逐句排隊（保證順序），文字一齊顯
-  if(!mute){
-    lines.forEach((ln,i)=>{ if(ln.voice) setTimeout(()=>speak(ln.voice), i*200); });
-  }
-  showMarquee(lines.map(l=>l.text));
+  if(dialogues.length) showMarquee(dialogues);
   updateBetDisplay(); updateAiBalances(); saveAiList();
 }
 function updateAiBalances(){   // 頂欄橫向捲動：你(人類)永遠第一格 + 最多6個AI
