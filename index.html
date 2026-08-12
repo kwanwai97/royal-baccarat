@@ -207,7 +207,8 @@
   .chip{width:30px; height:30px; flex:0 0 auto; border-radius:50%; border:2px dashed #fff; display:flex; align-items:center; justify-content:center;
     font-size:8px; font-weight:800; color:#fff; cursor:pointer; box-shadow:0 2px 4px rgba(0,0,0,.5); position:relative; transition:transform .12s;}
   .shoe-info{flex:0 0 auto; font-size:11px; font-weight:700; color:#06243f !important; background:rgba(169,210,255,.9); padding:2px 8px; border-radius:10px; white-space:nowrap; text-align:right;}
-  .odds-info{flex:0 0 auto; font-size:11px; font-weight:700; color:#06243f; background:rgba(255,236,179,.95); padding:3px 8px; border-radius:10px; white-space:nowrap; text-align:left; line-height:1.45; border:1px solid #e6b54a;}
+  .odds-row{display:flex; justify-content:center; padding:1px 10px 4px; width:100%; box-sizing:border-box;}
+  .odds-info{font-size:11px; font-weight:700; color:#06243f; background:rgba(255,236,179,.95); padding:3px 10px; border-radius:10px; white-space:nowrap; text-align:center; line-height:1.45; border:1px solid #e6b54a; max-width:100%; overflow:hidden; text-overflow:ellipsis;}
   .odds-info b{color:#7a3d00;}
   .chip.active{transform:scale(1.12); border-color:#fff;}
   .chip-icon{width:30px; height:30px; flex:0 0 auto; border-radius:8px; border:1px solid rgba(212,175,55,.4); background:linear-gradient(180deg,#1a2f24,#0d1a12); display:flex; align-items:center; justify-content:center; font-size:13px; color:#f5f0d8; cursor:pointer;}
@@ -477,17 +478,17 @@
   </div>
 
   <div class="chips-row">
-    <div class="chips" id="chips">
-      <div class="chip c1k active" data-chip="1000">1K</div>
-      <div class="chip c5k" data-chip="5000">5K</div>
-      <div class="chip c10k" data-chip="10000">10K</div>
-      <button class="iconbtn chip-icon" id="btnDaily" title="每日免費籌碼">🎁</button>
-      <button class="iconbtn chip-icon" id="btnStats" title="戰績">📊</button>
-      <button class="iconbtn chip-icon" id="btnMute" title="音效">🔊</button>
-    </div>
-    <div class="shoe-info" id="shoeInfo"></div>
-    <div class="odds-info" id="oddsInfo">真實機率：洗牌中…</div>
+  <div class="chips" id="chips">
+    <div class="chip c1k active" data-chip="1000">1K</div>
+    <div class="chip c5k" data-chip="5000">5K</div>
+    <div class="chip c10k" data-chip="10000">10K</div>
+    <button class="iconbtn chip-icon" id="btnDaily" title="每日免費籌碼">🎁</button>
+    <button class="iconbtn chip-icon" id="btnStats" title="戰績">📊</button>
+    <button class="iconbtn chip-icon" id="btnMute" title="音效">🔊</button>
   </div>
+  <div class="shoe-info" id="shoeInfo"></div>
+  </div>
+  <div class="odds-row"><div class="odds-info" id="oddsInfo">真實機率：洗牌中…</div></div>
 
   <div class="controls">
     <button class="btn shuffle" id="btnShuffle" title="重新洗牌">洗牌</button>
