@@ -51,6 +51,8 @@
   .derived-row{position:relative; border-bottom:1px solid #14241c; flex:1;}
   .derived-row:last-child{border-bottom:none;}
   .derived-row canvas{width:100%; height:100%; display:block; background:#02110a;}
+  /* 下三路標籤：擺喺每張圖右下角（唔喺左上），半透明金色細字 */
+  .derived-label{position:absolute; right:6px; bottom:2px; font-size:8px; opacity:.6; padding:0; letter-spacing:0; background:none; border:none; pointer-events:none; text-align:right;}
 
   /* 珠盤路下方資訊條：同底部按鈕區同高，2行4格緊湊顯示（這一靴牌統計） */
   .info-strip{display:grid; grid-template-columns:repeat(4,1fr); grid-template-rows:repeat(2,1fr); gap:1px 4px; margin-top:3px; padding:3px 6px; height:44px;
@@ -260,10 +262,10 @@
   .marquee.show{opacity:1;}
   .marquee-track{display:flex; flex-direction:column; gap:4px;}
 
-  /* ===== ① 開局前枱邊閒聊：單一面板錨定 .road-lower（大路第6格底開始） ===== */
-  /* #tableChatL 佔全寬覆蓋牌路區；top:0 喺大路底，標題貼大路第6格底 */
+  /* ===== ① 開局前枱邊閒聊：單一面板，只佔左半（珠盤路位），唔遮右邊下三路 ===== */
+  /* #tableChatL 佔左半(珠盤路位)；top:0 喺大路底，標題貼大路第6格底 */
   .tablechat{position:absolute; top:0; bottom:0; z-index:15; margin:0; background:rgba(2,17,10,.9); border:none; border-radius:0; padding:6px 8px; display:flex; flex-direction:column; max-height:none; opacity:0; visibility:hidden; pointer-events:none; transition:opacity .35s ease, visibility .35s;}
-  .tc-left{left:0; right:0; top:-20px;}   /* 佔全寬覆蓋牌路區（同倒數同高） */
+  .tc-left{left:0; right:50%; top:-20px;}   /* 只佔左半，蓋住珠盤路；右半下三路露出 */
   .tablechat.show{opacity:1; visibility:visible; pointer-events:auto;}
   .tc-title{font-size:14px; color:var(--gold2); opacity:.9; letter-spacing:1px; margin-bottom:3px; flex:0 0 auto; display:flex; align-items:center; justify-content:space-between;}
   .tc-close{font-size:16px; line-height:1; color:#f5f0d8; background:rgba(212,175,55,.28); border:1px solid rgba(212,175,55,.7); border-radius:6px; padding:3px 9px; cursor:pointer; pointer-events:auto;}
@@ -374,16 +376,16 @@
       </div>
       <div class="road-derived">
         <div class="derived-row">
-          <div class="road-section-title" style="font-size:8px;opacity:.55;padding:1px 6px;letter-spacing:0">大眼仔路</div>
           <canvas id="beeCanvas" width="270" height="44"></canvas>
+          <div class="road-section-title derived-label">大眼仔路</div>
         </div>
         <div class="derived-row">
-          <div class="road-section-title" style="font-size:8px;opacity:.55;padding:1px 6px;letter-spacing:0">小路</div>
           <canvas id="smallCanvas" width="270" height="44"></canvas>
+          <div class="road-section-title derived-label">小路</div>
         </div>
         <div class="derived-row">
-          <div class="road-section-title" style="font-size:8px;opacity:.55;padding:1px 6px;letter-spacing:0">蟑螂路</div>
           <canvas id="cockCanvas" width="270" height="44"></canvas>
+          <div class="road-section-title derived-label">蟑螂路</div>
         </div>
       </div>
       <div class="tablechat tc-left" id="tableChatL">
