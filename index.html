@@ -260,11 +260,10 @@
   .marquee.show{opacity:1;}
   .marquee-track{display:flex; flex-direction:column; gap:4px;}
 
-  /* ===== ① 開局前枱邊閒聊：拆兩層錨定 .road-lower（大路第6格底開始） ===== */
-  /* 左層 #tableChatL 佔左半(珠盤路位)、右層 #tableChatR 佔右半(下三路位)；top:0 喺大路底，標題貼大路第6格底 */
+  /* ===== ① 開局前枱邊閒聊：單一面板錨定 .road-lower（大路第6格底開始） ===== */
+  /* #tableChatL 佔全寬覆蓋牌路區；top:0 喺大路底，標題貼大路第6格底 */
   .tablechat{position:absolute; top:0; bottom:0; z-index:15; margin:0; background:rgba(2,17,10,.9); border:none; border-radius:0; padding:6px 8px; display:flex; flex-direction:column; max-height:none; opacity:0; visibility:hidden; pointer-events:none; transition:opacity .35s ease, visibility .35s;}
-  .tc-left{left:0; right:50%; top:-20px;}   /* 推上大路標題行高，貼實大路第6格底（同倒數同高） */
-  .tc-right{left:50%; right:0; top:-20px;}
+  .tc-left{left:0; right:0; top:-20px;}   /* 佔全寬覆蓋牌路區（同倒數同高） */
   .tablechat.show{opacity:1; visibility:visible; pointer-events:auto;}
   .tc-title{font-size:14px; color:var(--gold2); opacity:.9; letter-spacing:1px; margin-bottom:3px; flex:0 0 auto; display:flex; align-items:center; justify-content:space-between;}
   .tc-close{font-size:16px; line-height:1; color:#f5f0d8; background:rgba(212,175,55,.28); border:1px solid rgba(212,175,55,.7); border-radius:6px; padding:3px 9px; cursor:pointer; pointer-events:auto;}
@@ -375,24 +374,22 @@
       </div>
       <div class="road-derived">
         <div class="derived-row">
-          <canvas id="beeCanvas" width="270" height="50"></canvas>
+          <div class="road-section-title" style="font-size:8px;opacity:.55;padding:1px 6px;letter-spacing:0">大眼仔路</div>
+          <canvas id="beeCanvas" width="270" height="44"></canvas>
         </div>
         <div class="derived-row">
-          <canvas id="smallCanvas" width="270" height="50"></canvas>
+          <div class="road-section-title" style="font-size:8px;opacity:.55;padding:1px 6px;letter-spacing:0">小路</div>
+          <canvas id="smallCanvas" width="270" height="44"></canvas>
         </div>
         <div class="derived-row">
-          <canvas id="cockCanvas" width="270" height="50"></canvas>
+          <div class="road-section-title" style="font-size:8px;opacity:.55;padding:1px 6px;letter-spacing:0">蟑螂路</div>
+          <canvas id="cockCanvas" width="270" height="44"></canvas>
         </div>
       </div>
       <div class="tablechat tc-left" id="tableChatL">
         <div class="tc-title">💬 枱邊閒聊 <span class="tc-close" id="tcCloseL">✕</span></div>
         <div class="tc-count" id="tcCountL"></div>
         <div class="tc-body" id="tcBodyL"></div>
-      </div>
-      <div class="tablechat tc-right" id="tableChatR">
-        <div class="tc-title">💬 枱邊閒聊 <span class="tc-close" id="tcCloseR">✕</span></div>
-        <div class="tc-count" id="tcCountR"></div>
-        <div class="tc-body" id="tcBodyR"></div>
       </div>
     </div>
     <div class="dealzone" id="dealzoneOverlay">
@@ -1095,10 +1092,10 @@ function genChatLine(ai, pickSide, ctx, prevTalker) {
   return candidate;
 }
 function addChatBubble(ai, msg) {
-  const L = document.getElementById('tcBodyL'), R = document.getElementById('tcBodyR');
-  if (!L || !R) return;
-  const total = L.childElementCount + R.childElementCount;
-  if (total >= 8) return;
+  const L = document.getElementById('tcBodyL');
+  if (!L) return;
+  // 取消右邊，所有對話都落枱邊閒聊單一面板（最多留 8 句）；共 4 句唔會到頂
+  if (L.childElementCount >= 8) return;
 
   // 更新 AI 最近聊天記錄（去重用）
   if (ai) {
@@ -1110,13 +1107,12 @@ function addChatBubble(ai, msg) {
   const b = document.createElement('div');
   b.className = 'tc-bubble ai-' + (ais.indexOf(ai) % 6);
   b.innerHTML = '<span class="ic">' + ai.icon + '</span><span class="tx"><b>' + ai.name + '：</b>' + msg + '</span>';
-  const target = (total < 4) ? L : R;
-  target.appendChild(b);
-  target.scrollTop = target.scrollHeight;
-  // 注意：出聲由 tableChatPhase 嘅 voiceSet 控制，呢度唔 call speak（避免雙重出聲）
+  L.appendChild(b);
+  L.scrollTop = L.scrollHeight;
+  // 注意：出聲由 tableChatPhase / playerEmote 控制，呢度唔 call speak（避免雙重出聲）
 }
 function showTableChat(){
-  ['L','R'].forEach(s=>{
+  ['L'].forEach(s=>{
     const c=document.getElementById('tableChat'+s); if(!c) return;
     const tt=c.querySelector('.tc-title'); if(tt) tt.textContent='💬 枱邊閒聊';
     const body=document.getElementById('tcBody'+s); if(body) body.innerHTML='';
@@ -1124,33 +1120,28 @@ function showTableChat(){
     c.classList.add('show');
   });
 }
-function hideTableChat(){ ['L','R'].forEach(s=>{ const c=document.getElementById('tableChat'+s); if(c) c.classList.remove('show'); }); }
+function hideTableChat(){ ['L'].forEach(s=>{ const c=document.getElementById('tableChat'+s); if(c) c.classList.remove('show'); }); }
 document.getElementById('tcCloseL').addEventListener('click',()=>{ hideTableChat(); const f=window._tcFinish; if(f){ window._tcFinish(); window._tcFinish=null; } });
-document.getElementById('tcCloseR').addEventListener('click',()=>{ hideTableChat(); const f=window._tcFinish; if(f){ window._tcFinish(); window._tcFinish=null; } });
 async function tableChatPhase(sec) {
     if (ais.length === 0) return;
     showTableChat();
 
-    // 隨機打亂全部 AI，預先決定下注
+    // 隨機打亂全部 AI，取頭 4 個（最多4個）各講一句，4 句唔同 AI 對話
     const shuffled = [...ais].sort(() => Math.random() - 0.5);
-    shuffled.forEach(ai => { ai._prePick = aiPick(ai); });
-
-    // 從打亂後的順序中，選取最多 4 個作為語音發言者（枱邊出聲 +1）
-    const voiceSpeakers = shuffled.slice(0, Math.min(4, shuffled.length));
-    const voiceSet = new Set(voiceSpeakers.map(ai => ai.id));
+    const speakers = shuffled.slice(0, Math.min(4, shuffled.length));
+    speakers.forEach(ai => { ai._prePick = aiPick(ai); });
 
     const ctx = roadState();
-    const total = shuffled.length;          // 全部 AI 都出文字
     let prev = null;
 
-    // ✅ 串行：文字彈出 → 等佢把聲播完 → 停 0.45s 緩衝 → 下一句。播晒先收枱邊閒聊（唔同落注倒數撞聲）
-    for (let i = 0; i < total; i++) {
-        const ai = shuffled[i];
+    // ✅ 串行：文字彈出 → 等佢把聲播完 → 停 0.45s 緩衝 → 下一句。共 4 句播晒先收枱邊閒聊
+    for (let i = 0; i < speakers.length; i++) {
+        const ai = speakers[i];
         const msg = genChatLine(ai, ai._prePick, ctx, prev);
         addChatBubble(ai, msg);
-        if (!mute && msg && voiceSet.has(ai.id)) {
+        if (!mute && msg) {
             await speak(ai.name + '：' + msg);
-            await sleep(450);   // 句間緩衝，避免上一句尾撞下一句頭
+            await sleep(450);
         } else {
             await sleep(450);
         }
@@ -2209,10 +2200,10 @@ function playerEmote(em){
   const icon=EMOTE_ICON[em]; if(!icon) return;
   showTableChat();
   // 你嘅 bubble（用 human 色）
-  // 你嘅 bubble（用 human 色），同 addChatBubble 一致分流：頭4左、第5+右
-  const L=document.getElementById('tcBodyL'), R=document.getElementById('tcBodyR');
-  const total=(L?L.childElementCount:0)+(R?R.childElementCount:0);
-  if(total<8){ const target=(total<4)?L:R; if(target){ const b=document.createElement('div'); b.className='tc-bubble ai-0'; b.style.opacity='.95';
+  // 你嘅 bubble（用 human 色），取消右邊，全部落同一面板
+  const L=document.getElementById('tcBodyL');
+  const total=(L?L.childElementCount:0);
+  if(total<8){ const target=L; if(target){ const b=document.createElement('div'); b.className='tc-bubble ai-0'; b.style.opacity='.95';
     b.innerHTML='<span class="ic">👤</span><span class="tx"><b>你：</b>'+icon+'</span>'; target.appendChild(b); target.scrollTop=target.scrollHeight; } }
   // 隨機 1-2 個 AI 按性格回應
   const pool=[...ais].sort(()=>Math.random()-0.5).slice(0, 1+Math.floor(Math.random()*2));
