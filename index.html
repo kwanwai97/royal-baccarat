@@ -1882,7 +1882,8 @@ function aiSettle(result, playerPair, bankerPair, big, pTotal, bTotal, pCards, b
   // 人類輸贏報導語音（settle 內 announceResult + 你贏/輸/平手）不受影響。
   for(const ai of ais){
     if(!ai) continue;
-    const b=ai._lastBet; if(!b) return;          // 用 snapshot（currentBet 已於閃燈期清空）
+    const b=ai._lastBet;
+    if(!b){ ai.currentBet=null; continue; }   // 呢鋪冇落注：跳過不派彩（return 會中斷成個函數，必須 continue）
     const {bet,pick,sides}=b;
     let payout=0, win=false, sideWin=false;
     const sNames=[];
