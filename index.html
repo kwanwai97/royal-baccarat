@@ -810,26 +810,39 @@ if('speechSynthesis' in window){
 }
 function ttsProcess(){
   if(ttsBusy || ttsQueue.length===0) return;
-  if(!('speechSynthesis' in window)){ ttsQueue=[]; return; }
-  const text=ttsQueue.shift();
+  if(!('speechSynthesis' in window)){ ttsQueue.forEach(it=>{ if(it.done) it.done(); }); ttsQueue=[]; return; }
+  const item=ttsQueue.shift();
   ttsBusy=true;
   try{
-    const u=new SpeechSynthesisUtterance(text);
+    const u=new SpeechSynthesisUtterance(item.text);
     const v=pickDealerVoice(); if(v) u.voice=v;
-    u.lang='zh-HK'; u.rate=ttsRate; u.pitch=1.0; u.volume=1.0;
-    u.onend=()=>{ ttsBusy=false; setTimeout(ttsProcess, 140); };
-    u.onerror=()=>{ ttsBusy=false; setTimeout(ttsProcess, 140); };
+    u.lang='zh-HK'; u.rate=item.rate||ttsRate; u.pitch=1.0; u.volume=1.0;
+    u.onend=()=>{ ttsBusy=false; if(item.done) item.done(); setTimeout(ttsProcess, 140); };
+    u.onerror=()=>{ ttsBusy=false; if(item.done) item.done(); setTimeout(ttsProcess, 140); };
     speechSynthesis.speak(u);
-  }catch(e){ ttsBusy=false; }
+  }catch(e){ ttsBusy=false; if(item.done) item.done(); }
 }
 function speak(text, rate){
-  if(mute || !text) return;
-  if(!('speechSynthesis' in window)) return;
+  if(mute || !text) return Promise.resolve();
+  if(!('speechSynthesis' in window)) return Promise.resolve();
   ttsWarmup();
   ttsRate = (rate!=null) ? rate : 1.15;   // 聊天/結算後預設1.15（快少少）；開牌傳1.05
-  ttsQueue.push(text);
-  if(ttsQueue.length>4) ttsQueue.shift();   // 限制隊列，避免一次讀太多
-  ttsProcess();
+  return new Promise(res=>{
+    ttsQueue.push({text, rate:ttsRate, done:res});   // 句句入隊，播完 onend 先 resolve，唔會 drop 句子（解決漏聲）
+    ttsProcess();
+  });
+}
+/* 等語音隊列播完（串行，播完先下一句）；最長 maxMs 保險，避免卡死下一輪 */
+function waitTtsIdle(maxMs){
+  maxMs = maxMs || 20000;
+  return new Promise(res=>{
+    if(!('speechSynthesis' in window)){ res(); return; }
+    if(ttsQueue.length===0 && !ttsBusy){ res(); return; }
+    const t0=Date.now();
+    const iv=setInterval(()=>{
+      if((ttsQueue.length===0 && !ttsBusy) || (Date.now()-t0)>maxMs){ clearInterval(iv); res(); }
+    },100);
+  });
 }
 /* 荷官口播：大字 + 語音 */
 function dealerCall(text, color){
@@ -928,17 +941,18 @@ function placeBet(k){
   balance -= currentChip; bets[k]+=currentChip; updateBalance(); updateAiBalances(); updateBetDisplay(); sndChip(); flyChip(k);
 }
 function clearBets(force){ if(dealing && !betting && !force)return; if(!settled){ const refund=Object.values(bets).reduce((a,b)=>a+b,0); balance+=refund; } bets={player:0,banker:0,tie:0,ppair:0,bpair:0,big:0,small:0,luck6:0,luck7:0}; updateBalance(); updateAiBalances(); updateBetDisplay(); }
-/* 等上一手輸贏對話 + 語音全部播完（走馬燈收起 + 語音隊列清空），最長 12s safety */
+/* 等上一手輸贏對話 + 語音全部播完（走馬燈收起 + 語音隊列清空），最長 20s safety */
 function waitAudioIdle(){
-  return new Promise(res=>{
+  return new Promise(async res=>{
     const marq=document.getElementById('dialogueMarquee');
+    // 先等語音串行播完（唔會 drop 句，播晒先落下一階段）
+    await waitTtsIdle(20000);
+    // 再等走馬燈收起（最長等多 10s，避免上一手文字同下一手發言重疊）
     let waited=0;
     const iv=setInterval(()=>{
       waited+=100;
-      const ttsEmpty=(typeof ttsQueue==='undefined')||ttsQueue.length===0;
       const marqGone=!marq||!marq.classList.contains('show');
-      if(ttsEmpty && marqGone) { clearInterval(iv); setTimeout(res, 1500); }  // 播完再停 1.5s 先下一輪
-      else if(waited>12000) { clearInterval(iv); res(); }
+      if(marqGone || waited>10000){ clearInterval(iv); setTimeout(res, 800); }  // 收起後再停 0.8s 緩衝先下一輪
     },100);
   });
 }
@@ -1114,51 +1128,36 @@ function hideTableChat(){ ['L','R'].forEach(s=>{ const c=document.getElementById
 document.getElementById('tcCloseL').addEventListener('click',()=>{ hideTableChat(); const f=window._tcFinish; if(f){ window._tcFinish(); window._tcFinish=null; } });
 document.getElementById('tcCloseR').addEventListener('click',()=>{ hideTableChat(); const f=window._tcFinish; if(f){ window._tcFinish(); window._tcFinish=null; } });
 async function tableChatPhase(sec) {
-    return new Promise(resolve => {
-        if (ais.length === 0) { resolve(); return; }
-        showTableChat();
+    if (ais.length === 0) return;
+    showTableChat();
 
-        // 隨機打亂全部 AI，預先決定下注
-        const shuffled = [...ais].sort(() => Math.random() - 0.5);
-        shuffled.forEach(ai => { ai._prePick = aiPick(ai); });
+    // 隨機打亂全部 AI，預先決定下注
+    const shuffled = [...ais].sort(() => Math.random() - 0.5);
+    shuffled.forEach(ai => { ai._prePick = aiPick(ai); });
 
-        // 從打亂後的順序中，選取最多 4 個作為語音發言者（枱邊出聲 +1）
-        const voiceSpeakers = shuffled.slice(0, Math.min(4, shuffled.length));
-        const voiceSet = new Set(voiceSpeakers.map(ai => ai.id));
+    // 從打亂後的順序中，選取最多 4 個作為語音發言者（枱邊出聲 +1）
+    const voiceSpeakers = shuffled.slice(0, Math.min(4, shuffled.length));
+    const voiceSet = new Set(voiceSpeakers.map(ai => ai.id));
 
-        const ctx = roadState();
-        const total = shuffled.length;          // 全部 AI 都出文字
-        const stepMs = Math.max(600, (sec * 1000) / (total + 1));
-        let i = 0, prev = null;
-        let chatDone = false;
+    const ctx = roadState();
+    const total = shuffled.length;          // 全部 AI 都出文字
+    let prev = null;
 
-        const finish = () => {
-            if (chatDone) return;
-            chatDone = true;
-            hideTableChat();
-            setTimeout(() => resolve(), 400);
-        };
-        window._tcFinish = finish;
-
-        const emit = () => {
-            if (i < total) {
-                const ai = shuffled[i];
-                const msg = genChatLine(ai, ai._prePick, ctx, prev);
-                addChatBubble(ai, msg);
-
-                // ✅ 只有被選中的 AI 才播放語音
-                if (!mute && msg && voiceSet.has(ai.id)) {
-                    speak(ai.name + '：' + msg);
-                }
-
-                prev = ai;
-                i++;
-                if (i < total) setTimeout(emit, stepMs);
-                else setTimeout(finish, 4000);
-            }
-        };
-        emit();
-    });
+    // ✅ 串行：文字彈出 → 等佢把聲播完 → 停 0.45s 緩衝 → 下一句。播晒先收枱邊閒聊（唔同落注倒數撞聲）
+    for (let i = 0; i < total; i++) {
+        const ai = shuffled[i];
+        const msg = genChatLine(ai, ai._prePick, ctx, prev);
+        addChatBubble(ai, msg);
+        if (!mute && msg && voiceSet.has(ai.id)) {
+            await speak(ai.name + '：' + msg);
+            await sleep(450);   // 句間緩衝，避免上一句尾撞下一句頭
+        } else {
+            await sleep(450);
+        }
+        prev = ai;
+    }
+    hideTableChat();
+    await sleep(300);
 }
 
 /* ===================== 發牌流程 ===================== */
@@ -1875,15 +1874,20 @@ function showMarquee(items){
   });
   box.classList.add('show');
   clearTimeout(showMarquee._t);
-  showMarquee._t=setTimeout(()=>hideMarquee(), 10000);  // 固定 10 秒顯示，配合「等語音播完」先傾偈
+  // 固定最少顯示 10 秒；若語音仲未播完就續命，等播晒先收（唔同下一手發言重疊）
+  const keep=()=>{
+    if(ttsQueue.length>0 || ttsBusy){ showMarquee._t=setTimeout(keep, 800); return; }
+    hideMarquee();
+  };
+  showMarquee._t=setTimeout(keep, 10000);
 }
 function hideMarquee(){ document.getElementById('dialogueMarquee').classList.remove('show'); clearTimeout(showMarquee._t); }
 window.showMarquee=showMarquee; window.hideMarquee=hideMarquee;
 
-function aiSettle(result, playerPair, bankerPair, big, pTotal, bTotal, pCards, bCards){
+async function aiSettle(result, playerPair, bankerPair, big, pTotal, bTotal, pCards, bCards){
   const dialogues=[];
-  ais.forEach(ai=>{
-    if(!ai) return;
+  for(const ai of ais){
+    if(!ai) continue;
     const b=ai._lastBet; if(!b) return;          // 用 snapshot（currentBet 已於閃燈期清空）
     const {bet,pick,sides}=b;
     let payout=0, win=false, sideWin=false;
@@ -1948,15 +1952,14 @@ function aiSettle(result, playerPair, bankerPair, big, pTotal, bTotal, pCards, b
     }
     if(msg){
       dialogues.push(msg);
-      // AI 語音口播（同 mute 掣 / zh-HK；win 或 sideWin 先出聲，避免太嘈）
-      // AI 語音口播：最多3個出聲（唔再限制只贏錢）
-      if(!mute && (window._settleSpoken||0)<3){
-        window._settleSpoken=(window._settleSpoken||0)+1;
-        setTimeout(()=>speak(ai.name+(sNames.length?('中咗'+sNames.join('同')+'！'):'贏咗'), 1.15), 600+Math.random()*800);
+      // AI 語音口播：串行播（每句播完先下一句），全部都出聲唔 drop（解決漏聲）；句間 0.4s 緩衝唔重疊
+      if(!mute){
+        await speak(ai.name+(sNames.length?('中咗'+sNames.join('同')+'！'):'贏咗'), 1.15);
+        await sleep(400);
       }
     }
     ai.currentBet=null;
-  });
+  }
   if(dialogues.length) showMarquee(dialogues);
   updateBetDisplay(); updateAiBalances(); saveAiList();
 }
