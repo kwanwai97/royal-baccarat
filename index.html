@@ -462,6 +462,8 @@
     </div>
   </div>
 
+  <div class="odds-row"><div class="odds-info" id="oddsInfo">真實機率：洗牌中…</div></div>
+  <div class="odds-row"><div class="road-tip" id="roadTip"></div></div>
   <div class="bets" id="bets">
     <div class="betrow top">
       <div class="bet player" data-bet="player"><div class="bn">閒 PLAYER</div><div class="od">1 : 1</div><div class="chips-stack" data-stack="player"></div></div>
@@ -491,8 +493,6 @@
   </div>
   <div class="shoe-info" id="shoeInfo"></div>
   </div>
-  <div class="odds-row"><div class="odds-info" id="oddsInfo">真實機率：洗牌中…</div></div>
-  <div class="odds-row"><div class="road-tip" id="roadTip"></div></div>
 
   <div class="controls">
     <button class="btn shuffle" id="btnShuffle" title="重新洗牌">洗牌</button>
@@ -2035,24 +2035,31 @@ function updateRoadTip(){
   for(const off of [1,2,3]){ const d=deriveRoad(off); for(const n of d){ if(n.blue) blue++; else red++; } }
   const total=red+blue;
   const blueRatio = total>0 ? blue/total : 0.5;
-  let tip, cls='road-tip';
+  const hotSide = rs.streakType==='player' ? '閒' : (rs.streakType==='banker' ? '莊' : '');
+  const oppSide = hotSide==='閒' ? '莊' : (hotSide==='莊' ? '閒' : '');
+  let tip, cls='road-tip', suggest='';
   if(rs.streakLen>=3){
-    tip='📈 路單連 '+rs.streakLen+' 鋪'+ (rs.streakType==='player'?'閒':'莊') +'：跟紅頂，繼續追旺門';
+    tip='📈 路單連 '+rs.streakLen+' 鋪'+hotSide+'：跟紅頂，繼續追旺門';
     cls='road-tip hot';
+    suggest = hotSide ? '｜請投注'+hotSide : '';
   } else if(blueRatio>0.6){
     tip='🔄 下三路偏藍（'+Math.round(blueRatio*100)+'%）：路破碎，宜反手等轉唔好死跟';
     cls='road-tip cold';
+    suggest = oppSide ? '｜請投注'+oppSide : '';
   } else if(blueRatio<0.35){
     tip='➡️ 下三路偏紅（'+Math.round((1-blueRatio)*100)+'%）：路整齊，趨勢持續可跟';
     cls='road-tip hot';
+    suggest = hotSide ? '｜請投注'+hotSide : '';
   } else if(rs.streakLen>=2){
-    tip='👀 近 '+rs.streakLen+' 鋪'+ (rs.streakType==='player'?'閒':'莊') +'：小勢形成，可小注試跟';
+    tip='👀 近 '+rs.streakLen+' 鋪'+hotSide+'：小勢形成，可小注試跟';
     cls='road-tip';
+    suggest = hotSide ? '｜請投注'+hotSide : '';
   } else {
     tip='⏸ 路勢未明（紅藍參半）：觀望為主，等清晰路再落';
     cls='road-tip';
+    suggest = '';
   }
-  el.className=cls; el.textContent=tip;
+  el.className=cls; el.textContent=tip+suggest;
 }
 async function doShuffle(){
   const ov=document.getElementById('shuffleOverlay');
