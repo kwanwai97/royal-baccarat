@@ -1988,17 +1988,30 @@ let shoeCut=0;   // 切牌卡位置：剩118張時洗牌（8副416張 → 可玩
 function resetShoe(){
   shoe=shuffle(buildShoe(8)); shoeDrawn=0;
   shoeCut=shoe.length-118;   // 抽到呢個位（剩118張）自動洗牌
+  saveShoe();
   updateShoeInfo();
+}
+function saveShoe(){ try{ localStorage.setItem('bac_shoe', JSON.stringify({shoe, shoeDrawn, shoeCut})); }catch(e){} }
+function loadShoe(){
+  try{
+    const s=localStorage.getItem('bac_shoe');
+    if(!s) return false;
+    const o=JSON.parse(s);
+    if(!o || !Array.isArray(o.shoe) || o.shoe.length!==416) return false;
+    shoe=o.shoe; shoeDrawn=o.shoeDrawn||0; shoeCut=o.shoeCut||(shoe.length-118);
+    return true;
+  }catch(e){ return false; }
 }
 function burnCard(){ // 切牌卡燒牌：切牌卡下面第一張決定燒幾張 (A=1,2-9=對應,10/J/Q/K=10)
   const cut=shoe[shoeDrawn];
   let n = cut ? (cut.rank==='A'?1 : (cut.value>0?cut.value:10)) : 1;  // 10/J/Q/K value=0 → 燒10張
   n=Math.max(1,Math.min(n,10));
   for(let i=0;i<n && shoeDrawn<shoe.length;i++) shoeDrawn++;
+  saveShoe();
   updateShoeInfo();
   return n;
 }
-function drawCard(){ const c=shoe[shoeDrawn++]; updateShoeInfo(); return c; }
+function drawCard(){ const c=shoe[shoeDrawn++]; saveShoe(); updateShoeInfo(); return c; }
 function updateShoeInfo(){ const el=document.getElementById('shoeInfo'); if(!el) return; const playable=Math.max(0,shoeCut-shoeDrawn); el.textContent=shoe.length+'張｜剩'+playable+'張後洗牌'; updateOdds(); }
 // 即時勝率：根據牌靴剩餘張數做蒙特卡洛模擬 (2000手)，算真實莊/閒/和/對子機率
 function simulateOneHand(pool){
@@ -2264,7 +2277,8 @@ document.querySelectorAll('.player-emotes .pe').forEach(el=>{
 
 loadStats(); loadRoads(); loadAiList(); updateAiBalances();
 sessionStartBalance=balance;   // 記低開局餘額，畀「本場淨贏/輸」用
-resetShoe(); updateBalance(); updateBetDisplay(); checkDaily(); drawAllRoads();
+if(!loadShoe()) resetShoe();   // 有儲存嘅鞋就續返(派過幾多張繼續)，否則開新鞋
+updateBalance(); updateBetDisplay(); checkDaily(); drawAllRoads();
 </script>
 </body>
 </html>
