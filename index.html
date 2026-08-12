@@ -214,6 +214,8 @@
   .streak-bar .seg.on{background:linear-gradient(180deg,#ffd479,#e6a417); box-shadow:0 0 4px #ffd479;}
   .streak-bar.hot{border-color:#ffb347; color:#ffd479;}
   .streak-bar.zero{opacity:.55;}
+  .odds-top{font-size:11px; font-weight:700; color:#06243f; background:rgba(255,236,179,.95); padding:3px 10px; border-radius:10px; white-space:nowrap; text-align:center; line-height:1.4; border:1px solid #e6b54a;}
+  .odds-top b{color:#7a3d00;} .odds-top .p{color:#1f6fb0;} .odds-top .b{color:#b03030;} .odds-top .t{color:#2f7d32;}
   .odds-row{display:flex; justify-content:center; padding:1px 10px 4px; width:100%; box-sizing:border-box;}
   .odds-info{font-size:11px; font-weight:700; color:#06243f; background:rgba(255,236,179,.95); padding:3px 10px; border-radius:10px; white-space:nowrap; text-align:center; line-height:1.45; border:1px solid #e6b54a; max-width:100%; overflow:hidden; text-overflow:ellipsis;}
   .odds-info b{color:#7a3d00;}
@@ -372,6 +374,7 @@
   </div>
 
   <div class="odds-row"><div class="streak-bar zero" id="streakBar"></div></div>
+  <div class="odds-row"><div class="odds-top" id="oddsInfo"></div></div>
 
   <div class="roadpanel">
     <div style="display:flex;align-items:center;padding:4px 8px;position:relative;">
@@ -2057,6 +2060,7 @@ function updateOdds(){
   const pool=shoe.slice(shoeDrawn);
   if(pool.length<6){
     ['player','tie','banker','ppair','bpair','luck6','luck7','big','small'].forEach(k=>{ const e=document.querySelector('.bet-pct[data-pct="'+k+'"]'); if(e){ e.textContent='—'; e.className='bet-pct'; } });
+    const top=document.getElementById('oddsInfo'); if(top) top.textContent='牌靴將盡';
     return;
   }
   const N=2000; let bp=0,bk=0,tie=0,pp=0,bpp=0;
@@ -2071,6 +2075,8 @@ function updateOdds(){
   setPct('ppair','閒對 '+pctPP+'%','p');
   setPct('bpair','莊對 '+pctBP+'%','b');
   setPct('luck6','—'); setPct('luck7','—'); setPct('big','—'); setPct('small','—');
+  const top=document.getElementById('oddsInfo');
+  if(top) top.innerHTML='<span class="p">P '+pctP+'%</span> │ <span class="t">T '+pctT+'%</span> │ <span class="b">B '+pctB+'%</span> │ 莊對 '+pctBP+'% │ 閒對 '+pctPP+'%';
   updateRoadTip();
 }
 // 路單預測提示：根據大路連勢 + 下三路(大眼仔/小路/蟑螂)紅藍比例，比一句睇路建議
