@@ -1998,7 +1998,10 @@ function loadShoe(){
     if(!s) return false;
     const o=JSON.parse(s);
     if(!o || !Array.isArray(o.shoe) || o.shoe.length!==416) return false;
-    shoe=o.shoe; shoeDrawn=o.shoeDrawn||0; shoeCut=o.shoeCut||(shoe.length-118);
+    const drawn=o.shoeDrawn||0;
+    const cut=o.shoeCut||(o.shoe.length-118);
+    if(drawn>=cut || drawn<0) return false;   // 鞋已到底/數據壞 → 當新鞋，唔續避免卡洗牌
+    shoe=o.shoe; shoeDrawn=drawn; shoeCut=cut;
     return true;
   }catch(e){ return false; }
 }
@@ -2278,6 +2281,7 @@ document.querySelectorAll('.player-emotes .pe').forEach(el=>{
 loadStats(); loadRoads(); loadAiList(); updateAiBalances();
 sessionStartBalance=balance;   // 記低開局餘額，畀「本場淨贏/輸」用
 if(!loadShoe()) resetShoe();   // 有儲存嘅鞋就續返(派過幾多張繼續)，否則開新鞋
+updateShoeInfo();   // 無論續鞋定開新鞋都刷新剩餘張數顯示
 updateBalance(); updateBetDisplay(); checkDaily(); drawAllRoads();
 </script>
 </body>
