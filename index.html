@@ -1002,6 +1002,7 @@ function bettingPhase(sec){
       if(speakIt) speak(txt);
     };
     tick(true);
+    updateOdds();
     const iv=setInterval(()=>{
       t--;
       if(t<=0){
@@ -1560,7 +1561,6 @@ function settle(winner, playerPair, bankerPair, big, totalCards, pTotal, bTotal,
     if(still){ ais.forEach(ai=>{ if(ai) ai._lastBet=ai.currentBet||null; }); clearBets(true); ais.forEach(ai=>{ if(ai) ai.currentBet=null; }); updateBetDisplay(); }
     await sleep(2000); saveRoads(); settled=false;   // 結算已即時完成，呢度只留清籌碼保險 + 落注解鎖
   }, dur);
-  updateOdds();   // 結算後即時刷新機率/路單意見(開牌聊天時出，唔等落注倒數)
 }
 /* 結果文字：3行式 + 補牌提示 */
 function resultText(label, pTotal, bTotal, pp, bp, big, pCards, bCards, net){
@@ -2037,7 +2037,7 @@ function burnCard(){ // 切牌卡燒牌：切牌卡下面第一張決定燒幾�
   return n;
 }
 function drawCard(){ const c=shoe[shoeDrawn++]; saveShoe(); updateShoeInfo(); return c; }
-function updateShoeInfo(){ const el=document.getElementById('shoeInfo'); if(!el) return; const playable=Math.max(0,shoeCut-shoeDrawn); el.textContent=shoe.length+'張｜剩'+playable+'張後洗牌'; }
+function updateShoeInfo(){ const el=document.getElementById('shoeInfo'); if(!el) return; const playable=Math.max(0,shoeCut-shoeDrawn); el.textContent=shoe.length+'張｜剩'+playable+'張後洗牌'; updateOdds(); }
 // 即時勝率：根據牌靴剩餘張數做蒙特卡洛模擬 (2000手)，算真實莊/閒/和/對子機率
 function simulateOneHand(pool){
   const used=[];
