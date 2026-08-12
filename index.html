@@ -205,7 +205,8 @@
   /* 籌碼行：左標籤 / 中籌碼 / 右剩餘牌數 */
   .chips-row{display:flex; align-items:center; gap:8px; padding:4px 10px 2px;}
   .chips-label{font-size:11px; font-weight:700; color:var(--gold2); white-space:nowrap; opacity:.85;}
-  .chips{flex:0 0 auto; display:flex; gap:3px; justify-content:flex-start; flex-wrap:nowrap; overflow:visible;}
+  .chips{flex:0 0 auto; display:flex; gap:3px; justify-content:flex-start; flex-wrap:nowrap; overflow-x:auto; max-width:108px; scrollbar-width:none; -ms-overflow-style:none;}
+  .chips::-webkit-scrollbar{display:none;}
   .chip{width:30px; height:30px; flex:0 0 auto; border-radius:50%; border:2px dashed #fff; display:flex; align-items:center; justify-content:center;
     font-size:8px; font-weight:800; color:#fff; cursor:pointer; box-shadow:0 2px 4px rgba(0,0,0,.5); position:relative; transition:transform .12s;}
   .shoe-info{flex:0 0 auto; font-size:11px; font-weight:700; color:#06243f !important; background:rgba(169,210,255,.9); padding:2px 8px; border-radius:10px; white-space:nowrap; text-align:right;}
@@ -492,6 +493,8 @@
 
   <div class="chips-row">
   <div class="chips" id="chips">
+    <div class="chip c100" data-chip="100">100</div>
+    <div class="chip c500" data-chip="500">500</div>
     <div class="chip c1k active" data-chip="1000">1K</div>
     <div class="chip c5k" data-chip="5000">5K</div>
     <div class="chip c10k" data-chip="10000">10K</div>
