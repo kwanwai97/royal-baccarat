@@ -1877,8 +1877,9 @@ function showMarquee(items){
 function hideMarquee(){ document.getElementById('dialogueMarquee').classList.remove('show'); clearTimeout(showMarquee._t); }
 window.showMarquee=showMarquee; window.hideMarquee=hideMarquee;
 
-async function aiSettle(result, playerPair, bankerPair, big, pTotal, bTotal, pCards, bCards){
-  const dialogues=[];
+function aiSettle(result, playerPair, bankerPair, big, pTotal, bTotal, pCards, bCards){
+  // 注意：依用家要求，發牌完畢後「AI 走馬燈 + AI 語音對話」全部刪除，只保留 AI 派彩/統計（數字照更新）。
+  // 人類輸贏報導語音（settle 內 announceResult + 你贏/輸/平手）不受影響。
   for(const ai of ais){
     if(!ai) continue;
     const b=ai._lastBet; if(!b) return;          // 用 snapshot（currentBet 已於閃燈期清空）
@@ -1915,45 +1916,9 @@ async function aiSettle(result, playerPair, bankerPair, big, pTotal, bTotal, pCa
     else { ai.winStreak=0; ai.loseStreak=0; }
     ai.history.push(result==='player'?'P':result==='banker'?'B':'T');
     if(ai.history.length>40) ai.history.shift();
-    const p=AI_PERSONAS[ai.persona];
-    let msg='';
-    const ws=ai.winStreak||0, ls=ai.loseStreak||0;
-    if(ai.balance<=0){
-      msg=ai.icon+' '+ai.name+'：破產囉…下次再戰 💀';
-    } else if(win && ws>=3){
-      const brag=['連贏'+ws+'鋪！我係呢枱王','旺到飛起，誰與爭鋒','一早話咗我睇得準'];
-      if(!lastHumanWon) brag.push('你輸緊喎，跟住我啦');
-      msg=ai.icon+' '+ai.name+'：「'+pick(brag)+'」+'+fmt(bet)+(sNames.length?' 側注中'+sNames.join('/')+'！':'');
-    } else if(win){
-      const arr=ai.emotion>70?(p.tilt||p.win):p.win;
-      let m='「'+arr[Math.floor(Math.random()*arr.length)]+'」+'+fmt(bet);
-      if(sNames.length) m+=' 側注中'+sNames.join('/')+'！🔥';
-      if(lastHumanWon) m+='（你都贏，我哋旺到一齊）';
-      msg=ai.icon+' '+ai.name+'：'+m;
-    } else if(sideWin){
-      msg=ai.icon+' '+ai.name+'：主注輸咗，但側注中 '+sNames.join('/')+'！+'+fmt(payout-bet)+' 🎯';
-    } else if(!win && ls>=3){
-      const tilt=['連輸'+ls+'鋪…不甘心','今日黑到冇朋友','輸到唔服，但繼續'];
-      if(lastHumanWon) tilt.push('你贏緊喎，等我追返你');
-      msg=ai.icon+' '+ai.name+'：「'+pick(tilt)+'」';
-    } else if(!win && ai.step>=3){
-      const mood=tableMood();
-      const arr=ai.emotion<30?(p.tilt||p.lose):p.lose;
-      let tail='…連輸'+ai.step+'鋪'+(ai.plan==='martin'?'，倍投頂唔順':'');
-      if(mood==='cold' && Math.random()<0.5) tail+='，全枱都黑';
-      msg=ai.icon+' '+ai.name+'：「'+arr[Math.floor(Math.random()*arr.length)]+'」'+tail;
-    }
-    if(msg){
-      dialogues.push(msg);
-      // AI 語音口播：串行播（每句播完先下一句），全部都出聲唔 drop（解決漏聲）；句間 0.4s 緩衝唔重疊
-      if(!mute){
-        await speak(ai.name+(sNames.length?('中咗'+sNames.join('同')+'！'):'贏咗'), 1.15);
-        await sleep(400);
-      }
-    }
+    // —— 以下對話/語音已按用家要求刪除（唔再 showMarquee / speak） ——
     ai.currentBet=null;
   }
-  if(dialogues.length) showMarquee(dialogues);
   updateBetDisplay(); updateAiBalances(); saveAiList();
 }
 function updateAiBalances(){   // 頂欄橫向捲動：你(人類)永遠第一格 + 最多6個AI
