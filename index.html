@@ -474,19 +474,19 @@
   <div class="odds-row"><div class="road-tip" id="roadTip"></div></div>
   <div class="bets" id="bets">
     <div class="betrow top">
-      <div class="bet player" data-bet="player"><div class="bn">閒 PLAYER</div><div class="od">1 : 1</div><div class="bet-pct" data-pct="player"></div><div class="chips-stack" data-stack="player"></div></div>
-      <div class="bet tie" data-bet="tie"><div class="bn">和 TIE</div><div class="od">1 : 8</div><div class="bet-pct" data-pct="tie"></div><div class="chips-stack" data-stack="tie"></div></div>
-      <div class="bet banker" data-bet="banker"><div class="bn">莊 BANKER</div><div class="od">1 : 0.95</div><div class="bet-pct" data-pct="banker"></div><div class="chips-stack" data-stack="banker"></div></div>
+      <div class="bet player" data-bet="player"><div class="bn">閒 P</div><div class="od">1 : 1</div><div class="chips-stack" data-stack="player"></div></div>
+      <div class="bet tie" data-bet="tie"><div class="bn">和 T</div><div class="od">1 : 8</div><div class="chips-stack" data-stack="tie"></div></div>
+      <div class="bet banker" data-bet="banker"><div class="bn">莊 B</div><div class="od">1 : 0.95</div><div class="chips-stack" data-stack="banker"></div></div>
     </div>
     <div class="betrow mid">
-      <div class="bet ppair" data-bet="ppair"><div class="bn">閒對</div><div class="od">1 : 11</div><div class="bet-pct" data-pct="ppair"></div><div class="chips-stack" data-stack="ppair"></div></div>
-      <div class="bet luck luck6" data-bet="luck6"><div class="bn">幸運6</div><div class="od">1:12/20</div><div class="bet-pct" data-pct="luck6"></div><div class="chips-stack" data-stack="luck6"></div></div>
-      <div class="bet bpair" data-bet="bpair"><div class="bn">莊對</div><div class="od">1 : 11</div><div class="bet-pct" data-pct="bpair"></div><div class="chips-stack" data-stack="bpair"></div></div>
+      <div class="bet ppair" data-bet="ppair"><div class="bn">閒對</div><div class="od">1 : 11</div><div class="chips-stack" data-stack="ppair"></div></div>
+      <div class="bet luck luck6" data-bet="luck6"><div class="bn">幸運6</div><div class="od">1:12/20</div><div class="chips-stack" data-stack="luck6"></div></div>
+      <div class="bet bpair" data-bet="bpair"><div class="bn">莊對</div><div class="od">1 : 11</div><div class="chips-stack" data-stack="bpair"></div></div>
     </div>
     <div class="betrow bottom">
-      <div class="bet big" data-bet="big"><div class="bn">大 BIG</div><div class="od">1 : 0.54</div><div class="bet-pct" data-pct="big"></div><div class="chips-stack" data-stack="big"></div></div>
-      <div class="bet luck luck7" data-bet="luck7"><div class="bn">幸運7</div><div class="od">1:40/60/100</div><div class="bet-pct" data-pct="luck7"></div><div class="chips-stack" data-stack="luck7"></div></div>
-      <div class="bet small" data-bet="small"><div class="bn">小 SMALL</div><div class="od">1 : 1.5</div><div class="bet-pct" data-pct="small"></div><div class="chips-stack" data-stack="small"></div></div>
+      <div class="bet big" data-bet="big"><div class="bn">大 BIG</div><div class="od">1 : 0.54</div><div class="chips-stack" data-stack="big"></div></div>
+      <div class="bet luck luck7" data-bet="luck7"><div class="bn">幸運7</div><div class="od">1:40/60/100</div><div class="chips-stack" data-stack="luck7"></div></div>
+      <div class="bet small" data-bet="small"><div class="bn">小 SMALL</div><div class="od">1 : 1.5</div><div class="chips-stack" data-stack="small"></div></div>
     </div>
   </div>
 
@@ -2056,21 +2056,24 @@ function simulateOneHand(pool){
 function updateOdds(){
   const pool=shoe.slice(shoeDrawn);
   if(pool.length<6){
-    ['player','tie','banker','ppair','bpair','luck6','luck7','big','small'].forEach(k=>{ const e=document.querySelector('.bet-pct[data-pct="'+k+'"]'); if(e){ e.textContent='—'; e.className='bet-pct'; } });
+    ['player','tie','banker','ppair','bpair','luck6','luck7','big','small'].forEach(k=>{
+      const bet=document.querySelector('.bet[data-bet="'+k+'"]'); if(!bet) return;
+      const bn=bet.querySelector('.bn'); const base={player:'閒 P', tie:'和 T', banker:'莊 B', ppair:'閒對', bpair:'莊對', luck6:'幸運6', luck7:'幸運7', big:'大 BIG', small:'小 SMALL'}[k];
+      if(bn) bn.textContent=base+' —';
+    });
     return;
   }
   const N=2000; let bp=0,bk=0,tie=0,pp=0,bpp=0;
   for(let i=0;i<N;i++){ const r=simulateOneHand(pool); if(!r) continue; if(r.w==='player')bp++; else if(r.w==='banker')bk++; else tie++; if(r.pp)pp++; if(r.bp)bpp++; }
   const pctP=(100*bp/N).toFixed(0), pctB=(100*bk/N).toFixed(0), pctT=(100*tie/N).toFixed(0);
   const pctPP=(100*pp/N).toFixed(0), pctBP=(100*bpp/N).toFixed(0);
-  // 機率寫入投注區對應格 (你要求: 閒-P-44% / 和-T-10% / 莊-B-46%)
-  const setPct=(key,txt,cls)=>{ const e=document.querySelector('.bet-pct[data-pct="'+key+'"]'); if(e){ e.textContent=txt; e.className='bet-pct '+(cls||''); } };
-  setPct('player','P '+pctP+'%','p');
-  setPct('tie','T '+pctT+'%','t');
-  setPct('banker','B '+pctB+'%','b');
-  setPct('ppair','閒對 '+pctPP+'%','p');
-  setPct('bpair','莊對 '+pctBP+'%','b');
-  setPct('luck6','—'); setPct('luck7','—'); setPct('big','—'); setPct('small','—');
+  // 機率併入投注區第1列名 (你要求: 閒 P 45% / 和 T 10% / 莊 B 46%)，唔另開列表
+  const baseName={player:'閒 P', tie:'和 T', banker:'莊 B', ppair:'閒對', bpair:'莊對', luck6:'幸運6', luck7:'幸運7', big:'大 BIG', small:'小 SMALL'};
+  const pctMap={player:pctP+'%', tie:pctT+'%', banker:pctB+'%', ppair:pctPP+'%', bpair:pctBP+'%', luck6:'—', luck7:'—', big:'—', small:'—'};
+  ['player','tie','banker','ppair','bpair','luck6','luck7','big','small'].forEach(k=>{
+    const bet=document.querySelector('.bet[data-bet="'+k+'"]'); if(!bet) return;
+    const bn=bet.querySelector('.bn'); if(bn) bn.textContent=baseName[k]+' '+pctMap[k];
+  });
   updateRoadTip();
 }
 // 路單預測提示：根據大路連勢 + 下三路(大眼仔/小路/蟑螂)紅藍比例，比一句睇路建議
