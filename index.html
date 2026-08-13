@@ -1832,6 +1832,13 @@ function aiMultiFactor(ai){
 }
 
 // === 12種人物性格 v3：pre(開枱前諗法)/react(接別人句)/road(評路)+win/lose/tilt + rel(盟友/宿敵傾向) ===
+const AGE_GROUPS=[
+  {key:'young', name:'青年', range:'20-29', icon:'🧒'},
+  {key:'prime', name:'壯年', range:'30-39', icon:'🧑'},
+  {key:'mid', name:'中年', range:'40-49', icon:'🧔'},
+  {key:'senior', name:'資深', range:'50-59', icon:'🧓'},
+  {key:'elder', name:'長者', range:'60+', icon:'👴'}
+];
 const AI_PERSONAS={
   banker:{ name:'死忠莊', icon:'🏦', weights:{trend:1.5,pattern:0.3,emotion:0.5,crowd:0.2,memory:0.3},
     blurb:'莊家抽水都贏，偏重莊但會跟趨勢',
@@ -2338,6 +2345,7 @@ function showAiDetail(ai){
   const bankruptTxt = ai.bankrupt ? ' · 💀已破產出局' : '';
   const html =
     '<div style="margin-bottom:8px;"><b style="font-size:15px;color:#f5f0d8;">'+ai.icon+' '+ai.name+'</b>'+bankruptTxt+'</div>'+
+    '<div>年齡層：'+ageTxt+'</div>'+
     '<div>性格：'+personaTxt+'</div>'+
     '<div>策略：'+planTxt+'</div>'+
     '<div>本金：'+fmt(ai.balance)+'</div>'+
@@ -2360,6 +2368,7 @@ function renderAiList(){
     const row=document.createElement('div');
     row.className='ai-row';
     const personaTxt=(AI_PERSONAS[ai.persona]&&AI_PERSONAS[ai.persona].name)||ai.persona;
+    const ageTxt=(AGE_GROUPS.find(a=>a.key===ai.age)&&AGE_GROUPS.find(a=>a.key===ai.age).name)||'';
     const planTxt=(AI_PLANS[ai.plan]&&AI_PLANS[ai.plan].name)||ai.plan;
     const g=ai.games||0, w=ai.wins||0;
     const wr = g>0 ? Math.round(w/g*100) : 0;
@@ -2421,7 +2430,8 @@ document.getElementById('aiConfirm').addEventListener('click',()=>{
     document.getElementById('aiModal').classList.remove('show'); updateAiBalances(); renderAiList(); saveAiList();
     showToast('💾 已更新「'+name+'」'); return;
   }
-  const ai={ id:'ai'+(Date.now())+'-'+ais.length, name, icon:AI_ICONS[ais.length%6], balance:bank, persona, plan, baseBet:Math.max(1000, Math.floor(bank/20/1000)*1000), step:0, history:[], currentBet:null, emotion:50, winStreak:0, loseStreak:0, weights:AI_PERSONAS[persona].weights, recentChats:[], games:0, wins:0, losses:0, favBet:{player:0,banker:0,tie:0}, bankrupt:false };
+  const ag = AGE_GROUPS[Math.floor(Math.random()*AGE_GROUPS.length)];
+  const ai={ id:'ai'+(Date.now())+'-'+ais.length, name, icon:AI_ICONS[ais.length%6], age:ag.key, balance:bank, persona, plan, baseBet:Math.max(1000, Math.floor(bank/20/1000)*1000), step:0, history:[], currentBet:null, emotion:50, winStreak:0, loseStreak:0, weights:AI_PERSONAS[persona].weights, recentChats:[], games:0, wins:0, losses:0, favBet:{player:0,banker:0,tie:0}, bankrupt:false };
   ais.push(ai);
   document.getElementById('aiModal').classList.remove('show'); updateAiBalances(); renderAiList(); saveAiList();
   showToast(ai.icon+' '+name+' 入枱！本金 '+fmt(ai.balance)+'（共'+ais.length+'個AI）');
