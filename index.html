@@ -1706,7 +1706,7 @@ function setControls(en){ document.getElementById('btnClear').disabled=!en; docu
 /* ===================== 戰績 localStorage ===================== */
 function loadStats(){
   try{ const s=JSON.parse(localStorage.getItem('bac_stats')); if(s) stats=Object.assign(stats,s); }catch(e){}
-  try{ const b=localStorage.getItem('bac_balance'); if(b!==null) balance=Math.max(0,Math.min(+b,TABLE_MAX)); }catch(e){}
+  try{ const b=localStorage.getItem('bac_balance'); if(b!==null) balance=Math.max(0,+b); }catch(e){}  // 直接用存檔餘額，唔好用 TABLE_MAX(桌注上限)截，否則贏多過5萬reload變返5萬
   try{ const d=JSON.parse(localStorage.getItem('bac_daily')); if(d){ dailyClaim=d; } }catch(e){}
 }
 function saveStats(){
