@@ -330,6 +330,13 @@
   .modal-box h3{margin:0 0 12px; color:var(--gold2); text-align:center;}
   .stat-row{display:flex; justify-content:space-between; padding:7px 4px; border-bottom:1px solid #333; font-size:14px;}
   .stat-row span:last-child{color:var(--gold2); font-weight:800;}
+  .quest-box{margin:10px 0; padding:8px 10px; border:1px solid var(--goldd); border-radius:10px; background:rgba(255,215,121,.08);}
+  .quest-title{font-size:13px; font-weight:800; color:var(--gold2);}
+  .quest-desc{font-size:11px; opacity:.9; margin:3px 0;}
+  .quest-prog{height:10px; background:#222; border-radius:6px; overflow:hidden; margin:4px 0;}
+  .quest-bar{height:100%; width:0; background:linear-gradient(90deg,#ffd479,#e6a417); transition:width .4s;}
+  .quest-reward{font-size:10px; opacity:.8; margin-bottom:4px;}
+  .quest-box.done .quest-bar{background:linear-gradient(90deg,#4ade80,#16a34a);}
   .modal-close{display:block; margin:14px auto 0; background:var(--goldd); color:#fff; border:none; padding:10px 28px; border-radius:8px; font-weight:800; cursor:pointer;}
 
   .daily-tip{text-align:center; font-size:11px; color:var(--gold2); padding:0 10px 4px; min-height:14px;}
@@ -553,6 +560,13 @@
     <div class="stat-row"><span>淨盈虧</span><span id="sNet">0</span></div>
     <div class="stat-row"><span>最高餘額</span><span id="sPeak">0</span></div>
     <div class="stat-row"><span>本場淨贏/輸</span><span id="sSession">0</span></div>
+    <div class="quest-box" id="questBox">
+      <div class="quest-title">🎯 每日挑戰</div>
+      <div class="quest-desc" id="questDesc">載入中…</div>
+      <div class="quest-prog"><div class="quest-bar" id="questBar"></div></div>
+      <div class="quest-reward">完成獎勵：+5,000 籌碼</div>
+      <button class="modal-close" id="btnClaimQuest" style="background:#2faf5a;">領取獎勵</button>
+    </div>
     <button class="modal-close" id="btnClearStats" style="background:#7a2626; margin-bottom:6px;">🗑 清除歷史記錄</button>
     <button class="modal-close" id="btnCloseStats">關閉</button>
   </div>
@@ -1518,6 +1532,7 @@ function settle(winner, playerPair, bankerPair, big, totalCards, pTotal, bTotal,
   lastHumanWon=mainWin;   // 記低你上局主注中冇中，畀 AI 對話用
   stats.total++; stats.betRounds++;
   if(mainWin && lastStaked>0) stats.hit++;   // 準確命中率：有落主注且主注中獎
+  if(mainWin && net>0){ checkQuest(); dailyQuest.win++; updateQuest(); localStorage.setItem("bac_quest",JSON.stringify(dailyQuest)); }  // 每日挑戰：今日贏局+1
   if(winner==='player')stats.pWin++; else if(winner==='banker')stats.bWin++; else stats.tie++;
   // 這一靴牌統計（資訊條用）
   shoeStats.round++;
@@ -2029,8 +2044,37 @@ function showStats(){
   const sessionNet = balance - sessionStartBalance;
   const sSess=document.getElementById('sSession');
   if(sSess) sSess.textContent = (sessionNet>=0?'+':'')+fmt(sessionNet);
+  updateQuest();   // 每日挑戰進度刷新
   document.getElementById('statsModal').classList.add('show');
 }
+
+/* ===================== 每日挑戰 ===================== */
+let dailyQuest={ date:'', win:0, done:false, claimed:false };
+const QUEST_GOAL=5, QUEST_REWARD=5000;
+function loadQuest(){ try{ const q=JSON.parse(localStorage.getItem('bac_quest')); if(q) dailyQuest=q; }catch(e){} }
+function checkQuest(){
+  const today=new Date().toDateString();
+  if(dailyQuest.date!==today){ dailyQuest={date:today, win:0, done:false, claimed:false}; }
+}
+function updateQuest(){
+  checkQuest();
+  const box=document.getElementById('questBox'); if(!box) return;
+  const desc=document.getElementById('questDesc'); if(desc) desc.textContent='今日贏 '+dailyQuest.win+' / '+QUEST_GOAL+' 局';
+  const bar=document.getElementById('questBar'); if(bar) bar.style.width=Math.min(100, dailyQuest.win/QUEST_GOAL*100)+'%';
+  const btn=document.getElementById('btnClaimQuest');
+  if(dailyQuest.win>=QUEST_GOAL && !dailyQuest.claimed){ dailyQuest.done=true; box.classList.add('done'); if(btn){ btn.disabled=false; btn.textContent='領取 +'+fmt(QUEST_REWARD); btn.style.opacity='1'; } }
+  else if(dailyQuest.claimed){ box.classList.add('done'); if(btn){ btn.disabled=true; btn.textContent='已領取 ✓'; btn.style.opacity='0.5'; } }
+  else { box.classList.remove('done'); if(btn){ btn.disabled=true; btn.style.opacity='0.5'; } }
+}
+function claimQuest(){
+  checkQuest();
+  if(dailyQuest.win<QUEST_GOAL){ showToast('未達成挑戰'); return; }
+  if(dailyQuest.claimed){ showToast('今日已領取'); return; }
+  balance+=QUEST_REWARD; dailyQuest.claimed=true;
+  updateBalance(); updateQuest(); saveStats(); localStorage.setItem('bac_quest',JSON.stringify(dailyQuest));
+  showToast('🎯 挑戰完成！+'+fmt(QUEST_REWARD)); sndWin(); launchConfetti();
+}
+// 每日挑戰：結算贏錢時計今日贏局數
 
 /* ===================== 每日免費籌碼 ===================== */
 let dailyClaim={ date:'', claimed:false };
@@ -2210,6 +2254,7 @@ document.getElementById('btnAuto').addEventListener('click',function(){
 });
 document.getElementById('btnShuffle').addEventListener('click',()=>{ if(dealing) return; doShuffle().then(()=>showToast('🔀 已重新洗牌並清空路單')); });
 document.getElementById('btnDaily').addEventListener('click',claimDaily);
+document.getElementById('btnClaimQuest').addEventListener('click',claimQuest);
 document.getElementById('btnStats').addEventListener('click',showStats);
 document.getElementById('btnCloseStats').addEventListener('click',()=>document.getElementById('statsModal').classList.remove('show'));
 const btnDM=document.getElementById('btnDealMode');
@@ -2360,11 +2405,11 @@ document.querySelectorAll('.player-emotes .pe').forEach(el=>{
 
 
 
-loadStats(); loadRoads(); loadAiList(); updateAiBalances();
+loadStats(); loadRoads(); loadAiList(); loadQuest(); updateAiBalances();
 sessionStartBalance=balance;   // 記低開局餘額，畀「本場淨贏/輸」用
 if(!loadShoe()) resetShoe();   // 有儲存嘅鞋就續返(派過幾多張繼續)，否則開新鞋
 updateShoeInfo();   // 無論續鞋定開新鞋都刷新剩餘張數顯示
-updateBalance(); updateBetDisplay(); checkDaily(); drawAllRoads();
+updateBalance(); updateBetDisplay(); checkDaily(); updateQuest(); drawAllRoads();
 </script>
 </body>
 </html>
