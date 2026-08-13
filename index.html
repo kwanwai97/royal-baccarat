@@ -27,6 +27,9 @@
     display:flex; align-items:center; justify-content:space-between;
     box-shadow:0 2px 10px rgba(0,0,0,.6); position:sticky; top:0; z-index:30;
   }
+  .table-switch{display:flex; gap:3px; flex:0 0 auto;}
+  .tbtn{flex:0 0 auto; padding:4px 9px; border-radius:8px; font-size:11px; font-weight:800; border:1px solid rgba(212,175,55,.5); background:#16241a; color:var(--gold2); cursor:pointer;}
+  .tbtn.active{background:linear-gradient(180deg,var(--gold2),var(--goldd)); color:#241a00; border-color:var(--goldd);}
   .brand{font-weight:800; letter-spacing:1px; color:var(--gold2);
     font-size:15px; text-shadow:0 0 8px rgba(212,175,55,.6); display:flex; align-items:center; gap:6px;}
   .topright{display:flex; align-items:center; gap:10px;}
@@ -379,6 +382,11 @@
 <div class="app">
   <div class="topbar">
     <div class="brand">♛ 百家樂</div>
+    <div class="table-switch" id="tableSwitch">
+      <button class="tbtn active" data-t="0">桌1</button>
+      <button class="tbtn" data-t="1">桌2</button>
+      <button class="tbtn" data-t="2">桌3</button>
+    </div>
     <div class="topright">
       <div class="balance"><small>餘額</small><div><b id="balance">1,000,000</b></div></div>
       <div class="ai-balances" id="aiBalanceBox" style="display:none;"></div>
@@ -605,6 +613,53 @@ let lastBets=null;
 let limitMin=1000, limitMax=50000;
 function loadLimits(){ try{ const l=JSON.parse(localStorage.getItem('bac_limits')); if(l&&l.min>0&&l.max>=l.min){ limitMin=l.min; limitMax=l.max; } }catch(e){} }
 function saveLimits(){ try{ localStorage.setItem('bac_limits',JSON.stringify({min:limitMin,max:limitMax})); }catch(e){} }
+// 升級⑩ 多桌：3張獨立桌，每桌存自己嘅牌靴/路單/注/統計/餘額；AI陪玩全局共用
+let currentTable=0;
+const TABLE_COUNT=3;
+let tables=[];
+function freshTableState(){
+  return {
+    shoe:[], shoeDrawn:0, shoeCut:0,
+    bets:{player:0,banker:0,tie:0,ppair:0,bpair:0,big:0,small:0,luck6:0,luck7:0},
+    stats:{ total:0, pWin:0, bWin:0, tie:0, hit:0, betRounds:0, streak:0, maxStreak:0, winAmt:0, lossAmt:0, peak:50000 },
+    shoeStats:{ round:0, pWin:0, bWin:0, tie:0, ppair:0, bpair:0, luck6:0, luck7:0, lastCards:0 },
+    bigCols:[], history:[],
+    balance:50000, currentChip:1000, dealMode:localStorage.getItem('bac_dealmode')||'3d'
+  };
+}
+function initTables(){
+  tables=[];
+  for(let i=0;i<TABLE_COUNT;i++) tables.push(freshTableState());
+  // 第1桌用目前開局狀態（已 load 晒 shoe/roads/stats）
+  tables[0]={ shoe:shoe.slice(), shoeDrawn:shoeDrawn, shoeCut:shoeCut, bets:JSON.parse(JSON.stringify(bets)),
+    stats:JSON.parse(JSON.stringify(stats)), shoeStats:JSON.parse(JSON.stringify(shoeStats)),
+    bigCols:JSON.parse(JSON.stringify(bigCols)), history:JSON.parse(JSON.stringify(history)),
+    balance:balance, currentChip:currentChip, dealMode:dealMode };
+}
+function saveCurrentTable(){
+  const t=tables[currentTable];
+  t.shoe=shoe.slice(); t.shoeDrawn=shoeDrawn; t.shoeCut=shoeCut;
+  t.bets=JSON.parse(JSON.stringify(bets)); t.stats=JSON.parse(JSON.stringify(stats));
+  t.shoeStats=JSON.parse(JSON.stringify(shoeStats)); t.bigCols=JSON.parse(JSON.stringify(bigCols));
+  t.history=JSON.parse(JSON.stringify(history)); t.balance=balance; t.currentChip=currentChip; t.dealMode=dealMode;
+}
+function loadTable(i){
+  const t=tables[i];
+  shoe=t.shoe.slice(); shoeDrawn=t.shoeDrawn; shoeCut=t.shoeCut;
+  bets=JSON.parse(JSON.stringify(t.bets)); stats=JSON.parse(JSON.stringify(t.stats));
+  shoeStats=JSON.parse(JSON.stringify(t.shoeStats)); bigCols=JSON.parse(JSON.stringify(t.bigCols));
+  history=JSON.parse(JSON.stringify(t.history)); balance=t.balance; currentChip=t.currentChip; dealMode=t.dealMode;
+}
+function switchTable(i){
+  if(i===currentTable) return;
+  saveCurrentTable();          // 存目前桌
+  currentTable=i;
+  loadTable(i);                // 載入目標桌
+  // 重畫所有 UI
+  drawAllRoads(); updateBalance(); updateBetDisplay(); updateStreakBar(); updateStreak(); updateShoeInfo(); updateAiBalances();
+  document.querySelectorAll('.tbtn').forEach(b=>b.classList.toggle('active', +b.dataset.t===i));
+  showToast('切換到 桌'+(i+1));
+}
 let dealing=false;
 let autoOn=false;        // 自動進行中旗標（setControls 會保持 DEAL 掣停用）
 let settled=false; // settle已執行後clearBets唔再退款
@@ -626,16 +681,16 @@ let history=[]; // {winner:'player'|'banker'|'tie', playerPair, bankerPair, tota
 /* ===================== 路單 localStorage ===================== */
 function saveRoads(){
   try{
-    localStorage.setItem('bac_road_big', JSON.stringify(bigCols));
-    localStorage.setItem('bac_road_hist', JSON.stringify(history));
-    localStorage.setItem('bac_road_stats', JSON.stringify(shoeStats));
+    localStorage.setItem('bac_road_big'+currentTable, JSON.stringify(bigCols));
+    localStorage.setItem('bac_road_hist'+currentTable, JSON.stringify(history));
+    localStorage.setItem('bac_road_stats'+currentTable, JSON.stringify(shoeStats));
   }catch(e){}
 }
 function loadRoads(){
   try{
-    const b=localStorage.getItem('bac_road_big');
-    const h=localStorage.getItem('bac_road_hist');
-    const s=localStorage.getItem('bac_road_stats');
+    const b=localStorage.getItem('bac_road_big'+currentTable);
+    const h=localStorage.getItem('bac_road_hist'+currentTable);
+    const s=localStorage.getItem('bac_road_stats'+currentTable);
     if(b) bigCols=JSON.parse(b);
     if(h) history=JSON.parse(h);
     if(s) shoeStats=JSON.parse(s);
@@ -2120,10 +2175,10 @@ function resetShoe(){
   saveShoe();
   updateShoeInfo();
 }
-function saveShoe(){ try{ localStorage.setItem('bac_shoe', JSON.stringify({shoe, shoeDrawn, shoeCut})); }catch(e){} }
+function saveShoe(){ try{ localStorage.setItem('bac_shoe'+currentTable, JSON.stringify({shoe, shoeDrawn, shoeCut})); }catch(e){} }
 function loadShoe(){
   try{
-    const s=localStorage.getItem('bac_shoe');
+    const s=localStorage.getItem('bac_shoe'+currentTable);
     if(!s) return false;
     const o=JSON.parse(s);
     if(!o || !Array.isArray(o.shoe) || o.shoe.length!==416) return false;
@@ -2379,6 +2434,7 @@ document.getElementById('btnLimits').addEventListener('click',()=>{
   document.getElementById('limitsModal').classList.add('show');
 });
 document.getElementById('btnCloseLimits').addEventListener('click',()=>document.getElementById('limitsModal').classList.remove('show'));
+document.querySelectorAll('.tbtn').forEach(b=>b.addEventListener('click',()=>switchTable(+b.dataset.t)));  // 升級⑩ 多桌切換
 document.getElementById('btnSaveLimits').addEventListener('click',()=>{
   const mn=Math.max(100, Math.floor(+document.getElementById('limitMinInput').value||1000));
   const mx=Math.max(mn, Math.floor(+document.getElementById('limitMaxInput').value||50000));
@@ -2432,7 +2488,7 @@ document.querySelectorAll('.player-emotes .pe').forEach(el=>{
 
 
 
-loadStats(); loadRoads(); loadAiList(); loadQuest(); loadLimits(); updateAiBalances();
+loadStats(); loadRoads(); loadAiList(); loadQuest(); loadLimits(); updateAiBalances(); initTables();
 sessionStartBalance=balance;   // 記低開局餘額，畀「本場淨贏/輸」用
 if(!loadShoe()) resetShoe();   // 有儲存嘅鞋就續返(派過幾多張繼續)，否則開新鞋
 updateShoeInfo();   // 無論續鞋定開新鞋都刷新剩餘張數顯示
