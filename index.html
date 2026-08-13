@@ -518,6 +518,7 @@
   <button class="iconbtn chip-icon" id="btnDaily" title="每日免費籌碼">🎁</button>
   <button class="iconbtn chip-icon" id="btnStats" title="戰績">📊</button>
   <button class="iconbtn chip-icon" id="btnMute" title="音效">🔊</button>
+  <button class="iconbtn chip-icon" id="btnAi" title="陪玩AI管理">🤖</button>
   </div>
 
   <div class="controls">
@@ -2359,6 +2360,7 @@ document.getElementById('aiStop').addEventListener('click',()=>{
 });
 document.getElementById('aiExit').addEventListener('click',()=>{ document.getElementById('aiModal').classList.remove('show'); });
 document.getElementById('btnMute').addEventListener('click',()=>{ mute=!mute; document.getElementById('btnMute').textContent=mute?'🔇':'🔊'; if(!mute) sndChip(); });
+document.getElementById('btnAi').addEventListener('click',()=>document.getElementById('aiModal').classList.add('show'));  // 陪玩AI管理
 
 /* ===================== ⑤ 玩家快捷表情：你發，AI 回 ===================== */
 const EMOTE_ICON={laugh:'😂',money:'💰',wow:'😮',fire:'🔥'};
