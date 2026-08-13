@@ -618,8 +618,9 @@ let currentTable=0;
 const TABLE_COUNT=3;
 let tables=[];
 function freshTableState(){
+  const sh=shuffle(buildShoe(8));   // 新桌開新鞋（8副）
   return {
-    shoe:[], shoeDrawn:0, shoeCut:0,
+    shoe:sh, shoeDrawn:0, shoeCut:sh.length-118,
     bets:{player:0,banker:0,tie:0,ppair:0,bpair:0,big:0,small:0,luck6:0,luck7:0},
     stats:{ total:0, pWin:0, bWin:0, tie:0, hit:0, betRounds:0, streak:0, maxStreak:0, winAmt:0, lossAmt:0, peak:50000 },
     shoeStats:{ round:0, pWin:0, bWin:0, tie:0, ppair:0, bpair:0, luck6:0, luck7:0, lastCards:0 },
