@@ -380,10 +380,8 @@
   <div class="topbar">
     <div class="brand">♛ 百家樂</div>
     <div class="topright">
-      <span class="streak-badge" id="streakBadge">🔥 連勝 0</span>
       <div class="balance"><small>餘額</small><div><b id="balance">1,000,000</b></div></div>
       <div class="ai-balances" id="aiBalanceBox" style="display:none;"></div>
-      <button class="iconbtn" id="btnAI" title="AI陪玩設定">🤖</button>
 
     </div>
   </div>
@@ -970,6 +968,7 @@ function updateBetDisplay(){
 }
 function updateStreak(){
   const b=document.getElementById('streakBadge');
+  if(!b) return;   // 頂部連勝badge已移除(改用投注區連勝條)，防null
   if(stats.streak>=2){ b.textContent='🔥 連勝 '+stats.streak; b.classList.add('show'); }
   else b.classList.remove('show');
 }
@@ -2284,12 +2283,6 @@ function aiChipGroup(id, key, onChange){
 }
 function refreshPersonaBlurb(){ const p=AI_PERSONAS[aiSel.persona]; const b=document.getElementById('aiPersonaBlurb'); if(p&&b) b.textContent=p.blurb; }
 aiChipGroup('aiPersona','persona', refreshPersonaBlurb); aiChipGroup('aiPlan','plan');
-document.getElementById('btnAI').addEventListener('click',()=>{
-  document.getElementById('aiModal').classList.add('show'); editingAiId=null; document.getElementById('aiConfirm').textContent='確認 · 新增 AI';
-  renderAiList();
-  if(ais.length<8) randomizeNewAi();   // 新增模式：自動隨機配性格+注碼（編輯模式唔 call）
-  document.getElementById('aiStop').style.display = ais.length? '' : 'none';
-});
 /* 列出所有AI，逐個可改/刪（唔再只刪最後一個） */
 function renderAiList(){
   const list=document.getElementById('aiList');
