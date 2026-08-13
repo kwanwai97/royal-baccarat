@@ -215,7 +215,7 @@
   .streak-bar .seg.on{background:linear-gradient(180deg,#ffd479,#e6a417); box-shadow:0 0 4px #ffd479;}
   .streak-bar.hot{border-color:#ffb347; color:#ffd479;}
   .streak-bar.zero{opacity:.55;}
-  .odds-row{display:flex; justify-content:center; padding:1px 10px 4px; width:100%; box-sizing:border-box;}
+  .odds-row{display:flex; justify-content:center; align-items:center; gap:10px; padding:1px 10px 4px; width:100%; box-sizing:border-box;}
   .odds-info{font-size:11px; font-weight:700; color:#06243f; background:rgba(255,236,179,.95); padding:3px 10px; border-radius:10px; white-space:nowrap; text-align:center; line-height:1.45; border:1px solid #e6b54a; max-width:100%; overflow:hidden; text-overflow:ellipsis;}
   .odds-info b{color:#7a3d00;}
   .road-tip{font-size:11px; font-weight:700; color:#fff; background:rgba(20,40,30,.9); padding:3px 10px; border-radius:10px; text-align:center; line-height:1.4; border:1px solid rgba(212,175,55,.45); max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
@@ -388,7 +388,7 @@
     </div>
   </div>
 
-  <div class="odds-row"><div class="streak-bar zero" id="streakBar"></div></div>
+  <div class="odds-row"><div class="streak-bar zero" id="streakBar"></div><div class="shoe-info" id="shoeInfo"></div></div>
 
   <div class="roadpanel">
     <div style="display:flex;align-items:center;padding:4px 8px;position:relative;">
@@ -518,7 +518,6 @@
   <button class="iconbtn chip-icon" id="btnDaily" title="每日免費籌碼">🎁</button>
   <button class="iconbtn chip-icon" id="btnStats" title="戰績">📊</button>
   <button class="iconbtn chip-icon" id="btnMute" title="音效">🔊</button>
-  <div class="shoe-info" id="shoeInfo"></div>
   </div>
 
   <div class="controls">
@@ -2127,7 +2126,7 @@ function burnCard(){ // 切牌卡燒牌：切牌卡下面第一張決定燒幾�
   return n;
 }
 function drawCard(){ const c=shoe[shoeDrawn++]; saveShoe(); updateShoeInfo(); return c; }
-function updateShoeInfo(){ const el=document.getElementById('shoeInfo'); if(!el) return; const playable=Math.max(0,shoeCut-shoeDrawn); el.textContent=shoe.length+'張｜剩'+playable+'張後洗牌'; updateOdds(); }
+function updateShoeInfo(){ const el=document.getElementById('shoeInfo'); if(!el) return; const playable=Math.max(0,shoeCut-shoeDrawn); el.textContent='剩 '+playable+' 張'; updateOdds(); }
 // 即時勝率：根據牌靴剩餘張數做蒙特卡洛模擬 (2000手)，算真實莊/閒/和/對子機率
 function simulateOneHand(pool){
   const used=[];
