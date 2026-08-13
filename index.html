@@ -1145,6 +1145,29 @@ function relOf(aiA, aiB){
   return 'neutral';
 }
 function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+
+function genFunnyLine(ai, ctx) {
+  const p = AI_PERSONAS[ai.persona];
+  const ws = ai.winStreak || 0, ls = ai.loseStreak || 0;
+  const tag = (p && p.blurb) ? p.blurb.slice(0,4) : '';
+  const funnyPool = [];
+  if (ws >= 4) funnyPool.push('旺到阿媽都唔認得，連贏'+ws+'鋪！我係賭神轉世😎');
+  if (ws >= 3) funnyPool.push('連贏'+ws+'鋪，你仲跟唔跟？唔跟就笨啦');
+  if (ls >= 4) funnyPool.push('連輸'+ls+'鋪…我啲錢係紙印㗎嘛，唔痛😭');
+  if (ls >= 3) funnyPool.push('輸到褲浪都濕晒，但老子唔服！');
+  if (ctx && ctx.streakLen >= 4) {
+    const t = ctx.streakType === 'banker' ? '莊' : '閒';
+    funnyPool.push('條龍'+ctx.streakLen+'鋪'+t+'！你唔跟就真係傻😂');
+    funnyPool.push(ctx.streakType==='banker'?'莊狗又偷食，跟咗都唔知點解贏':'閒家威到冇朋友，條龍仲未斷');
+  }
+  if (ctx && ctx.streakLen === 2) funnyPool.push('兩鋪同邊，係咪要變龍？我賭佢斷😏');
+  if (lastHumanWon && ls >= 2) funnyPool.push('你贏緊我輸緊，我哋係對立😤');
+  if (!lastHumanWon && ws >= 2) funnyPool.push('我旺你衰，跟返我啦笨😝');
+  if (ctx && ctx.last === 'tie') funnyPool.push('又和？莊閒講好咗扮曬嘢，冇癮😒');
+  if (tag) funnyPool.push(tag+'…呢鋪我賭佢反轉，信我冇死');
+  if (funnyPool.length === 0) return null;
+  return funnyPool[Math.floor(Math.random()*funnyPool.length)];
+}
 function genChatLine(ai, pickSide, ctx, prevTalker, usedSet) {
   const p = AI_PERSONAS[ai.persona];
   const pickTxt = pickSide === 'banker' ? '莊' : pickSide === 'player' ? '閒' : '和';
@@ -1152,6 +1175,10 @@ function genChatLine(ai, pickSide, ctx, prevTalker, usedSet) {
 
   // 生成一句候选句子的函数
   function generateCandidate() {
+    if (Math.random() < 0.6) {
+      const f = genFunnyLine(ai, ctx);
+      if (f) return f;
+    }
     if (prevTalker && prevTalker.persona !== ai.persona && p.react) {
       const rel = relOf(ai, prevTalker);
       if (rel !== 'neutral' && Math.random() < 0.7) {
@@ -1198,9 +1225,17 @@ function genChatLine(ai, pickSide, ctx, prevTalker, usedSet) {
   do {
     candidate = generateCandidate();
     attempts++;
-  } while (attempts < 8 && (ownRecent.includes(candidate) || (usedSet && usedSet.has(candidate))));
+  } while (attempts < 8 && (ownRecent.includes(candidate) || (usedSet && usedSet.has(candidate)) || chatGlobalHas(candidate)));
   if (usedSet) usedSet.add(candidate);
   return candidate;
+}
+
+const CHAT_GLOBAL_KEY='bac_chat_global';
+function chatGlobalPush(msg){
+  try{ let arr=JSON.parse(localStorage.getItem(CHAT_GLOBAL_KEY)||'[]'); arr.push(msg); if(arr.length>30) arr.shift(); localStorage.setItem(CHAT_GLOBAL_KEY, JSON.stringify(arr)); }catch(e){}
+}
+function chatGlobalHas(msg){
+  try{ const arr=JSON.parse(localStorage.getItem(CHAT_GLOBAL_KEY)||'[]'); return arr.indexOf(msg)>=0; }catch(e){ return false; }
 }
 function addChatBubble(ai, msg) {
   const L = document.getElementById('tcBodyL');
@@ -1214,6 +1249,7 @@ function addChatBubble(ai, msg) {
     ai.recentChats.push(msg);
     if (ai.recentChats.length > 8) ai.recentChats.shift();
   }
+  chatGlobalPush(msg);
 
   const b = document.createElement('div');
   b.className = 'tc-bubble ai-' + (ais.indexOf(ai) % 6);
@@ -1233,27 +1269,30 @@ function showTableChat(){
 }
 function hideTableChat(){ ['L'].forEach(s=>{ const c=document.getElementById('tableChat'+s); if(c) c.classList.remove('show'); }); }
 document.getElementById('tcCloseL').addEventListener('click',()=>{ hideTableChat(); const f=window._tcFinish; if(f){ window._tcFinish(); window._tcFinish=null; } });
+const CHAT_BUDGET_MS = 10000;  // 枱邊閒聊彈性預算：最多喺呢段時間內講，好笑就長啲，唔好笑就短啲（唔固定4句）
 async function tableChatPhase(sec) {
     if (ais.length === 0) return;
     showTableChat();
 
-    // 隨機打亂全部 AI，取頭 4 個（最多4個）各講一句，4 句唔同 AI 對話
+    // 彈性：唔固定4句，按10秒預算出句（出1段/2段/更長都得，預算用完就收聲）
     const shuffled = [...ais].sort(() => Math.random() - 0.5);
-    const speakers = shuffled.slice(0, Math.min(4, shuffled.length));
+    const speakers = shuffled.slice(0, Math.min(6, shuffled.length));  // 最多6個排住隊，預算用完就停
     speakers.forEach(ai => { ai._prePick = aiPick(ai); });
 
     const ctx = roadState();
     const usedThisRound = new Set();
     let prev = null;
+    const t0 = Date.now();
 
-    // ✅ 串行：文字彈出 → 等佢把聲播完 → 停 0.45s 緩衝 → 下一句。共 4 句播晒先收枱邊閒聊
     for (let i = 0; i < speakers.length; i++) {
+        if (Date.now() - t0 > CHAT_BUDGET_MS) break;   // 預算用完就收聲，唔硬出4句
         const ai = speakers[i];
         const msg = genChatLine(ai, ai._prePick, ctx, prev, usedThisRound);
+        if (!msg) { prev = ai; continue; }
         addChatBubble(ai, msg);
-        if (!mute && msg) {
-            await speak(ai.name + '：' + msg);
-            await sleep(450);
+        if (!mute) {
+            await speak(ai.name + '：' + msg);   // 原版 speak，唔收 ms，保語音安全
+            await sleep(450);                     // 固定緩衝，唔靠估算
         } else {
             await sleep(450);
         }
