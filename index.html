@@ -363,8 +363,9 @@
   .ai-row-info b{font-size:13px; color:#f5f0d8;}
   .ai-row-info small{font-size:9px; opacity:.7; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
   .ai-row-info .ai-stat{font-size:9px; opacity:.85; color:var(--gold2);}
-  .ai-row-edit, .ai-row-del{background:none; border:1px solid #2c5240; border-radius:6px; width:28px; height:28px; font-size:13px; cursor:pointer; color:#cfe9d8;}
+  .ai-row-edit, .ai-row-del, .ai-row-detail{background:none; border:1px solid #2c5240; border-radius:6px; width:28px; height:28px; font-size:13px; cursor:pointer; color:#cfe9d8;}
   .ai-row-del{border-color:#7a2d2d; color:#ffb3b3;}
+  .ai-row-detail{border-color:#7a6a2d; color:#ffd98a;}
   .ai-blurb{font-size:13px; color:var(--gold2); opacity:.9; margin-top:5px; padding:4px 10px; background:#0d1f15; border-radius:6px; border:1px solid #2c5240;}
   .ai-modal-btns{display:flex; gap:8px; margin:14px 0 4px;}
   .ai-modal-btns .modal-close{margin:0; flex:1;}
@@ -484,6 +485,16 @@
         <button class="modal-close" id="aiStop" style="background:#7a2d2d;margin:0;flex:1;display:none;">拆除全部 AI</button>
       </div>
       <div id="aiList" class="ai-list"></div>
+    </div>
+  </div>
+
+  <div class="modal" id="aiDetailModal">
+    <div class="modal-box" style="max-width:420px;">
+      <h3>📊 AI 戰績詳細</h3>
+      <div id="aiDetailBody" style="font-size:13px; color:#e8e0c0; line-height:1.6;"></div>
+      <div class="ai-modal-btns" style="display:flex; gap:8px; justify-content:flex-end; margin-top:12px;">
+        <button class="modal-close" id="aiDetailClose" style="background:#555;margin:0;flex:1;">關閉</button>
+      </div>
     </div>
   </div>
 
@@ -2307,6 +2318,27 @@ function aiChipGroup(id, key, onChange){
   const first=grp.querySelector('.ai-chip'); if(first) first.classList.add('sel');
 }
 function refreshPersonaBlurb(){ const p=AI_PERSONAS[aiSel.persona]; const b=document.getElementById('aiPersonaBlurb'); if(p&&b) b.textContent=p.blurb; }
+/* 顯示 AI 詳細戰績（似人類戰績卡） */
+function showAiDetail(ai){
+  const personaTxt=(AI_PERSONAS[ai.persona]&&AI_PERSONAS[ai.persona].name)||ai.persona;
+  const planTxt=(AI_PLANS[ai.plan]&&AI_PLANS[ai.plan].name)||ai.plan;
+  const g=ai.games||0, w=ai.wins||0, l=ai.losses||0;
+  const wr = g>0 ? Math.round(w/g*100) : 0;
+  let fav='-'; if(ai.favBet){ const f=ai.favBet; const top=Object.keys(f).sort((a,b)=>f[b]-f[a])[0]; if(top&&f[top]>0) fav=(top==='player'?'閒':top==='banker'?'莊':'和'); }
+  const st = g>0 ? ('勝率 '+wr+'% （勝'+w+' / 負'+l+' / 共'+g+'局）') : '尚未開局';
+  const bankruptTxt = ai.bankrupt ? ' · 💀已破產出局' : '';
+  const html =
+    '<div style="margin-bottom:8px;"><b style="font-size:15px;color:#f5f0d8;">'+ai.icon+' '+ai.name+'</b>'+bankruptTxt+'</div>'+
+    '<div>性格：'+personaTxt+'</div>'+
+    '<div>策略：'+planTxt+'</div>'+
+    '<div>本金：'+fmt(ai.balance)+'</div>'+
+    '<div>'+st+'</div>'+
+    '<div>偏好主注：'+(fav==='-'?'尚未投注':fav)+'</div>'+
+    '<div style="margin-top:6px; opacity:.7; font-size:11px;">似人類戰績紀錄：未破產前持續累計勝率與投注偏好</div>';
+  document.getElementById('aiDetailBody').innerHTML=html;
+  document.getElementById('aiDetailModal').classList.add('show');
+}
+document.getElementById('aiDetailClose').addEventListener('click',()=>{ document.getElementById('aiDetailModal').classList.remove('show'); });
 aiChipGroup('aiPersona','persona', refreshPersonaBlurb); aiChipGroup('aiPlan','plan');
 /* 列出所有AI，逐個可改/刪（唔再只刪最後一個） */
 function renderAiList(){
@@ -2329,6 +2361,7 @@ function renderAiList(){
       '<span class="ai-row-info"><b>'+ai.name+'</b><small>'+personaTxt+' · '+planTxt+' · 本金'+fmt(ai.balance)+bankruptTxt+'</small>'+
       '<small class="ai-stat">'+statTxt+'</small></span>'+
       '<button class="ai-row-edit" data-edit="'+ai.id+'">✏</button>'+
+      '<button class="ai-row-detail" data-detail="'+ai.id+'">📊</button>'+
       '<button class="ai-row-del" data-del="'+ai.id+'">🗑</button>';
     list.appendChild(row);
   });
@@ -2344,6 +2377,10 @@ function renderAiList(){
     setAiSel('aiPersona',ai.persona); setAiSel('aiPlan',ai.plan);
     document.getElementById('aiConfirm').textContent='💾 儲存修改';
     showToast('✏ 修改「'+ai.name+'」— 改好撳下方「儲存修改」');
+  }));
+  list.querySelectorAll('[data-detail]').forEach(b=>b.addEventListener('click',()=>{
+    const id=b.dataset.detail; const ai=ais.find(a=>a.id===id); if(!ai) return;
+    showAiDetail(ai);
   }));
   // 如果唔係編輯模式，自動填下一個預設名
   if(!editingAiId) setNextDefaultName();
