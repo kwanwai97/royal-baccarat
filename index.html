@@ -517,6 +517,7 @@
   <button class="iconbtn chip-icon" id="btnStats" title="戰績">📊</button>
   <button class="iconbtn chip-icon" id="btnMute" title="音效">🔊</button>
   <button class="iconbtn chip-icon" id="btnAi" title="陪玩AI管理">🤖</button>
+  <button class="iconbtn chip-icon" id="btnLimits" title="限紅自選">🎚</button>
   </div>
 
   <div class="controls">
@@ -570,6 +571,17 @@
   </div>
 </div>
 
+<div class="modal" id="limitsModal">
+  <div class="modal-box">
+    <h3>🎚 限紅自選</h3>
+    <div class="stat-row"><span>最低注（每注）</span><input id="limitMinInput" type="number" min="100" step="100" value="1000" style="width:110px; background:#1a1a1a; color:var(--gold2); border:1px solid var(--goldd); border-radius:6px; padding:4px;"></div>
+    <div class="stat-row"><span>最高注（每注）</span><input id="limitMaxInput" type="number" min="1000" step="1000" value="50000" style="width:110px; background:#1a1a1a; color:var(--gold2); border:1px solid var(--goldd); border-radius:6px; padding:4px;"></div>
+    <div class="quest-reward" id="limitsTip">預設：最低 1,000 ／ 最高 50,000</div>
+    <button class="modal-close" id="btnSaveLimits" style="background:#2faf5a;">儲存限紅</button>
+    <button class="modal-close" id="btnCloseLimits">關閉</button>
+  </div>
+</div>
+
 <script>
 /* ===================== 百家樂核心引擎 (Punto Banco) ===================== */
 const SUITS=['♠','♥','♦','♣'];
@@ -588,6 +600,10 @@ let lastHumanWon=false;   // 你上局主注有冇中（AI 對話用：針對你
 let currentChip=1000;
 let bets={player:0,banker:0,tie:0,ppair:0,bpair:0,big:0,small:0,luck6:0,luck7:0};
 let lastBets=null;
+// 升級⑧ 限紅自選（玩家自設最低/最高每注，持久化）
+let limitMin=1000, limitMax=50000;
+function loadLimits(){ try{ const l=JSON.parse(localStorage.getItem('bac_limits')); if(l&&l.min>0&&l.max>=l.min){ limitMin=l.min; limitMax=l.max; } }catch(e){} }
+function saveLimits(){ try{ localStorage.setItem('bac_limits',JSON.stringify({min:limitMin,max:limitMax})); }catch(e){} }
 let dealing=false;
 let autoOn=false;        // 自動進行中旗標（setControls 會保持 DEAL 掣停用）
 let settled=false; // settle已執行後clearBets唔再退款
@@ -989,7 +1005,8 @@ function flyChip(k){
 
 function placeBet(k){
   if((dealing && !betting) || settled) return;   // 發牌中(非落注期)或結算中不可落注；落注倒數期(betting=true)人手可照落/跟注
-  if(bets[k]+currentChip>LIMIT_MAX){ showToast('⚠ 單注超過限紅 '+fmt(LIMIT_MAX)); return; }
+  if(currentChip<limitMin){ showToast('⚠ 單注低過限紅最低 '+fmt(limitMin)); return; }
+  if(bets[k]+currentChip>limitMax){ showToast('⚠ 單注超過限紅最高 '+fmt(limitMax)); return; }
   let total=0; for(const x in bets) total+=bets[x];
   if(total+currentChip>TABLE_MAX){ showToast('⚠ 全桌注額超過 '+fmt(TABLE_MAX)); return; }
   if(balance<currentChip){ showToast('⚠ 餘額不足（剩 '+fmt(balance)+'）'); return; }
@@ -2354,6 +2371,21 @@ document.getElementById('aiStop').addEventListener('click',()=>{
 document.getElementById('aiExit').addEventListener('click',()=>{ document.getElementById('aiModal').classList.remove('show'); });
 document.getElementById('btnMute').addEventListener('click',()=>{ mute=!mute; document.getElementById('btnMute').textContent=mute?'🔇':'🔊'; if(!mute) sndChip(); });
 document.getElementById('btnAi').addEventListener('click',()=>document.getElementById('aiModal').classList.add('show'));  // 陪玩AI管理
+// 升級⑧ 限紅自選 modal
+document.getElementById('btnLimits').addEventListener('click',()=>{
+  document.getElementById('limitMinInput').value=limitMin;
+  document.getElementById('limitMaxInput').value=limitMax;
+  document.getElementById('limitsModal').classList.add('show');
+});
+document.getElementById('btnCloseLimits').addEventListener('click',()=>document.getElementById('limitsModal').classList.remove('show'));
+document.getElementById('btnSaveLimits').addEventListener('click',()=>{
+  const mn=Math.max(100, Math.floor(+document.getElementById('limitMinInput').value||1000));
+  const mx=Math.max(mn, Math.floor(+document.getElementById('limitMaxInput').value||50000));
+  limitMin=mn; limitMax=mx; saveLimits();
+  document.getElementById('limitsTip').textContent='已設：最低 '+fmt(limitMin)+' ／ 最高 '+fmt(limitMax);
+  showToast('🎚 限紅已設：最低 '+fmt(limitMin)+' 最高 '+fmt(limitMax));
+  document.getElementById('limitsModal').classList.remove('show');
+});
 
 /* ===================== ⑤ 玩家快捷表情：你發，AI 回 ===================== */
 const EMOTE_ICON={laugh:'😂',money:'💰',wow:'😮',fire:'🔥'};
@@ -2399,7 +2431,7 @@ document.querySelectorAll('.player-emotes .pe').forEach(el=>{
 
 
 
-loadStats(); loadRoads(); loadAiList(); loadQuest(); updateAiBalances();
+loadStats(); loadRoads(); loadAiList(); loadQuest(); loadLimits(); updateAiBalances();
 sessionStartBalance=balance;   // 記低開局餘額，畀「本場淨贏/輸」用
 if(!loadShoe()) resetShoe();   // 有儲存嘅鞋就續返(派過幾多張繼續)，否則開新鞋
 updateShoeInfo();   // 無論續鞋定開新鞋都刷新剩餘張數顯示
