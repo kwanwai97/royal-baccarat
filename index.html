@@ -657,6 +657,7 @@ function switchTable(i){
   currentTable=i;
   loadTable(i);                // 載入目標桌
   // 重畫所有 UI
+  const cm=document.getElementById('centerMsg'); if(cm){ cm.textContent=''; cm.classList.remove('show'); }  // 清走舊桌開牌結果banner
   drawAllRoads(); updateBalance(); updateBetDisplay(); updateStreakBar(); updateStreak(); updateShoeInfo(); updateAiBalances();
   document.querySelectorAll('.tbtn').forEach(b=>b.classList.toggle('active', +b.dataset.t===i));
   showToast('切換到 桌'+(i+1));
