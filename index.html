@@ -2432,7 +2432,7 @@ document.querySelectorAll('.player-emotes .pe').forEach(el=>{
 
 
 
-loadStats(); loadRoads(); loadAiList(); loadQuest(); loadLimits(); updateAiBalances();
+loadStats(); loadRoads(); loadAiList(); loadQuest(); loadLimits(); updateAiBalances(); renderAiList();   // 修復: 開局重畫AI列表(否則reload後下方無卡片)
 sessionStartBalance=balance;   // 記低開局餘額，畀「本場淨贏/輸」用
 if(!loadShoe()) resetShoe();   // 有儲存嘅鞋就續返(派過幾多張繼續)，否則開新鞋
 updateShoeInfo();   // 無論續鞋定開新鞋都刷新剩餘張數顯示
