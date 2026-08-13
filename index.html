@@ -171,9 +171,7 @@
   .bet.sel{box-shadow:inset 0 0 0 2px rgba(244,217,123,.28); background:rgba(212,175,55,.10);}
   .bet .bn{font-size:12px; font-weight:800; letter-spacing:.5px;}
   .bet .od{font-size:9px; opacity:.8; margin-top:1px;}
-  .bet .bet-pct{font-size:10px; font-weight:800; margin-top:1px; color:#ffd479; letter-spacing:.3px;}
-  .bet .bet-pct.b{color:#ff9a9a;} .bet .bet-pct.p{color:#9fd3ff;} .bet .bet-pct.t{color:#c9f5a8;}
-  .bet .bet-pct.hot-predict{ color:#fff !important; background:linear-gradient(90deg,#e6b54a,#ffd479); -webkit-background-clip:text; background-clip:text; font-weight:900; text-shadow:0 0 6px rgba(255,212,121,.6); }
+  .bet.hot-predict{ border:2px solid #ffd479 !important; box-shadow:0 0 10px rgba(255,212,121,.6), inset 0 0 8px rgba(255,212,121,.25); }
   /* 頂列3格(閒/莊/和)：高度加大，籌碼疊上覆蓋賠率，籌碼間留空間，4+人自動分兩層 */
   .betrow.top .bet{position:relative; min-height:86px; padding:7px 3px 7px; display:flex; flex-direction:column; justify-content:flex-start; align-items:center;}
   .betrow.top .bet .od{position:relative; z-index:1;}
@@ -505,9 +503,9 @@
   <div class="odds-row"><div class="road-tip" id="roadTip"></div></div>
   <div class="bets" id="bets">
     <div class="betrow top">
-      <div class="bet player" data-bet="player"><div class="bn">閒 P</div><div class="od">1 : 1</div><div class="bet-pct p" id="pctPlayer"></div><div class="chips-stack" data-stack="player"></div></div>
-      <div class="bet tie" data-bet="tie"><div class="bn">和 T</div><div class="od">1 : 8</div><div class="bet-pct t" id="pctTie"></div><div class="chips-stack" data-stack="tie"></div></div>
-      <div class="bet banker" data-bet="banker"><div class="bn">莊 B</div><div class="od">1 : 0.95 抽水5%</div><div class="bet-pct b" id="pctBanker"></div><div class="chips-stack" data-stack="banker"></div></div>
+      <div class="bet player" data-bet="player"><div class="bn">閒 P</div><div class="od">1 : 1</div><div class="chips-stack" data-stack="player"></div></div>
+      <div class="bet tie" data-bet="tie"><div class="bn">和 T</div><div class="od">1 : 8</div><div class="chips-stack" data-stack="tie"></div></div>
+      <div class="bet banker" data-bet="banker"><div class="bn">莊 B</div><div class="od">1 : 0.95 抽水5%</div><div class="chips-stack" data-stack="banker"></div></div>
     </div>
     <div class="betrow mid">
       <div class="bet ppair" data-bet="ppair"><div class="bn">閒對</div><div class="od">1 : 11</div><div class="chips-stack" data-stack="ppair"></div></div>
@@ -1165,6 +1163,13 @@ function genFunnyLine(ai, ctx) {
   if (!lastHumanWon && ws >= 2) funnyPool.push('我旺你衰，跟返我啦笨😝');
   if (ctx && ctx.last === 'tie') funnyPool.push('又和？莊閒講好咗扮曬嘢，冇癮😒');
   if (tag) funnyPool.push(tag+'…呢鋪我賭佢反轉，信我冇死');
+  // 更抵死長句（港式市井，跟牌路/局勢嘲諷）
+  if (ws >= 5) funnyPool.push('連贏'+ws+'鋪！我準備退休買島，你哋仲喺度博緊彩數😏');
+  if (ls >= 5) funnyPool.push('連輸'+ls+'鋪…我决定改行做荷官，起碼唔使輸😭');
+  if (ctx && ctx.streakLen >= 5) funnyPool.push('嘩條龍'+ctx.streakLen+'鋪！莊閒都唔敢郁，得我敢跟😂');
+  if (lastHumanWon && ls >= 3) funnyPool.push('你贏緊我輸到趴街，我懷疑你係荷官親戚🤬');
+  if (!lastHumanWon && ws >= 3) funnyPool.push('我旺到飛起你伏到落衝，跟唔跟自己想😎');
+  if (ctx && ctx.last === 'tie') funnyPool.push('又和！莊閒兩家講好咗扮曬嘢，我啲注飛咗去邊😒');
   if (funnyPool.length === 0) return null;
   return funnyPool[Math.floor(Math.random()*funnyPool.length)];
 }
@@ -1269,7 +1274,7 @@ function showTableChat(){
 }
 function hideTableChat(){ ['L'].forEach(s=>{ const c=document.getElementById('tableChat'+s); if(c) c.classList.remove('show'); }); }
 document.getElementById('tcCloseL').addEventListener('click',()=>{ hideTableChat(); const f=window._tcFinish; if(f){ window._tcFinish(); window._tcFinish=null; } });
-const CHAT_BUDGET_MS = 10000;  // 枱邊閒聊彈性預算：最多喺呢段時間內講，好笑就長啲，唔好笑就短啲（唔固定4句）
+const CHAT_BUDGET_MS = 15000;  // 枱邊閒聊彈性預算15秒：語音唔係噪音後加長，更好笑更抵死  // 枱邊閒聊彈性預算：最多喺呢段時間內講，好笑就長啲，唔好笑就短啲（唔固定4句）
 async function tableChatPhase(sec) {
     if (ais.length === 0) return;
     showTableChat();
@@ -2348,21 +2353,16 @@ function predictScore(){
   return {banker:sB, player:sP, tie:sT, conf:Math.min(0.85,conf), side, reason};
 }
 function updatePredict(){
-  const elP=document.getElementById('pctPlayer'), elT=document.getElementById('pctTie'), elB=document.getElementById('pctBanker');
-  if(!elP) return;
+  // 機率已由 updateOdds 顯示喺格名（真實蒙特卡洛），呢度只做「建議邊金邊高亮」+ roadTip 預測句（唔重複百分比）
   const pr=predictScore();
-  elP.textContent = '閒 '+pr.player+'%';
-  elT.textContent = '和 '+pr.tie+'%';
-  elB.textContent = '莊 '+pr.banker+'%';
-  // 高亮建議邊（金邊）
-  [elP,elT,elB].forEach(e=>e.classList.remove('hot-predict'));
-  if(pr.side==='B') elB.classList.add('hot-predict');
-  else if(pr.side==='P') elP.classList.add('hot-predict');
-  // 同時更新 roadTip 建議句（落注倒數時機）
+  const bets={P:document.querySelector('.bet[data-bet="player"]'), T:document.querySelector('.bet[data-bet="tie"]'), B:document.querySelector('.bet[data-bet="banker"]')};
+  Object.values(bets).forEach(e=>{ if(e) e.classList.remove('hot-predict'); });
+  if(pr.side==='B' && bets.B) bets.B.classList.add('hot-predict');
+  else if(pr.side==='P' && bets.P) bets.P.classList.add('hot-predict');
   const tip=document.getElementById('roadTip');
   if(tip && pr.side){
     tip.className='road-tip hot';
-    tip.textContent='🔮 預測：'+(pr.side==='B'?'莊':'閒')+' '+Math.round(pr[pr.side==='B'?'banker':'player'])+'% ▲ '+pr.reason+'｜請投注'+(pr.side==='B'?'莊':'閒');
+    tip.textContent='🔮 預測：'+(pr.side==='B'?'莊':'閒')+' ▲ '+pr.reason+'｜請投注'+(pr.side==='B'?'莊':'閒');
   }
 }
 async function doShuffle(){
