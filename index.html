@@ -362,6 +362,7 @@
   .ai-row-info{display:flex; flex-direction:column; flex:1; line-height:1.15; min-width:0;}
   .ai-row-info b{font-size:13px; color:#f5f0d8;}
   .ai-row-info small{font-size:9px; opacity:.7; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .ai-row-info .ai-stat{font-size:9px; opacity:.85; color:var(--gold2);}
   .ai-row-edit, .ai-row-del{background:none; border:1px solid #2c5240; border-radius:6px; width:28px; height:28px; font-size:13px; cursor:pointer; color:#cfe9d8;}
   .ai-row-del{border-color:#7a2d2d; color:#ffb3b3;}
   .ai-blurb{font-size:13px; color:var(--gold2); opacity:.9; margin-top:5px; padding:4px 10px; background:#0d1f15; border-radius:6px; border:1px solid #2c5240;}
@@ -1981,15 +1982,20 @@ function aiSettle(result, playerPair, bankerPair, big, pTotal, bTotal, pCards, b
     const b=ai._lastBet;
     if(!b){ ai.currentBet=null; continue; }   // 呢鋪冇落注：跳過不派彩（return 會中斷成個函數，必須 continue）
     const {bet,pick,sides}=b;
+    if(!ai.favBet) ai.favBet={player:0,banker:0,tie:0};
+    ai.favBet[pick]=(ai.favBet[pick]||0)+1;   // 戰績：主注偏好統計
     let payout=0, win=false, sideWin=false;
     const sNames=[];
     if(result===pick){
       if(pick==='player') payout=bet*2; else if(pick==='banker') payout=Math.round(bet*1.95); else if(pick==='tie') payout=bet*9;
       ai.balance+=payout; ai.step=0; ai.lastWin=true; win=true;
+      ai.games=(ai.games||0)+1; ai.wins=(ai.wins||0)+1;   // 戰績：贏一局
       ai.emotion=Math.min(100, (ai.emotion||50)+8);
     } else if(result==='tie' && (pick==='player'||pick==='banker')){
       ai.balance+=bet; ai.lastWin=null; win=false;
+      ai.games=(ai.games||0)+1;   // 和局：算一局，唔計贏輸
     } else { ai.step++; ai.lastWin=false; win=false;
+      ai.games=(ai.games||0)+1; ai.losses=(ai.losses||0)+1;   // 戰績：輸一局
       ai.emotion=Math.max(0, (ai.emotion||50)-6);
     }
     // 側注派彩（真人化：AI 都玩對子/幸運6/7/大細）
@@ -2014,6 +2020,7 @@ function aiSettle(result, playerPair, bankerPair, big, pTotal, bTotal, pCards, b
     ai.history.push(result==='player'?'P':result==='banker'?'B':'T');
     if(ai.history.length>40) ai.history.shift();
     // —— 以下對話/語音已按用家要求刪除（唔再 showMarquee / speak） ——
+    if(ai.balance<=0){ ai.balance=0; ai.bankrupt=true; }   // 戰績：破產標記（留低戰績唔刪）
     if(win) wonIds.push(ai.id); else if(ai.lastWin===false) lostIds.push(ai.id);
     ai.currentBet=null;
   }
@@ -2313,8 +2320,14 @@ function renderAiList(){
     row.className='ai-row';
     const personaTxt=(AI_PERSONAS[ai.persona]&&AI_PERSONAS[ai.persona].name)||ai.persona;
     const planTxt=(AI_PLANS[ai.plan]&&AI_PLANS[ai.plan].name)||ai.plan;
+    const g=ai.games||0, w=ai.wins||0;
+    const wr = g>0 ? Math.round(w/g*100) : 0;
+    let fav='-'; if(ai.favBet){ const f=ai.favBet; const top=Object.keys(f).sort((a,b)=>f[b]-f[a])[0]; if(top&&f[top]>0) fav=(top==='player'?'閒':top==='banker'?'莊':'和'); }
+    const statTxt = g>0 ? ('勝率'+wr+'% · '+g+'局 · 偏好'+fav) : '未開局';
+    const破产 = ai.bankrupt ? ' · 💀出局' : '';
     row.innerHTML='<span class="ai-row-ic">'+ai.icon+'</span>'+
-      '<span class="ai-row-info"><b>'+ai.name+'</b><small>'+personaTxt+' · '+planTxt+' · 本金'+fmt(ai.balance)+'</small></span>'+
+      '<span class="ai-row-info"><b>'+ai.name+'</b><small>'+personaTxt+' · '+planTxt+' · 本金'+fmt(ai.balance)+破产+'</small>'+
+      '<small class="ai-stat">'+statTxt+'</small></span>'+
       '<button class="ai-row-edit" data-edit="'+ai.id+'">✏</button>'+
       '<button class="ai-row-del" data-del="'+ai.id+'">🗑</button>';
     list.appendChild(row);
@@ -2362,7 +2375,7 @@ document.getElementById('aiConfirm').addEventListener('click',()=>{
     document.getElementById('aiModal').classList.remove('show'); updateAiBalances(); renderAiList(); saveAiList();
     showToast('💾 已更新「'+name+'」'); return;
   }
-  const ai={ id:'ai'+(Date.now())+'-'+ais.length, name, icon:AI_ICONS[ais.length%6], balance:bank, persona, plan, baseBet:Math.max(1000, Math.floor(bank/20/1000)*1000), step:0, history:[], currentBet:null, emotion:50, winStreak:0, loseStreak:0, weights:AI_PERSONAS[persona].weights, recentChats:[] };
+  const ai={ id:'ai'+(Date.now())+'-'+ais.length, name, icon:AI_ICONS[ais.length%6], balance:bank, persona, plan, baseBet:Math.max(1000, Math.floor(bank/20/1000)*1000), step:0, history:[], currentBet:null, emotion:50, winStreak:0, loseStreak:0, weights:AI_PERSONAS[persona].weights, recentChats:[], games:0, wins:0, losses:0, favBet:{player:0,banker:0,tie:0}, bankrupt:false };
   ais.push(ai);
   document.getElementById('aiModal').classList.remove('show'); updateAiBalances(); renderAiList(); saveAiList();
   showToast(ai.icon+' '+name+' 入枱！本金 '+fmt(ai.balance)+'（共'+ais.length+'個AI）');
