@@ -173,6 +173,7 @@
   .bet .od{font-size:9px; opacity:.8; margin-top:1px;}
   .bet .bet-pct{font-size:10px; font-weight:800; margin-top:1px; color:#ffd479; letter-spacing:.3px;}
   .bet .bet-pct.b{color:#ff9a9a;} .bet .bet-pct.p{color:#9fd3ff;} .bet .bet-pct.t{color:#c9f5a8;}
+  .bet .bet-pct.hot-predict{ color:#fff !important; background:linear-gradient(90deg,#e6b54a,#ffd479); -webkit-background-clip:text; background-clip:text; font-weight:900; text-shadow:0 0 6px rgba(255,212,121,.6); }
   /* 頂列3格(閒/莊/和)：高度加大，籌碼疊上覆蓋賠率，籌碼間留空間，4+人自動分兩層 */
   .betrow.top .bet{position:relative; min-height:86px; padding:7px 3px 7px; display:flex; flex-direction:column; justify-content:flex-start; align-items:center;}
   .betrow.top .bet .od{position:relative; z-index:1;}
@@ -504,9 +505,9 @@
   <div class="odds-row"><div class="road-tip" id="roadTip"></div></div>
   <div class="bets" id="bets">
     <div class="betrow top">
-      <div class="bet player" data-bet="player"><div class="bn">閒 P</div><div class="od">1 : 1</div><div class="chips-stack" data-stack="player"></div></div>
-      <div class="bet tie" data-bet="tie"><div class="bn">和 T</div><div class="od">1 : 8</div><div class="chips-stack" data-stack="tie"></div></div>
-      <div class="bet banker" data-bet="banker"><div class="bn">莊 B</div><div class="od">1 : 0.95 抽水5%</div><div class="chips-stack" data-stack="banker"></div></div>
+      <div class="bet player" data-bet="player"><div class="bn">閒 P</div><div class="od">1 : 1</div><div class="bet-pct p" id="pctPlayer"></div><div class="chips-stack" data-stack="player"></div></div>
+      <div class="bet tie" data-bet="tie"><div class="bn">和 T</div><div class="od">1 : 8</div><div class="bet-pct t" id="pctTie"></div><div class="chips-stack" data-stack="tie"></div></div>
+      <div class="bet banker" data-bet="banker"><div class="bn">莊 B</div><div class="od">1 : 0.95 抽水5%</div><div class="bet-pct b" id="pctBanker"></div><div class="chips-stack" data-stack="banker"></div></div>
     </div>
     <div class="betrow mid">
       <div class="bet ppair" data-bet="ppair"><div class="bn">閒對</div><div class="od">1 : 11</div><div class="chips-stack" data-stack="ppair"></div></div>
@@ -1257,6 +1258,7 @@ async function tableChatPhase(sec) {
             await sleep(450);
         }
         prev = ai;
+        try{ updatePredict(); }catch(e){}
     }
     hideTableChat();
     await sleep(300);
@@ -2258,6 +2260,71 @@ function updateRoadTip(){
     suggest = '';
   }
   el.className=cls; el.textContent=tip+suggest;
+}
+
+/* ===================== 預測系統 v2（秘密武器：綜合大路+下三路+珠盤多因子） ===================== */
+function predictScore(){
+  // 返回 {banker, player, tie, conf, side, reason} —— conf=置信度0~1, side=建議邊
+  const h = history;
+  if(!h || h.length < 2) return {banker:45, player:44, tie:9, conf:0, side:'', reason:'新靴起局'};
+  // 因子A：近期趨勢（近8局非和局邊）
+  const recent = h.slice(-8).filter(x=>x!=='T');
+  let p=0,b=0; recent.forEach(x=>{ if(x==='P')p++; else if(x==='B')b++; });
+  const trendBias = b>p? 'B' : p>b? 'P' : '';
+  const trendConf = Math.abs(b-p)/Math.max(1,b+p);
+  // 因子B：連龍檢測（大路最尾同向手數）
+  let streak=0, st=null;
+  for(let i=h.length-1;i>=0;i--){
+    const w=h[i];
+    if(w==='T'){ if(streak===0) continue; else break; }
+    if(st===null){ st=w; streak=1; }
+    else if(w===st) streak++;
+    else break;
+  }
+  // 因子C：下三路紅藍偏離（破碎=反手訊號）
+  let red=0, blue=0;
+  for(const off of [1,2,3]){ const d=deriveRoad(off); for(const n of d){ if(n.blue) blue++; else red++; } }
+  const total=red+blue; const blueRatio = total>0 ? blue/total : 0.5;
+  // 因子D：鋸齒/單跳（交替=反手有效）
+  let jump=0;
+  for(let i=h.length-1;i>=1;i--){ if(h[i]!=='T'&&h[i-1]!=='T'&&h[i]!==h[i-1]) jump++; else break; }
+  // 綜合評分（娛樂向：放大信號令體驗似專家，但長遠仍~50%）
+  let sB=45, sP=44, sT=9;
+  if(trendBias==='B'){ sB += trendConf*12; sP -= trendConf*12; }
+  else if(trendBias==='P'){ sP += trendConf*12; sB -= trendConf*12; }
+  if(streak>=3){ const hot = st==='B'?'B':'P'; if(hot==='B'){ sB+=8; sP-=8; } else { sP+=8; sB-=8; } }
+  if(blueRatio>0.62){ // 路破碎：輕微反手
+    if(trendBias==='B'){ sP+=6; sB-=6; } else if(trendBias==='P'){ sB+=6; sP-=6; }
+  }
+  if(jump>=3){ // 單跳：反手
+    const last = h[h.length-1];
+    if(last==='B'){ sP+=5; } else if(last==='P'){ sB+=5; }
+  }
+  // 正規化
+  const sum=sB+sP+sT; sB=Math.round(sB/sum*100); sP=Math.round(sP/sum*100); sT=100-sB-sP;
+  let side='', conf=0, reason='';
+  if(sB>sP+4){ side='B'; conf=(sB-50)/50; reason='莊線偏強'; }
+  else if(sP>sB+4){ side='P'; conf=(sP-50)/50; reason='閒線偏強'; }
+  else { side=''; conf=0; reason='路勢拉鋸，觀望'; }
+  return {banker:sB, player:sP, tie:sT, conf:Math.min(0.85,conf), side, reason};
+}
+function updatePredict(){
+  const elP=document.getElementById('pctPlayer'), elT=document.getElementById('pctTie'), elB=document.getElementById('pctBanker');
+  if(!elP) return;
+  const pr=predictScore();
+  elP.textContent = '閒 '+pr.player+'%';
+  elT.textContent = '和 '+pr.tie+'%';
+  elB.textContent = '莊 '+pr.banker+'%';
+  // 高亮建議邊（金邊）
+  [elP,elT,elB].forEach(e=>e.classList.remove('hot-predict'));
+  if(pr.side==='B') elB.classList.add('hot-predict');
+  else if(pr.side==='P') elP.classList.add('hot-predict');
+  // 同時更新 roadTip 建議句（落注倒數時機）
+  const tip=document.getElementById('roadTip');
+  if(tip && pr.side){
+    tip.className='road-tip hot';
+    tip.textContent='🔮 預測：'+(pr.side==='B'?'莊':'閒')+' '+Math.round(pr[pr.side==='B'?'banker':'player'])+'% ▲ '+pr.reason+'｜請投注'+(pr.side==='B'?'莊':'閒');
+  }
 }
 async function doShuffle(){
   const ov=document.getElementById('shuffleOverlay');
