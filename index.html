@@ -2093,11 +2093,19 @@ function aiSettle(result, playerPair, bankerPair, big, pTotal, bTotal, pCards, b
       if(sideWin) ai.emotion=Math.min(100, (ai.emotion||50)+4);
     }
     // 連勝/連輸 streak（旺門錯覺用）
-    if(win){ ai.winStreak=(ai.winStreak||0)+1; ai.loseStreak=0; }
+    if(win){ ai.winStreak=(ai.winStreak||0)+1; ai.loseStreak=0; ai._maxWinStreak=Math.max(ai._maxWinStreak||0, ai.winStreak); }
     else if(ai.lastWin===false){ ai.loseStreak=(ai.loseStreak||0)+1; ai.winStreak=0; }
     else { ai.winStreak=0; ai.loseStreak=0; }
     ai.history.push(result==='player'?'P':result==='banker'?'B':'T');
     if(ai.history.length>40) ai.history.shift();
+    // 詳細紀錄：總投注額 + 總盈虧 + 資金曲線（畫圖用）
+    const wagerThis=ai._lastBet ? (ai._lastBet.bet + (ai._lastBet.sides?Object.values(ai._lastBet.sides).reduce((a,b)=>a+b,0):0)) : 0;
+    ai.totalWager=(ai.totalWager||0)+wagerThis;
+    ai.totalProfit=(ai.totalProfit||0)+(ai.balance-(ai._prevBalance!=null?ai._prevBalance:ai.baseBalance));
+    ai._prevBalance=ai.balance;
+    if(!ai.curve) ai.curve=[ai.baseBalance||ai.balance];
+    ai.curve.push(ai.balance);
+    if(ai.curve.length>300) ai.curve.shift();
     // —— 以下對話/語音已按用家要求刪除（唔再 showMarquee / speak） ——
     if(ai.balance<=0){ ai.balance=0; ai.bankrupt=true; }
     if(win) wonIds.push(ai.id); else if(ai.lastWin===false) lostIds.push(ai.id);
@@ -2453,19 +2461,39 @@ function showAiDetail(ai){
   const ageTxt=(AGE_GROUPS.find(function(a){return a.key===ai.age;})||{}).name||'';
   const g=ai.games||0, w=ai.wins||0, l=ai.losses||0;
   const wr = g>0 ? Math.round(w/g*100) : 0;
+  const totalWager=ai.totalWager||0, totalProfit=ai.totalProfit||0;
+  const maxStreak=ai._maxWinStreak||ai.winStreak||0;
   let fav='-'; if(ai.favBet){ const f=ai.favBet; const top=Object.keys(f).sort((a,b)=>f[b]-f[a])[0]; if(top&&f[top]>0) fav=(top==='player'?'閒':top==='banker'?'莊':'和'); }
   const st = g>0 ? ('勝率 '+wr+'% （勝'+w+' / 負'+l+' / 共'+g+'局）') : '尚未開局';
   const bankruptTxt = ai.bankrupt ? ' · 💀已破產出局' : '';
+  const profitColor = totalProfit>=0 ? '#9fd3ff' : '#ff9a9a';
   const html =
     '<div style="margin-bottom:8px;"><b style="font-size:15px;color:#f5f0d8;">'+ai.icon+' '+ai.name+'</b>'+bankruptTxt+'</div>'+
     '<div>年齡層：'+ageTxt+'</div>'+
     '<div>性格：'+personaTxt+'</div>'+
     '<div>策略：'+planTxt+'</div>'+
-    '<div>本金：'+fmt(ai.balance)+'</div>'+
+    '<div>本金：'+fmt(ai.baseBalance||ai.balance)+'　資金：'+fmt(ai.balance)+'</div>'+
     '<div>'+st+'</div>'+
     '<div>偏好主注：'+(fav==='-'?'尚未投注':fav)+'</div>'+
-    '<div style="margin-top:6px; opacity:.7; font-size:11px;">似人類戰績紀錄：未破產前持續累計勝率與投注偏好</div>';
+    '<div>總投注額：'+fmt(totalWager)+'　最長連勝：'+(ai._maxWinStreak||0)+'鋪</div>'+
+    '<div>總盈虧：<b style="color:'+profitColor+'">'+(totalProfit>=0?'+':'')+fmt(totalProfit)+'</b></div>'+
+    '<canvas id="aiCurve" width="300" height="120" style="width:100%;max-width:300px;height:120px;margin-top:8px;background:#0a0f0c;border-radius:6px;"></canvas>'+
+    '<div style="margin-top:6px; opacity:.7; font-size:11px;">資金曲線：每局資金走勢（跌到0=破產）。人生百態邊個組合最耐唔破產？</div>';
   document.getElementById('aiDetailBody').innerHTML=html;
+  // 畫曲線圖
+  try{
+    const cv=document.getElementById('aiCurve'); if(cv){ const ctx2=cv.getContext('2d');
+      const curve=ai.curve&&ai.curve.length?ai.curve:[ai.balance];
+      const W=cv.width, H=cv.height, pad=8;
+      const maxV=Math.max.apply(null,curve), minV=Math.min.apply(null,curve,0);
+      const range=Math.max(1,maxV-minV);
+      ctx2.clearRect(0,0,W,H);
+      ctx2.strokeStyle='#2a3a30'; ctx2.beginPath(); ctx2.moveTo(pad,H-pad); ctx2.lineTo(W-pad,H-pad); ctx2.lineTo(W-pad,pad); ctx2.stroke();
+      ctx2.strokeStyle='#ffd479'; ctx2.lineWidth=2; ctx2.beginPath();
+      curve.forEach((v,i)=>{ const x=pad+(W-2*pad)*(i/(curve.length-1||1)); const y=H-pad-(H-2*pad)*((v-minV)/range); if(i===0)ctx2.moveTo(x,y); else ctx2.lineTo(x,y); });
+      ctx2.stroke();
+    }
+  }catch(e){}
   document.getElementById('aiDetailModal').classList.add('show');
 }
 document.getElementById('aiDetailClose').addEventListener('click',()=>{ document.getElementById('aiDetailModal').classList.remove('show'); });
@@ -2544,7 +2572,7 @@ document.getElementById('aiConfirm').addEventListener('click',()=>{
     showToast('💾 已更新「'+name+'」'); return;
   }
   const ag = AGE_GROUPS[Math.floor(Math.random()*AGE_GROUPS.length)];
-  const ai={ id:'ai'+(Date.now())+'-'+ais.length, name, icon:AI_ICONS[ais.length%6], age:ag.key, balance:bank, persona, plan, baseBet:Math.max(1000, Math.floor(bank/20/1000)*1000), step:0, history:[], currentBet:null, emotion:50, winStreak:0, loseStreak:0, weights:AI_PERSONAS[persona].weights, recentChats:[], games:0, wins:0, losses:0, favBet:{player:0,banker:0,tie:0}, bankrupt:false };
+  const ai={ id:'ai'+(Date.now())+'-'+ais.length, name, icon:AI_ICONS[ais.length%6], age:ag.key, balance:bank, baseBalance:bank, persona, plan, baseBet:Math.max(1000, Math.floor(bank/20/1000)*1000), step:0, history:[], currentBet:null, emotion:50, winStreak:0, loseStreak:0, weights:AI_PERSONAS[persona].weights, recentChats:[], games:0, wins:0, losses:0, favBet:{player:0,banker:0,tie:0}, bankrupt:false, totalWager:0, totalProfit:0, curve:[bank] };
   ais.push(ai);
   document.getElementById('aiModal').classList.remove('show'); updateAiBalances(); renderAiList(); saveAiList();
   showToast(ai.icon+' '+name+' 入枱！本金 '+fmt(ai.balance)+'（共'+ais.length+'個AI）');
