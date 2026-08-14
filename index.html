@@ -2500,30 +2500,22 @@ function autoFollowHot(reverse){
   balance-=amt; updateBalance(); updateBetDisplay(); sndChip();
   showToast((reverse?'🔥 反旺AI':'🔥 跟旺AI')+'「'+hot.name+'」('+pick+' '+fmt(amt)+')');
 }
-document.getElementById('btnFollowPredict2').addEventListener('click', function(){
-  followPredictOn=!followPredictOn;
-  this.classList.toggle('on', followPredictOn);
-  if(followPredictOn){ showToast('🔮 跟預測開啟：每局自動跟預測建議邊'); autoFollowPredict(false); }
-  else showToast('⏹ 跟預測已關閉');
-});
-document.getElementById('btnFollowRev').addEventListener('click', function(){
-  followReverseOn=!followReverseOn;
-  this.classList.toggle('on', followReverseOn);
-  if(followReverseOn){ showToast('🔄 反預測開啟：每局自動跟預測相反邊'); autoFollowPredict(true); }
-  else showToast('⏹ 反預測已關閉');
-});
-document.getElementById('btnFollowHot').addEventListener('click', function(){
-  followHotOn=!followHotOn;
-  this.classList.toggle('on', followHotOn);
-  if(followHotOn){ showToast('🔥 跟旺AI開啟：每局自動跟連勝最高AI'); autoFollowHot(false); }
-  else showToast('⏹ 跟旺AI已關閉');
-});
-document.getElementById('btnFollowHotRev').addEventListener('click', function(){
-  followHotReverseOn=!followHotReverseOn;
-  this.classList.toggle('on', followHotReverseOn);
-  if(followHotReverseOn){ showToast('🔥 反旺AI開啟：每局自動跟連勝最高AI相反邊'); autoFollowHot(true); }
-  else showToast('⏹ 反旺AI已關閉');
-});
+// 四個跟注掣互斥：每次只可以跟一邊（撳新掣自動熄其他三個）
+function setFollow(which){
+  followPredictOn=false; followReverseOn=false; followHotOn=false; followHotReverseOn=false;
+  document.getElementById('btnFollowPredict2').classList.remove('on');
+  document.getElementById('btnFollowRev').classList.remove('on');
+  document.getElementById('btnFollowHot').classList.remove('on');
+  document.getElementById('btnFollowHotRev').classList.remove('on');
+  if(which==='predict'){ followPredictOn=true; document.getElementById('btnFollowPredict2').classList.add('on'); showToast('🔮 跟預測開啟：每局自動跟預測建議邊'); autoFollowPredict(false); }
+  else if(which==='reverse'){ followReverseOn=true; document.getElementById('btnFollowRev').classList.add('on'); showToast('🔄 反預測開啟：每局自動跟預測相反邊'); autoFollowPredict(true); }
+  else if(which==='hot'){ followHotOn=true; document.getElementById('btnFollowHot').classList.add('on'); showToast('🔥 跟旺AI開啟：每局自動跟連勝最高AI'); autoFollowHot(false); }
+  else if(which==='hotrev'){ followHotReverseOn=true; document.getElementById('btnFollowHotRev').classList.add('on'); showToast('🔥 反旺AI開啟：每局自動跟連勝最高AI相反邊'); autoFollowHot(true); }
+}
+document.getElementById('btnFollowPredict2').addEventListener('click', ()=> setFollow(followPredictOn?'off':'predict'));
+document.getElementById('btnFollowRev').addEventListener('click', ()=> setFollow(followReverseOn?'off':'reverse'));
+document.getElementById('btnFollowHot').addEventListener('click', ()=> setFollow(followHotOn?'off':'hot'));
+document.getElementById('btnFollowHotRev').addEventListener('click', ()=> setFollow(followHotReverseOn?'off':'hotrev'));
 
 /* ===================== 自動開牌：同手動統一次序 ===================== */
 let autoTimer=null;
