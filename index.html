@@ -563,11 +563,10 @@
 
   <div class="controls">
     <button class="btn shuffle" id="btnShuffle" title="重新洗牌">洗牌</button>
-    <button class="btn deal" id="btnDealNow" title="即時開牌：唔等13秒倒數，即刻發牌（強制開牌，唔理有冇落注）">開牌</button>
     <button class="btn auto" id="btnAuto" title="自動開牌">自動:關</button>
     <button class="btn clear" id="btnClear">清除</button>
     <button class="btn repeat" id="btnRepeat">重複</button>
-    <button class="btn deal" id="btnDeal">發牌 DEAL</button>
+    <button class="btn deal" id="btnDeal">發牌</button>
   </div>
 </div>
 
@@ -2470,7 +2469,6 @@ document.querySelectorAll('.bet[data-bet]').forEach(b=>b.addEventListener('click
 document.getElementById('btnClear').addEventListener('click',clearBets);
 document.getElementById('btnRepeat').addEventListener('click',repeatBets);
 document.getElementById('btnDeal').addEventListener('click',function(){ if(autoOn){ showToast('自動開牌進行中，請先按「自動」停止'); return; } deal(); });
-document.getElementById('btnDealNow').addEventListener('click', function(){ if(autoOn){ showToast('自動開牌進行中，請先按「自動」停止'); return; } if(dealing){ showToast('發牌中…'); return; } deal(true); });
 function autoFollowPredict(reverse){
   const pr=predictScore();
   if(!pr.side){ return; }  // 觀望唔跟（正常）
