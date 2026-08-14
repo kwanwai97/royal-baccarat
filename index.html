@@ -2631,8 +2631,8 @@ function randomizeNewAi(){
   const plans=Object.keys(AI_PLANS);
   setAiSel('aiPersona', personas[Math.floor(Math.random()*personas.length)]);
   setAiSel('aiPlan', plans[Math.floor(Math.random()*plans.length)]);
-  // 年齡組預選第一個(用戶可改)；唔預選會令 #aiAge .ai-chip.sel 為 null -> 新增時隨機抽 age(bug)
-  setAiSel('aiAge', AGE_GROUPS[0].key);
+  // 年齡組同性格/注碼一樣隨機抽(用戶可手動改)；全部組別新增時隨機
+  setAiSel('aiAge', AGE_GROUPS[Math.floor(Math.random()*AGE_GROUPS.length)].key);
 }
 let editingAiId=null;
 document.getElementById('aiConfirm').addEventListener('click',()=>{
