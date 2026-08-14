@@ -478,6 +478,15 @@
           <span class="ai-chip" data-v="parlay">連贏加注</span>
         </div>
       </div>
+      <div class="ai-opt"><div class="ai-opt-label">年齡組</div>
+        <div class="ai-chips" id="aiAge" style="display:grid;grid-template-columns:repeat(5,1fr);">
+          <span class="ai-chip" data-v="young">🧒 青年</span>
+          <span class="ai-chip" data-v="prime">🧑 壯年</span>
+          <span class="ai-chip" data-v="mid">🧔 中年</span>
+          <span class="ai-chip" data-v="senior">🧓 資深</span>
+          <span class="ai-chip" data-v="elder">👴 長者</span>
+        </div>
+      </div>
       <div class="ai-opt" style="display:flex;gap:8px;align-items:flex-end;">
         <div style="flex:1;"><div class="ai-opt-label">名字</div><input id="aiNameInput" maxlength="6" value="阿龍" style="width:100%;padding:6px;border-radius:6px;border:1px solid #555;background:#0d1f15;color:#f5f0d8;" /></div>
         <button class="modal-close" id="aiConfirm" style="background:#2faf5a;margin:0;height:36px;align-self:flex-end;">確認 · 新增 AI</button>
@@ -2497,7 +2506,7 @@ function showAiDetail(ai){
   document.getElementById('aiDetailModal').classList.add('show');
 }
 document.getElementById('aiDetailClose').addEventListener('click',()=>{ document.getElementById('aiDetailModal').classList.remove('show'); });
-aiChipGroup('aiPersona','persona', refreshPersonaBlurb); aiChipGroup('aiPlan','plan');
+aiChipGroup('aiPersona','persona', refreshPersonaBlurb); aiChipGroup('aiPlan','plan'); aiChipGroup('aiAge','age');
 /* 列出所有AI，逐個可改/刪（唔再只刪最後一個） */
 function renderAiList(){
   const list=document.getElementById('aiList');
@@ -2533,7 +2542,7 @@ function renderAiList(){
     const id=b.dataset.edit; const ai=ais.find(a=>a.id===id); if(!ai) return;
     editingAiId=id;
     document.getElementById('aiNameInput').value=ai.name;
-    setAiSel('aiPersona',ai.persona); setAiSel('aiPlan',ai.plan);
+    setAiSel('aiPersona',ai.persona); setAiSel('aiPlan',ai.plan); setAiSel('aiAge',ai.age);
     document.getElementById('aiConfirm').textContent='💾 儲存修改';
     showToast('✏ 修改「'+ai.name+'」— 改好撳下方「儲存修改」');
   }));
@@ -2571,7 +2580,7 @@ document.getElementById('aiConfirm').addEventListener('click',()=>{
     document.getElementById('aiModal').classList.remove('show'); updateAiBalances(); renderAiList(); saveAiList();
     showToast('💾 已更新「'+name+'」'); return;
   }
-  const ag = AGE_GROUPS[Math.floor(Math.random()*AGE_GROUPS.length)];
+  const ageSel=document.querySelector('#aiAge .ai-chip.sel'); const agKey=ageSel?ageSel.dataset.v:(AGE_GROUPS[Math.floor(Math.random()*AGE_GROUPS.length)].key); const ag=AGE_GROUPS.find(function(a){return a.key===agKey;})||AGE_GROUPS[0];
   const ai={ id:'ai'+(Date.now())+'-'+ais.length, name, icon:AI_ICONS[ais.length%6], age:ag.key, balance:bank, baseBalance:bank, persona, plan, baseBet:Math.max(1000, Math.floor(bank/20/1000)*1000), step:0, history:[], currentBet:null, emotion:50, winStreak:0, loseStreak:0, weights:AI_PERSONAS[persona].weights, recentChats:[], games:0, wins:0, losses:0, favBet:{player:0,banker:0,tie:0}, bankrupt:false, totalWager:0, totalProfit:0, curve:[bank] };
   ais.push(ai);
   document.getElementById('aiModal').classList.remove('show'); updateAiBalances(); renderAiList(); saveAiList();
