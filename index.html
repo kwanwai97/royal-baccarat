@@ -515,7 +515,7 @@
     </div>
   </div>
 
-  <div class="odds-row predict-row"><div class="road-tip" id="roadTip"></div><button class="btn follow-predict-inline" id="btnFollowPredict2" title="跟預測：長期跟模式，每局自動跟預測建議邊落注">跟預測</button></div>
+  <div class="odds-row predict-row"><div class="road-tip" id="roadTip"></div><button class="btn follow-predict-inline" id="btnFollowPredict2" title="跟預測：長期跟模式，每局自動跟預測建議邊落注">跟預測</button><span class="follow-mark" id="followMark" style="display:none;margin-left:8px;color:#5fffa0;font-weight:800;"></span></div>
   <div class="bets" id="bets">
     <div class="betrow top">
       <div class="bet player" data-bet="player"><div class="bn">閒 P</div><div class="od">1 : 1</div><div class="chips-stack" data-stack="player"></div></div>
@@ -1065,7 +1065,7 @@ function bettingPhase(sec){
   return new Promise(resolve=>{
     betting=true;
     // 跟預測長期跟：落注開始即自動跟預測系統建議邊落注（掛機睇成效）
-    if(followPredictOn){ autoFollowPredict(); }
+    if(followPredictOn){ console.log('[跟預測] 落注期觸發, followPredictOn=',followPredictOn); autoFollowPredict(); }
     // 落注窗口：啟用清除/重複掣（人類可改注/重複/清除）；DEAL 照舊（autoOn 或發牌中禁用）
     document.getElementById('btnClear').disabled=false;
     document.getElementById('btnRepeat').disabled=false;
@@ -2441,6 +2441,7 @@ document.getElementById('btnDeal').addEventListener('click',function(){ if(autoO
 document.getElementById('btnFollow').addEventListener('click', followHotAI);
 function autoFollowPredict(){
   const pr=predictScore();
+  console.log('[跟預測] predictScore side=',pr.side,'reason=',pr.reason);
   if(!pr.side){ return; }  // 觀望唔跟（正常）
   const amt = currentChip>0 ? currentChip : 1000;
   const betAmt = Math.min(amt, balance);
@@ -2448,6 +2449,7 @@ function autoFollowPredict(){
   clearBets(true);
   if(pr.side==='B') bets.banker=betAmt; else if(pr.side==='P') bets.player=betAmt;
   balance-=betAmt; updateBalance(); updateBetDisplay(); sndChip();
+  const mark=document.getElementById('followMark'); if(mark){ mark.style.display=''; mark.textContent='🔮 跟注 '+(pr.side==='B'?'莊':'閒')+' '+fmt(betAmt); }
   showToast('🔮 跟預測：自動落注'+(pr.side==='B'?'莊':'閒')+' '+fmt(betAmt));
 }
 document.getElementById('btnFollowPredict2').addEventListener('click', function(){
