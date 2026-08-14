@@ -2296,7 +2296,7 @@ function updateOdds(){
     const bet=document.querySelector('.bet[data-bet="'+k+'"]'); if(!bet) return;
     const bn=bet.querySelector('.bn'); if(bn) bn.textContent=baseName[k]+' '+pctMap[k];
   });
-  updateRoadTip();
+  // 注意：roadTip(預測句)改由 updatePredict() 控制(牌局結束+2秒早出)，唔喺呢度寫避免13秒落注期覆蓋
 }
 // 路單預測提示：根據大路連勢 + 下三路(大眼仔/小路/蟑螂)紅藍比例，比一句睇路建議
 function updateRoadTip(){
