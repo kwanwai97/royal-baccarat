@@ -1296,8 +1296,6 @@ const CHAT_BUDGET_MS = 15000;  // 枱邊閒聊彈性預算15秒：語音唔係�
 async function tableChatPhase(sec) {
     if (ais.length === 0) return;
     showTableChat();
-    // 枱邊聊天開始即啟動預測系統（根據上局路單出預測，唔等13秒落注期）
-    try{ updatePredict(); }catch(e){}
 
     // 彈性：唔固定4句，按10秒預算出句（出1段/2段/更長都得，預算用完就收聲）
     const shuffled = [...ais].sort(() => Math.random() - 0.5);
@@ -1494,6 +1492,8 @@ async function deal(auto){
   // 統一次序（自動/手動都一樣）：2秒緩衝 → 5秒局間緩衝 → 枱邊討論 → 落注倒數 → 開牌
   await sleep(2000);
   await waitAudioIdle();   // 等上一手輸贏對話 + 語音全部播完，先開枱邊聊天（唔用固定秒數）
+  // 預測系統：無論有冇AI，牌局結束+語音結束+等兩秒就啟動預測（提早，唔等13秒落注期）
+  await sleep(2000); updatePredict();
   if(ais.length){ await tableChatPhase(13); aiPlaceBets(); }
   // 跟預測長期跟：枱邊聊天同時就根據上局路單落注（提早，等13秒落注期啟動時already落好，唔會太遲）
   if(followPredictOn){ autoFollowPredict(); }
