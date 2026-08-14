@@ -2323,6 +2323,22 @@ function updateRoadTip(){
   el.className=cls; el.textContent=tip+suggest;
 }
 
+function threeBead(){  // 三珠路：每3局一列，統計莊/閒組合形態偏向（忽略和）
+  const h=history.filter(x=>x!=='T'); if(h.length<3) return null;
+  let bCount=0, pCount=0;
+  for(let i=0;i+2<h.length;i+=3){
+    const col=h.slice(i,i+3);
+    col.forEach(x=>{ if(x==='B')bCount++; else if(x==='P')pCount++; });
+  }
+  // 計每列「莊多/閒多」嘅列數
+  let bCols=0, pCols=0;
+  for(let i=0;i+2<h.length;i+=3){
+    const col=h.slice(i,i+3); const bb=col.filter(x=>x==='B').length, pp=col.filter(x=>x==='P').length;
+    if(bb>pp) bCols++; else if(pp>bb) pCols++;
+  }
+  const total=bCount+pCount; if(total===0) return null;
+  return { bRatio:bCount/total, bCols, pCols, totalCols:bCols+pCols };
+}
 /* ===================== 預測系統 v2（秘密武器：綜合大路+下三路+珠盤多因子） ===================== */
 function predictScore(){
   // 返回 {banker, player, tie, conf, side, reason} —— conf=置信度0~1, side=建議邊
@@ -2360,6 +2376,15 @@ function predictScore(){
   if(jump>=3){ // 單跳：反手
     const last = h[h.length-1];
     if(last==='B'){ sP+=5; } else if(last==='P'){ sB+=5; }
+  }
+  // 因子E：三珠路統計（每3局一列，莊/閒組合形態偏向）
+  const tb=threeBead();
+  if(tb && tb.totalCols>0){
+    const colBias = tb.bCols - tb.pCols;
+    if(colBias>0){ sB += Math.min(7, colBias); sP -= Math.min(7, colBias); }
+    else if(colBias<0){ sP += Math.min(7, -colBias); sB -= Math.min(7, -colBias); }
+    if(tb.bRatio>0.58){ sB += 4; sP -= 4; }
+    else if(tb.bRatio<0.42){ sP += 4; sB -= 4; }
   }
   // 正規化
   const sum=sB+sP+sT; sB=Math.round(sB/sum*100); sP=Math.round(sP/sum*100); sT=100-sB-sP;
