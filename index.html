@@ -1064,6 +1064,7 @@ let followPredictOn=false;  // 跟預測長期跟模式（toggle）
 function bettingPhase(sec){
   return new Promise(resolve=>{
     betting=true;
+    updatePredict();  // 雙保：落注期開始確保預測句出（唔會空白）
     // 跟預測長期跟：落注開始即自動跟預測系統建議邊落注（掛機睇成效）
     if(followPredictOn){ console.log('[跟預測] 落注期觸發, followPredictOn=',followPredictOn); autoFollowPredict(); }
     // 落注窗口：啟用清除/重複掣（人類可改注/重複/清除）；DEAL 照舊（autoOn 或發牌中禁用）
@@ -2407,6 +2408,7 @@ function predictScore(){
   return {banker:sB, player:sP, tie:sT, conf:Math.min(0.85,conf), side, reason};
 }
 function updatePredict(){
+  console.log('[updatePredict] call, history.len=',(history&&history.length)||0,'side=',(predictScore().side||""));
   // 機率已由 updateOdds 顯示喺格名（真實蒙特卡洛），呢度只做「建議邊金邊高亮」+ roadTip 預測句（唔重複百分比）
   const pr=predictScore();
   const bets={P:document.querySelector('.bet[data-bet="player"]'), T:document.querySelector('.bet[data-bet="tie"]'), B:document.querySelector('.bet[data-bet="banker"]')};
