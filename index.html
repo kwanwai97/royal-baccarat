@@ -2519,8 +2519,8 @@ function renderAiList(){
     row.innerHTML='<span class="ai-row-ic">'+ai.icon+'</span>'+
       '<span class="ai-row-info"><b>'+ai.name+'</b><small>'+personaTxt+' · '+planTxt+' · 本金'+fmt(ai.balance)+bankruptTxt+'</small>'+
       '<small class="ai-stat">'+statTxt+'</small></span>'+
-      '<button class="ai-row-edit" data-edit="'+ai.id+'">✏</button>'+
       '<button class="ai-row-detail" data-detail="'+ai.id+'">📊</button>'+
+      '<button class="ai-row-edit" data-edit="'+ai.id+'">✏</button>'+
       '<button class="ai-row-del" data-del="'+ai.id+'">🗑</button>';
     list.appendChild(row);
   });
