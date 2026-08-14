@@ -1494,6 +1494,8 @@ async function deal(auto){
   await sleep(2000);
   await waitAudioIdle();   // 等上一手輸贏對話 + 語音全部播完，先開枱邊聊天（唔用固定秒數）
   if(ais.length){ await tableChatPhase(13); aiPlaceBets(); }
+  // 跟預測長期跟：枱邊聊天同時就根據上局路單落注（提早，等13秒落注期啟動時already落好，唔會太遲）
+  if(followPredictOn){ autoFollowPredict(); }
   await bettingPhase(13);
   preBalance=balance;
   try{
