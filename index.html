@@ -2145,8 +2145,8 @@ function updateAiBalances(){   // 頂欄橫向捲動：你(人類)永遠第一�
     const isHot = ai.id===hotId;
     const em=ai.emotion||50;
     const emCls = em>65?' em-hot': em<35?' em-cold':' em-normal';
-    // 旺AI：用🔥🔥取代情緒表情（避免兩個圖案擠迫跳彈）；非旺：出情緒表情
-    const face = isHot ? ' 🔥🔥' : (em>65?'😄': em<35?'😢':'😐');
+    // 旺AI：用🔥取代情緒表情（避免兩個圖案擠迫跳彈）；非旺：出情緒表情
+    const face = isHot ? ' 🔥' : (em>65?'😄': em<35?'😢':'😐');
     html+='<div class="aib'+(isHot?' hot':'')+emCls+'" data-ai="'+ai.id+'"><small>'+ai.icon+' '+ai.name+face+'</small><b>'+fmt(ai.balance)+'</b></div>';
   });
   box.innerHTML=html;
