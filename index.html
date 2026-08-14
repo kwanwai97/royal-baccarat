@@ -993,11 +993,9 @@ function fmt(n){ return Math.round(n).toLocaleString('en-US'); }
 function fmtK(n){ n=Math.round(n); if(n>=1000) return (n/1000)+'k'; return ''+n; }
 function updateBalance(){ document.getElementById('balance').textContent=fmt(balance); if(balance>stats.peak) stats.peak=balance; updateStreakBar(); }
 // 你嘅連續顯示：圖案(你🔥)，≤2次只顯圖案；>2次先顯次數（十格連續條已取消）
+// 連續勝利顯示暫停（用家要求取消）：youStreak 永遠空白，唔顯示圖案/次數/彩金
 function updateStreakBar(){
-  const el=document.getElementById('youStreak'); if(!el) return;
-  const s=stats.streak;
-  if(s<=2){ el.textContent='你🔥'; }
-  else { el.textContent='你🔥 連勝 '+s+' ｜彩金 +'+(STREAK_BONUS[Math.min(s,STREAK_BONUS.length-1)]*100).toFixed(0)+'%'; }
+  const el=document.getElementById('youStreak'); if(el) el.textContent='';
 }
 const BET_KEYS=['player','banker','tie','ppair','bpair','big','small','luck6','luck7'];
 function updateBetDisplay(){
