@@ -258,6 +258,8 @@
   .btn:disabled{opacity:.4; filter:grayscale(.6);}
   .btn.shuffle{background:#222; color:var(--gold2); border:1px solid var(--goldd); flex:0 0 auto; padding:7px 10px;}
   .btn.follow{background:linear-gradient(180deg,#ffd479,#e6a417); color:#241a00; border:1px solid #ffb347; flex:0 0 auto; padding:7px 10px; font-weight:800; box-shadow:0 3px 0 #7a5a00;}
+  .btn.follow-predict{background:linear-gradient(180deg,#9fd3ff,#4a90d9); color:#06243f; border:1px solid #6fb3ef; flex:0 0 auto; padding:7px 10px; font-weight:800; box-shadow:0 3px 0 #2a5a8a; opacity:.6;}
+  .btn.follow-predict.on{background:linear-gradient(180deg,#5fffa0,#1faf5a); color:#06240f; border:1px solid #3fdf7a; opacity:1; box-shadow:0 3px 0 #0a7a3a;}
   .btn.auto{background:#2a2113; color:#e0b34a; border:1px solid #7a5a1a; flex:0 0 auto; padding:7px 7px; font-size:11px;}   /* 關：琥珀色，醒目「可按啟動」 */
   .btn.auto.on{background:#2faf5a; color:#04110a; border-color:#2faf5a; box-shadow:0 0 10px rgba(47,175,90,.5);}             /* 開：綠色，進行中 */
 
@@ -547,6 +549,7 @@
   <div class="controls">
     <button class="btn shuffle" id="btnShuffle" title="重新洗牌">洗牌</button>
     <button class="btn follow" id="btnFollow" title="跟旺AI：跟連勝最高的AI（頂欄🔥標記嗰個），跟佢主注邊+同注額">跟旺AI</button>
+    <button class="btn follow-predict" id="btnFollowPredict" title="跟預測：長按開啟後每局自動跟預測系統建議邊落注（掛機睇成效）">跟預測</button>
     <button class="btn auto" id="btnAuto" title="自動開牌">自動:關</button>
     <button class="btn clear" id="btnClear">清除</button>
     <button class="btn repeat" id="btnRepeat">重複</button>
@@ -1054,9 +1057,12 @@ function waitAudioIdle(){
 }
 /* 落注期：綠字倒數 N 秒，期間人類可落注；AI 已經先落好供參考 */
 let betting=false;
+let followPredictOn=false;  // 跟預測長期跟模式（toggle）
 function bettingPhase(sec){
   return new Promise(resolve=>{
     betting=true;
+    // 跟預測長期跟：落注開始即自動跟預測系統建議邊落注（掛機睇成效）
+    if(followPredictOn){ autoFollowPredict(); }
     // 落注窗口：啟用清除/重複掣（人類可改注/重複/清除）；DEAL 照舊（autoOn 或發牌中禁用）
     document.getElementById('btnClear').disabled=false;
     document.getElementById('btnRepeat').disabled=false;
@@ -2430,6 +2436,24 @@ document.getElementById('btnClear').addEventListener('click',clearBets);
 document.getElementById('btnRepeat').addEventListener('click',repeatBets);
 document.getElementById('btnDeal').addEventListener('click',function(){ if(autoOn){ showToast('自動開牌進行中，請先按「自動」停止'); return; } deal(); });
 document.getElementById('btnFollow').addEventListener('click', followHotAI);
+function autoFollowPredict(){
+  if(dealing && !betting) return;
+  const pr=predictScore();
+  if(!pr.side) return;
+  const amt = currentChip>0 ? currentChip : (selectChipAmt());
+  const betAmt = Math.min(amt, balance);
+  if(betAmt<=0) return;
+  clearBets(true);
+  if(pr.side==='B') bets.banker=betAmt; else if(pr.side==='P') bets.player=betAmt;
+  balance-=betAmt; updateBalance(); updateBetDisplay(); sndChip();
+}
+function selectChipAmt(){ const cs=document.querySelectorAll('.chip'); for(const c of cs){ if(c.classList.contains('sel')) return +c.dataset.chip; } return 1000; }
+document.getElementById('btnFollowPredict').addEventListener('click', function(){
+  followPredictOn=!followPredictOn;
+  this.classList.toggle('on', followPredictOn);
+  if(followPredictOn){ showToast('🔮 跟預測開啟：之後每局自動跟預測建議邊落注'); autoFollowPredict(); }
+  else showToast('⏹ 跟預測已關閉');
+});
 
 /* ===================== 自動開牌：同手動統一次序 ===================== */
 let autoTimer=null;
