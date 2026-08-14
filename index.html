@@ -1296,6 +1296,8 @@ const CHAT_BUDGET_MS = 15000;  // 枱邊閒聊彈性預算15秒：語音唔係�
 async function tableChatPhase(sec) {
     if (ais.length === 0) return;
     showTableChat();
+    // 枱邊聊天開始即啟動預測系統（根據上局路單出預測，唔等13秒落注期）
+    try{ updatePredict(); }catch(e){}
 
     // 彈性：唔固定4句，按10秒預算出句（出1段/2段/更長都得，預算用完就收聲）
     const shuffled = [...ais].sort(() => Math.random() - 0.5);
@@ -1320,7 +1322,6 @@ async function tableChatPhase(sec) {
             await sleep(450);
         }
         prev = ai;
-        try{ updatePredict(); }catch(e){}
     }
     hideTableChat();
     await sleep(300);
