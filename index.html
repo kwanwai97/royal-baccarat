@@ -2136,12 +2136,12 @@ function updateAiBalances(){   // 頂欄橫向捲動：你(人類)永遠第一�
   // 你 永遠第一格；格式同AI完全一樣(icon+名+餘額) 確保4格對稱
   let html='<div class="aib human"><small>👤 你</small><b>'+fmt(balance)+'</b></div>';
   ais.forEach(ai=>{
-    const hot = ai.id===hotId ? ' 🔥🔥' : '';
-    // 升級⑦ AI情緒：根據 emotion 顯示表情 + 狀態class
+    const isHot = ai.id===hotId;
     const em=ai.emotion||50;
-    const face = em>65?'😄': em<35?'😢':'😐';
     const emCls = em>65?' em-hot': em<35?' em-cold':' em-normal';
-    html+='<div class="aib'+(ai.id===hotId?' hot':'')+emCls+'" data-ai="'+ai.id+'"><small>'+ai.icon+' '+ai.name+face+hot+'</small><b>'+fmt(ai.balance)+'</b></div>';
+    // 旺AI：用🔥🔥取代情緒表情（避免兩個圖案擠迫跳彈）；非旺：出情緒表情
+    const face = isHot ? ' 🔥🔥' : (em>65?'😄': em<35?'😢':'😐');
+    html+='<div class="aib'+(isHot?' hot':'')+emCls+'" data-ai="'+ai.id+'"><small>'+ai.icon+' '+ai.name+face+'</small><b>'+fmt(ai.balance)+'</b></div>';
   });
   box.innerHTML=html;
   
