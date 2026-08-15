@@ -1672,9 +1672,12 @@ function settle(winner, playerPair, bankerPair, big, totalCards, pTotal, bTotal,
   if(bankerWin && bTotal===6) shoeStats.luck6++;
   if(winner==='player' && pTotal===7 && bTotal===6) shoeStats.luck7++;
   shoeStats.lastCards=totalCards;
+  // 連勝/連輸統計（有落注先計，純以主注中冇中判斷，唔受net正負影響）
+  if(staked>0){
+    if(mainWin){ stats.streak++; if(stats.streak>stats.maxStreak)stats.maxStreak=stats.streak; stats.loseStreak=0; }
+    else { stats.loseStreak++; if(stats.loseStreak>stats.maxLoseStreak)stats.maxLoseStreak=stats.loseStreak; stats.streak=0; }
+  }
   if(net>0){
-    if(mainWin){ stats.streak++; if(stats.streak>stats.maxStreak)stats.maxStreak=stats.streak; }
-    else { stats.loseStreak++; if(stats.loseStreak>stats.maxLoseStreak)stats.maxLoseStreak=stats.loseStreak; }
     // 連勝彩金
     const bonusTier=STREAK_BONUS[Math.min(stats.streak, STREAK_BONUS.length-1)];
     let bonus=0;
@@ -2145,7 +2148,7 @@ function aiSettle(result, playerPair, bankerPair, big, pTotal, bTotal, pCards, b
     }
     // 連勝/連輸 streak（旺門錯覺用）
     if(win){ ai.winStreak=(ai.winStreak||0)+1; ai.loseStreak=0; ai._maxWinStreak=Math.max(ai._maxWinStreak||0, ai.winStreak); }
-    else if(ai.lastWin===false){ ai.loseStreak=(ai.loseStreak||0)+1; ai.winStreak=0; if(ai.loseStreak>(ai.maxLoseStreak||0)) ai.maxLoseStreak=ai.loseStreak; }
+    else if(ai.lastWin===false || ai.lastWin===undefined){ ai.loseStreak=(ai.loseStreak||0)+1; ai.winStreak=0; if(ai.loseStreak>(ai.maxLoseStreak||0)) ai.maxLoseStreak=ai.loseStreak; }
     else { ai.winStreak=0; ai.loseStreak=0; }
     if(ai.balance>(ai.peak||0)) ai.peak=ai.balance;
     ai.history.push(result==='player'?'P':result==='banker'?'B':'T');
