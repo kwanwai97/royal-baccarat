@@ -598,6 +598,7 @@
     <div style="display:grid; grid-template-columns:1fr 1fr; gap:4px 10px; margin:6px 0;">
       <div>本金：<span id="sBase">0</span></div>
       <div>資金：<span id="sBalance">0</span></div>
+      <div>勝 <span id="sWins">0</span> / 負 <span id="sLosses">0</span> / 共 <span id="sRounds">0</span> 局</div>
       <div>勝率：<span id="sWinRate">0%</span></div>
       <div>總投注額：<span id="sTotalWager">0</span></div>
       <div>最高金額：<span id="sPeak">0</span></div>
@@ -655,7 +656,7 @@ let dealing=false;
 let autoOn=false;        // 自動進行中旗標（setControls 會保持 DEAL 掣停用）
 let settled=false; // settle已執行後clearBets唔再退款
 
-let stats={ total:0, pWin:0, bWin:0, tie:0, hit:0, betRounds:0, streak:0, maxStreak:0, loseStreak:0, maxLoseStreak:0, winAmt:0, lossAmt:0, peak:50000, totalWager:0, totalProfit:0, curve:[50000], humanBets:[] };
+let stats={ total:0, pWin:0, bWin:0, tie:0, hit:0, betRounds:0, streak:0, maxStreak:0, loseStreak:0, maxLoseStreak:0, winAmt:0, lossAmt:0, peak:50000, totalWager:0, totalProfit:0, curve:[50000], humanBets:[], humanTie:0 };
 let sessionStartBalance=50000;
 /* 這一靴牌的統計（非戰績累計）：每次洗牌開新靴清零，一啟動未派牌全0 */
 let shoeStats={ round:0, pWin:0, bWin:0, tie:0, ppair:0, bpair:0, luck6:0, luck7:0, lastCards:0 };
@@ -1664,6 +1665,7 @@ function settle(winner, playerPair, bankerPair, big, totalCards, pTotal, bTotal,
   if(mainWin && lastStaked>0) stats.hit++;   // 準確命中率：有落主注且主注中獎
   if(mainWin && net>0){ checkQuest(); dailyQuest.win++; updateQuest(); localStorage.setItem("bac_quest",JSON.stringify(dailyQuest)); }  // 每日挑戰：今日贏局+1
   if(winner==='player')stats.pWin++; else if(winner==='banker')stats.bWin++; else stats.tie++;
+  if(staked>0 && winner==='tie') stats.humanTie++;   // 你落注遇到和局（本金退回，唔算勝唔算負）
   // 這一靴牌統計（資訊條用）
   shoeStats.round++;
   if(winner==='player')shoeStats.pWin++; else if(winner==='banker')shoeStats.bWin++; else shoeStats.tie++;
@@ -2605,7 +2607,7 @@ btnDM.addEventListener('click',()=>{
 refreshDealModeBtn();
 document.getElementById('btnClearStats').addEventListener('click',()=>{
   if(!confirm('確定清除全部戰績歷史記錄？（餘額不受影響）')) return;
-  stats={ total:0, pWin:0, bWin:0, tie:0, hit:0, betRounds:0, streak:0, maxStreak:0, loseStreak:0, maxLoseStreak:0, winAmt:0, lossAmt:0, peak:balance, totalWager:0, totalProfit:0, curve:[balance], humanBets:[] };
+  stats={ total:0, pWin:0, bWin:0, tie:0, hit:0, betRounds:0, streak:0, maxStreak:0, loseStreak:0, maxLoseStreak:0, winAmt:0, lossAmt:0, peak:balance, totalWager:0, totalProfit:0, curve:[balance], humanBets:[], humanTie:0 };
   try{ localStorage.removeItem('bac_stats'); }catch(e){}
   saveStats(); showStats(); showToast('🗑 戰績記錄已清除');
 });
