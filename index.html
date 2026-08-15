@@ -2662,6 +2662,7 @@ function showAiDetail(ai){
       '<div>最長連輸：'+(ai.maxLoseStreak||0)+'鋪</div>'+
       '<div>總盈虧：<b style="color:'+profitColor+'">'+(totalProfit>=0?'+':'')+fmt(totalProfit)+'</b></div>'+
     '</div>'+
+    '<div style="margin:2px 0 2px; font-size:12px; color:#f5f0d8;">📊 戰績：'+st+'</div>'+
     '<canvas id="aiCurve" width="300" height="120" style="width:100%;max-width:300px;height:120px;margin-top:8px;background:#0a0f0c;border-radius:6px;"></canvas>'+
     '<div style="margin-top:6px; opacity:.7; font-size:11px;">資金曲線：每局資金走勢（跌到0=破產）。</div>';
   document.getElementById('aiDetailBody').innerHTML=html;
