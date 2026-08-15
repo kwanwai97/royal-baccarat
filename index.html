@@ -603,6 +603,9 @@
     <div class="stat-row"><span>淨盈虧</span><span id="sNet">0</span></div>
     <div class="stat-row"><span>最高餘額</span><span id="sPeak">0</span></div>
     <div class="stat-row"><span>本場淨贏/輸</span><span id="sSession">0</span></div>
+    <div class="stat-row"><span>總投注額</span><span id="sTotalWager">0</span></div>
+    <div class="stat-row"><span>總盈虧</span><span id="sTotalProfit">0</span></div>
+    <div id="humanBetsBox" style="margin-top:8px;"><div style="font-weight:700;color:#f5f0d8;margin-bottom:4px;">👤 人類投注明細（有投資嘅局）</div><div id="humanBetsList" style="max-height:180px;overflow:auto;font-size:11px;line-height:1.6;"></div></div>
     <div class="quest-box" id="questBox">
       <div class="quest-title">🎯 每日挑戰</div>
       <div class="quest-desc" id="questDesc">載入中…</div>
@@ -652,7 +655,7 @@ let dealing=false;
 let autoOn=false;        // 自動進行中旗標（setControls 會保持 DEAL 掣停用）
 let settled=false; // settle已執行後clearBets唔再退款
 
-let stats={ total:0, pWin:0, bWin:0, tie:0, hit:0, betRounds:0, streak:0, maxStreak:0, winAmt:0, lossAmt:0, peak:50000 };
+let stats={ total:0, pWin:0, bWin:0, tie:0, hit:0, betRounds:0, streak:0, maxStreak:0, winAmt:0, lossAmt:0, peak:50000, totalWager:0, totalProfit:0, curve:[50000], humanBets:[] };
 let sessionStartBalance=50000;
 /* 這一靴牌的統計（非戰績累計）：每次洗牌開新靴清零，一啟動未派牌全0 */
 let shoeStats={ round:0, pWin:0, bWin:0, tie:0, ppair:0, bpair:0, luck6:0, luck7:0, lastCards:0 };
@@ -1642,11 +1645,21 @@ function settle(winner, playerPair, bankerPair, big, totalCards, pTotal, bTotal,
   balance = balance + payout;
   const net=payout-staked;
   lastStaked=staked;
+  // 跟 AI 模式一樣記錄人類戰績：總投注額/總盈虧/最長連勝/資金曲線
+  stats.totalWager = (stats.totalWager||0) + staked;
+  stats.totalProfit = (stats.totalProfit||0) + net;
+  stats.curve.push(balance);
+  if(stats.curve.length > 200) stats.curve.shift();
 
   // 戰績統計 + 連勝 (以主注是否中獎判斷)
   const mainWin = (winner==='player'&&bets.player>0) || (winner==='banker'&&bets.banker>0) || (winner==='tie'&&bets.tie>0);
   lastHumanWon=mainWin;   // 記低你上局主注中冇中，畀 AI 對話用
   stats.total++; stats.betRounds++;
+  // 人類每局投注紀錄（有投資先記）：投注金額 + 輸贏 + 結果 + 結餘
+  if(staked>0){
+    stats.humanBets.push({ round: stats.total, wager: staked, net: net, winner: winner, balance: balance });
+    if(stats.humanBets.length > 300) stats.humanBets.shift();
+  }
   if(mainWin && lastStaked>0) stats.hit++;   // 準確命中率：有落主注且主注中獎
   if(mainWin && net>0){ checkQuest(); dailyQuest.win++; updateQuest(); localStorage.setItem("bac_quest",JSON.stringify(dailyQuest)); }  // 每日挑戰：今日贏局+1
   if(winner==='player')stats.pWin++; else if(winner==='banker')stats.bWin++; else stats.tie++;
@@ -2187,6 +2200,20 @@ function showStats(){
   document.getElementById('sLossAmt').textContent=fmt(stats.lossAmt);
   document.getElementById('sNet').textContent=fmt(stats.winAmt-stats.lossAmt);
   document.getElementById('sPeak').textContent=fmt(stats.peak);
+  // 人類總投注額/總盈虧（跟 AI 詳細卡一致）
+  const tw=document.getElementById('sTotalWager'); if(tw) tw.textContent=fmt(stats.totalWager||0);
+  const tp=document.getElementById('sTotalProfit'); if(tp){ const v=stats.totalProfit||0; tp.textContent=(v>=0?'+':'')+fmt(v); tp.style.color=v>=0?'#9fd3ff':'#ff9a9a'; }
+  // 人類投注明細：每局 投注/輸贏 列表
+  const list=document.getElementById('humanBetsList');
+  if(list){
+    const arr=stats.humanBets||[];
+    if(arr.length===0){ list.innerHTML='<div style="opacity:.6;">暫時無投注紀錄</div>'; }
+    else {
+      let h='<div style="display:flex;justify-content:space-between;opacity:.7;border-bottom:1px solid #2a3a30;padding:1px 0;"><span>局</span><span>投注</span><span>輸贏</span><span>結餘</span></div>';
+      for(let i=Math.max(0,arr.length-50);i<arr.length;i++){ const r=arr[i]; const col=r.net>=0?'#9fd3ff':'#ff9a9a'; const wlabel=r.winner==='player'?'閒':r.winner==='banker'?'莊':'和'; h+='<div style="display:flex;justify-content:space-between;"><span>#'+(i+1)+' '+wlabel+'</span><span>'+fmt(r.wager)+'</span><span style="color:'+col+'">'+(r.net>=0?'+':'')+fmt(r.net)+'</span><span>'+fmt(r.balance)+'</span></div>'; }
+      list.innerHTML=h;
+    }
+  }
   // 本 session 淨贏（相對開局餘額）
   const sessionNet = balance - sessionStartBalance;
   const sSess=document.getElementById('sSession');
@@ -2552,7 +2579,7 @@ btnDM.addEventListener('click',()=>{
 refreshDealModeBtn();
 document.getElementById('btnClearStats').addEventListener('click',()=>{
   if(!confirm('確定清除全部戰績歷史記錄？（餘額不受影響）')) return;
-  stats={ total:0, pWin:0, bWin:0, tie:0, hit:0, betRounds:0, streak:0, maxStreak:0, winAmt:0, lossAmt:0, peak:balance };
+  stats={ total:0, pWin:0, bWin:0, tie:0, hit:0, betRounds:0, streak:0, maxStreak:0, winAmt:0, lossAmt:0, peak:balance, totalWager:0, totalProfit:0, curve:[balance], humanBets:[] };
   try{ localStorage.removeItem('bac_stats'); }catch(e){}
   saveStats(); showStats(); showToast('🗑 戰績記錄已清除');
 });
