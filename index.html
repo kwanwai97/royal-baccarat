@@ -593,18 +593,16 @@
 <div class="modal" id="statsModal">
   <div class="modal-box">
     <h3>📊 戰績統計</h3>
-    <div class="stat-row"><span>總局數</span><span id="sTotal">0</span></div>
-    <div class="stat-row"><span>閒家勝 / 莊家勝 / 和局</span><span id="sWins">0 / 0 / 0</span></div>
-    <div class="stat-row"><span>命中率 (有下注局)</span><span id="sHit">0%</span></div>
-    <div class="stat-row"><span>目前連勝</span><span id="sStreak">0</span></div>
-    <div class="stat-row"><span>最高連勝</span><span id="sMaxStreak">0</span></div>
-    <div class="stat-row"><span>總贏額</span><span id="sWinAmt">0</span></div>
-    <div class="stat-row"><span>總輸額</span><span id="sLossAmt">0</span></div>
-    <div class="stat-row"><span>淨盈虧</span><span id="sNet">0</span></div>
-    <div class="stat-row"><span>最高餘額</span><span id="sPeak">0</span></div>
-    <div class="stat-row"><span>本場淨贏/輸</span><span id="sSession">0</span></div>
-    <div class="stat-row"><span>總投注額</span><span id="sTotalWager">0</span></div>
-    <div class="stat-row"><span>總盈虧</span><span id="sTotalProfit">0</span></div>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:4px 10px; margin:6px 0;">
+      <div>本金：<span id="sBase">0</span></div>
+      <div>資金：<span id="sBalance">0</span></div>
+      <div>勝率：<span id="sWinRate">0%</span></div>
+      <div>總投注額：<span id="sTotalWager">0</span></div>
+      <div>最高金額：<span id="sPeak">0</span></div>
+      <div>最長連贏：<span id="sMaxStreak">0</span></div>
+      <div>最長連輸：<span id="sMaxLose">0</span></div>
+      <div>總盈虧：<span id="sTotalProfit">0</span></div>
+    </div>
     <div id="humanBetsBox" style="margin-top:8px;"><div style="font-weight:700;color:#f5f0d8;margin-bottom:4px;">👤 人類投注明細（有投資嘅局）</div><div id="humanBetsList" style="max-height:180px;overflow:auto;font-size:11px;line-height:1.6;"></div></div>
     <div class="quest-box" id="questBox">
       <div class="quest-title">🎯 每日挑戰</div>
@@ -1673,6 +1671,7 @@ function settle(winner, playerPair, bankerPair, big, totalCards, pTotal, bTotal,
   shoeStats.lastCards=totalCards;
   if(net>0){
     if(mainWin){ stats.streak++; if(stats.streak>stats.maxStreak)stats.maxStreak=stats.streak; }
+    else { stats.loseStreak++; if(stats.loseStreak>stats.maxLoseStreak)stats.maxLoseStreak=stats.loseStreak; }
     // 連勝彩金
     const bonusTier=STREAK_BONUS[Math.min(stats.streak, STREAK_BONUS.length-1)];
     let bonus=0;
@@ -2143,8 +2142,9 @@ function aiSettle(result, playerPair, bankerPair, big, pTotal, bTotal, pCards, b
     }
     // 連勝/連輸 streak（旺門錯覺用）
     if(win){ ai.winStreak=(ai.winStreak||0)+1; ai.loseStreak=0; ai._maxWinStreak=Math.max(ai._maxWinStreak||0, ai.winStreak); }
-    else if(ai.lastWin===false){ ai.loseStreak=(ai.loseStreak||0)+1; ai.winStreak=0; }
+    else if(ai.lastWin===false){ ai.loseStreak=(ai.loseStreak||0)+1; ai.winStreak=0; if(ai.loseStreak>(ai.maxLoseStreak||0)) ai.maxLoseStreak=ai.loseStreak; }
     else { ai.winStreak=0; ai.loseStreak=0; }
+    if(ai.balance>(ai.peak||0)) ai.peak=ai.balance;
     ai.history.push(result==='player'?'P':result==='banker'?'B':'T');
     if(ai.history.length>40) ai.history.shift();
     // 詳細紀錄：總投注額 + 總盈虧 + 資金曲線（畫圖用）
@@ -2190,19 +2190,18 @@ function updateAiBalance(){ updateAiBalances(); }
 function showAiBalanceBox(){ updateAiBalances(); }
 function showStats(){
   document.getElementById('sTotal').textContent=stats.total;
-  document.getElementById('sWins').textContent=stats.pWin+' / '+stats.bWin+' / '+stats.tie;
-  // 準確命中率：主注中獎局 / 有落注局（含和局退還唔計中獎）
-  const hitRate = stats.betRounds>0 ? Math.round(stats.hit/stats.betRounds*100) : 0;
-  document.getElementById('sHit').textContent = hitRate+'%';
-  document.getElementById('sStreak').textContent=stats.streak;
-  document.getElementById('sMaxStreak').textContent=stats.maxStreak;
-  document.getElementById('sWinAmt').textContent=fmt(stats.winAmt);
-  document.getElementById('sLossAmt').textContent=fmt(stats.lossAmt);
-  document.getElementById('sNet').textContent=fmt(stats.winAmt-stats.lossAmt);
-  document.getElementById('sPeak').textContent=fmt(stats.peak);
-  // 人類總投注額/總盈虧（跟 AI 詳細卡一致）
-  const tw=document.getElementById('sTotalWager'); if(tw) tw.textContent=fmt(stats.totalWager||0);
-  const tp=document.getElementById('sTotalProfit'); if(tp){ const v=stats.totalProfit||0; tp.textContent=(v>=0?'+':'')+fmt(v); tp.style.color=v>=0?'#9fd3ff':'#ff9a9a'; }
+  // 統一 7 項：本金 / 資金 / 勝率 / 總投注額 / 最高金額 / 最長連贏 / 最長連輸（跟 AI 詳細卡一致）
+  const humanG=stats.betRounds||0, humanW=stats.hit||0;
+  const humanWR = humanG>0 ? Math.round(humanW/humanG*100) : 0;
+  document.getElementById('sBase').textContent=fmt(stats.baseBalance||50000);
+  document.getElementById('sBalance').textContent=fmt(balance);
+  document.getElementById('sWinRate').textContent=humanWR+'%';
+  document.getElementById('sTotalWager').textContent=fmt(stats.totalWager||0);
+  document.getElementById('sPeak').textContent=fmt(stats.peak||balance);
+  document.getElementById('sMaxStreak').textContent=stats.maxStreak||0;
+  document.getElementById('sMaxLose').textContent=stats.maxLoseStreak||0;
+  const tp=document.getElementById('sTotalProfit'); const v=stats.totalProfit||0;
+  tp.textContent=(v>=0?'+':'')+fmt(v); tp.style.color=v>=0?'#9fd3ff':'#ff9a9a';
   // 人類投注明細：每局 投注/輸贏 列表
   const list=document.getElementById('humanBetsList');
   if(list){
@@ -2612,13 +2611,18 @@ function showAiDetail(ai){
     '<div>年齡層：'+ageTxt+'</div>'+
     '<div>性格：'+personaTxt+'</div>'+
     '<div>策略：'+planTxt+'</div>'+
-    '<div>本金：'+fmt(ai.baseBalance||ai.balance)+'　資金：'+fmt(ai.balance)+'</div>'+
-    '<div>'+st+'</div>'+
-    '<div>偏好主注：'+(fav==='-'?'尚未投注':fav)+'</div>'+
-    '<div>總投注額：'+fmt(totalWager)+'　最長連勝：'+(ai._maxWinStreak||0)+'鋪</div>'+
-    '<div>總盈虧：<b style="color:'+profitColor+'">'+(totalProfit>=0?'+':'')+fmt(totalProfit)+'</b></div>'+
+    '<div style="display:grid; grid-template-columns:1fr 1fr; gap:4px 10px; margin:6px 0;">'+
+      '<div>本金：'+fmt(ai.baseBalance||ai.balance)+'</div>'+
+      '<div>資金：'+fmt(ai.balance)+'</div>'+
+      '<div>勝率：'+wr+'%</div>'+
+      '<div>總投注額：'+fmt(totalWager)+'</div>'+
+      '<div>最高金額：'+fmt(ai.peak||ai.balance)+'</div>'+
+      '<div>最長連贏：'+(ai._maxWinStreak||0)+'鋪</div>'+
+      '<div>最長連輸：'+(ai.maxLoseStreak||0)+'鋪</div>'+
+      '<div>總盈虧：<b style="color:'+profitColor+'">'+(totalProfit>=0?'+':'')+fmt(totalProfit)+'</b></div>'+
+    '</div>'+
     '<canvas id="aiCurve" width="300" height="120" style="width:100%;max-width:300px;height:120px;margin-top:8px;background:#0a0f0c;border-radius:6px;"></canvas>'+
-    '<div style="margin-top:6px; opacity:.7; font-size:11px;">資金曲線：每局資金走勢（跌到0=破產）。人生百態邊個組合最耐唔破產？</div>';
+    '<div style="margin-top:6px; opacity:.7; font-size:11px;">資金曲線：每局資金走勢（跌到0=破產）。</div>';
   document.getElementById('aiDetailBody').innerHTML=html;
   // 畫曲線圖
   try{
@@ -2714,7 +2718,7 @@ document.getElementById('aiConfirm').addEventListener('click',()=>{
     showToast('💾 已更新「'+name+'」'); return;
   }
   const ageSel=document.querySelector('#aiAge .ai-chip.sel'); const agKey=ageSel?ageSel.dataset.v:(AGE_GROUPS[Math.floor(Math.random()*AGE_GROUPS.length)].key); const ag=AGE_GROUPS.find(function(a){return a.key===agKey;})||AGE_GROUPS[0];
-  const ai={ id:'ai'+(Date.now())+'-'+ais.length, name, icon:AI_ICONS[ais.length%6], age:ag.key, balance:bank, baseBalance:bank, persona, plan, baseBet:Math.max(1000, Math.floor(bank/20/1000)*1000), step:0, history:[], currentBet:null, emotion:50, winStreak:0, loseStreak:0, weights:AI_PERSONAS[persona].weights, recentChats:[], games:0, wins:0, losses:0, favBet:{player:0,banker:0,tie:0}, bankrupt:false, totalWager:0, totalProfit:0, curve:[bank] };
+  const ai={ id:'ai'+(Date.now())+'-'+ais.length, name, icon:AI_ICONS[ais.length%6], age:ag.key, balance:bank, baseBalance:bank, persona, plan, baseBet:Math.max(1000, Math.floor(bank/20/1000)*1000), step:0, history:[], currentBet:null, emotion:50, winStreak:0, loseStreak:0, maxLoseStreak:0, weights:AI_PERSONAS[persona].weights, recentChats:[], games:0, wins:0, losses:0, favBet:{player:0,banker:0,tie:0}, bankrupt:false, totalWager:0, totalProfit:0, peak:bank, curve:[bank] };
   ais.push(ai);
   document.getElementById('aiModal').classList.remove('show'); updateAiBalances(); renderAiList(); saveAiList();
   showToast(ai.icon+' '+name+' 入枱！本金 '+fmt(ai.balance)+'（共'+ais.length+'個AI）');
