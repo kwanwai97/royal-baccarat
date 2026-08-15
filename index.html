@@ -353,7 +353,8 @@
 
   .daily-tip{text-align:center; font-size:11px; color:var(--gold2); padding:0 10px 4px; min-height:14px;}
   /* AI 陪玩 · 3+1 顯示：上面2個AI + 下邊1個AI + 你最底 */
-  .ai-balances{display:grid; grid-template-columns:repeat(4,1fr); gap:2px 6px; align-items:center; justify-items:start; max-width:100%;}
+  .ai-balances{display:flex; flex-wrap:nowrap; overflow-x:auto; gap:4px 10px; align-items:center; justify-items:start; max-width:100%; padding-bottom:2px;}
+  .ai-balances .aib{flex:0 0 auto; min-width:62px;}
   .ai-balances .aib{display:flex; flex-direction:column; line-height:1.1; padding:1px 5px; border-left:1px solid rgba(255,255,255,.15);}
   .ai-balances .aib small{font-size:10px; opacity:.8; white-space:nowrap;}
   .ai-balances .aib b{font-size:13px; color:var(--gold2); font-weight:800;}
@@ -2729,7 +2730,7 @@ function randomizeNewAi(){
 }
 let editingAiId=null;
 document.getElementById('aiConfirm').addEventListener('click',()=>{
-  if(ais.length>=8 && !editingAiId){ showToast('最多 8 個 AI 陪玩（2×4）'); return; }
+  if(ais.length>=11 && !editingAiId){ showToast('最多 11 個 AI 陪玩'); return; }
   const name=document.getElementById('aiNameInput').value.trim()||('AI'+(ais.length+1));
   const persona=aiSel.persona, plan=aiSel.plan;
   const bank=50000; // 新增/编辑一律固定5万，不显示本金选单
