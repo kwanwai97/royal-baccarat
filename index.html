@@ -1786,6 +1786,7 @@ let aiSeq=0;
 function nextAiNum(){ aiSeq++; return aiSeq; }   // 取下一個唯一號
 // reload 後從現有最大號續上（parse 現有 AI##）
 function syncAiSeq(){ let mx=0; ais.forEach(a=>{ const m=/^AI(\d+)$/.exec(a.name||''); if(m){ const n=+m[1]; if(n>mx) mx=n; } }); if(mx>aiSeq) aiSeq=mx; }
+let aiReplaceOnShuffle=0;   // 累計「結算時離枱嘅 AI 數」，洗牌時先補返（維持枱上人數）
 function saveAiList(){ try{ localStorage.setItem('bac_ai', JSON.stringify(ais)); }catch(e){} }
 function loadAiList(){ 
   try{ 
@@ -2187,7 +2188,7 @@ function aiSettle(result, playerPair, bankerPair, big, pTotal, bTotal, pCards, b
   // 升級⑦ 情緒動畫：贏錢飄金 / 輸錢變灰（短暫1.5s）
   wonIds.forEach(id=>{ const el=document.querySelector('.aib[data-ai="'+id+'"]'); if(el){ el.classList.add('em-flash-win'); setTimeout(()=>el.classList.remove('em-flash-win'),1500); } });
   lostIds.forEach(id=>{ const el=document.querySelector('.aib[data-ai="'+id+'"]'); if(el){ el.classList.add('em-flash-lose'); setTimeout(()=>el.classList.remove('em-flash-lose'),1500); } });
-  autoReplaceBrokeAis();   // 結算後：餘額不足最低注嘅 AI 自動離枱 + 補替
+  autoReplaceBrokeAis();   // 結算後：餘額不足最低注嘅 AI 自動離枱（補替留到洗牌做）
 }
 function updateAiBalances(){   // 頂欄橫向捲動：你(人類)永遠第一格 + 最多6個AI
   const box=document.getElementById('aiBalanceBox');
@@ -2499,6 +2500,15 @@ async function doShuffle(){
   const ov=document.getElementById('shuffleOverlay');
   if(ov){ ov.querySelector('.title').textContent='🔀 洗牌中…'; ov.classList.add('show'); }
   resetShoe(); resetRoads(); drawAllRoads();
+  // 洗牌時補替：結算時離枱嘅 AI，喺開新靴先補返（維持枱上原本人數，上限 11）
+  if(aiReplaceOnShuffle>0 && ais.length<11){
+    const target=Math.min(11, ais.length+aiReplaceOnShuffle);
+    let added=0;
+    while(ais.length<target){ spawnRandomAi(); added++; }
+    aiReplaceOnShuffle=0;
+    updateAiBalances(); renderAiList(); saveAiList();
+    if(added>0) showToast('🆕 洗牌開新靴，補 '+added+' 個 新 AI 入替（現共 '+ais.length+' 個）');
+  }
   showToast('🔀 牌靴用盡，自動洗牌開新靴');
   await sleep(1200);
   // 燒牌動作：切牌卡數字決定燒幾張 (A=1, 2-9=對應, 10/J/Q/K=10)
@@ -2764,23 +2774,20 @@ function spawnRandomAi(){
   return ai;
 }
 // 自動離枱 + 補替：AI 餘額低過最細注(連最低注都唔能夠落)就自動走，隨機補一個新 AI 入替
-function autoReplaceBrokeAis(){
-  if(!ais.length) return;
+function autoReplaceBrokeAis(){}  // 舊名保留兼容（唔再用）
+// 結算後：餘額不足最低注就自動離枱（補替改到洗牌時才做）
+function removeBrokeAis(){
+  if(!ais.length) return 0;
   const before=ais.length;
   const left=ais.filter(ai=>ai.balance < LIMIT_MIN);
-  if(left.length===0) return;
+  if(left.length===0) return 0;
   const leftNames=left.map(a=>a.icon+' '+a.name);
   ais=ais.filter(ai=>ai.balance >= LIMIT_MIN);   // 自動離枱（走剩額唔夠最低注嘅）
   const leftCount=before-ais.length;
-  // 補替：維持原本人數（上限 8）
-  let added=0;
-  while(ais.length<before && ais.length<8){ spawnRandomAi(); added++; }
+  aiReplaceOnShuffle += leftCount;   // 記低：洗牌時先補返
   updateAiBalances(); renderAiList(); saveAiList();
-  if(leftCount>0){
-    let msg='🚪 '+(leftCount>1?leftCount+' 個 AI':'「'+leftNames.join('、')+'」')+' 餘額不足最低注，自動離枱';
-    if(added>0) msg+='，補 '+(added>1?added+' 個':'1 個')+' 新 AI 入替';
-    showToast(msg+'（現共 '+ais.length+' 個）');
-  }
+  if(leftCount>0) showToast('🚪 '+(leftCount>1?leftCount+' 個 AI':'「'+leftNames.join('、')+'」')+' 餘額不足最低注，自動離枱（洗牌時補替）');
+  return leftCount;
 }
 let editingAiId=null;
 document.getElementById('aiConfirm').addEventListener('click',()=>{
