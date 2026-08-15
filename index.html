@@ -1781,6 +1781,11 @@ function saveStats(){
 /* ===================== AI 陪玩 v2 · 多因子+情感+人生百態 ===================== */
 let ais=[];   // 多AI陣列，最多8個
 const AI_ICONS=['🤖','👽','🦊','🐲','🦉','🎭','🐙','🐯'];
+// 單調遞增序號：每次新增 +1，永不重用 → 避免 AI 走咗再新增撞號（AI4 走咗變 length 3，再新增又出 AI4）
+let aiSeq=0;
+function nextAiNum(){ aiSeq++; return aiSeq; }   // 取下一個唯一號
+// reload 後從現有最大號續上（parse 現有 AI##）
+function syncAiSeq(){ let mx=0; ais.forEach(a=>{ const m=/^AI(\d+)$/.exec(a.name||''); if(m){ const n=+m[1]; if(n>mx) mx=n; } }); if(mx>aiSeq) aiSeq=mx; }
 function saveAiList(){ try{ localStorage.setItem('bac_ai', JSON.stringify(ais)); }catch(e){} }
 function loadAiList(){ 
   try{ 
@@ -1801,6 +1806,7 @@ function loadAiList(){
       }
     } 
   } catch(e){}
+  syncAiSeq();   // reload 後從現有最大號續上，避免重號
 }
 
 // === 多因子決策引擎：每個AI根據性格權重分析5個維度 ===
@@ -2734,7 +2740,7 @@ const DEFAULT_NAMES=['阿龍','小美','阿強','阿明','阿花','阿杰'];
 function setNextDefaultName(){
   const used=new Set(ais.map(a=>a.name));
   for(const n of DEFAULT_NAMES){ if(!used.has(n)){ document.getElementById('aiNameInput').value=n; return; } }
-  document.getElementById('aiNameInput').value='AI'+(ais.length+1);
+  document.getElementById('aiNameInput').value='AI'+nextAiNum();
 }
 function setAiSel(id,val){ const grp=document.getElementById(id); if(!grp) return; grp.querySelectorAll('.ai-chip').forEach(x=>x.classList.toggle('sel', x.dataset.v===val)); if(id==='aiPersona'){ aiSel.persona=val; refreshPersonaBlurb(); } else if(id==='aiPlan'){ aiSel.plan=val; } }
 /* 新增模式：隨機性格 + 注碼方案配搭（UI 同步 highlight，用家可手動改） */
@@ -2753,7 +2759,7 @@ function spawnRandomAi(){
   const persona=personas[Math.floor(Math.random()*personas.length)];
   const plan=plans[Math.floor(Math.random()*plans.length)];
   const bank=50000;
-  const ai={ id:'ai'+(Date.now())+'-'+ais.length, name:('AI'+(ais.length+1)), icon:AI_ICONS[ais.length%AI_ICONS.length], balance:bank, persona, plan, baseBet:Math.max(1000, Math.floor(bank/20/1000)*1000), step:0, history:[], currentBet:null, emotion:50, winStreak:0, loseStreak:0, weights:AI_PERSONAS[persona].weights, recentChats:[] };
+  const ai={ id:'ai'+(Date.now())+'-'+ais.length, name:('AI'+nextAiNum()), icon:AI_ICONS[ais.length%AI_ICONS.length], balance:bank, persona, plan, baseBet:Math.max(1000, Math.floor(bank/20/1000)*1000), step:0, history:[], currentBet:null, emotion:50, winStreak:0, loseStreak:0, weights:AI_PERSONAS[persona].weights, recentChats:[] };
   ais.push(ai);
   return ai;
 }
@@ -2779,7 +2785,7 @@ function autoReplaceBrokeAis(){
 let editingAiId=null;
 document.getElementById('aiConfirm').addEventListener('click',()=>{
   if(ais.length>=11 && !editingAiId){ showToast('最多 11 個 AI 陪玩'); return; }
-  const name=document.getElementById('aiNameInput').value.trim()||('AI'+(ais.length+1));
+  const name=document.getElementById('aiNameInput').value.trim()||('AI'+nextAiNum());
   const persona=aiSel.persona, plan=aiSel.plan;
   const bank=50000; // 新增/编辑一律固定5万，不显示本金选单
   if(editingAiId){
