@@ -272,9 +272,7 @@
   .btn.fbtn.rev.on{background:linear-gradient(180deg,#ff9a6f,#d94f1f); color:#2a0900; border:1px solid #ef7a4a; opacity:1;}
   .btn.auto{background:#2a2113; color:#e0b34a; border:1px solid #7a5a1a; flex:0 0 auto; padding:7px 7px; font-size:11px;}   /* 關：琥珀色，醒目「可按啟動」 */
   .btn.auto.on{background:#2faf5a; color:#04110a; border-color:#2faf5a; box-shadow:0 0 10px rgba(47,175,90,.5);}             /* 開：綠色，進行中 */
-  .auto-int-sel{display:flex; align-items:center; flex-wrap:wrap; margin-top:4px;}
-  .ai-chip.ai-int{font-size:11px; padding:2px 8px; margin:1px 2px; background:#1d2a20; color:#cfe8d8; border:1px solid #3a5a44; border-radius:10px; cursor:pointer; user-select:none;}
-  .ai-chip.ai-int.on{background:linear-gradient(180deg,#9fd3ff,#4a90d9); color:#06223a; font-weight:700;}
+  .btn.auto-int-btn{background:#2a2113; color:#e0b34a; border:1px solid #7a5a1a; flex:0 0 auto; padding:7px 7px; font-size:11px; margin-left:6px;}
 
   .toast{position:fixed; left:50%; top:42%; transform:translate(-50%,-50%); background:#000c; color:#ffd45e;
     padding:12px 22px; border-radius:22px; font-size:18px; font-weight:800; border:1px solid var(--gold); opacity:0; transition:opacity .3s; z-index:50; pointer-events:none; text-shadow:0 0 10px #000; box-shadow:0 0 18px rgba(212,175,55,.4);}
@@ -571,13 +569,7 @@
   <div class="controls">
     <button class="btn shuffle" id="btnShuffle" title="重新洗牌">洗牌</button>
     <button class="btn auto" id="btnAuto" title="自動開牌">自動:關</button>
-    <div class="auto-int-sel" id="autoIntSel">
-      <span style="opacity:.7;font-size:11px;margin-right:4px;">自動間隔</span>
-      <span class="ai-chip ai-int" data-v="3000">3秒</span>
-      <span class="ai-chip ai-int" data-v="7000">7秒</span>
-      <span class="ai-chip ai-int on" data-v="13000">13秒</span>
-      <span class="ai-chip ai-int" data-v="20000">20秒</span>
-    </div>
+    <button class="btn auto-int-btn" id="btnAutoInt">🌟 中 13秒</button>
     <button class="btn clear" id="btnClear">清除</button>
     <button class="btn repeat" id="btnRepeat">重複</button>
     <button class="btn deal" id="btnDeal">發牌</button>
@@ -2556,17 +2548,25 @@ function autoTick(gen){
     if(gen===autoGen) setTimeout(function(){ autoTick(gen); }, 4000);
   });
 }
-// 自動間隔選擇 chip（3/7/13/20秒）
+// 自動間隔：單一按鈕點擊循環四狀態（極快3/快7/中13/慢20秒）
+const AUTO_SPEEDS=[
+  {ms:3000, label:'⚡ 極快 3秒'},
+  {ms:7000, label:'🔥 快 7秒'},
+  {ms:13000,label:'🌟 中 13秒'},
+  {ms:20000,label:'🐢 慢 20秒'}
+];
+let autoSpeedIdx=2;   // 預設「中 13秒」
 (function(){
-  const box=document.getElementById('autoIntSel'); if(!box) return;
-  box.querySelectorAll('.ai-int').forEach(function(chip){
-    chip.addEventListener('click', function(){
-      const v=+chip.dataset.v; if(!v) return;
-      autoInterval=v;
-      box.querySelectorAll('.ai-int').forEach(c=>c.classList.remove('on'));
-      chip.classList.add('on');
-      showToast('自動間隔設為 '+(v/1000)+' 秒');
-    });
+  const btn=document.getElementById('btnAutoInt'); if(!btn) return;
+  function refresh(){
+    autoInterval=AUTO_SPEEDS[autoSpeedIdx].ms;
+    btn.textContent=AUTO_SPEEDS[autoSpeedIdx].label;
+  }
+  refresh();
+  btn.addEventListener('click', function(){
+    autoSpeedIdx=(autoSpeedIdx+1)%AUTO_SPEEDS.length;
+    refresh();
+    showToast('自動間隔：'+AUTO_SPEEDS[autoSpeedIdx].label);
   });
 })();
 function startAuto(){
