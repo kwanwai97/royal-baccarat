@@ -1663,7 +1663,11 @@ function settle(winner, playerPair, bankerPair, big, totalCards, pTotal, bTotal,
     if(stats.humanBets.length > 300) stats.humanBets.shift();
   }
   if(mainWin && lastStaked>0) stats.hit++;   // 準確命中率：有落主注且主注中獎
-  if(mainWin && net>0){ checkQuest(); dailyQuest.win++; updateQuest(); localStorage.setItem("bac_quest",JSON.stringify(dailyQuest)); }  // 每日挑戰：今日贏局+1
+  if(mainWin && net>0){
+    checkQuest();
+    if(dailyQuest.win < QUEST_GOAL) dailyQuest.win++;   // 達標後封頂，唔再累加
+    updateQuest(); localStorage.setItem("bac_quest",JSON.stringify(dailyQuest));
+  }  // 每日挑戰：今日贏局+1（上限=目標）
   if(winner==='player')stats.pWin++; else if(winner==='banker')stats.bWin++; else stats.tie++;
   if(staked>0 && winner==='tie') stats.humanTie++;   // 你落注遇到和局（本金退回，唔算勝唔算負）
   // 這一靴牌統計（資訊條用）
