@@ -2137,7 +2137,7 @@ function aiSettle(result, playerPair, bankerPair, big, pTotal, bTotal, pCards, b
       ai.emotion=Math.min(100, (ai.emotion||50)+8);
     } else if(result==='tie' && (pick==='player'||pick==='banker')){
       ai.balance+=bet; ai.lastWin=null; win=false;
-      ai.games=(ai.games||0)+1;
+      ai.games=(ai.games||0)+1; ai.ties=(ai.ties||0)+1;   // AI 和局（押莊/閒開和，本金退回，唔算勝唔算負）
     } else { ai.step++; ai.lastWin=false; win=false;
       ai.games=(ai.games||0)+1; ai.losses=(ai.losses||0)+1;
       ai.emotion=Math.max(0, (ai.emotion||50)-6);
@@ -2639,12 +2639,12 @@ function showAiDetail(ai){
   const personaTxt=(AI_PERSONAS[ai.persona]&&AI_PERSONAS[ai.persona].name)||ai.persona;
   const planTxt=(AI_PLANS[ai.plan]&&AI_PLANS[ai.plan].name)||ai.plan;
   const ageTxt=(AGE_GROUPS.find(function(a){return a.key===ai.age;})||{}).name||'';
-  const g=ai.games||0, w=ai.wins||0, l=ai.losses||0;
+  const g=ai.games||0, w=ai.wins||0, l=ai.losses||0, t=ai.ties||0;
   const wr = g>0 ? Math.round(w/g*100) : 0;
   const totalWager=ai.totalWager||0, totalProfit=ai.totalProfit||0;
   const maxStreak=ai._maxWinStreak||ai.winStreak||0;
   let fav='-'; if(ai.favBet){ const f=ai.favBet; const top=Object.keys(f).sort((a,b)=>f[b]-f[a])[0]; if(top&&f[top]>0) fav=(top==='player'?'閒':top==='banker'?'莊':'和'); }
-  const st = g>0 ? ('勝率 '+wr+'% （勝'+w+' / 負'+l+' / 共'+g+'局）') : '尚未開局';
+  const st = g>0 ? ('勝 '+w+' / 負 '+l+' / 和 '+t+' / 共 '+g+' 局') : '尚未開局';
   const bankruptTxt = ai.bankrupt ? ' · 💀已破產出局' : '';
   const profitColor = totalProfit>=0 ? '#9fd3ff' : '#ff9a9a';
   const html =
@@ -2696,10 +2696,9 @@ function renderAiList(){
     const personaTxt=(AI_PERSONAS[ai.persona]&&AI_PERSONAS[ai.persona].name)||ai.persona;
     const ageTxt=(AGE_GROUPS.find(function(a){return a.key===ai.age;})||{}).name||'';
     const planTxt=(AI_PLANS[ai.plan]&&AI_PLANS[ai.plan].name)||ai.plan;
-    const g=ai.games||0, w=ai.wins||0;
-    const wr = g>0 ? Math.round(w/g*100) : 0;
+    const g=ai.games||0, w=ai.wins||0, l=ai.losses||0, t=ai.ties||0;
     let fav='-'; if(ai.favBet){ const f=ai.favBet; const top=Object.keys(f).sort((a,b)=>f[b]-f[a])[0]; if(top&&f[top]>0) fav=(top==='player'?'閒':top==='banker'?'莊':'和'); }
-    const statTxt = g>0 ? ('勝率'+wr+'% · '+g+'局 · 偏好'+fav) : '未開局';
+    const statTxt = g>0 ? ('勝'+w+'/負'+l+'/和'+t+'/共'+g+' · 偏好'+fav) : '未開局';
     const bankruptTxt = ai.bankrupt ? ' · 💀出局' : '';
     row.innerHTML='<span class="ai-row-ic">'+ai.icon+'</span>'+
       '<span class="ai-row-info"><b>'+ai.name+'</b><small>'+personaTxt+' · '+planTxt+' · 本金'+fmt(ai.balance)+bankruptTxt+'</small>'+
@@ -2759,7 +2758,7 @@ document.getElementById('aiConfirm').addEventListener('click',()=>{
     showToast('💾 已更新「'+name+'」'); return;
   }
   const ageSel=document.querySelector('#aiAge .ai-chip.sel'); const agKey=ageSel?ageSel.dataset.v:(AGE_GROUPS[Math.floor(Math.random()*AGE_GROUPS.length)].key); const ag=AGE_GROUPS.find(function(a){return a.key===agKey;})||AGE_GROUPS[0];
-  const ai={ id:'ai'+(Date.now())+'-'+ais.length, name, icon:AI_ICONS[ais.length%6], age:ag.key, balance:bank, baseBalance:bank, persona, plan, baseBet:Math.max(1000, Math.floor(bank/20/1000)*1000), step:0, history:[], currentBet:null, emotion:50, winStreak:0, loseStreak:0, maxLoseStreak:0, weights:AI_PERSONAS[persona].weights, recentChats:[], games:0, wins:0, losses:0, favBet:{player:0,banker:0,tie:0}, bankrupt:false, totalWager:0, totalProfit:0, peak:bank, curve:[bank] };
+  const ai={ id:'ai'+(Date.now())+'-'+ais.length, name, icon:AI_ICONS[ais.length%6], age:ag.key, balance:bank, baseBalance:bank, persona, plan, baseBet:Math.max(1000, Math.floor(bank/20/1000)*1000), step:0, history:[], currentBet:null, emotion:50, winStreak:0, loseStreak:0, maxLoseStreak:0, weights:AI_PERSONAS[persona].weights, recentChats:[], games:0, wins:0, losses:0, ties:0, favBet:{player:0,banker:0,tie:0}, bankrupt:false, totalWager:0, totalProfit:0, peak:bank, curve:[bank] };
   ais.push(ai);
   document.getElementById('aiModal').classList.remove('show'); updateAiBalances(); renderAiList(); saveAiList();
   showToast(ai.icon+' '+name+' 入枱！本金 '+fmt(ai.balance)+'（共'+ais.length+'個AI）');
