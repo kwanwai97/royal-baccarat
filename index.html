@@ -268,6 +268,8 @@
   .follow-col{display:flex; flex-direction:row; flex-wrap:wrap; gap:4px; flex:0 1 auto; margin-left:8px; align-items:center;}
   .btn.fbtn{background:linear-gradient(180deg,#9fd3ff,#4a90d9); color:#06243f; border:1px solid #6fb3ef; font-size:11px; font-weight:800; padding:3px 8px; border-radius:6px; opacity:.6; white-space:nowrap; line-height:1.3;}
   .btn.fbtn.on{background:linear-gradient(180deg,#5fffa0,#1faf5a); color:#06240f; border:1px solid #3fdf7a; opacity:1; box-shadow:0 2px 0 #0a7a3a;}
+  .btn.flim{font-size:11px; padding:2px 9px; opacity:.55; border-radius:6px;}
+  .btn.flim.on{opacity:1; background:linear-gradient(180deg,#ffd479,#e6a417); color:#241a00; border:1px solid #ffb347; box-shadow:0 2px 0 #7a5a00;}
   .btn.fbtn.rev{background:linear-gradient(180deg,#ffd0a0,#d9804a); color:#2a1400; border:1px solid #ef9b6f; opacity:.7;}
   .btn.fbtn.rev.on{background:linear-gradient(180deg,#ff9a6f,#d94f1f); color:#2a0900; border:1px solid #ef7a4a; opacity:1;}
   .btn.auto{background:#2a2113; color:#e0b34a; border:1px solid #7a5a1a; flex:0 0 auto; padding:7px 7px; font-size:11px;}   /* 關：琥珀色，醒目「可按啟動」 */
@@ -530,6 +532,14 @@
       <button class="btn fbtn" id="btnFollowRev" title="反預測：長期跟模式，每局自動跟預測相反邊">反預測</button>
       <button class="btn fbtn" id="btnFollowHot" title="跟旺AI：長期跟模式，每局自動跟連勝最高AI嘅主注邊">跟旺AI</button>
       <button class="btn fbtn" id="btnFollowHotRev" title="反旺AI：長期跟模式，每局自動跟連勝最高AI嘅相反邊">反旺AI</button>
+    </div>
+    <div class="follow-col" id="followLimitRow" style="margin-left:8px; opacity:.85;">
+      <span style="font-size:10px;opacity:.8;">連續上限</span>
+      <button class="btn fbtn flim" data-lim="2">2</button>
+      <button class="btn fbtn flim" data-lim="3">3</button>
+      <button class="btn fbtn flim" data-lim="4">4</button>
+      <button class="btn fbtn flim" data-lim="5">5</button>
+      <span id="followStatus" style="font-size:10px;color:#7fffb0;"></span>
     </div>
   </div>
   <div class="bets" id="bets">
@@ -1077,6 +1087,21 @@ let followPredictOn=false;   // 跟預測長期跟（toggle）
 let followReverseOn=false;    // 反預測長期跟（跟預測相反邊）
 let followHotOn=false;        // 跟旺AI長期跟（toggle）
 let followHotReverseOn=false; // 反旺AI長期跟（跟旺AI相反邊）
+// 跟/反 連續次數上限：同一個對象（旺AI id / 預測來源）連續跟足 limit 次就暫停，轉咗對象先再跟
+let followLimit=3;            // 連續上限（預設3，可選2/3/4/5）
+let followStreakKey=null;     // 跟緊邊個（旺AI id，或 'predict'）
+let followStreakCount=0;      // 連續跟咗幾多次
+function followTrack(key){    // 每局 call：回傳 true=可以跟，false=已達上限暫停
+  if(followStreakKey===key){ followStreakCount++; }
+  else { followStreakKey=key; followStreakCount=1; }   // 對象轉咗 → reset 解禁
+  return followStreakCount<=followLimit;
+}
+function followStatusText(mode){   // mode: 'hot'/'hotrev'/'predict'/'reverse'
+  if(!followStreakKey) return '';
+  const nm = followStreakKey==='predict' ? '預測' : followStreakKey;
+  if(followStreakCount>=followLimit) return '⏸ '+nm+' 已跟 '+followLimit+' 次，等轉對象先再跟';
+  return '跟 '+nm+' 第 '+followStreakCount+'/'+followLimit+' 次';
+}
 function bettingPhase(sec){
   return new Promise(resolve=>{
     betting=true;
@@ -2530,6 +2555,12 @@ document.getElementById('btnDeal').addEventListener('click',function(){ if(autoO
 function autoFollowPredict(reverse){
   const pr=predictScore();
   if(!pr.side){ return; }  // 觀望唔跟（正常）
+  // 連續次數上限：預測同一建議邊當「同一來源」，跟足 limit 次暫停（轉邊自然 reset）
+  if(!followTrack('predict')){
+    document.getElementById('followStatus').textContent=followStatusText();
+    showToast((reverse?'🔄 反預測':'🔮 跟預測')+'已跟足 '+followLimit+' 次，暫停');
+    return;
+  }
   let side = reverse ? (pr.side==='B'?'P':'B') : pr.side;
   const amt = currentChip>0 ? currentChip : 1000;
   const betAmt = Math.min(amt, balance);
@@ -2537,6 +2568,7 @@ function autoFollowPredict(reverse){
   clearBets(true);
   if(side==='B') bets.banker=betAmt; else if(side==='P') bets.player=betAmt;
   balance-=betAmt; updateBalance(); updateBetDisplay(); sndChip();
+  document.getElementById('followStatus').textContent=followStatusText();
   showToast((reverse?'🔄 反預測':'🔮 跟預測')+'：自動落注'+(side==='B'?'莊':'閒')+' '+fmt(betAmt));
 }
 function getHotAI(){
@@ -2547,6 +2579,13 @@ function getHotAI(){
 function autoFollowHot(reverse){
   const hot=getHotAI();
   if(!hot || !hot.currentBet || !hot.currentBet.pick) return;
+  // 連續次數上限：同一旺AI 跟足 limit 次就暫停，轉咗旺AI 先再跟
+  if(!followTrack(hot.id)){
+    const fs2=followStatusText();
+    document.getElementById('followStatus').textContent=fs2;
+    showToast((reverse?'🔥 反旺AI':'🔥 跟旺AI')+'「'+hot.name+'」已跟足 '+followLimit+' 次，暫停等轉 AI');
+    return;
+  }
   let pick=hot.currentBet.pick;
   if(reverse){ pick = pick==='player' ? 'banker' : pick==='banker' ? 'player' : pick; }
   const amt=Math.min(hot.currentBet.bet, balance);
@@ -2554,6 +2593,7 @@ function autoFollowHot(reverse){
   clearBets(true);
   if(pick==='player') bets.player=amt; else if(pick==='banker') bets.banker=amt; else if(pick==='tie') bets.tie=amt;
   balance-=amt; updateBalance(); updateBetDisplay(); sndChip();
+  document.getElementById('followStatus').textContent=followStatusText();
   showToast((reverse?'🔥 反旺AI':'🔥 跟旺AI')+'「'+hot.name+'」('+pick+' '+fmt(amt)+')');
 }
 // 四個跟注掣互斥：每次只可以跟一邊（撳新掣自動熄其他三個）
@@ -2563,11 +2603,26 @@ function setFollow(which){
   document.getElementById('btnFollowRev').classList.remove('on');
   document.getElementById('btnFollowHot').classList.remove('on');
   document.getElementById('btnFollowHotRev').classList.remove('on');
+  followStreakKey=null; followStreakCount=0;   // 切換跟注模式 → 連續計數歸零（新對象）
+  document.getElementById('followStatus').textContent='';
   if(which==='predict'){ followPredictOn=true; document.getElementById('btnFollowPredict2').classList.add('on'); showToast('🔮 跟預測開啟：每局自動跟預測建議邊'); autoFollowPredict(false); }
   else if(which==='reverse'){ followReverseOn=true; document.getElementById('btnFollowRev').classList.add('on'); showToast('🔄 反預測開啟：每局自動跟預測相反邊'); autoFollowPredict(true); }
   else if(which==='hot'){ followHotOn=true; document.getElementById('btnFollowHot').classList.add('on'); showToast('🔥 跟旺AI開啟：每局自動跟連勝最高AI'); autoFollowHot(false); }
   else if(which==='hotrev'){ followHotReverseOn=true; document.getElementById('btnFollowHotRev').classList.add('on'); showToast('🔥 反旺AI開啟：每局自動跟連勝最高AI相反邊'); autoFollowHot(true); }
 }
+// 連續上限選擇（2/3/4/5），跟/反四掣共用
+document.querySelectorAll('.flim').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    followLimit=+btn.dataset.lim;
+    document.querySelectorAll('.flim').forEach(x=>x.classList.remove('on'));
+    btn.classList.add('on');
+    followStreakKey=null; followStreakCount=0;   // 改上限 → 計數歸零重計
+    document.getElementById('followStatus').textContent='';
+    showToast('🔢 連續上限設為 '+followLimit+' 次');
+  });
+});
+// 預設高亮「3」
+(function(){ const d=document.querySelector('.flim[data-lim="3"]'); if(d) d.classList.add('on'); })();
 document.getElementById('btnFollowPredict2').addEventListener('click', ()=> setFollow(followPredictOn?'off':'predict'));
 document.getElementById('btnFollowRev').addEventListener('click', ()=> setFollow(followReverseOn?'off':'reverse'));
 document.getElementById('btnFollowHot').addEventListener('click', ()=> setFollow(followHotOn?'off':'hot'));
