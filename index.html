@@ -655,7 +655,7 @@ let dealing=false;
 let autoOn=false;        // 自動進行中旗標（setControls 會保持 DEAL 掣停用）
 let settled=false; // settle已執行後clearBets唔再退款
 
-let stats={ total:0, pWin:0, bWin:0, tie:0, hit:0, betRounds:0, streak:0, maxStreak:0, winAmt:0, lossAmt:0, peak:50000, totalWager:0, totalProfit:0, curve:[50000], humanBets:[] };
+let stats={ total:0, pWin:0, bWin:0, tie:0, hit:0, betRounds:0, streak:0, maxStreak:0, loseStreak:0, maxLoseStreak:0, winAmt:0, lossAmt:0, peak:50000, totalWager:0, totalProfit:0, curve:[50000], humanBets:[] };
 let sessionStartBalance=50000;
 /* 這一靴牌的統計（非戰績累計）：每次洗牌開新靴清零，一啟動未派牌全0 */
 let shoeStats={ round:0, pWin:0, bWin:0, tie:0, ppair:0, bpair:0, luck6:0, luck7:0, lastCards:0 };
@@ -2604,7 +2604,7 @@ btnDM.addEventListener('click',()=>{
 refreshDealModeBtn();
 document.getElementById('btnClearStats').addEventListener('click',()=>{
   if(!confirm('確定清除全部戰績歷史記錄？（餘額不受影響）')) return;
-  stats={ total:0, pWin:0, bWin:0, tie:0, hit:0, betRounds:0, streak:0, maxStreak:0, winAmt:0, lossAmt:0, peak:balance, totalWager:0, totalProfit:0, curve:[balance], humanBets:[] };
+  stats={ total:0, pWin:0, bWin:0, tie:0, hit:0, betRounds:0, streak:0, maxStreak:0, loseStreak:0, maxLoseStreak:0, winAmt:0, lossAmt:0, peak:balance, totalWager:0, totalProfit:0, curve:[balance], humanBets:[] };
   try{ localStorage.removeItem('bac_stats'); }catch(e){}
   saveStats(); showStats(); showToast('🗑 戰績記錄已清除');
 });
