@@ -2188,7 +2188,7 @@ function aiSettle(result, playerPair, bankerPair, big, pTotal, bTotal, pCards, b
   // 升級⑦ 情緒動畫：贏錢飄金 / 輸錢變灰（短暫1.5s）
   wonIds.forEach(id=>{ const el=document.querySelector('.aib[data-ai="'+id+'"]'); if(el){ el.classList.add('em-flash-win'); setTimeout(()=>el.classList.remove('em-flash-win'),1500); } });
   lostIds.forEach(id=>{ const el=document.querySelector('.aib[data-ai="'+id+'"]'); if(el){ el.classList.add('em-flash-lose'); setTimeout(()=>el.classList.remove('em-flash-lose'),1500); } });
-  autoReplaceBrokeAis();   // 結算後：餘額不足最低注嘅 AI 自動離枱（補替留到洗牌做）
+  removeBrokeAis();   // 結算後：餘額不足最低注嘅 AI 自動離枱（補替留到洗牌做）
 }
 function updateAiBalances(){   // 頂欄橫向捲動：你(人類)永遠第一格 + 最多6個AI
   const box=document.getElementById('aiBalanceBox');
