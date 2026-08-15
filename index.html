@@ -265,8 +265,8 @@
   .odds-row.predict-row{display:flex; align-items:center; gap:8px; flex-wrap:nowrap;}
   .odds-row.predict-row .road-tip{flex:1 1 auto;}
   .odds-row.predict-row{align-items:flex-start;}
-  .follow-col{display:flex; flex-direction:row; flex-wrap:wrap; gap:4px; flex:0 1 auto; margin-left:8px; align-items:center;}
-  .btn.fbtn{background:linear-gradient(180deg,#9fd3ff,#4a90d9); color:#06243f; border:1px solid #6fb3ef; font-size:11px; font-weight:800; padding:3px 8px; border-radius:6px; opacity:.6; white-space:nowrap; line-height:1.3;}
+  .follow-col{display:flex; flex-direction:row; flex-wrap:nowrap; gap:3px; flex:0 1 auto; margin-left:8px; align-items:center; overflow-x:auto;}
+  .btn.fbtn{background:linear-gradient(180deg,#9fd3ff,#4a90d9); color:#06243f; border:1px solid #6fb3ef; font-size:10px; font-weight:800; padding:3px 6px; border-radius:6px; opacity:.6; white-space:nowrap; line-height:1.3; flex:0 0 auto;}
   .btn.fbtn.on{background:linear-gradient(180deg,#5fffa0,#1faf5a); color:#06240f; border:1px solid #3fdf7a; opacity:1; box-shadow:0 2px 0 #0a7a3a;}
   .btn.fbtn.rev{background:linear-gradient(180deg,#ffd0a0,#d9804a); color:#2a1400; border:1px solid #ef9b6f; opacity:.7;}
   .btn.fbtn.rev.on{background:linear-gradient(180deg,#ff9a6f,#d94f1f); color:#2a0900; border:1px solid #ef7a4a; opacity:1;}
@@ -655,7 +655,7 @@ let dealing=false;
 let autoOn=false;        // 自動進行中旗標（setControls 會保持 DEAL 掣停用）
 let settled=false; // settle已執行後clearBets唔再退款
 
-let stats={ total:0, pWin:0, bWin:0, tie:0, hit:0, betRounds:0, streak:0, maxStreak:0, winAmt:0, lossAmt:0, peak:50000, totalWager:0, totalProfit:0, curve:[50000], humanBets:[] };
+let stats={ total:0, pWin:0, bWin:0, tie:0, hit:0, betRounds:0, streak:0, maxStreak:0, winAmt:0, lossAmt:0, peak:50000, baseBalance:50000, totalWager:0, totalProfit:0, curve:[50000], humanBets:[] };
 let sessionStartBalance=50000;
 /* 這一靴牌的統計（非戰績累計）：每次洗牌開新靴清零，一啟動未派牌全0 */
 let shoeStats={ round:0, pWin:0, bWin:0, tie:0, ppair:0, bpair:0, luck6:0, luck7:0, lastCards:0 };
@@ -1648,7 +1648,7 @@ function settle(winner, playerPair, bankerPair, big, totalCards, pTotal, bTotal,
   lastStaked=staked;
   // 跟 AI 模式一樣記錄人類戰績：總投注額/總盈虧/最長連勝/資金曲線
   stats.totalWager = (stats.totalWager||0) + staked;
-  stats.totalProfit = (stats.totalProfit||0) + net;
+  stats.totalProfit = balance - stats.baseBalance;   // 直接同 balance 對齊（含彩金/挑戰獎勵），唔會對唔落
   stats.curve.push(balance);
   if(stats.curve.length > 200) stats.curve.shift();
 
@@ -2604,7 +2604,7 @@ btnDM.addEventListener('click',()=>{
 refreshDealModeBtn();
 document.getElementById('btnClearStats').addEventListener('click',()=>{
   if(!confirm('確定清除全部戰績歷史記錄？（餘額不受影響）')) return;
-  stats={ total:0, pWin:0, bWin:0, tie:0, hit:0, betRounds:0, streak:0, maxStreak:0, winAmt:0, lossAmt:0, peak:balance, totalWager:0, totalProfit:0, curve:[balance], humanBets:[] };
+  stats={ total:0, pWin:0, bWin:0, tie:0, hit:0, betRounds:0, streak:0, maxStreak:0, winAmt:0, lossAmt:0, peak:balance, baseBalance:balance, totalWager:0, totalProfit:0, curve:[balance], humanBets:[] };
   try{ localStorage.removeItem('bac_stats'); }catch(e){}
   saveStats(); showStats(); showToast('🗑 戰績記錄已清除');
 });
