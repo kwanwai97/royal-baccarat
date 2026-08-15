@@ -598,7 +598,7 @@
     <div style="display:grid; grid-template-columns:1fr 1fr; gap:4px 10px; margin:6px 0;">
       <div>本金：<span id="sBase">0</span></div>
       <div>資金：<span id="sBalance">0</span></div>
-      <div>勝 <span id="sWins">0</span> / 負 <span id="sLosses">0</span> / 共 <span id="sRounds">0</span> 局</div>
+      <div>勝 <span id="sWins">0</span> / 負 <span id="sLosses">0</span> / 和 <span id="sTies">0</span> / 共 <span id="sRounds">0</span> 局</div>
       <div>勝率：<span id="sWinRate">0%</span></div>
       <div>總投注額：<span id="sTotalWager">0</span></div>
       <div>最高金額：<span id="sPeak">0</span></div>
@@ -656,7 +656,7 @@ let dealing=false;
 let autoOn=false;        // 自動進行中旗標（setControls 會保持 DEAL 掣停用）
 let settled=false; // settle已執行後clearBets唔再退款
 
-let stats={ total:0, pWin:0, bWin:0, tie:0, hit:0, betRounds:0, streak:0, maxStreak:0, loseStreak:0, maxLoseStreak:0, winAmt:0, lossAmt:0, peak:50000, totalWager:0, totalProfit:0, curve:[50000], humanBets:[], humanTie:0 };
+let stats={ total:0, pWin:0, bWin:0, tie:0, hit:0, wins:0, losses:0, betRounds:0, streak:0, maxStreak:0, loseStreak:0, maxLoseStreak:0, winAmt:0, lossAmt:0, peak:50000, totalWager:0, totalProfit:0, curve:[50000], humanBets:[], humanTie:0 };
 let sessionStartBalance=50000;
 /* 這一靴牌的統計（非戰績累計）：每次洗牌開新靴清零，一啟動未派牌全0 */
 let shoeStats={ round:0, pWin:0, bWin:0, tie:0, ppair:0, bpair:0, luck6:0, luck7:0, lastCards:0 };
@@ -1670,6 +1670,7 @@ function settle(winner, playerPair, bankerPair, big, totalCards, pTotal, bTotal,
   }  // 每日挑戰：今日贏局+1（上限=目標）
   if(winner==='player')stats.pWin++; else if(winner==='banker')stats.bWin++; else stats.tie++;
   if(staked>0 && winner==='tie') stats.humanTie++;   // 你落注遇到和局（本金退回，唔算勝唔算負）
+  if(staked>0){ if(mainWin) stats.wins++; else if(winner!=='tie') stats.losses++; }   // 人類戰績：勝/負/和（有落注先計，和局唔算負，同AI一致）
   // 這一靴牌統計（資訊條用）
   shoeStats.round++;
   if(winner==='player')shoeStats.pWin++; else if(winner==='banker')shoeStats.bWin++; else shoeStats.tie++;
@@ -2203,11 +2204,15 @@ function updateAiBalance(){ updateAiBalances(); }
 function showAiBalanceBox(){ updateAiBalances(); }
 function showStats(){
   // 統一 7 項：本金 / 資金 / 勝率 / 總投注額 / 最高金額 / 最長連贏 / 最長連輸（跟 AI 詳細卡一致）
-  const humanG=stats.betRounds||0, humanW=stats.hit||0;
-  const humanWR = humanG>0 ? Math.round(humanW/humanG*100) : 0;
+  const humanG=(stats.wins||0)+(stats.losses||0)+(stats.humanTie||0);   // 有落注且已分勝/負/和嘅局（共 = 勝+負+和）
+  const humanWR = humanG>0 ? Math.round((stats.wins||0)/humanG*100) : 0;
   document.getElementById('sBase').textContent=fmt(stats.baseBalance||50000);
   document.getElementById('sBalance').textContent=fmt(balance);
   document.getElementById('sWinRate').textContent=humanWR+'%';
+  document.getElementById('sWins').textContent=stats.wins||0;
+  document.getElementById('sLosses').textContent=stats.losses||0;
+  document.getElementById('sTies').textContent=stats.humanTie||0;
+  document.getElementById('sRounds').textContent=humanG;
   document.getElementById('sTotalWager').textContent=fmt(stats.totalWager||0);
   document.getElementById('sPeak').textContent=fmt(stats.peak||balance);
   document.getElementById('sMaxStreak').textContent=stats.maxStreak||0;
@@ -2611,7 +2616,7 @@ btnDM.addEventListener('click',()=>{
 refreshDealModeBtn();
 document.getElementById('btnClearStats').addEventListener('click',()=>{
   if(!confirm('確定清除全部戰績歷史記錄？（餘額不受影響）')) return;
-  stats={ total:0, pWin:0, bWin:0, tie:0, hit:0, betRounds:0, streak:0, maxStreak:0, loseStreak:0, maxLoseStreak:0, winAmt:0, lossAmt:0, peak:balance, totalWager:0, totalProfit:0, curve:[balance], humanBets:[], humanTie:0 };
+  stats={ total:0, pWin:0, bWin:0, tie:0, hit:0, wins:0, losses:0, betRounds:0, streak:0, maxStreak:0, loseStreak:0, maxLoseStreak:0, winAmt:0, lossAmt:0, peak:balance, totalWager:0, totalProfit:0, curve:[balance], humanBets:[], humanTie:0 };
   try{ localStorage.removeItem('bac_stats'); }catch(e){}
   saveStats(); showStats(); showToast('🗑 戰績記錄已清除');
 });
