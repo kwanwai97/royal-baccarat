@@ -606,7 +606,7 @@
       <div>最長連輸：<span id="sMaxLose">0</span></div>
       <div>總盈虧：<span id="sTotalProfit">0</span></div>
     </div>
-    <div id="humanBetsBox" style="margin-top:8px;"><div style="font-weight:700;color:#f5f0d8;margin-bottom:4px;">👤 人類投注明細（有投資嘅局）</div><div id="humanBetsList" style="max-height:180px;overflow:auto;font-size:11px;line-height:1.6;"></div></div>
+    <div id="humanBetsBox" style="margin-top:8px;"><div style="font-weight:700;color:#f5f0d8;margin-bottom:4px;">👤 人類投注明細（這一靴牌）</div><div id="humanBetsList" style="max-height:180px;overflow:auto;font-size:11px;line-height:1.6;"></div></div>
     <div class="quest-box" id="questBox">
       <div class="quest-title">🎯 每日挑戰</div>
       <div class="quest-desc" id="questDesc">載入中…</div>
@@ -660,6 +660,7 @@ let stats={ total:0, pWin:0, bWin:0, tie:0, hit:0, wins:0, losses:0, betRounds:0
 let sessionStartBalance=50000;
 /* 這一靴牌的統計（非戰績累計）：每次洗牌開新靴清零，一啟動未派牌全0 */
 let shoeStats={ round:0, pWin:0, bWin:0, tie:0, ppair:0, bpair:0, luck6:0, luck7:0, lastCards:0 };
+let shoeHumanBets=[];  // 這一靴牌嘅人類投注明細（洗牌開新靴清零，跨 reload 保留直到洗牌）
 let mute=false;
 
 const LIMIT_MIN=1000, LIMIT_MAX=20000, TABLE_MAX=50000;
@@ -676,6 +677,7 @@ function saveRoads(){
     localStorage.setItem('bac_road_big', JSON.stringify(bigCols));
     localStorage.setItem('bac_road_hist', JSON.stringify(history));
     localStorage.setItem('bac_road_stats', JSON.stringify(shoeStats));
+    localStorage.setItem('bac_shoe_bets', JSON.stringify(shoeHumanBets));
   }catch(e){}
 }
 function loadRoads(){
@@ -686,10 +688,11 @@ function loadRoads(){
     if(b) bigCols=JSON.parse(b);
     if(h) history=JSON.parse(h);
     if(s) shoeStats=JSON.parse(s);
+    const sb=localStorage.getItem('bac_shoe_bets'); if(sb) shoeHumanBets=JSON.parse(sb);
   }catch(e){}
 }
 
-function resetRoads(){ bigCols=[]; history=[]; shoeStats={ round:0, pWin:0, bWin:0, tie:0, ppair:0, bpair:0, luck6:0, luck7:0, lastCards:0 }; saveRoads(); }
+function resetRoads(){ bigCols=[]; history=[]; shoeStats={ round:0, pWin:0, bWin:0, tie:0, ppair:0, bpair:0, luck6:0, luck7:0, lastCards:0 }; shoeHumanBets=[]; saveRoads(); }
 
 function addResult(winner, playerPair, bankerPair, totalCards){
   history.push({winner, playerPair, bankerPair, totalCards});
@@ -1659,8 +1662,8 @@ function settle(winner, playerPair, bankerPair, big, totalCards, pTotal, bTotal,
   stats.total++; stats.betRounds++;
   // 人類每局投注紀錄（有投資先記）：投注金額 + 輸贏 + 結果 + 結餘
   if(staked>0){
-    stats.humanBets.push({ round: stats.total, wager: staked, net: net, winner: winner, balance: balance });
-    if(stats.humanBets.length > 300) stats.humanBets.shift();
+    shoeHumanBets.push({ round: shoeHumanBets.length+1, wager: staked, net: net, winner: winner, balance: balance });
+    if(shoeHumanBets.length > 100) shoeHumanBets.shift();
   }
   if(mainWin && lastStaked>0) stats.hit++;   // 準確命中率：有落主注且主注中獎
   if(mainWin && net>0){
@@ -2222,11 +2225,11 @@ function showStats(){
   // 人類投注明細：每局 投注/輸贏 列表
   const list=document.getElementById('humanBetsList');
   if(list){
-    const arr=stats.humanBets||[];
-    if(arr.length===0){ list.innerHTML='<div style="opacity:.6;">暫時無投注紀錄</div>'; }
+    const arr=shoeHumanBets||[];
+    if(arr.length===0){ list.innerHTML='<div style="opacity:.6;">這一靴牌暫時無投注紀錄</div>'; }
     else {
       let h='<div style="display:flex;justify-content:space-between;opacity:.7;border-bottom:1px solid #2a3a30;padding:1px 0;"><span>局</span><span>投注</span><span>輸贏</span><span>結餘</span></div>';
-      for(let i=Math.max(0,arr.length-50);i<arr.length;i++){ const r=arr[i]; const col=r.net>=0?'#9fd3ff':'#ff9a9a'; const wlabel=r.winner==='player'?'閒':r.winner==='banker'?'莊':'和'; h+='<div style="display:flex;justify-content:space-between;"><span>#'+(i+1)+' '+wlabel+'</span><span>'+fmt(r.wager)+'</span><span style="color:'+col+'">'+(r.net>=0?'+':'')+fmt(r.net)+'</span><span>'+fmt(r.balance)+'</span></div>'; }
+      for(let i=0;i<arr.length;i++){ const r=arr[i]; const col=r.net>=0?'#9fd3ff':'#ff9a9a'; const wlabel=r.winner==='player'?'閒':r.winner==='banker'?'莊':'和'; h+='<div style="display:flex;justify-content:space-between;"><span>#'+(i+1)+' '+wlabel+'</span><span>'+fmt(r.wager)+'</span><span style="color:'+col+'">'+(r.net>=0?'+':'')+fmt(r.net)+'</span><span>'+fmt(r.balance)+'</span></div>'; }
       list.innerHTML=h;
     }
   }
