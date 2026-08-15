@@ -2189,7 +2189,6 @@ function updateAiBalances(){   // 頂欄橫向捲動：你(人類)永遠第一�
 function updateAiBalance(){ updateAiBalances(); }
 function showAiBalanceBox(){ updateAiBalances(); }
 function showStats(){
-  document.getElementById('sTotal').textContent=stats.total;
   // 統一 7 項：本金 / 資金 / 勝率 / 總投注額 / 最高金額 / 最長連贏 / 最長連輸（跟 AI 詳細卡一致）
   const humanG=stats.betRounds||0, humanW=stats.hit||0;
   const humanWR = humanG>0 ? Math.round(humanW/humanG*100) : 0;
