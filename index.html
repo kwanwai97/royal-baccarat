@@ -272,6 +272,9 @@
   .btn.fbtn.rev.on{background:linear-gradient(180deg,#ff9a6f,#d94f1f); color:#2a0900; border:1px solid #ef7a4a; opacity:1;}
   .btn.auto{background:#2a2113; color:#e0b34a; border:1px solid #7a5a1a; flex:0 0 auto; padding:7px 7px; font-size:11px;}   /* 關：琥珀色，醒目「可按啟動」 */
   .btn.auto.on{background:#2faf5a; color:#04110a; border-color:#2faf5a; box-shadow:0 0 10px rgba(47,175,90,.5);}             /* 開：綠色，進行中 */
+  .auto-int-sel{display:flex; align-items:center; flex-wrap:wrap; margin-top:4px;}
+  .ai-chip.ai-int{font-size:11px; padding:2px 8px; margin:1px 2px; background:#1d2a20; color:#cfe8d8; border:1px solid #3a5a44; border-radius:10px; cursor:pointer; user-select:none;}
+  .ai-chip.ai-int.on{background:linear-gradient(180deg,#9fd3ff,#4a90d9); color:#06223a; font-weight:700;}
 
   .toast{position:fixed; left:50%; top:42%; transform:translate(-50%,-50%); background:#000c; color:#ffd45e;
     padding:12px 22px; border-radius:22px; font-size:18px; font-weight:800; border:1px solid var(--gold); opacity:0; transition:opacity .3s; z-index:50; pointer-events:none; text-shadow:0 0 10px #000; box-shadow:0 0 18px rgba(212,175,55,.4);}
@@ -568,6 +571,13 @@
   <div class="controls">
     <button class="btn shuffle" id="btnShuffle" title="重新洗牌">洗牌</button>
     <button class="btn auto" id="btnAuto" title="自動開牌">自動:關</button>
+    <div class="auto-int-sel" id="autoIntSel">
+      <span style="opacity:.7;font-size:11px;margin-right:4px;">自動間隔</span>
+      <span class="ai-chip ai-int" data-v="3000">3秒</span>
+      <span class="ai-chip ai-int" data-v="7000">7秒</span>
+      <span class="ai-chip ai-int on" data-v="13000">13秒</span>
+      <span class="ai-chip ai-int" data-v="20000">20秒</span>
+    </div>
     <button class="btn clear" id="btnClear">清除</button>
     <button class="btn repeat" id="btnRepeat">重複</button>
     <button class="btn deal" id="btnDeal">發牌</button>
@@ -989,7 +999,7 @@ function launchConfetti(){
 }
 
 /* ===================== UI 互動 ===================== */
-function showToast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(t._tm); t._tm=setTimeout(()=>t.classList.remove('show'),1000); }
+function showToast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(t._tm); t._tm=setTimeout(()=>t.classList.remove('show'),2000); }
 function fmt(n){ return Math.round(n).toLocaleString('en-US'); }
 function fmtK(n){ n=Math.round(n); if(n>=1000) return (n/1000)+'k'; return ''+n; }
 function updateBalance(){ document.getElementById('balance').textContent=fmt(balance); if(balance>stats.peak) stats.peak=balance; updateStreakBar(); }
@@ -1066,6 +1076,7 @@ function waitAudioIdle(){
 }
 /* 落注期：綠字倒數 N 秒，期間人類可落注；AI 已經先落好供參考 */
 let betting=false;
+let autoInterval=13000;   // 自動開牌間隔（毫秒），可揀 3/7/13/20秒
 let followPredictOn=false;   // 跟預測長期跟（toggle）
 let followReverseOn=false;    // 反預測長期跟（跟預測相反邊）
 let followHotOn=false;        // 跟旺AI長期跟（toggle）
@@ -1513,7 +1524,7 @@ async function deal(auto){
   if(followReverseOn) autoFollowPredict(true);
   if(followHotOn) autoFollowHot(false);
   if(followHotReverseOn) autoFollowHot(true);
-  await bettingPhase(13);
+  await bettingPhase(Math.round(autoInterval/1000));
   preBalance=balance;
   try{
 
@@ -2545,6 +2556,19 @@ function autoTick(gen){
     if(gen===autoGen) setTimeout(function(){ autoTick(gen); }, 4000);
   });
 }
+// 自動間隔選擇 chip（3/7/13/20秒）
+(function(){
+  const box=document.getElementById('autoIntSel'); if(!box) return;
+  box.querySelectorAll('.ai-int').forEach(function(chip){
+    chip.addEventListener('click', function(){
+      const v=+chip.dataset.v; if(!v) return;
+      autoInterval=v;
+      box.querySelectorAll('.ai-int').forEach(c=>c.classList.remove('on'));
+      chip.classList.add('on');
+      showToast('自動間隔設為 '+(v/1000)+' 秒');
+    });
+  });
+})();
 function startAuto(){
   autoGen++; autoOn=true;                        // 令之前任何在途循環失效，避免疊加多個 loop
   const g=autoGen; autoTimer={};
