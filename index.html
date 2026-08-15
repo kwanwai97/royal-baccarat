@@ -1675,6 +1675,7 @@ function settle(winner, playerPair, bankerPair, big, totalCards, pTotal, bTotal,
   // 連勝/連輸統計（有落注先計，純以主注中冇中判斷，唔受net正負影響）
   if(staked>0){
     if(mainWin){ stats.streak++; if(stats.streak>stats.maxStreak)stats.maxStreak=stats.streak; stats.loseStreak=0; }
+    else if(winner==='tie'){ stats.streak=0; stats.loseStreak=0; }   // 和局本金退回，無輸無贏，中斷連勝連輸（同AI一致）
     else { stats.loseStreak++; if(stats.loseStreak>stats.maxLoseStreak)stats.maxLoseStreak=stats.loseStreak; stats.streak=0; }
   }
   if(net>0){
