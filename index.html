@@ -274,8 +274,7 @@
   .follow-right .fbtn{background:linear-gradient(180deg,#ffd479,#e6a417); color:#241a00; border:1px solid #ffb347; font-size:11px; font-weight:800; padding:4px 9px; border-radius:6px; opacity:.7; white-space:nowrap; line-height:1.3; text-align:center;}
   .follow-right .fbtn.on{background:linear-gradient(180deg,#5fffa0,#1faf5a); color:#06240f; border:1px solid #3fdf7a; opacity:1; box-shadow:0 2px 0 #0a7a3a;}
   .limit-row{display:flex; flex-direction:row; align-items:center; gap:4px; background:rgba(40,30,10,.7); border:1px solid rgba(212,175,55,.5); border-radius:6px; padding:3px 6px;}
-  .fslider{width:60px; accent-color:#e6a417;}
-  .limit-text{font-size:10px; opacity:.85; display:flex; align-items:center; gap:2px; white-space:nowrap;}
+  .limit-text{font-size:10px; opacity:.85; white-space:nowrap;}
   .limit-val{font-weight:800; color:#ffd479; font-size:13px;}
   .btn.fstep{background:linear-gradient(180deg,#ffd479,#e6a417); color:#241a00; border:1px solid #ffb347; font-size:13px; font-weight:800; padding:1px 7px; border-radius:6px; line-height:1.2;}
   .follow-status{font-size:10px; color:#7fffb0; min-height:12px; white-space:normal;}
@@ -550,10 +549,10 @@
       <button class="btn fbtn" id="btnFollowHot" title="跟旺AI：長期跟模式，每局自動跟連勝最高AI嘅主注邊">跟旺AI</button>
       <button class="btn fbtn" id="btnFollowHotRev" title="反旺AI：長期跟模式，每局自動跟連勝最高AI嘅相反邊">反旺AI</button>
       <div class="limit-row">
-        <button class="btn fstep" id="btnLimUp" title="加1">＋</button>
-        <input type="range" id="followLimit" min="1" max="10" value="3" step="1" class="fslider" />
+        <span class="limit-text">次數</span>
         <button class="btn fstep" id="btnLimDown" title="減1">−</button>
-        <span class="limit-text">次數<span class="limit-val" id="followLimitVal">3</span></span>
+        <span class="limit-val" id="followLimitVal">3</span>
+        <button class="btn fstep" id="btnLimUp" title="加1">＋</button>
       </div>
     </div>
   </div>
@@ -2625,21 +2624,15 @@ function setFollow(which){
   else if(which==='hot'){ followHotOn=true; document.getElementById('btnFollowHot').classList.add('on'); showToast('🔥 跟旺AI開啟：每局自動跟連勝最高AI'); autoFollowHot(false); }
   else if(which==='hotrev'){ followHotReverseOn=true; document.getElementById('btnFollowHotRev').classList.add('on'); showToast('🔥 反旺AI開啟：每局自動跟連勝最高AI相反邊'); autoFollowHot(true); }
 }
-// 連續上限 slider（1-10，推上推下加減），跟/反四掣共用
+// 連續上限手動數字（1-10，撳＋/−上下移動），跟/反四掣共用
 function setFollowLimit(v){
   v=Math.max(1, Math.min(10, Math.round(v)||1));
   followLimit=v;
-  const sl=document.getElementById('followLimit'); if(sl) sl.value=v;
   const vv=document.getElementById('followLimitVal'); if(vv) vv.textContent=v;
   followStreakKey=null; followStreakCount=0;   // 改上限 → 計數歸零重計
-  document.getElementById('followStatus').textContent='';
+  const st=document.getElementById('followStatus'); if(st) st.textContent='';
 }
 (function(){
-  const sl=document.getElementById('followLimit');
-  if(sl){
-    sl.value=followLimit;
-    sl.addEventListener('input',()=> setFollowLimit(+sl.value));
-  }
   const vu=document.getElementById('btnLimUp');   if(vu) vu.addEventListener('click',()=> setFollowLimit(followLimit+1));
   const vd=document.getElementById('btnLimDown'); if(vd) vd.addEventListener('click',()=> setFollowLimit(followLimit-1));
   setFollowLimit(3);   // 預設 3
