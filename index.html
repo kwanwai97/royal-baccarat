@@ -163,7 +163,7 @@
   .center-msg.show{opacity:1;}
 
   /* 下注區 3x3 */
-  .bets{display:flex; flex-direction:column; gap:4px; padding:1px 10px 4px;}
+  .bets{display:flex; flex-direction:column; gap:4px; padding:3px 10px 4px;}
   .betrow{display:grid; gap:4px; grid-template-columns:repeat(3,1fr);}
   .betrow.top{grid-template-columns:repeat(3,1fr);}
   .betrow.bottom{grid-template-columns:repeat(3,1fr);}
@@ -746,7 +746,6 @@ let limitMin=1000, limitMax=50000;
 function loadLimits(){ try{ const l=JSON.parse(localStorage.getItem('bac_limits')); if(l&&l.min>0&&l.max>=l.min){ limitMin=l.min; limitMax=l.max; } }catch(e){} }
 function saveLimits(){ try{ localStorage.setItem('bac_limits',JSON.stringify({min:limitMin,max:limitMax})); }catch(e){} }
 let dealing=false;
-let settling=false;      // <--- 新增：結算動畫進行中鎖定
 let autoOn=false;        // 自動進行中旗標（setControls 會保持 DEAL 掣停用）
 let settled=false; // settle已執行後clearBets唔再退款
 
@@ -1140,7 +1139,7 @@ function flyChip(k){
 }
 
 function placeBet(k){
-  if((dealing && !betting) || settled || settling) return;   // 發牌中(非落注期)或結算中不可落注；落注倒數期(betting=true)人手可照落/跟注
+  if((dealing && !betting) || settled) return;   // 發牌中(非落注期)或結算中不可落注；落注倒數期(betting=true)人手可照落/跟注
   if(currentChip<limitMin){ showToast('⚠ 單注低過限紅最低 '+fmt(limitMin)); return; }
   if(bets[k]+currentChip>limitMax){ showToast('⚠ 單注超過限紅最高 '+fmt(limitMax)); return; }
   let total=0; for(const x in bets) total+=bets[x];
@@ -1606,37 +1605,10 @@ function positionDealzone(){
   dz.dataset.dzShift=String(delta);
 }
 
-// 修正 drawCard() 防止牌堆耗盡時 Crash
-function drawCard(){ 
-    if (shoeDrawn >= shoe.length) {
-        console.warn('牌堆異常耗盡，緊急重新洗牌');
-        resetShoe();
-        if (shoeDrawn >= shoe.length) {
-            shoe = shuffle(buildShoe(8));
-            shoeDrawn = 0;
-            shoeCut = shoe.length - 138;
-        }
-    }
-    const c = shoe[shoeDrawn++]; 
-    saveShoe(); 
-    updateShoeInfo(); 
-    return c; 
-}
-
 async function deal(auto){
   if(dealing) return;                 // 已經開緊牌就唔再開（防止重複發牌）
-  // 自動模式：等閃燈完再開；手動模式：提示
-  if(settling) {
-    if(auto) {
-      await sleep(6000);   // 等 6 秒閃燈完
-      if(settling) return;
-    } else {
-      showToast('⏳ 等上一局結算動畫完畢先');
-      return;
-    }
-  }
-  dealing=true;
-  // ...
+  dealing=true;                       // 即時上鎖：doShuffle / 緩衝期間任何並發呼叫都擋到
+  try{
   let total=0; for(const x in bets) total+=bets[x];
   if(total===0 && auto!==true && ais.length===0){ showToast('請先下注'); return; }
   if(shoeDrawn>=shoeCut || shoeStats.round>=60){ await doShuffle(); }
@@ -1745,28 +1717,15 @@ async function deal(auto){
     console.error('deal() 錯誤已攔截:', err);
     showToast('⚠ 發牌異常，已自動重置');
   } finally {
-    // 唔喺呢度解鎖，交俾 settle 嘅動畫結束解鎖；但保留 8 秒安全計時器
-    if (window._settleTimer) clearTimeout(window._settleTimer);
-    window._settleTimer = setTimeout(() => {
-        if (settling) {
-            settling = false;
-            dealing = false;
-            setControls(true);
-        }
-    }, 8000);
+    dealing=false; setControls(true);
   }
   } finally {
-    // 外層強制解鎖 only 如果 settling 已經 false（即係冇開牌或者 settle 好快完成）
-    if (!settling) {
-        dealing = false;
-        setControls(true);
-    }
+    dealing=false; setControls(true);   // 外層：確保「請先下注」等早退都會解鎖，唔會卡死
   }
 }
 
 /* ===================== 結算 ===================== */
 function settle(winner, playerPair, bankerPair, big, totalCards, pTotal, bTotal, pCards, bCards){
-  settling = true;   // 鎖定結算動畫
   settled=true;
   window._settleSpoken=0;   // 每局重置結算後出聲計數（最多3個）
   lastBets=Object.assign({},bets);  // 記錄本局投注供重複按鈕用
@@ -1894,15 +1853,7 @@ function settle(winner, playerPair, bankerPair, big, totalCards, pTotal, bTotal,
     // 保險：若籌碼仲喺度（異常）強制再清一次
     let still=false; document.querySelectorAll('.chips-stack').forEach(s=>{ if(s.children.length) still=true; });
     if(still){ ais.forEach(ai=>{ if(ai) ai._lastBet=ai.currentBet||null; }); clearBets(true); ais.forEach(ai=>{ if(ai) ai.currentBet=null; }); updateBetDisplay(); }
-    await sleep(2000); saveRoads(); settled=false;
-    // 解鎖結算鎖
-    settling = false;
-    dealing = false;
-    setControls(true);
-    if (window._settleTimer) {
-        clearTimeout(window._settleTimer);
-        window._settleTimer = null;
-    }
+    await sleep(2000); saveRoads(); settled=false;   // 結算已即時完成，呢度只留清籌碼保險 + 落注解鎖
   }, dur);
 }
 /* 結果文字：3行式 + 補牌提示 */
@@ -1919,11 +1870,7 @@ function resultText(label, pTotal, bTotal, pp, bp, big, pCards, bCards, net){
 }
 function extra(pp,bp,b){ let a=[]; if(pp)a.push('閒對'); if(bp)a.push('莊對'); a.push(b?'大':'小'); return a.join(' '); }
 
-function setControls(en){ 
-    document.getElementById('btnClear').disabled = !en || settling; 
-    document.getElementById('btnRepeat').disabled = !en || settling; 
-    document.getElementById('btnDeal').disabled = !en || autoOn || settling; 
-}
+function setControls(en){ document.getElementById('btnClear').disabled=!en; document.getElementById('btnRepeat').disabled=!en; document.getElementById('btnDeal').disabled= !en || autoOn; }
 
 /* ===================== 戰績 localStorage ===================== */
 function loadStats(){
@@ -2766,10 +2713,11 @@ let autoGen=0;          // 代號：每次開/停都 +1，確保舊循環唔會�
 function autoTick(gen){
   if(dealing || gen!==autoGen) return;          // 發牌中或已停用/換代就跳過
   deal(true).finally(function(){
-    if(gen===autoGen) setTimeout(function(){ autoTick(gen); }, 7500);
+    // 無論開牌成功/異常都繼續下一輪；開牌流程內已含 2秒→討論→倒數→開牌
+    if(gen===autoGen) setTimeout(function(){ autoTick(gen); }, 4000);
   });
 }
-// 自動間隔：單一按鈕點擊循環四狀態（極快4/快7/中13/慢18秒）
+// 自動間隔：單一按鈕點擊循環四狀態（極快/快7/中13/慢18秒）
 const AUTO_SPEEDS=[
   {ms:3000, label:'極 4秒'},
   {ms:7000, label:'快 7秒'},
