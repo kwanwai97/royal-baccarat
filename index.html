@@ -267,88 +267,98 @@
   .odds-row.predict-row{align-items:flex-start;}
   .follow-col{display:flex; flex-direction:row; flex-wrap:wrap; gap:4px; flex:0 1 auto; margin-left:8px; align-items:center;}
   /* 新版：左右兩半（左預測，右5格打橫一排） */
-  .follow-wrap{display:flex; gap:2px; align-items:stretch; margin-bottom:0px;}
-  .follow-left{flex:0 0 50%; display:flex; flex-direction:column; gap:5px; min-width:0; justify-content:flex-start; padding-left:6px;}
-  .follow-right{flex:1 1 50%; display:flex; flex-direction:row; flex-wrap:wrap; gap:2px; align-items:flex-start; justify-content:flex-start; padding-right:6px;}
-  /* 五個掣統一尺寸（修改重點） */
-  .follow-right .fbtn,
-  .follow-right .limit-row {
-    flex: 0 0 auto;
-    min-width: 40px;
-    height: 36px;
-    padding: 5px 2px;
-    font-size: 9px;
-    font-weight: 800;
-    line-height: 1.2;
-    text-align: center;
-    white-space: nowrap;
-    letter-spacing: 0;
-    border-radius: 8px;
-    border: 1px solid #ffb347;
-    background: linear-gradient(180deg, #ffd479, #e6a417);
-    color: #241a00;
-    opacity: .7;
-    box-sizing: border-box;
-  }
-  .follow-right .limit-row {
-    flex: 0 0 auto;
-    min-width: 44px;          /* 同其他掣一樣 */
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 1px;
-    padding: 3px 2px;
-}
-  .follow-right .limit-row .fstep {
-    background: none;
-    border: none;
-    color: #241a00;
-    font-size: 10px;
-    font-weight: 800;
-    padding: 0;
-    line-height: 1;
-    width: 100%;
-    cursor: pointer;
-    writing-mode: horizontal-tb;   /* 改返水平，避免撐大 */
-    text-orientation: mixed;
-  }
-  .follow-right .limit-row .limit-val {
-    font-size: 11px;
-    font-weight: 900;
-    line-height: 1;
-    color: #241a00;
-  }
-  .follow-right .follow-status {
-    flex-basis: 100%;
-    font-size: 10px;
-    color: #7fffb0;
-    min-height: 16px;
-    white-space: normal;
-    text-align: left;
-    margin-top: 0;          /* 緊貼上方 */
-    padding: 0 2px;
-  }
-  /* 原有其他樣式保留 */
-  .follow-right .fbtn.on{
-    background:linear-gradient(180deg,#5fffa0,#1faf5a); color:#06240f; border:1px solid #3fdf7a; opacity:1; box-shadow:0 2px 0 #0a7a3a;
-  }
-  .follow-right .fbtn .ai-h{display:inline-block; writing-mode:horizontal-tb; font-size:10px; font-weight:800; letter-spacing:0;}
-  .follow-right .limit-row{background:linear-gradient(180deg,#ffd479,#e6a417); color:#241a00; border:1px solid #ffb347; border-radius:8px; padding:1px 2px; min-width:auto; font-weight:800; line-height:1;}
-  .follow-right .limit-val{font-weight:800; color:#241a00; font-size:9px;}
-  .follow-right .fstep{background:none; border:none; color:#241a00; font-size:9px; font-weight:800; padding:0 3px; line-height:1; writing-mode:vertical-rl; text-orientation:upright;}
-  .follow-status{flex-basis:100%; font-size:10px; color:#7fffb0; min-height:10px; white-space:normal; text-align:left; margin-top:0;}
-  .btn.fbtn{background:linear-gradient(180deg,#ffd479,#e6a417); color:#241a00; border:1px solid #ffb347; font-size:10px; font-weight:800; padding:1px 2px; border-radius:8px; opacity:.6; writing-mode:vertical-rl; text-orientation:upright; white-space:nowrap; letter-spacing:0; min-width:30px; line-height:1.0; text-align:center;}
-  .btn.fbtn.on{background:linear-gradient(180deg,#5fffa0,#1faf5a); color:#06240f; border:1px solid #3fdf7a; opacity:1; box-shadow:0 2px 0 #0a7a3a;}
-  .btn.fbtn.rev{background:linear-gradient(180deg,#ffd0a0,#d9804a); color:#2a1400; border:1px solid #ef9b6f; opacity:.7;}
-  .btn.fbtn.rev.on{background:linear-gradient(180deg,#ff9a6f,#d94f1f); color:#2a0900; border:1px solid #ef7a4a; opacity:1;}
-  .btn.auto{background:#2a2113; color:#e0b34a; border:1px solid #7a5a1a; flex:0 0 auto; padding:7px 7px; font-size:11px;}   /* 關：琥珀色，醒目「可按啟動」 */
-  .btn.auto.on{background:#2faf5a; color:#04110a; border-color:#2faf5a; box-shadow:0 0 10px rgba(47,175,90,.5);}             /* 開：綠色，進行中 */
-  .btn.auto-int-btn{background:#2a2113; color:#e0b34a; border:1px solid #7a5a1a; flex:0 0 auto; padding:7px 7px; font-size:11px; margin-left:6px;}
+.follow-wrap{display:flex; gap:2px; align-items:stretch; margin-bottom:0px;}
+.follow-left{flex:0 0 50%; display:flex; flex-direction:column; gap:5px; min-width:0; justify-content:flex-start; padding-left:6px;}
+.follow-right{flex:1 1 50%; display:flex; flex-direction:row; flex-wrap:wrap; gap:2px; align-items:flex-start; justify-content:flex-start; padding-right:6px;}
 
-  .toast{position:fixed; left:50%; top:42%; transform:translate(-50%,-50%); background:#000c; color:#ffd45e;
-    padding:12px 22px; border-radius:22px; font-size:18px; font-weight:800; border:1px solid var(--gold); opacity:0; transition:opacity .3s; z-index:50; pointer-events:none; text-shadow:0 0 10px #000; box-shadow:0 0 18px rgba(212,175,55,.4);}
-  .toast.show{opacity:1;}
+/* 五個掣統一尺寸 */
+.follow-right .fbtn,
+.follow-right .limit-row {
+  flex: 0 0 auto;
+  min-width: 40px;
+  height: 36px;
+  padding: 5px 2px;
+  font-size: 9px;
+  font-weight: 800;
+  line-height: 1.2;
+  text-align: center;
+  white-space: nowrap;
+  letter-spacing: 0;
+  border-radius: 8px;
+  border: 1px solid #ffb347;
+  background: linear-gradient(180deg, #ffd479, #e6a417);
+  color: #241a00;
+  opacity: .7;
+  box-sizing: border-box;
+}
+
+/* limit-row 專屬設定（只覆蓋需要唔同嘅部分） */
+.follow-right .limit-row {
+  flex: 0 0 auto;
+  min-width: 44px;          /* 比其他掣多少少，方便顯示數字 */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  padding: 3px 2px;
+}
+
+.follow-right .limit-row .fstep {
+  background: none;
+  border: none;
+  color: #241a00;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 0;
+  line-height: 1;
+  width: 100%;
+  cursor: pointer;
+  writing-mode: horizontal-tb;
+  text-orientation: mixed;
+}
+
+.follow-right .limit-row .limit-val {
+  font-size: 11px;
+  font-weight: 900;
+  line-height: 1;
+  color: #241a00;
+}
+
+.follow-right .follow-status {
+  flex-basis: 100%;
+  font-size: 10px;
+  color: #7fffb0;
+  min-height: 16px;
+  white-space: normal;
+  text-align: left;
+  margin-top: 0;
+  padding: 0 2px;
+}
+
+/* 原有其他樣式保留 */
+.follow-right .fbtn.on{
+  background:linear-gradient(180deg,#5fffa0,#1faf5a); color:#06240f; border:1px solid #3fdf7a; opacity:1; box-shadow:0 2px 0 #0a7a3a;
+}
+.follow-right .fbtn .ai-h{display:inline-block; writing-mode:horizontal-tb; font-size:10px; font-weight:800; letter-spacing:0;}
+
+/* 呢行刪走咗 min-width:auto，改返同上面一致 */
+.follow-right .limit-row{background:linear-gradient(180deg,#ffd479,#e6a417); color:#241a00; border:1px solid #ffb347; border-radius:8px; padding:3px 2px; font-weight:800; line-height:1;}
+
+.follow-right .limit-val{font-weight:800; color:#241a00; font-size:9px;}
+.follow-right .fstep{background:none; border:none; color:#241a00; font-size:9px; font-weight:800; padding:0 3px; line-height:1; writing-mode:vertical-rl; text-orientation:upright;}
+.follow-status{flex-basis:100%; font-size:10px; color:#7fffb0; min-height:10px; white-space:normal; text-align:left; margin-top:0;}
+.btn.fbtn{background:linear-gradient(180deg,#ffd479,#e6a417); color:#241a00; border:1px solid #ffb347; font-size:10px; font-weight:800; padding:1px 2px; border-radius:8px; opacity:.6; writing-mode:vertical-rl; text-orientation:upright; white-space:nowrap; letter-spacing:0; min-width:30px; line-height:1.0; text-align:center;}
+.btn.fbtn.on{background:linear-gradient(180deg,#5fffa0,#1faf5a); color:#06240f; border:1px solid #3fdf7a; opacity:1; box-shadow:0 2px 0 #0a7a3a;}
+.btn.fbtn.rev{background:linear-gradient(180deg,#ffd0a0,#d9804a); color:#2a1400; border:1px solid #ef9b6f; opacity:.7;}
+.btn.fbtn.rev.on{background:linear-gradient(180deg,#ff9a6f,#d94f1f); color:#2a0900; border:1px solid #ef7a4a; opacity:1;}
+.btn.auto{background:#2a2113; color:#e0b34a; border:1px solid #7a5a1a; flex:0 0 auto; padding:7px 7px; font-size:11px;}
+.btn.auto.on{background:#2faf5a; color:#04110a; border-color:#2faf5a; box-shadow:0 0 10px rgba(47,175,90,.5);}
+.btn.auto-int-btn{background:#2a2113; color:#e0b34a; border:1px solid #7a5a1a; flex:0 0 auto; padding:7px 7px; font-size:11px; margin-left:6px;}
+
+.toast{position:fixed; left:50%; top:42%; transform:translate(-50%,-50%); background:#000c; color:#ffd45e;
+  padding:12px 22px; border-radius:22px; font-size:18px; font-weight:800; border:1px solid var(--gold); opacity:0; transition:opacity .3s; z-index:50; pointer-events:none; text-shadow:0 0 10px #000; box-shadow:0 0 18px rgba(212,175,55,.4);}
+.toast.show{opacity:1;}
   /* AI 走馬燈：無框無底, 右對齊, 顏色即身份 */
   .marquee{position:fixed; top:266px; right:24px; left:auto; transform:none; width:auto; max-width:calc(100vw - 28px); z-index:51; pointer-events:none; opacity:0; transition:opacity .3s; display:flex; flex-direction:column; gap:4px; background:none; border:none; padding:0;}
   .marquee-item{display:flex !important; justify-content:flex-end !important; align-items:center; gap:4px; font-size:12px; font-weight:800; color:#ffd45e; text-shadow:0 0 8px #000, 0 2px 4px #000; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%; text-align:right; background:none !important; border:none !important; border-radius:0 !important; padding:2px 0 !important; margin:0 !important;}
