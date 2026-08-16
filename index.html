@@ -2764,11 +2764,7 @@ document.getElementById('btnFollowHotRev').addEventListener('click', ()=> setFol
 let autoTimer=null;
 let autoGen=0;          // 代號：每次開/停都 +1，確保舊循環唔會再排程（防止重複開牌）
 function autoTick(gen){
-  if(gen!==autoGen) return;   // 只檢查是否已停用
-  if(dealing || settling) {
-    setTimeout(function(){ autoTick(gen); }, 2000);  // 鎖住就 2 秒後再試
-    return;
-  }
+  if(dealing || gen!==autoGen) return;          // 發牌中或已停用/換代就跳過
   deal(true).finally(function(){
     if(gen===autoGen) setTimeout(function(){ autoTick(gen); }, 7500);
   });
