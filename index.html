@@ -2401,10 +2401,10 @@ function claimDaily(){
 }
 
 /* ===================== 牌靴 ===================== */
-let shoeCut=0;   // 切牌卡位置：剩118張時洗牌（8副416張 → 可玩298張，約50-60局）
+let shoeCut=0;   // 切牌卡位置：剩138張時洗牌（8副416張 → 可玩278張，約50-60局）
 function resetShoe(){
   shoe=shuffle(buildShoe(8)); shoeDrawn=0;
-  shoeCut=shoe.length-148;   // 抽到呢個位（剩148張）自動洗牌
+  shoeCut=shoe.length-138;   // 抽到呢個位（剩138張）自動洗牌
   saveShoe();
   updateShoeInfo();
 }
@@ -2700,7 +2700,7 @@ function setFollowLimit(v){
 (function(){
   const vu=document.getElementById('btnLimUp');   if(vu) vu.addEventListener('click',()=> setFollowLimit(followLimit+1));
   const vd=document.getElementById('btnLimDown'); if(vd) vd.addEventListener('click',()=> setFollowLimit(followLimit-1));
-  setFollowLimit(3);   // 預設 3
+  setFollowLimit(4);   // 預設 3
 })();
 document.getElementById('btnFollowPredict2').addEventListener('click', ()=> setFollow(followPredictOn?'off':'predict'));
 document.getElementById('btnFollowRev').addEventListener('click', ()=> setFollow(followReverseOn?'off':'reverse'));
@@ -2717,9 +2717,9 @@ function autoTick(gen){
     if(gen===autoGen) setTimeout(function(){ autoTick(gen); }, 4000);
   });
 }
-// 自動間隔：單一按鈕點擊循環四狀態（極快/快7/中13/慢18秒）
+// 自動間隔：單一按鈕點擊循環四狀態（極快3/快7/中13/慢18秒）
 const AUTO_SPEEDS=[
-  {ms:3000, label:'極 4秒'},
+  {ms:3000, label:'極 3秒'},
   {ms:7000, label:'快 7秒'},
   {ms:13000,label:'中 13秒'},
   {ms:20000,label:'慢 18秒'}
