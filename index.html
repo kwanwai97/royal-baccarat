@@ -1111,7 +1111,7 @@ function followTrack(key){    // 每局 call：回傳 true=可以跟，false=已
 }
 function followStatusText(mode){   // mode: 'hot'/'hotrev'/'predict'/'reverse'
   if(!followStreakKey) return '';
-  const nm = followStreakKey==='predict' ? '預測' : followStreakKey;
+  const nm = followStreakKey==='predict' ? '預測' : (followStreakKey.startsWith('ai') ? 'ai'+followStreakKey.slice(followStreakKey.indexOf('-')) : followStreakKey);
   if(followStreakCount>=followLimit) return '⏸ '+nm+' 已跟 '+followLimit+' 次，等轉對象先再跟';
   return '跟 '+nm+' 第 '+followStreakCount+'/'+followLimit+' 次';
 }
