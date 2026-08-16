@@ -2647,12 +2647,12 @@ function autoTick(gen){
     if(gen===autoGen) setTimeout(function(){ autoTick(gen); }, 4000);
   });
 }
-// 自動間隔：單一按鈕點擊循環四狀態（極快3/快7/中13/慢20秒）
+// 自動間隔：單一按鈕點擊循環四狀態（極快/快7/中13/慢18秒）
 const AUTO_SPEEDS=[
-  {ms:3000, label:'⚡ 極快 3秒'},
-  {ms:7000, label:'🔥 快 7秒'},
-  {ms:13000,label:'🌟 中 13秒'},
-  {ms:20000,label:'🐢 慢 20秒'}
+  {ms:3000, label:'極 4秒'},
+  {ms:7000, label:'快 7秒'},
+  {ms:13000,label:'中 13秒'},
+  {ms:20000,label:'慢 18秒'}
 ];
 let autoSpeedIdx=2;   // 預設「中 13秒」
 (function(){
