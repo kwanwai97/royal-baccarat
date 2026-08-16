@@ -2764,13 +2764,16 @@ document.getElementById('btnFollowHotRev').addEventListener('click', ()=> setFol
 let autoTimer=null;
 let autoGen=0;          // 代號：每次開/停都 +1，確保舊循環唔會再排程（防止重複開牌）
 function autoTick(gen){
-  if(dealing || gen!==autoGen) return;          // 發牌中或已停用/換代就跳過
+  if(gen!==autoGen) return;   // 只檢查是否已停用
+  if(dealing || settling) {
+    setTimeout(function(){ autoTick(gen); }, 2000);  // 鎖住就 2 秒後再試
+    return;
+  }
   deal(true).finally(function(){
-    // 無論開牌成功/異常都繼續下一輪；開牌流程內已含 2秒→討論→倒數→開牌
-    if(gen===autoGen) setTimeout(function(){ autoTick(gen); }, 7500);   // 延長至 7.5 秒，避免同閃燈重疊
+    if(gen===autoGen) setTimeout(function(){ autoTick(gen); }, 7500);
   });
 }
-// 自動間隔：單一按鈕點擊循環四狀態（極快/快7/中13/慢18秒）
+// 自動間隔：單一按鈕點擊循環四狀態（極快4/快7/中13/慢18秒）
 const AUTO_SPEEDS=[
   {ms:3000, label:'極 4秒'},
   {ms:7000, label:'快 7秒'},
