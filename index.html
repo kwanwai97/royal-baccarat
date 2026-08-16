@@ -1173,6 +1173,8 @@ let followHotReverseOn=false; // 反旺AI長期跟（跟旺AI相反邊）
 // 跟/反 連續次數上限：同一個對象（旺AI id / 預測來源）連續跟足 limit 次就暫停，轉咗對象先再跟
 let followLimit=3;            // 連續上限（預設3，可選2/3/4/5）
 let followStreakKey=null;     // 跟緊邊個（旺AI id，或 'predict'）
+let lastPredictSide='';       // 上一局開牌前出嘅預測邊(B/P/空)，開牌後用嚟計命中
+let predHit=0, predTotal=0;   // 預測命中統計（開和/觀望 skip），存 bac_pred
 let followStreakCount=0;      // 連續跟咗幾多次
 function followTrack(key){    // 每局 call：回傳 true=可以跟，false=已達上限暫停
   if(followStreakKey===key){ followStreakCount++; }
@@ -1701,6 +1703,7 @@ async function deal(auto){
 
   settle(winner, playerPair, bankerPair, big, totalCards, pTotal, bTotal, pc.length, bc.length);
   addResult(winner, playerPair, bankerPair, totalCards);
+  recordPredictHit(winner);   // 開牌後：用上一局開牌前出嘅預測計命中
   drawAllRoads();
   saveStats();
   // 開牌3秒後啤牌淡出消失，結果文字保留
@@ -1877,6 +1880,7 @@ function loadStats(){
   try{ const s=JSON.parse(localStorage.getItem('bac_stats')); if(s) stats=Object.assign(stats,s); }catch(e){}
   try{ const b=localStorage.getItem('bac_balance'); if(b!==null) balance=Math.max(0,+b); }catch(e){}  // 直接用存檔餘額，唔好用 TABLE_MAX(桌注上限)截，否則贏多過5萬reload變返5萬
   try{ const d=JSON.parse(localStorage.getItem('bac_daily')); if(d){ dailyClaim=d; } }catch(e){}
+  try{ const p=JSON.parse(localStorage.getItem('bac_pred')); if(p){ predHit=p.hit||0; predTotal=p.total||0; } }catch(e){}  // 預測命中統計恢復
 }
 function saveStats(){
   try{ localStorage.setItem('bac_stats',JSON.stringify(stats)); localStorage.setItem('bac_balance',String(balance)); }catch(e){}
@@ -2585,6 +2589,7 @@ function updatePredict(){
   console.log('[updatePredict] call, history.len=',(history&&history.length)||0,'side=',(predictScore().side||""));
   // 機率已由 updateOdds 顯示喺格名（真實蒙特卡洛），呢度只做「建議邊金邊高亮」+ roadTip 預測句（唔重複百分比）
   const pr=predictScore();
+  lastPredictSide=pr.side;   // 記低本局預測邊，開牌後由 recordPredictHit 計命中
   const bets={P:document.querySelector('.bet[data-bet="player"]'), T:document.querySelector('.bet[data-bet="tie"]'), B:document.querySelector('.bet[data-bet="banker"]')};
   Object.values(bets).forEach(e=>{ if(e) e.classList.remove('hot-predict'); });
   if(pr.side==='B' && bets.B) bets.B.classList.add('hot-predict');
@@ -2593,13 +2598,30 @@ function updatePredict(){
   if(tip){
     if(pr.side){
       tip.className='road-tip hot';
-      tip.textContent='🔮 預測：'+(pr.side==='B'?'莊':'閒')+' ▲ '+pr.reason+'｜請投注'+(pr.side==='B'?'莊':'閒');
+      tip.textContent='🔮 預測：'+(pr.side==='B'?'莊':'閒')+' ▲ '+pr.reason+'｜請投注'+(pr.side==='B'?'莊':'閒')+' ｜ '+predHitText();
     } else {
       tip.className='road-tip';
-      tip.textContent='⏸ 預測：路勢未明（觀望）— 等清晰路再跟';
+      tip.textContent='⏸ 預測：路勢未明（觀望）— 等清晰路再跟 ｜ '+predHitText();
     }
   }
 }
+// 預測命中統計：開牌結果定咗之後 call（deal 內 addResult 後）
+// 規則：觀望(空) skip；開和(tie) skip（唔當中唔當錯）；出咗莊/閒預測先計 total
+function recordPredictHit(winner){
+  if(!lastPredictSide) return;          // 觀望：無出預測，skip
+  if(winner==='tie') return;            // 開和：skip（退本金，唔計）
+  predTotal++;                          // 出咗預測就計一鋪
+  const predIsBanker = lastPredictSide==='B';
+  const actualBanker = winner==='banker';
+  if(predIsBanker===actualBanker) predHit++;
+  savePredStats();
+}
+function predHitText(){
+  if(predTotal===0) return '命中 —';
+  const pct=Math.round(predHit/predTotal*100);
+  return '命中 '+pct+'% (中 '+predHit+'/'+predTotal+')';
+}
+function savePredStats(){ try{ localStorage.setItem('bac_pred', JSON.stringify({hit:predHit,total:predTotal})); }catch(e){} }
 async function doShuffle(){
   const ov=document.getElementById('shuffleOverlay');
   if(ov){ ov.querySelector('.title').textContent='🔀 洗牌中…'; ov.classList.add('show'); }
