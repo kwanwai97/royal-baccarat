@@ -1119,11 +1119,7 @@ function bettingPhase(sec){
   return new Promise(resolve=>{
     betting=true;
     updatePredict();  // 雙保：落注期開始確保預測句出（唔會空白）
-    // 跟預測長期跟：落注開始即自動跟預測系統建議邊落注（掛機睇成效）
-    if(followPredictOn) autoFollowPredict(false);
-    if(followReverseOn) autoFollowPredict(true);
-    if(followHotOn) autoFollowHot(false);
-    if(followHotReverseOn) autoFollowHot(true);
+    // 注意：自動跟注已喺開牌前段(約1557)落成，避免同局重複 call 令 followStreakCount 每局+2（顯示跳雙數）
     // 落注窗口：啟用清除/重複掣（人類可改注/重複/清除）；DEAL 照舊（autoOn 或發牌中禁用）
     document.getElementById('btnClear').disabled=false;
     document.getElementById('btnRepeat').disabled=false;
