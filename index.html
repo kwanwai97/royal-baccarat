@@ -163,7 +163,7 @@
   .center-msg.show{opacity:1;}
 
   /* 下注區 3x3 */
-  .bets{display:flex; flex-direction:column; gap:4px; padding:0 10px 4px;}
+  .bets{display:flex; flex-direction:column; gap:4px; padding:3px 10px 4px;}
   .betrow{display:grid; gap:4px; grid-template-columns:repeat(3,1fr);}
   .betrow.top{grid-template-columns:repeat(3,1fr);}
   .betrow.bottom{grid-template-columns:repeat(3,1fr);}
@@ -267,14 +267,72 @@
   .odds-row.predict-row{align-items:flex-start;}
   .follow-col{display:flex; flex-direction:row; flex-wrap:wrap; gap:4px; flex:0 1 auto; margin-left:8px; align-items:center;}
   /* 新版：左右兩半（左預測，右5格打橫一排） */
-  .follow-wrap{display:flex; gap:2px; align-items:stretch; margin-bottom:0;}
+  .follow-wrap{display:flex; gap:2px; align-items:stretch; margin-bottom:6px;}
   .follow-left{flex:0 0 50%; display:flex; flex-direction:column; gap:5px; min-width:0; justify-content:flex-start;}
-  .follow-right{flex:1 1 50%; display:flex; flex-direction:row; flex-wrap:wrap; gap:4px; align-items:flex-start; justify-content:flex-start; padding-right:6px;}
-  /* 5張卡：打橫一行並排，唔堆疊；卡片文字直排(vertical-rl)，統一gold格式 */
-  .follow-right .fbtn{background:linear-gradient(180deg,#ffd479,#e6a417); color:#241a00; border:1px solid #ffb347; font-size:9px; font-weight:800; padding:5px 1px; border-radius:8px; opacity:.7; white-space:nowrap; letter-spacing:0; min-width:28px; line-height:1.0; text-align:center;}
-  .follow-right .fbtn.on{background:linear-gradient(180deg,#5fffa0,#1faf5a); color:#06240f; border:1px solid #3fdf7a; opacity:1; box-shadow:0 2px 0 #0a7a3a;}
+  .follow-right{flex:1 1 50%; display:flex; flex-direction:row; flex-wrap:wrap; gap:2px; align-items:flex-start; justify-content:flex-start; padding-right:6px;}
+  /* 五個掣統一尺寸（修改重點） */
+  .follow-right .fbtn,
+  .follow-right .limit-row {
+    flex: 0 0 auto;
+    min-width: 30px;
+    height: 44px;
+    padding: 5px 2px;
+    font-size: 9px;
+    font-weight: 800;
+    line-height: 1.2;
+    text-align: center;
+    white-space: nowrap;
+    letter-spacing: 0;
+    border-radius: 8px;
+    border: 1px solid #ffb347;
+    background: linear-gradient(180deg, #ffd479, #e6a417);
+    color: #241a00;
+    opacity: .7;
+    box-sizing: border-box;
+  }
+  .follow-right .limit-row {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1px;
+    padding: 3px 2px;
+  }
+  .follow-right .limit-row .fstep {
+    background: none;
+    border: none;
+    color: #241a00;
+    font-size: 10px;
+    font-weight: 800;
+    padding: 0;
+    line-height: 1;
+    width: 100%;
+    cursor: pointer;
+    writing-mode: horizontal-tb;   /* 改返水平，避免撐大 */
+    text-orientation: mixed;
+  }
+  .follow-right .limit-row .limit-val {
+    font-size: 11px;
+    font-weight: 900;
+    line-height: 1;
+    color: #241a00;
+  }
+  .follow-right .follow-status {
+    flex-basis: 100%;
+    font-size: 10px;
+    color: #7fffb0;
+    min-height: 16px;
+    white-space: normal;
+    text-align: left;
+    margin-top: 0;          /* 緊貼上方 */
+    padding: 0 2px;
+  }
+  /* 原有其他樣式保留 */
+  .follow-right .fbtn.on{
+    background:linear-gradient(180deg,#5fffa0,#1faf5a); color:#06240f; border:1px solid #3fdf7a; opacity:1; box-shadow:0 2px 0 #0a7a3a;
+  }
   .follow-right .fbtn .ai-h{display:inline-block; writing-mode:horizontal-tb; font-size:10px; font-weight:800; letter-spacing:0;}
-  .follow-right .limit-row{display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; background:linear-gradient(180deg,#ffd479,#e6a417); color:#241a00; border:1px solid #ffb347; border-radius:8px; padding:1px 2px; min-width:auto; font-weight:800; line-height:1;}
+  .follow-right .limit-row{background:linear-gradient(180deg,#ffd479,#e6a417); color:#241a00; border:1px solid #ffb347; border-radius:8px; padding:1px 2px; min-width:auto; font-weight:800; line-height:1;}
   .follow-right .limit-val{font-weight:800; color:#241a00; font-size:9px;}
   .follow-right .fstep{background:none; border:none; color:#241a00; font-size:9px; font-weight:800; padding:0 3px; line-height:1; writing-mode:vertical-rl; text-orientation:upright;}
   .follow-status{flex-basis:100%; font-size:10px; color:#7fffb0; min-height:10px; white-space:normal; text-align:left; margin-top:0;}
@@ -296,7 +354,7 @@
   .marquee-item.ai-1{color:#4da6ff;}
   .marquee-item.ai-2{color:#5ce0a0;}
   @media (max-width:768px){
-    .marquee{top:238px; right:24px; left:auto; transform:none; width:auto; max-width:calc(100vw - 26px);}
+    .marquee{top:238px; right:24px; left:auto; transform:none; width:auto; max-width:calc(100vw - 28px);}
   }
   .marquee.show{opacity:1;}
   .marquee-track{display:flex; flex-direction:column; gap:4px;}
@@ -676,6 +734,7 @@ let limitMin=1000, limitMax=50000;
 function loadLimits(){ try{ const l=JSON.parse(localStorage.getItem('bac_limits')); if(l&&l.min>0&&l.max>=l.min){ limitMin=l.min; limitMax=l.max; } }catch(e){} }
 function saveLimits(){ try{ localStorage.setItem('bac_limits',JSON.stringify({min:limitMin,max:limitMax})); }catch(e){} }
 let dealing=false;
+let settling=false;      // <--- 新增：結算動畫進行中鎖定
 let autoOn=false;        // 自動進行中旗標（setControls 會保持 DEAL 掣停用）
 let settled=false; // settle已執行後clearBets唔再退款
 
@@ -1069,7 +1128,7 @@ function flyChip(k){
 }
 
 function placeBet(k){
-  if((dealing && !betting) || settled) return;   // 發牌中(非落注期)或結算中不可落注；落注倒數期(betting=true)人手可照落/跟注
+  if((dealing && !betting) || settled || settling) return;   // 發牌中(非落注期)或結算中不可落注；落注倒數期(betting=true)人手可照落/跟注
   if(currentChip<limitMin){ showToast('⚠ 單注低過限紅最低 '+fmt(limitMin)); return; }
   if(bets[k]+currentChip>limitMax){ showToast('⚠ 單注超過限紅最高 '+fmt(limitMax)); return; }
   let total=0; for(const x in bets) total+=bets[x];
@@ -1535,8 +1594,26 @@ function positionDealzone(){
   dz.dataset.dzShift=String(delta);
 }
 
+// 修正 drawCard() 防止牌堆耗盡時 Crash
+function drawCard(){ 
+    if (shoeDrawn >= shoe.length) {
+        console.warn('牌堆異常耗盡，緊急重新洗牌');
+        resetShoe();
+        if (shoeDrawn >= shoe.length) {
+            shoe = shuffle(buildShoe(8));
+            shoeDrawn = 0;
+            shoeCut = shoe.length - 148;
+        }
+    }
+    const c = shoe[shoeDrawn++]; 
+    saveShoe(); 
+    updateShoeInfo(); 
+    return c; 
+}
+
 async function deal(auto){
   if(dealing) return;                 // 已經開緊牌就唔再開（防止重複發牌）
+  if(settling) { showToast('⏳ 等上一局結算動畫完畢先'); return; }
   dealing=true;                       // 即時上鎖：doShuffle / 緩衝期間任何並發呼叫都擋到
   try{
   let total=0; for(const x in bets) total+=bets[x];
@@ -1647,15 +1724,28 @@ async function deal(auto){
     console.error('deal() 錯誤已攔截:', err);
     showToast('⚠ 發牌異常，已自動重置');
   } finally {
-    dealing=false; setControls(true);
+    // 唔喺呢度解鎖，交俾 settle 嘅動畫結束解鎖；但保留 8 秒安全計時器
+    if (window._settleTimer) clearTimeout(window._settleTimer);
+    window._settleTimer = setTimeout(() => {
+        if (settling) {
+            settling = false;
+            dealing = false;
+            setControls(true);
+        }
+    }, 8000);
   }
   } finally {
-    dealing=false; setControls(true);   // 外層：確保「請先下注」等早退都會解鎖，唔會卡死
+    // 外層強制解鎖 only 如果 settling 已經 false（即係冇開牌或者 settle 好快完成）
+    if (!settling) {
+        dealing = false;
+        setControls(true);
+    }
   }
 }
 
 /* ===================== 結算 ===================== */
 function settle(winner, playerPair, bankerPair, big, totalCards, pTotal, bTotal, pCards, bCards){
+  settling = true;   // 鎖定結算動畫
   settled=true;
   window._settleSpoken=0;   // 每局重置結算後出聲計數（最多3個）
   lastBets=Object.assign({},bets);  // 記錄本局投注供重複按鈕用
@@ -1783,7 +1873,15 @@ function settle(winner, playerPair, bankerPair, big, totalCards, pTotal, bTotal,
     // 保險：若籌碼仲喺度（異常）強制再清一次
     let still=false; document.querySelectorAll('.chips-stack').forEach(s=>{ if(s.children.length) still=true; });
     if(still){ ais.forEach(ai=>{ if(ai) ai._lastBet=ai.currentBet||null; }); clearBets(true); ais.forEach(ai=>{ if(ai) ai.currentBet=null; }); updateBetDisplay(); }
-    await sleep(2000); saveRoads(); settled=false;   // 結算已即時完成，呢度只留清籌碼保險 + 落注解鎖
+    await sleep(2000); saveRoads(); settled=false;
+    // 解鎖結算鎖
+    settling = false;
+    dealing = false;
+    setControls(true);
+    if (window._settleTimer) {
+        clearTimeout(window._settleTimer);
+        window._settleTimer = null;
+    }
   }, dur);
 }
 /* 結果文字：3行式 + 補牌提示 */
@@ -1800,7 +1898,11 @@ function resultText(label, pTotal, bTotal, pp, bp, big, pCards, bCards, net){
 }
 function extra(pp,bp,b){ let a=[]; if(pp)a.push('閒對'); if(bp)a.push('莊對'); a.push(b?'大':'小'); return a.join(' '); }
 
-function setControls(en){ document.getElementById('btnClear').disabled=!en; document.getElementById('btnRepeat').disabled=!en; document.getElementById('btnDeal').disabled= !en || autoOn; }
+function setControls(en){ 
+    document.getElementById('btnClear').disabled = !en || settling; 
+    document.getElementById('btnRepeat').disabled = !en || settling; 
+    document.getElementById('btnDeal').disabled = !en || autoOn || settling; 
+}
 
 /* ===================== 戰績 localStorage ===================== */
 function loadStats(){
@@ -2644,7 +2746,7 @@ function autoTick(gen){
   if(dealing || gen!==autoGen) return;          // 發牌中或已停用/換代就跳過
   deal(true).finally(function(){
     // 無論開牌成功/異常都繼續下一輪；開牌流程內已含 2秒→討論→倒數→開牌
-    if(gen===autoGen) setTimeout(function(){ autoTick(gen); }, 4000);
+    if(gen===autoGen) setTimeout(function(){ autoTick(gen); }, 7500);   // 延長至 7.5 秒，避免同閃燈重疊
   });
 }
 // 自動間隔：單一按鈕點擊循環四狀態（極快/快7/中13/慢18秒）
@@ -2947,4 +3049,3 @@ updateBalance(); updateBetDisplay(); checkDaily(); updateQuest(); drawAllRoads()
 </script>
 </body>
 </html>
-
