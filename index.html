@@ -2885,27 +2885,34 @@ function renderAiList(){
   // 如果唔係編輯模式，自動填下一個預設名
   if(!editingAiId) setNextDefaultName();
 }
-const DEFAULT_NAMES=['阿龍','小美','阿強','阿明','阿花','阿杰'];
+const DEFAULT_NAMES=['永恆','賭神','財神','運來','大勝','金龍','旺角','福星','阿龍','小美','阿強','阿明','阿花','阿杰','志強','家豪','國華','振邦','耀祖','世昌','富貴','榮盛','鴻運','添丁','進寶','滿堂','順興','泰來','安康','慶豐'];
 function setNextDefaultName(){
   const used=new Set(ais.map(a=>a.name));
   for(const n of DEFAULT_NAMES){ if(!used.has(n)){ document.getElementById('aiNameInput').value=n; return; } }
   document.getElementById('aiNameInput').value='AI'+nextAiNum();
 }
 function setAiSel(id,val){ const grp=document.getElementById(id); if(!grp) return; grp.querySelectorAll('.ai-chip').forEach(x=>x.classList.toggle('sel', x.dataset.v===val)); if(id==='aiPersona'){ aiSel.persona=val; refreshPersonaBlurb(); } else if(id==='aiPlan'){ aiSel.plan=val; } }
+// 隨機抽性格：同一性格(pessoa)全枱最多 2 個（避免全部 AI 同一款）；已滿 2 個就 skip
+function pickPersona(){
+  const personas=Object.keys(AI_PERSONAS);
+  const cnt={}; ais.forEach(a=>{ if(a&&a.persona) cnt[a.persona]=(cnt[a.persona]||0)+1; });
+  const avail=personas.filter(p=> (cnt[p]||0) < 2);
+  const pool = avail.length? avail : personas;   // 萬一全部滿咗（>11個AI難發生）先當機會平等
+  return pool[Math.floor(Math.random()*pool.length)];
+}
 /* 新增模式：隨機性格 + 注碼方案配搭（UI 同步 highlight，用家可手動改） */
 function randomizeNewAi(){
   const personas=Object.keys(AI_PERSONAS);
   const plans=Object.keys(AI_PLANS);
-  setAiSel('aiPersona', personas[Math.floor(Math.random()*personas.length)]);
+  setAiSel('aiPersona', pickPersona());
   setAiSel('aiPlan', plans[Math.floor(Math.random()*plans.length)]);
   // 年齡組同性格/注碼一樣隨機抽(用戶可手動改)；全部組別新增時隨機
   setAiSel('aiAge', AGE_GROUPS[Math.floor(Math.random()*AGE_GROUPS.length)].key);
 }
 // 隨機新增一個新 AI（自動補替用），本金固定 5 萬
 function spawnRandomAi(){
-  const personas=Object.keys(AI_PERSONAS);
   const plans=Object.keys(AI_PLANS);
-  const persona=personas[Math.floor(Math.random()*personas.length)];
+  const persona=pickPersona();
   const plan=plans[Math.floor(Math.random()*plans.length)];
   const bank=50000;
   const ai={ id:'ai'+(Date.now())+'-'+ais.length, name:('AI'+nextAiNum()), icon:AI_ICONS[ais.length%AI_ICONS.length], balance:bank, persona, plan, baseBet:Math.max(1000, Math.floor(bank/20/1000)*1000), step:0, history:[], currentBet:null, emotion:50, winStreak:0, loseStreak:0, weights:AI_PERSONAS[persona].weights, recentChats:[] };
