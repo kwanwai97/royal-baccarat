@@ -1280,7 +1280,7 @@ function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
 /* ===================== 🧠 LLM 枱邊閒聊（本地 Ollama，default 關） ===================== */
 /* 開關 localStorage 'bac_llmchat'；手機要同 PC 同一 WiFi，call 192.168.0.220:11434 */
 let LLM_CHAT = localStorage.getItem('bac_llmchat') === '1';
-const OLLAMA_URLS = ['http://localhost:11434/v1/chat/completions', 'http://192.168.0.220:11434/v1/chat/completions'];
+const OLLAMA_URLS = ['http://localhost:11434/v1/chat/completions', 'http://192.168.0.105:11434/v1/chat/completions'];
 const OLLAMA_MODEL = 'qwen2.5:3b';
 const OLLAMA_TIMEOUT = 4000;
 // 12 性格嘅廣東話人設指令（令 LLM 講得似該款 AI、好笑得意）
