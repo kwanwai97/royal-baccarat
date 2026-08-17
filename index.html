@@ -2596,7 +2596,7 @@ function updatePredict(){
   else if(pr.side==='P' && bets.P) bets.P.classList.add('hot-predict');
   const tip=document.getElementById('roadTip');
   if(pr.side){
-  tip.className='road-tip hot';
+  tip.className='road-tip hot'; 
   tip.textContent='🔮 預測：'+(pr.side==='B'?'莊':'閒')+' ▲ '+pr.reason+'｜請投注'+(pr.side==='B'?'莊':'閒')+' ｜ '+predHitText();
 } else {
   tip.className='road-tip';
