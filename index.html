@@ -2589,20 +2589,20 @@ function updatePredict(){
   console.log('[updatePredict] call, history.len=',(history&&history.length)||0,'side=',(predictScore().side||""));
   // 機率已由 updateOdds 顯示喺格名（真實蒙特卡洛），呢度只做「建議邊金邊高亮」+ roadTip 預測句（唔重複百分比）
   const pr=predictScore();
-  lastPredictSide=pr.side;   // 記低本局預測邊，開牌後由 recordPredictHit 計命中
   const bets={P:document.querySelector('.bet[data-bet="player"]'), T:document.querySelector('.bet[data-bet="tie"]'), B:document.querySelector('.bet[data-bet="banker"]')};
   Object.values(bets).forEach(e=>{ if(e) e.classList.remove('hot-predict'); });
   if(pr.side==='B' && bets.B) bets.B.classList.add('hot-predict');
   else if(pr.side==='P' && bets.P) bets.P.classList.add('hot-predict');
   const tip=document.getElementById('roadTip');
-  if(pr.side){
+  if(tip){
+    if(pr.side){
       tip.className='road-tip hot';
-      tip.textContent='🔮 預測：'+(pr.side==='B'?'莊':'閒')+' ▲ '+pr.reason+'｜請投注'+(pr.side==='B'?'莊':'閒')+' ｜ '+predHitText();
+      tip.textContent='🔮 預測：'+(pr.side==='B'?'莊':'閒')+' ▲ '+pr.reason+'｜請投注'+(pr.side==='B'?'莊':'閒')+｜ '+predHitText()';
     } else {
       tip.className='road-tip';
-      tip.textContent='⏸ 預測：路勢未明（觀望）— 等清晰路再跟 ｜ '+predHitText();
-    } else {
-      tip.className='road-tip';
+      tip.textContent='⏸ 預測：路勢未明（觀望）— 等清晰路再跟｜ '+predHitText();
+    }
+  }
 }
 // 預測命中統計：開牌結果定咗之後 call（deal 內 addResult 後）
 // 規則：觀望(空) skip；開和(tie) skip（唔當中唔當錯）；出咗莊/閒預測先計 total
