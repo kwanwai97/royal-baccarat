@@ -533,6 +533,7 @@
         </div>
       </div>
     </div>
+    <button class="chip-icon" id="btnLeaderboard" title="AI 排行榜（電腦後台每小時跑）" style="margin-top:8px;width:100%;background:linear-gradient(90deg,#3a2d5c,#5a3d7c);color:#fff;border:none;padding:8px;border-radius:8px;font-size:13px;cursor:pointer;">🏆 AI 排行榜（後台每小時跑）</button>
   </div>
   <div class="modal" id="aiModal">
     <div class="modal-box" style="max-width:400px;">
@@ -3020,6 +3021,10 @@ document.getElementById('btnLlm').addEventListener('click',()=>{
   document.getElementById('btnLlm').style.opacity = LLM_CHAT?'1':'0.4';
   if(LLM_CHAT){ showToast('🧠 AI腦開啟（本地 Ollama 即時聊天；手機要同 PC 同一 WiFi）'); }
   else { showToast('🧠 AI腦關閉（用返預製句）'); }
+});
+document.getElementById('btnLeaderboard').addEventListener('click',()=>{
+  // 開 AI 排行榜（獨立頁，讀電腦後台 leaderboard.json）
+  window.open('leaderboard.html', '_blank');
 });
 document.getElementById('btnAi').addEventListener('click',()=>{ document.getElementById('aiModal').classList.add('show'); editingAiId=null; document.getElementById('aiConfirm').textContent='確認 · 新增 AI'; renderAiList(); if(ais.length<8) randomizeNewAi(); });  // 陪玩AI管理+新增模式自動隨機性格/注碼
 // 升級⑧ 限紅自選 modal

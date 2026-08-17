@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>🏆 AI 排行榜</title>
+<style>
+  body{margin:0;background:#15101f;color:#eee;font-family:-apple-system,"PingFang TC","Microsoft JhengHei",sans-serif;padding:12px;}
+  h1{font-size:18px;margin:6px 0 2px;}
+  .sub{font-size:12px;opacity:.6;margin-bottom:10px;}
+  .controls{margin-bottom:10px;}
+  .controls button{background:#5a3d7c;color:#fff;border:none;padding:6px 12px;border-radius:6px;font-size:13px;cursor:pointer;margin-right:6px;}
+  .controls select{background:#2a2138;color:#eee;border:1px solid #5a3d7c;border-radius:6px;padding:6px;font-size:13px;}
+  table{width:100%;border-collapse:collapse;font-size:12px;}
+  th,td{padding:6px 4px;text-align:center;border-bottom:1px solid #2a2138;}
+  th{position:sticky;top:0;background:#1d1530;font-weight:600;}
+  td.name{text-align:left;font-weight:600;}
+  .pos{color:#2faf5a;font-weight:700;}
+  .neg{color:#e23b3b;font-weight:700;}
+  .bank0{color:#2faf5a;}
+  .bankN{color:#e8a33d;}
+  .tag{display:inline-block;background:#2a2138;border-radius:4px;padding:1px 5px;margin:1px;font-size:11px;}
+  .loading{opacity:.6;}
+</style>
+</head>
+<body>
+  <h1>🏆 AI 排行榜</h1>
+  <div class="sub">電腦後台每小時跑 60 局（全枱共用牌路）· 累積不清除 · 相同賽果不同組合</div>
+  <div class="controls">
+    <button id="refreshBtn">🔄 刷新</button>
+    <label>排序：</label>
+    <select id="sortSel">
+      <option value="profit">總盈利</option>
+      <option value="bankrupt">最穩（破產少→多）</option>
+      <option value="winrate">勝率</option>
+      <option value="wager">總投注</option>
+    </select>
+    <span id="meta" class="sub"></span>
+  </div>
+  <div id="board" class="loading">載入中…</div>
+
+<script>
+const JSON_URLS = [
+  'leaderboard.json',
+  'http://localhost:8888/leaderboard.json',
+  'http://192.168.0.105:8888/leaderboard.json'
+];
+const PERSONA_NAME = {banker:'死忠莊',player:'閒家膽',dragon:'追龍佬',road:'路單迷',gambler:'賭徒膽',granny:'保守婆',hot:'燥底哥',pro:'算牌神',million:'大戶豪',rookie:'初哥仔',analyst:'分析師',rebel:'反叛者'};
+const AGE_NAME = {young:'青年',prime:'壯年',mid:'中年',senior:'資深',elder:'長者'};
+
+async function loadJSON(){
+  for(const u of JSON_URLS){
+    try{
+      const r = await fetch(u, {cache:'no-store'});
+      if(r.ok) return await r.json();
+    }catch(e){ /* 試下一個 */ }
+  }
+  return null;
+}
+
+function fmt(n){ return (n>=0?'+':'') + n.toLocaleString('en-US'); }
+
+function render(db, sortBy){
+  if(!db){ document.getElementById('board').innerHTML='<p>讀取失敗：請確認電腦後台 leaderboard.json 已生成，且 PC 起了 serve.py (端口8888)。</p>'; return; }
+  const rows = db.roster.map(a=>{
+    const wr = a.games? a.wins/a.games*100 : 0;
+    return Object.assign({}, a, {wr});
+  });
+  rows.sort((x,y)=>{
+    if(sortBy==='profit') return y.totalProfit - x.totalProfit;
+    if(sortBy==='bankrupt') return x.bankrupt - y.bankrupt || y.totalProfit - x.totalProfit;
+    if(sortBy==='winrate') return y.wr - x.wr;
+    if(sortBy==='wager') return y.totalWager - x.totalWager;
+    return 0;
+  });
+  let html = '<table><thead><tr><th>#</th><th>名稱</th><th>性格</th><th>年齡</th><th>注碼</th><th>總投注</th><th>總盈利</th><th>破產</th><th>局數</th><th>勝率</th></tr></thead><tbody>';
+  rows.forEach((a,i)=>{
+    const pc = a.totalProfit>=0?'pos':'neg';
+    const bc = a.bankrupt===0?'bank0':'bankN';
+    html += `<tr>
+      <td>${i+1}</td>
+      <td class="name">${a.name}</td>
+      <td><span class="tag">${PERSONA_NAME[a.persona]||a.persona}</span></td>
+      <td>${AGE_NAME[a.age]||a.age}</td>
+      <td><span class="tag">${a.plan}</span></td>
+      <td>${a.totalWager.toLocaleString('en-US')}</td>
+      <td class="${pc}">${fmt(a.totalProfit)}</td>
+      <td class="${bc}">${a.bankrupt}</td>
+      <td>${a.games}</td>
+      <td>${a.wr.toFixed(1)}%</td>
+    </tr>`;
+  });
+  html += '</tbody></table>';
+  document.getElementById('board').innerHTML = html;
+  document.getElementById('board').classList.remove('loading');
+  document.getElementById('meta').textContent = `（已跑 ${db.updated} 鐘 · ${db.roster.length} 個 AI）`;
+}
+
+async function refresh(){
+  const sortBy = document.getElementById('sortSel').value;
+  document.getElementById('board').classList.add('loading');
+  document.getElementById('board').textContent = '載入中…';
+  const db = await loadJSON();
+  render(db, sortBy);
+}
+
+document.getElementById('refreshBtn').addEventListener('click', refresh);
+document.getElementById('sortSel').addEventListener('change', refresh);
+refresh();
+</script>
+</body>
+</html>
