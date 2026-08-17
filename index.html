@@ -650,6 +650,7 @@
   <button class="iconbtn chip-icon" id="btnDaily" title="每日免費籌碼">🎁</button>
   <button class="iconbtn chip-icon" id="btnStats" title="戰績">📊</button>
   <button class="iconbtn chip-icon" id="btnMute" title="音效">🔊</button>
+  <button class="iconbtn chip-icon" id="btnLlm" title="AI腦即時聊天(本地Ollama)">🧠</button>
   <button class="iconbtn chip-icon" id="btnAi" title="陪玩AI管理">🤖</button>
   <button class="iconbtn chip-icon" id="btnLimits" title="限紅自選">🎚</button>
   </div>
@@ -1276,6 +1277,56 @@ function relOf(aiA, aiB){
 }
 function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
 
+/* ===================== 🧠 LLM 枱邊閒聊（本地 Ollama，default 關） ===================== */
+/* 開關 localStorage 'bac_llmchat'；手機要同 PC 同一 WiFi，call 192.168.0.220:11434 */
+let LLM_CHAT = localStorage.getItem('bac_llmchat') === '1';
+const OLLAMA_URLS = ['http://localhost:11434/v1/chat/completions', 'http://192.168.0.220:11434/v1/chat/completions'];
+const OLLAMA_MODEL = 'qwen2.5:3b';
+const OLLAMA_TIMEOUT = 4000;
+// 12 性格嘅廣東話人設指令（令 LLM 講得似該款 AI、好笑得意）
+const PERSONA_SYS = {
+  banker:  '你係「死忠莊」，信莊不信命，抽水都贏。用廣東話繁體講一句得意的短句（30字內），可以沾沾自喜。',
+  player:  '你係「閒家膽」，唔信莊抽水，偏幫閒。用廣東話繁體講一句短句（30字內），得意啲。',
+  dragon:  '你係「追龍佬」，見長龍就追到斷。用廣東話繁體講一句短句（30字內），自信囂張啲。',
+  road:    '你係「路單迷」，天天畫路分析形態。用廣東話繁體講一句短句（30字內），扮專家。',
+  gambler: '你係「賭徒膽」，情緒主導亂博重注。用廣東話繁體講一句短句（30字內），豪氣搞笑。',
+  granny:  '你係「保守婆」，細注跟大隊最穩陣。用廣東話繁體講一句短句（30字內），慈祥又淡定。',
+  hot:     '你係「燥底哥」，火起上嚟就反手。用廣東話繁體講一句短句（30字內），暴躁搞笑。',
+  pro:     '你係「算牌神」，冷靜靠數據。用廣東話繁體講一句短句（30字內），扮高深。',
+  million: '你係「大戶豪」，大注氣勢獨行。用廣東話繁體講一句短句（30字內），霸氣奢華。',
+  rookie:  '你係「初哥仔」，乜都唔識跟人买。用廣東話繁體講一句短句（30字內），驚青可愛。',
+  analyst: '你係「分析師」，指標系統話事。用廣東話繁體講一句短句（30字內），扮專業。',
+  rebel:   '你係「反叛者」，人買莊你買閒。用廣東話繁體講一句短句（30字內），反骨好笑。'
+};
+function buildChatPrompt(ai, ctx, prev){
+  const p = AI_PERSONAS[ai.persona];
+  const sys = (PERSONA_SYS[ai.persona] || '你係百家樂玩家，用廣東話繁體講一句短句。');
+  const ws = ai.winStreak||0, ls = ai.loseStreak||0;
+  let sit = '新一局開始。';
+  if(ws>=3) sit = '你連贏'+ws+'鋪，好囂。';
+  else if(ls>=3) sit = '你連輸'+ls+'鋪，有啲陰功。';
+  if(ctx && ctx.streakLen>=4){ sit += ' 路單出咗'+ctx.streakLen+'鋪'+(ctx.streakType==='banker'?'莊':'閒')+'長龍。'; }
+  if(prev && prev.name) sit += ' 上個講嘢嘅係'+prev.name+'。';
+  return [{role:'system',content:sys},{role:'user',content:sit+'講一句得意嘅枱邊閒聊（唔好解釋，直接講）。'}];
+}
+async function genAiLineLLM(ai, ctx, prev){
+  if(!LLM_CHAT) return null;
+  const body = { model:OLLAMA_MODEL, messages:buildChatPrompt(ai,ctx,prev), max_tokens:48, temperature:0.9 };
+  for(const url of OLLAMA_URLS){
+    try{
+      const ctrl = new AbortController();
+      const tid = setTimeout(()=>ctrl.abort(), OLLAMA_TIMEOUT);
+      const r = await fetch(url, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body), signal:ctrl.signal});
+      clearTimeout(tid);
+      if(!r.ok) continue;
+      const j = await r.json();
+      const txt = (j.choices&&j.choices[0]&&j.choices[0].message&&j.choices[0].message.content||'').trim();
+      if(txt) return txt.slice(0,60);
+    }catch(e){ /* 試下一個 URL 或 fallback */ }
+  }
+  return null;  // 全部失敗 → caller fallback 預製句
+}
+
 function genFunnyLine(ai, ctx) {
   const p = AI_PERSONAS[ai.persona];
   const ws = ai.winStreak || 0, ls = ai.loseStreak || 0;
@@ -1424,7 +1475,9 @@ async function tableChatPhase(sec) {
     for (let i = 0; i < speakers.length; i++) {
         if (Date.now() - t0 > CHAT_BUDGET_MS) break;   // 預算用完就收聲，唔硬出4句
         const ai = speakers[i];
-        const msg = genChatLine(ai, ai._prePick, ctx, prev, usedThisRound);
+        let msg = null;
+        if(LLM_CHAT){ msg = await genAiLineLLM(ai, ctx, prev); }   // 🧠 LLM 即時生成（call 唔到會 null）
+        if(!msg){ msg = genChatLine(ai, ai._prePick, ctx, prev, usedThisRound); }  // fallback 預製句
         if (!msg) { prev = ai; continue; }
         addChatBubble(ai, msg);
         if (!mute) {
@@ -2960,6 +3013,14 @@ document.getElementById('aiStop').addEventListener('click',()=>{
 });
 document.getElementById('aiExit').addEventListener('click',()=>{ document.getElementById('aiModal').classList.remove('show'); });
 document.getElementById('btnMute').addEventListener('click',()=>{ mute=!mute; document.getElementById('btnMute').textContent=mute?'🔇':'🔊'; if(!mute) sndChip(); });
+document.getElementById('btnLlm').addEventListener('click',()=>{
+  LLM_CHAT = !LLM_CHAT;
+  localStorage.setItem('bac_llmchat', LLM_CHAT?'1':'0');
+  document.getElementById('btnLlm').textContent = LLM_CHAT?'🧠':'🧠';
+  document.getElementById('btnLlm').style.opacity = LLM_CHAT?'1':'0.4';
+  if(LLM_CHAT){ showToast('🧠 AI腦開啟（本地 Ollama 即時聊天；手機要同 PC 同一 WiFi）'); }
+  else { showToast('🧠 AI腦關閉（用返預製句）'); }
+});
 document.getElementById('btnAi').addEventListener('click',()=>{ document.getElementById('aiModal').classList.add('show'); editingAiId=null; document.getElementById('aiConfirm').textContent='確認 · 新增 AI'; renderAiList(); if(ais.length<8) randomizeNewAi(); });  // 陪玩AI管理+新增模式自動隨機性格/注碼
 // 升級⑧ 限紅自選 modal
 document.getElementById('btnLimits').addEventListener('click',()=>{
