@@ -2655,12 +2655,7 @@ document.getElementById('btnDeal').addEventListener('click',function(){ if(autoO
 function autoFollowPredict(reverse){
   const pr=predictScore();
   if(!pr.side){ return; }  // 觀望唔跟（正常）
-  // 連續次數上限：預測同一建議邊當「同一來源」，跟足 limit 次暫停（轉邊自然 reset）
-  if(!followTrack('predict')){
-    document.getElementById('followStatus').textContent=followStatusText();
-    showToast((reverse?'🔄 反預測':'🔮 跟預測')+'已跟足 '+followLimit+' 次，暫停');
-    return;
-  }
+  // 跟預測/反預測：緊跟路單，唔設連續上限（上限只用於跟旺AI防死跟）；轉邊自然跟到
   let side = reverse ? (pr.side==='B'?'P':'B') : pr.side;
   const amt = currentChip>0 ? currentChip : 1000;
   const betAmt = Math.min(amt, balance);
@@ -2668,7 +2663,8 @@ function autoFollowPredict(reverse){
   clearBets(true);
   if(side==='B') bets.banker=betAmt; else if(side==='P') bets.player=betAmt;
   balance-=betAmt; updateBalance(); updateBetDisplay(); sndChip();
-  document.getElementById('followStatus').textContent=followStatusText();
+  const fsEl=document.getElementById('followStatus');
+  if(fsEl) fsEl.textContent=(reverse?'🔄 反預測':'🔮 跟預測')+'：緊跟路單';
   showToast((reverse?'🔄 反預測':'🔮 跟預測')+'：自動落注'+(side==='B'?'莊':'閒')+' '+fmt(betAmt));
 }
 function getHotAI(){
