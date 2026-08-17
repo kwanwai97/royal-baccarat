@@ -2596,13 +2596,13 @@ function updatePredict(){
   else if(pr.side==='P' && bets.P) bets.P.classList.add('hot-predict');
   const tip=document.getElementById('roadTip');
   if(pr.side){
-    tip.className='road-tip hot'; 
-    tip.textContent='請投注 '+(pr.side==='B'?'莊':'閒')+' ｜ '+predHitText();
-  } else {
-    tip.className='road-tip';
-    tip.textContent='觀望中 ｜ '+predHitText();
-  }
-}
+      tip.className='road-tip hot';
+      tip.textContent='🔮 預測：'+(pr.side==='B'?'莊':'閒')+' ▲ '+pr.reason+'｜請投注'+(pr.side==='B'?'莊':'閒')+' ｜ '+predHitText();
+    } else {
+      tip.className='road-tip';
+      tip.textContent='⏸ 預測：路勢未明（觀望）— 等清晰路再跟 ｜ '+predHitText();
+    } else {
+      tip.className='road-tip';
 }
 // 預測命中統計：開牌結果定咗之後 call（deal 內 addResult 後）
 // 規則：觀望(空) skip；開和(tie) skip（唔當中唔當錯）；出咗莊/閒預測先計 total
