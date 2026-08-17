@@ -1393,7 +1393,7 @@ function addChatBubble(ai, msg) {
   b.innerHTML = '<span class="ic">' + ai.icon + '</span><span class="tx"><b>' + ai.name + '：</b>' + msg + '</span>';
   L.appendChild(b);
   L.scrollTop = L.scrollHeight;
-  // 注意：出聲由 tableChatPhase / playerEmote 控制，呢度唔 call speak（避免雙重出聲）
+  // 注意：出聲由 tableChatPhase 控制，呢度唔 call speak（避免雙重出聲）
 }
 function showTableChat(){
   ['L'].forEach(s=>{
