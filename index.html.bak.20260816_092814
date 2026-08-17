@@ -18,22 +18,22 @@
     background:radial-gradient(circle at 50% 0%, #1a1a1a 0%, #000 70%);
     color:#f5f0d8; overflow-x:hidden; user-select:none;
   }
-  .app{max-width:560px; margin:0 auto; min-height:100vh; display:flex; flex-direction:column; position:relative; padding-top:0;}
+  .app{max-width:560px; margin:0 auto; min-height:100vh; display:flex; flex-direction:column; position:relative;}
 
   /* 頂部 */
   .topbar{
     background:linear-gradient(180deg,#2a1d00,#1a1200);
-    border-bottom:2px solid var(--gold); padding:4px 12px; margin-top:0;
+    border-bottom:2px solid var(--gold); padding:8px 12px;
     display:flex; align-items:center; justify-content:space-between;
     box-shadow:0 2px 10px rgba(0,0,0,.6); position:sticky; top:0; z-index:30;
   }
   .brand{font-weight:800; letter-spacing:1px; color:var(--gold2);
-    font-size:15px; text-shadow:0 0 8px rgba(212,175,55,.6); display:flex; flex-direction:column; align-items:flex-start; gap:2px; margin-left:-6px;}
+    font-size:15px; text-shadow:0 0 8px rgba(212,175,55,.6); display:flex; flex-direction:column; align-items:flex-start; gap:2px;}
   .brand-sub{font-size:11px; font-weight:600; color:#cdbf8e; opacity:.85; display:flex; flex-direction:column; gap:1px;}
   .brand-sub #shoeInfo{font-size:14px; font-weight:800; color:#7fffb0; text-shadow:0 0 6px rgba(80,255,160,.5);}
   .topright{display:flex; align-items:center; gap:10px;}
   .balance{font-size:12px; text-align:right;}
-  .balance b{color:var(--gold2); font-size:18px; margin-left:1px;}
+  .balance b{color:var(--gold2); font-size:18px; margin-left:4px;}
   .iconbtn{background:#1a1200; border:1px solid var(--goldd); color:var(--gold2); border-radius:8px; padding:6px 9px; font-size:13px; cursor:pointer;}
   .iconbtn:active{transform:scale(.92);}
 
@@ -252,7 +252,7 @@
   @keyframes shuffleMove{ 0%{transform:translateY(0) rotate(0);} 50%{transform:translateY(-22px) rotate(12deg);} 100%{transform:translateY(0) rotate(0);} }
 
   /* 控制 */
-  .controls{display:flex; gap:5px; padding:4px 10px 0;}
+  .controls{display:flex; gap:5px; padding:4px 10px 8px;}
   .btn{flex:1; padding:7px; border-radius:8px; font-size:13px; font-weight:800; border:none; cursor:pointer; letter-spacing:1px;}
   .btn.deal{background:linear-gradient(180deg,var(--gold2),var(--goldd)); color:#241a00; box-shadow:0 3px 0 #7a5a00;}
   .btn.repeat{background:#233; color:#cfe; border:1px solid #4a6;}
@@ -267,98 +267,28 @@
   .odds-row.predict-row{align-items:flex-start;}
   .follow-col{display:flex; flex-direction:row; flex-wrap:wrap; gap:4px; flex:0 1 auto; margin-left:8px; align-items:center;}
   /* 新版：左右兩半（左預測，右5格打橫一排） */
-.follow-wrap{display:flex; gap:2px; align-items:stretch; margin-bottom:0px;}
-.follow-left{flex:0 0 50%; display:flex; flex-direction:column; gap:5px; min-width:0; justify-content:flex-start; padding-left:6px;}
-.follow-right{flex:1 1 50%; display:flex; flex-direction:row; flex-wrap:wrap; gap:2px; align-items:flex-start; justify-content:flex-start; padding-right:6px;}
+  .follow-wrap{display:flex; gap:2px; align-items:stretch; margin-bottom:6px;}
+  .follow-left{flex:0 0 50%; display:flex; flex-direction:column; gap:5px; min-width:0; justify-content:flex-start;}
+  .follow-right{flex:1 1 50%; display:flex; flex-direction:row; flex-wrap:nowrap; gap:4px; align-items:stretch; justify-content:flex-start; overflow-x:auto; -webkit-overflow-scrolling:touch; padding-right:6px;}
+  /* 5張卡：打橫一行並排，唔堆疊；卡片文字直排(vertical-rl)，統一gold格式 */
+  .follow-right .fbtn{background:linear-gradient(180deg,#ffd479,#e6a417); color:#241a00; border:1px solid #ffb347; font-size:10px; font-weight:800; padding:5px 1px; border-radius:8px; opacity:.7; white-space:nowrap; letter-spacing:0; min-width:28px; line-height:1.1; text-align:center;}
+  .follow-right .fbtn.on{background:linear-gradient(180deg,#5fffa0,#1faf5a); color:#06240f; border:1px solid #3fdf7a; opacity:1; box-shadow:0 2px 0 #0a7a3a;}
+  .follow-right .fbtn .ai-h{display:inline-block; writing-mode:horizontal-tb; font-size:10px; font-weight:800; letter-spacing:0;}
+  .follow-right .limit-row{display:flex; flex-direction:row; align-items:center; justify-content:center; gap:3px; background:linear-gradient(180deg,#ffd479,#e6a417); color:#241a00; border:1px solid #ffb347; border-radius:8px; padding:4px 5px; min-width:auto; font-weight:800; line-height:1;}
+  .follow-right .limit-val{font-weight:800; color:#241a00; font-size:15px;}
+  .follow-right .fstep{background:none; border:none; color:#241a00; font-size:15px; font-weight:800; padding:0 3px; line-height:1;}
+  .follow-status{font-size:10px; color:#7fffb0; min-height:12px; white-space:normal;}
+  .btn.fbtn{background:linear-gradient(180deg,#ffd479,#e6a417); color:#241a00; border:1px solid #ffb347; font-size:10px; font-weight:800; padding:5px 3px; border-radius:8px; opacity:.6; white-space:nowrap; letter-spacing:0; min-width:30px; line-height:1.1; text-align:center;}
+  .btn.fbtn.on{background:linear-gradient(180deg,#5fffa0,#1faf5a); color:#06240f; border:1px solid #3fdf7a; opacity:1; box-shadow:0 2px 0 #0a7a3a;}
+  .btn.fbtn.rev{background:linear-gradient(180deg,#ffd0a0,#d9804a); color:#2a1400; border:1px solid #ef9b6f; opacity:.7;}
+  .btn.fbtn.rev.on{background:linear-gradient(180deg,#ff9a6f,#d94f1f); color:#2a0900; border:1px solid #ef7a4a; opacity:1;}
+  .btn.auto{background:#2a2113; color:#e0b34a; border:1px solid #7a5a1a; flex:0 0 auto; padding:7px 7px; font-size:11px;}   /* 關：琥珀色，醒目「可按啟動」 */
+  .btn.auto.on{background:#2faf5a; color:#04110a; border-color:#2faf5a; box-shadow:0 0 10px rgba(47,175,90,.5);}             /* 開：綠色，進行中 */
+  .btn.auto-int-btn{background:#2a2113; color:#e0b34a; border:1px solid #7a5a1a; flex:0 0 auto; padding:7px 7px; font-size:11px; margin-left:6px;}
 
-/* 五個掣統一尺寸 */
-.follow-right .fbtn,
-.follow-right .limit-row {
-  flex: 0 0 auto;
-  min-width: 40px;
-  height: 36px;
-  padding: 5px 2px;
-  font-size: 9px;
-  font-weight: 800;
-  line-height: 1.2;
-  text-align: center;
-  white-space: nowrap;
-  letter-spacing: 0;
-  border-radius: 8px;
-  border: 1px solid #ffb347;
-  background: linear-gradient(180deg, #ffd479, #e6a417);
-  color: #241a00;
-  opacity: .7;
-  box-sizing: border-box;
-}
-
-/* limit-row 專屬設定（只覆蓋需要唔同嘅部分） */
-.follow-right .limit-row {
-  flex: 0 0 auto;
-  min-width: 44px;          /* 比其他掣多少少，方便顯示數字 */
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 1px;
-  padding: 3px 2px;
-}
-
-.follow-right .limit-row .fstep {
-  background: none;
-  border: none;
-  color: #241a00;
-  font-size: 10px;
-  font-weight: 800;
-  padding: 0;
-  line-height: 1;
-  width: 100%;
-  cursor: pointer;
-  writing-mode: horizontal-tb;
-  text-orientation: mixed;
-}
-
-.follow-right .limit-row .limit-val {
-  font-size: 11px;
-  font-weight: 900;
-  line-height: 1;
-  color: #241a00;
-}
-
-.follow-right .follow-status {
-  flex-basis: 100%;
-  font-size: 10px;
-  color: #7fffb0;
-  min-height: 16px;
-  white-space: normal;
-  text-align: left;
-  margin-top: 0;
-  padding: 0 2px;
-}
-
-/* 原有其他樣式保留 */
-.follow-right .fbtn.on{
-  background:linear-gradient(180deg,#5fffa0,#1faf5a); color:#06240f; border:1px solid #3fdf7a; opacity:1; box-shadow:0 2px 0 #0a7a3a;
-}
-.follow-right .fbtn .ai-h{display:inline-block; writing-mode:horizontal-tb; font-size:10px; font-weight:800; letter-spacing:0;}
-
-/* 呢行刪走咗 min-width:auto，改返同上面一致 */
-.follow-right .limit-row{background:linear-gradient(180deg,#ffd479,#e6a417); color:#241a00; border:1px solid #ffb347; border-radius:8px; padding:3px 2px; font-weight:800; line-height:1;}
-
-.follow-right .limit-val{font-weight:800; color:#241a00; font-size:9px;}
-.follow-right .fstep{background:none; border:none; color:#241a00; font-size:9px; font-weight:800; padding:0 3px; line-height:1; writing-mode:vertical-rl; text-orientation:upright;}
-.follow-status{flex-basis:100%; font-size:10px; color:#7fffb0; min-height:10px; white-space:normal; text-align:left; margin-top:0;}
-.btn.fbtn{background:linear-gradient(180deg,#ffd479,#e6a417); color:#241a00; border:1px solid #ffb347; font-size:10px; font-weight:800; padding:1px 2px; border-radius:8px; opacity:.6; writing-mode:vertical-rl; text-orientation:upright; white-space:nowrap; letter-spacing:0; min-width:30px; line-height:1.0; text-align:center;}
-.btn.fbtn.on{background:linear-gradient(180deg,#5fffa0,#1faf5a); color:#06240f; border:1px solid #3fdf7a; opacity:1; box-shadow:0 2px 0 #0a7a3a;}
-.btn.fbtn.rev{background:linear-gradient(180deg,#ffd0a0,#d9804a); color:#2a1400; border:1px solid #ef9b6f; opacity:.7;}
-.btn.fbtn.rev.on{background:linear-gradient(180deg,#ff9a6f,#d94f1f); color:#2a0900; border:1px solid #ef7a4a; opacity:1;}
-.btn.auto{background:#2a2113; color:#e0b34a; border:1px solid #7a5a1a; flex:0 0 auto; padding:7px 7px; font-size:11px;}
-.btn.auto.on{background:#2faf5a; color:#04110a; border-color:#2faf5a; box-shadow:0 0 10px rgba(47,175,90,.5);}
-.btn.auto-int-btn{background:#2a2113; color:#e0b34a; border:1px solid #7a5a1a; flex:0 0 auto; padding:7px 7px; font-size:11px; margin-left:6px;}
-
-.toast{position:fixed; left:50%; top:42%; transform:translate(-50%,-50%); background:#000c; color:#ffd45e;
-  padding:12px 22px; border-radius:22px; font-size:18px; font-weight:800; border:1px solid var(--gold); opacity:0; transition:opacity .3s; z-index:50; pointer-events:none; text-shadow:0 0 10px #000; box-shadow:0 0 18px rgba(212,175,55,.4);}
-.toast.show{opacity:1;}
+  .toast{position:fixed; left:50%; top:42%; transform:translate(-50%,-50%); background:#000c; color:#ffd45e;
+    padding:12px 22px; border-radius:22px; font-size:18px; font-weight:800; border:1px solid var(--gold); opacity:0; transition:opacity .3s; z-index:50; pointer-events:none; text-shadow:0 0 10px #000; box-shadow:0 0 18px rgba(212,175,55,.4);}
+  .toast.show{opacity:1;}
   /* AI 走馬燈：無框無底, 右對齊, 顏色即身份 */
   .marquee{position:fixed; top:266px; right:24px; left:auto; transform:none; width:auto; max-width:calc(100vw - 28px); z-index:51; pointer-events:none; opacity:0; transition:opacity .3s; display:flex; flex-direction:column; gap:4px; background:none; border:none; padding:0;}
   .marquee-item{display:flex !important; justify-content:flex-end !important; align-items:center; gap:4px; font-size:12px; font-weight:800; color:#ffd45e; text-shadow:0 0 8px #000, 0 2px 4px #000; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%; text-align:right; background:none !important; border:none !important; border-radius:0 !important; padding:2px 0 !important; margin:0 !important;}
@@ -407,6 +337,11 @@
   .hist.t{background:var(--gold); color:#241a00;}
 
   .limitinfo{text-align:center; font-size:10px; opacity:.6; padding:2px 10px 6px;}
+
+  /* ⑤ 玩家快捷表情 */
+  .player-emotes{display:flex; justify-content:center; gap:18px; padding:2px 10px 8px;}
+  .player-emotes .pe{ font-size:22px; cursor:pointer; line-height:1; filter:drop-shadow(0 1px 2px rgba(0,0,0,.6)); transition:transform .12s; user-select:none; }
+  .player-emotes .pe:active{ transform:scale(1.3); }
 
 
   /* 彩帶 canvas */
@@ -469,9 +404,7 @@
 <body>
 <div class="app">
   <div class="topbar">
-    <div class="brand">
-      <button id="btnLeaderboard" title="AI 排行榜" style="align-self:flex-start;margin:0;background:linear-gradient(90deg,#3a2d5c,#5a3d7c);color:#fff;border:none;padding:3px 9px;border-radius:6px;font-size:12px;line-height:1.35;cursor:pointer;letter-spacing:.5px;">🏆 AI排行榜<div style="font-size:9px;opacity:.75;letter-spacing:0;">每小時更新</div></button>
-      ♛ 百家樂
+    <div class="brand">♛ 百家樂
       <div class="brand-sub"><span id="shoeInfo"></span>　<span id="youStreak"></span></div>
     </div>
     <div class="topright">
@@ -607,8 +540,9 @@
     <!-- 左半：預測系統 -->
     <div class="follow-left">
       <div class="road-tip" id="roadTip"></div>
+      <div id="followStatus" class="follow-status" style="display:none"></div>
     </div>
-    <!-- 右半：打橫一行 5 張卡 (4掣 + 次數) + 底下跟隨次數文字 -->
+    <!-- 右半：由頂到底直排 5 格 (4掣 + 次數slider) -->
     <div class="follow-right">
       <button class="btn fbtn" id="btnFollowPredict2" title="跟預測：長期跟模式，每局自動跟預測建議邊">跟預測</button>
       <button class="btn fbtn" id="btnFollowRev" title="反預測：長期跟模式，每局自動跟預測相反邊">反預測</button>
@@ -619,7 +553,6 @@
         <span class="limit-val" id="followLimitVal">3</span>
         <button class="btn fstep" id="btnLimDown" title="減1">−</button>
       </div>
-      <div id="followStatus" class="follow-status"></div>
     </div>
   </div>
   <div class="bets" id="bets">
@@ -652,7 +585,6 @@
   <button class="iconbtn chip-icon" id="btnDaily" title="每日免費籌碼">🎁</button>
   <button class="iconbtn chip-icon" id="btnStats" title="戰績">📊</button>
   <button class="iconbtn chip-icon" id="btnMute" title="音效">🔊</button>
-  <button class="iconbtn chip-icon" id="btnLlm" title="AI腦即時聊天(本地Ollama)">🧠</button>
   <button class="iconbtn chip-icon" id="btnAi" title="陪玩AI管理">🤖</button>
   <button class="iconbtn chip-icon" id="btnLimits" title="限紅自選">🎚</button>
   </div>
@@ -665,6 +597,13 @@
     <button class="btn repeat" id="btnRepeat">重複</button>
     <button class="btn deal" id="btnDeal">發牌</button>
   </div>
+</div>
+
+<div class="player-emotes" id="playerEmotes">
+  <span class="pe" data-em="laugh">😂</span>
+  <span class="pe" data-em="money">💰</span>
+  <span class="pe" data-em="wow">😮</span>
+  <span class="pe" data-em="fire">🔥</span>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -1164,8 +1103,6 @@ let followHotReverseOn=false; // 反旺AI長期跟（跟旺AI相反邊）
 // 跟/反 連續次數上限：同一個對象（旺AI id / 預測來源）連續跟足 limit 次就暫停，轉咗對象先再跟
 let followLimit=3;            // 連續上限（預設3，可選2/3/4/5）
 let followStreakKey=null;     // 跟緊邊個（旺AI id，或 'predict'）
-let lastPredictSide='';       // 上一局開牌前出嘅預測邊(B/P/空)，開牌後用嚟計命中
-let predHit=0, predTotal=0;   // 預測命中統計（開和/觀望 skip），存 bac_pred
 let followStreakCount=0;      // 連續跟咗幾多次
 function followTrack(key){    // 每局 call：回傳 true=可以跟，false=已達上限暫停
   if(followStreakKey===key){ followStreakCount++; }
@@ -1174,7 +1111,7 @@ function followTrack(key){    // 每局 call：回傳 true=可以跟，false=已
 }
 function followStatusText(mode){   // mode: 'hot'/'hotrev'/'predict'/'reverse'
   if(!followStreakKey) return '';
-  const nm = followStreakKey==='predict' ? '預測' : (followStreakKey.startsWith('ai') ? 'ai'+followStreakKey.slice(followStreakKey.indexOf('-')) : followStreakKey);
+  const nm = followStreakKey==='predict' ? '預測' : followStreakKey;
   if(followStreakCount>=followLimit) return '⏸ '+nm+' 已跟 '+followLimit+' 次，等轉對象先再跟';
   return '跟 '+nm+' 第 '+followStreakCount+'/'+followLimit+' 次';
 }
@@ -1278,56 +1215,6 @@ function relOf(aiA, aiB){
   return 'neutral';
 }
 function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
-
-/* ===================== 🧠 LLM 枱邊閒聊（本地 Ollama，default 關） ===================== */
-/* 開關 localStorage 'bac_llmchat'；手機要同 PC 同一 WiFi，call 192.168.0.220:11434 */
-let LLM_CHAT = localStorage.getItem('bac_llmchat') === '1';
-const OLLAMA_URLS = ['http://localhost:11434/v1/chat/completions', 'http://192.168.0.105:11434/v1/chat/completions'];
-const OLLAMA_MODEL = 'qwen2.5:3b';
-const OLLAMA_TIMEOUT = 4000;
-// 12 性格嘅廣東話人設指令（令 LLM 講得似該款 AI、好笑得意）
-const PERSONA_SYS = {
-  banker:  '你係「死忠莊」，信莊不信命，抽水都贏。用廣東話繁體講一句得意的短句（30字內），可以沾沾自喜。',
-  player:  '你係「閒家膽」，唔信莊抽水，偏幫閒。用廣東話繁體講一句短句（30字內），得意啲。',
-  dragon:  '你係「追龍佬」，見長龍就追到斷。用廣東話繁體講一句短句（30字內），自信囂張啲。',
-  road:    '你係「路單迷」，天天畫路分析形態。用廣東話繁體講一句短句（30字內），扮專家。',
-  gambler: '你係「賭徒膽」，情緒主導亂博重注。用廣東話繁體講一句短句（30字內），豪氣搞笑。',
-  granny:  '你係「保守婆」，細注跟大隊最穩陣。用廣東話繁體講一句短句（30字內），慈祥又淡定。',
-  hot:     '你係「燥底哥」，火起上嚟就反手。用廣東話繁體講一句短句（30字內），暴躁搞笑。',
-  pro:     '你係「算牌神」，冷靜靠數據。用廣東話繁體講一句短句（30字內），扮高深。',
-  million: '你係「大戶豪」，大注氣勢獨行。用廣東話繁體講一句短句（30字內），霸氣奢華。',
-  rookie:  '你係「初哥仔」，乜都唔識跟人买。用廣東話繁體講一句短句（30字內），驚青可愛。',
-  analyst: '你係「分析師」，指標系統話事。用廣東話繁體講一句短句（30字內），扮專業。',
-  rebel:   '你係「反叛者」，人買莊你買閒。用廣東話繁體講一句短句（30字內），反骨好笑。'
-};
-function buildChatPrompt(ai, ctx, prev){
-  const p = AI_PERSONAS[ai.persona];
-  const sys = (PERSONA_SYS[ai.persona] || '你係百家樂玩家，用廣東話繁體講一句短句。');
-  const ws = ai.winStreak||0, ls = ai.loseStreak||0;
-  let sit = '新一局開始。';
-  if(ws>=3) sit = '你連贏'+ws+'鋪，好囂。';
-  else if(ls>=3) sit = '你連輸'+ls+'鋪，有啲陰功。';
-  if(ctx && ctx.streakLen>=4){ sit += ' 路單出咗'+ctx.streakLen+'鋪'+(ctx.streakType==='banker'?'莊':'閒')+'長龍。'; }
-  if(prev && prev.name) sit += ' 上個講嘢嘅係'+prev.name+'。';
-  return [{role:'system',content:sys},{role:'user',content:sit+'講一句得意嘅枱邊閒聊（唔好解釋，直接講）。'}];
-}
-async function genAiLineLLM(ai, ctx, prev){
-  if(!LLM_CHAT) return null;
-  const body = { model:OLLAMA_MODEL, messages:buildChatPrompt(ai,ctx,prev), max_tokens:48, temperature:0.9 };
-  for(const url of OLLAMA_URLS){
-    try{
-      const ctrl = new AbortController();
-      const tid = setTimeout(()=>ctrl.abort(), OLLAMA_TIMEOUT);
-      const r = await fetch(url, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body), signal:ctrl.signal});
-      clearTimeout(tid);
-      if(!r.ok) continue;
-      const j = await r.json();
-      const txt = (j.choices&&j.choices[0]&&j.choices[0].message&&j.choices[0].message.content||'').trim();
-      if(txt) return txt.slice(0,60);
-    }catch(e){ /* 試下一個 URL 或 fallback */ }
-  }
-  return null;  // 全部失敗 → caller fallback 預製句
-}
 
 function genFunnyLine(ai, ctx) {
   const p = AI_PERSONAS[ai.persona];
@@ -1446,7 +1333,7 @@ function addChatBubble(ai, msg) {
   b.innerHTML = '<span class="ic">' + ai.icon + '</span><span class="tx"><b>' + ai.name + '：</b>' + msg + '</span>';
   L.appendChild(b);
   L.scrollTop = L.scrollHeight;
-  // 注意：出聲由 tableChatPhase 控制，呢度唔 call speak（避免雙重出聲）
+  // 注意：出聲由 tableChatPhase / playerEmote 控制，呢度唔 call speak（避免雙重出聲）
 }
 function showTableChat(){
   ['L'].forEach(s=>{
@@ -1477,9 +1364,7 @@ async function tableChatPhase(sec) {
     for (let i = 0; i < speakers.length; i++) {
         if (Date.now() - t0 > CHAT_BUDGET_MS) break;   // 預算用完就收聲，唔硬出4句
         const ai = speakers[i];
-        let msg = null;
-        if(LLM_CHAT){ msg = await genAiLineLLM(ai, ctx, prev); }   // 🧠 LLM 即時生成（call 唔到會 null）
-        if(!msg){ msg = genChatLine(ai, ai._prePick, ctx, prev, usedThisRound); }  // fallback 預製句
+        const msg = genChatLine(ai, ai._prePick, ctx, prev, usedThisRound);
         if (!msg) { prev = ai; continue; }
         addChatBubble(ai, msg);
         if (!mute) {
@@ -1746,7 +1631,6 @@ async function deal(auto){
 
   settle(winner, playerPair, bankerPair, big, totalCards, pTotal, bTotal, pc.length, bc.length);
   addResult(winner, playerPair, bankerPair, totalCards);
-  recordPredictHit(winner);   // 開牌後：用上一局開牌前出嘅預測計命中
   drawAllRoads();
   saveStats();
   // 開牌3秒後啤牌淡出消失，結果文字保留
@@ -1923,7 +1807,6 @@ function loadStats(){
   try{ const s=JSON.parse(localStorage.getItem('bac_stats')); if(s) stats=Object.assign(stats,s); }catch(e){}
   try{ const b=localStorage.getItem('bac_balance'); if(b!==null) balance=Math.max(0,+b); }catch(e){}  // 直接用存檔餘額，唔好用 TABLE_MAX(桌注上限)截，否則贏多過5萬reload變返5萬
   try{ const d=JSON.parse(localStorage.getItem('bac_daily')); if(d){ dailyClaim=d; } }catch(e){}
-  try{ const p=JSON.parse(localStorage.getItem('bac_pred')); if(p){ predHit=p.hit||0; predTotal=p.total||0; } }catch(e){}  // 預測命中統計恢復
 }
 function saveStats(){
   try{ localStorage.setItem('bac_stats',JSON.stringify(stats)); localStorage.setItem('bac_balance',String(balance)); }catch(e){}
@@ -2448,10 +2331,10 @@ function claimDaily(){
 }
 
 /* ===================== 牌靴 ===================== */
-let shoeCut=0;   // 切牌卡位置：剩138張時洗牌（8副416張 → 可玩278張，約50-60局）
+let shoeCut=0;   // 切牌卡位置：剩118張時洗牌（8副416張 → 可玩298張，約50-60局）
 function resetShoe(){
   shoe=shuffle(buildShoe(8)); shoeDrawn=0;
-  shoeCut=shoe.length-138;   // 抽到呢個位（剩138張）自動洗牌
+  shoeCut=shoe.length-148;   // 抽到呢個位（剩148張）自動洗牌
   saveShoe();
   updateShoeInfo();
 }
@@ -2640,30 +2523,13 @@ function updatePredict(){
   if(tip){
     if(pr.side){
       tip.className='road-tip hot';
-      tip.textContent='請投注'+(pr.side==='B'?'莊':'閒')+' ｜ '+predHitText();
+      tip.textContent='🔮 預測：'+(pr.side==='B'?'莊':'閒')+' ▲ '+pr.reason+'｜請投注'+(pr.side==='B'?'莊':'閒');
     } else {
       tip.className='road-tip';
-      tip.textContent='請投注 — ｜ '+predHitText();
+      tip.textContent='⏸ 預測：路勢未明（觀望）— 等清晰路再跟';
     }
   }
 }
-// 預測命中統計：開牌結果定咗之後 call（deal 內 addResult 後）
-// 規則：觀望(空) skip；開和(tie) skip（唔當中唔當錯）；出咗莊/閒預測先計 total
-function recordPredictHit(winner){
-  if(!lastPredictSide) return;          // 觀望：無出預測，skip
-  if(winner==='tie') return;            // 開和：skip（退本金，唔計）
-  predTotal++;                          // 出咗預測就計一鋪
-  const predIsBanker = lastPredictSide==='B';
-  const actualBanker = winner==='banker';
-  if(predIsBanker===actualBanker) predHit++;
-  savePredStats();
-}
-function predHitText(){
-  if(predTotal===0) return '命中 —';
-  const pct=Math.round(predHit/predTotal*100);
-  return '命中 '+pct+'% (中 '+predHit+'/'+predTotal+')';
-}
-function savePredStats(){ try{ localStorage.setItem('bac_pred', JSON.stringify({hit:predHit,total:predTotal})); }catch(e){} }
 async function doShuffle(){
   const ov=document.getElementById('shuffleOverlay');
   if(ov){ ov.querySelector('.title').textContent='🔀 洗牌中…'; ov.classList.add('show'); }
@@ -2698,7 +2564,12 @@ document.getElementById('btnDeal').addEventListener('click',function(){ if(autoO
 function autoFollowPredict(reverse){
   const pr=predictScore();
   if(!pr.side){ return; }  // 觀望唔跟（正常）
-  // 跟預測/反預測：緊跟路單，唔設連續上限（上限只用於跟旺AI防死跟）；轉邊自然跟到
+  // 連續次數上限：預測同一建議邊當「同一來源」，跟足 limit 次暫停（轉邊自然 reset）
+  if(!followTrack('predict')){
+    document.getElementById('followStatus').textContent=followStatusText();
+    showToast((reverse?'🔄 反預測':'🔮 跟預測')+'已跟足 '+followLimit+' 次，暫停');
+    return;
+  }
   let side = reverse ? (pr.side==='B'?'P':'B') : pr.side;
   const amt = currentChip>0 ? currentChip : 1000;
   const betAmt = Math.min(amt, balance);
@@ -2706,8 +2577,7 @@ function autoFollowPredict(reverse){
   clearBets(true);
   if(side==='B') bets.banker=betAmt; else if(side==='P') bets.player=betAmt;
   balance-=betAmt; updateBalance(); updateBetDisplay(); sndChip();
-  const fsEl=document.getElementById('followStatus');
-  if(fsEl) fsEl.textContent=(reverse?'🔄 反預測':'🔮 跟預測')+'：緊跟路單';
+  document.getElementById('followStatus').textContent=followStatusText();
   showToast((reverse?'🔄 反預測':'🔮 跟預測')+'：自動落注'+(side==='B'?'莊':'閒')+' '+fmt(betAmt));
 }
 function getHotAI(){
@@ -2760,7 +2630,7 @@ function setFollowLimit(v){
 (function(){
   const vu=document.getElementById('btnLimUp');   if(vu) vu.addEventListener('click',()=> setFollowLimit(followLimit+1));
   const vd=document.getElementById('btnLimDown'); if(vd) vd.addEventListener('click',()=> setFollowLimit(followLimit-1));
-  setFollowLimit(4);   // 預設 3
+  setFollowLimit(3);   // 預設 3
 })();
 document.getElementById('btnFollowPredict2').addEventListener('click', ()=> setFollow(followPredictOn?'off':'predict'));
 document.getElementById('btnFollowRev').addEventListener('click', ()=> setFollow(followReverseOn?'off':'reverse'));
@@ -2777,12 +2647,12 @@ function autoTick(gen){
     if(gen===autoGen) setTimeout(function(){ autoTick(gen); }, 4000);
   });
 }
-// 自動間隔：單一按鈕點擊循環四狀態（極快3/快7/中13/慢18秒）
+// 自動間隔：單一按鈕點擊循環四狀態（極快3/快7/中13/慢20秒）
 const AUTO_SPEEDS=[
-  {ms:3000, label:'極 3秒'},
-  {ms:7000, label:'快 7秒'},
-  {ms:13000,label:'中 13秒'},
-  {ms:20000,label:'慢 18秒'}
+  {ms:3000, label:'⚡ 極快 3秒'},
+  {ms:7000, label:'🔥 快 7秒'},
+  {ms:13000,label:'🌟 中 13秒'},
+  {ms:20000,label:'🐢 慢 20秒'}
 ];
 let autoSpeedIdx=2;   // 預設「中 13秒」
 (function(){
@@ -2940,34 +2810,27 @@ function renderAiList(){
   // 如果唔係編輯模式，自動填下一個預設名
   if(!editingAiId) setNextDefaultName();
 }
-const DEFAULT_NAMES=['永恆','賭神','運來','大勝','金龍','旺角','福星','阿龍','小美','阿強','阿明','阿花','阿杰','志強','家豪','國華','振邦','耀祖','世昌','富貴','榮盛','鴻運','添丁','進寶','滿堂','順興','財神','泰來','安康','慶豐'];
+const DEFAULT_NAMES=['阿龍','小美','阿強','阿明','阿花','阿杰'];
 function setNextDefaultName(){
   const used=new Set(ais.map(a=>a.name));
   for(const n of DEFAULT_NAMES){ if(!used.has(n)){ document.getElementById('aiNameInput').value=n; return; } }
   document.getElementById('aiNameInput').value='AI'+nextAiNum();
 }
 function setAiSel(id,val){ const grp=document.getElementById(id); if(!grp) return; grp.querySelectorAll('.ai-chip').forEach(x=>x.classList.toggle('sel', x.dataset.v===val)); if(id==='aiPersona'){ aiSel.persona=val; refreshPersonaBlurb(); } else if(id==='aiPlan'){ aiSel.plan=val; } }
-// 隨機抽性格：同一性格(pessoa)全枱最多 2 個（避免全部 AI 同一款）；已滿 2 個就 skip
-function pickPersona(){
-  const personas=Object.keys(AI_PERSONAS);
-  const cnt={}; ais.forEach(a=>{ if(a&&a.persona) cnt[a.persona]=(cnt[a.persona]||0)+1; });
-  const avail=personas.filter(p=> (cnt[p]||0) < 2);
-  const pool = avail.length? avail : personas;   // 萬一全部滿咗（>11個AI難發生）先當機會平等
-  return pool[Math.floor(Math.random()*pool.length)];
-}
 /* 新增模式：隨機性格 + 注碼方案配搭（UI 同步 highlight，用家可手動改） */
 function randomizeNewAi(){
   const personas=Object.keys(AI_PERSONAS);
   const plans=Object.keys(AI_PLANS);
-  setAiSel('aiPersona', pickPersona());
+  setAiSel('aiPersona', personas[Math.floor(Math.random()*personas.length)]);
   setAiSel('aiPlan', plans[Math.floor(Math.random()*plans.length)]);
   // 年齡組同性格/注碼一樣隨機抽(用戶可手動改)；全部組別新增時隨機
   setAiSel('aiAge', AGE_GROUPS[Math.floor(Math.random()*AGE_GROUPS.length)].key);
 }
 // 隨機新增一個新 AI（自動補替用），本金固定 5 萬
 function spawnRandomAi(){
+  const personas=Object.keys(AI_PERSONAS);
   const plans=Object.keys(AI_PLANS);
-  const persona=pickPersona();
+  const persona=personas[Math.floor(Math.random()*personas.length)];
   const plan=plans[Math.floor(Math.random()*plans.length)];
   const bank=50000;
   const ai={ id:'ai'+(Date.now())+'-'+ais.length, name:('AI'+nextAiNum()), icon:AI_ICONS[ais.length%AI_ICONS.length], balance:bank, persona, plan, baseBet:Math.max(1000, Math.floor(bank/20/1000)*1000), step:0, history:[], currentBet:null, emotion:50, winStreak:0, loseStreak:0, weights:AI_PERSONAS[persona].weights, recentChats:[] };
@@ -3015,18 +2878,6 @@ document.getElementById('aiStop').addEventListener('click',()=>{
 });
 document.getElementById('aiExit').addEventListener('click',()=>{ document.getElementById('aiModal').classList.remove('show'); });
 document.getElementById('btnMute').addEventListener('click',()=>{ mute=!mute; document.getElementById('btnMute').textContent=mute?'🔇':'🔊'; if(!mute) sndChip(); });
-document.getElementById('btnLlm').addEventListener('click',()=>{
-  LLM_CHAT = !LLM_CHAT;
-  localStorage.setItem('bac_llmchat', LLM_CHAT?'1':'0');
-  document.getElementById('btnLlm').textContent = LLM_CHAT?'🧠':'🧠';
-  document.getElementById('btnLlm').style.opacity = LLM_CHAT?'1':'0.4';
-  if(LLM_CHAT){ showToast('🧠 AI腦開啟（本地 Ollama 即時聊天；手機要同 PC 同一 WiFi）'); }
-  else { showToast('🧠 AI腦關閉（用返預製句）'); }
-});
-document.getElementById('btnLeaderboard').addEventListener('click',()=>{
-  // 開 AI 排行榜（獨立頁，讀電腦後台 leaderboard.json）
-  window.open('leaderboard.html', '_blank');
-});
 document.getElementById('btnAi').addEventListener('click',()=>{ document.getElementById('aiModal').classList.add('show'); editingAiId=null; document.getElementById('aiConfirm').textContent='確認 · 新增 AI'; renderAiList(); if(ais.length<8) randomizeNewAi(); });  // 陪玩AI管理+新增模式自動隨機性格/注碼
 // 升級⑧ 限紅自選 modal
 document.getElementById('btnLimits').addEventListener('click',()=>{
@@ -3044,6 +2895,49 @@ document.getElementById('btnSaveLimits').addEventListener('click',()=>{
   document.getElementById('limitsModal').classList.remove('show');
 });
 
+/* ===================== ⑤ 玩家快捷表情：你發，AI 回 ===================== */
+const EMOTE_ICON={laugh:'😂',money:'💰',wow:'😮',fire:'🔥'};
+const EMOTE_REPLY={
+  banker:{laugh:'莊友都笑到碌地',money:'你贏莊我唔眼紅',wow:'莊又點會輸俾你驚',fire:'🔥跟莊火埋一份'},
+  player:{laugh:'閒友笑得好開心',money:'閒贏先係真錢',wow:'閒都贏，你都驚？',fire:'🔥閒家火起來'},
+  dragon:{laugh:'龍都笑咗出來',money:'贏錢就係追龍成功',wow:'龍現形你都驚？',fire:'🔥追龍之火不滅'},
+  road:{laugh:'路單話你開心',money:'贏錢都係路單啱晒',wow:'路單轉勢你先驚',fire:'🔥路單紅線火'},
+  gambler:{laugh:'哈哈哈賭徒同笑',money:'錢？搏大佢！',wow:'嘩！刺激！',fire:'🔥我燥埋你份'},
+  granny:{laugh:'婆婆都笑埋',money:'細細注贏都開心啦',wow:'後生仔唔使驚',fire:'🔥婆婆唔燥嘅'},
+  hot:{laugh:'笑咩啊快啲博',money:'錢嚟喇！火！',wow:'嘩！我仲燥過你',fire:'🔥🔥🔥同你一齊火'},
+  pro:{laugh:'概率上你開心',money:'期望值內贏錢',wow:'數據顯示正常波動',fire:'🔥模型顯示旺'},
+  million:{laugh:'豪客笑而不語',money:'💎呢啲碎銀',wow:'大戶唔會大驚小怪',fire:'🔥大注火力全開'},
+  rookie:{laugh:'哈哈初哥都識笑',money:'嘩好叻呀你！',wow:'嘩咁都得？！',fire:'🔥我學你火力'},
+  analyst:{laugh:'指標顯示你開心',money:'系統確認資金增長',wow:'異常波動值得關注',fire:'🔥數據紅區預警'},
+  rebel:{laugh:'笑？我偏唔笑',money:'你贏？我偏相反',wow:'驚？我偏鎮定',fire:'🔥我反你份火'}
+};
+function playerEmote(em){
+  if(ais.length===0){ showToast('先加 AI 陪玩先可以傾偈 😎'); return; }
+  const icon=EMOTE_ICON[em]; if(!icon) return;
+  showTableChat();
+  // 你嘅 bubble（用 human 色）
+  // 你嘅 bubble（用 human 色），取消右邊，全部落同一面板
+  const L=document.getElementById('tcBodyL');
+  const total=(L?L.childElementCount:0);
+  if(total<8){ const target=L; if(target){ const b=document.createElement('div'); b.className='tc-bubble ai-0'; b.style.opacity='.95';
+    b.innerHTML='<span class="ic">👤</span><span class="tx"><b>你：</b>'+icon+'</span>'; target.appendChild(b); target.scrollTop=target.scrollHeight; } }
+  // 隨機 1-2 個 AI 按性格回應
+  const pool=[...ais].sort(()=>Math.random()-0.5).slice(0, 1+Math.floor(Math.random()*2));
+  pool.forEach((ai,idx)=>{
+    setTimeout(()=>{
+      const reply=EMOTE_REPLY[ai.persona] && EMOTE_REPLY[ai.persona][em];
+      if(reply) addChatBubble(ai, reply);
+    }, 350+idx*450);
+  });
+  // 自動收起（唔影響遊戲流程）
+  clearTimeout(playerEmote._t);
+  playerEmote._t=setTimeout(hideTableChat, 6000);
+}
+document.querySelectorAll('.player-emotes .pe').forEach(el=>{
+  el.addEventListener('click',()=>playerEmote(el.dataset.em));
+});
+
+
 
 loadStats(); loadRoads(); loadAiList(); loadQuest(); loadLimits(); updateAiBalances(); renderAiList();   // 修復: 開局重畫AI列表(否則reload後下方無卡片)
 sessionStartBalance=balance;   // 記低開局餘額，畀「本場淨贏/輸」用
@@ -3053,3 +2947,4 @@ updateBalance(); updateBetDisplay(); checkDaily(); updateQuest(); drawAllRoads()
 </script>
 </body>
 </html>
+
