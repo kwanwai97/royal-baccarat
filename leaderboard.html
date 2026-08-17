@@ -47,6 +47,7 @@ const JSON_URLS = [
 ];
 const PERSONA_NAME = {banker:'死忠莊',player:'閒家膽',dragon:'追龍佬',road:'路單迷',gambler:'賭徒膽',granny:'保守婆',hot:'燥底哥',pro:'算牌神',million:'大戶豪',rookie:'初哥仔',analyst:'分析師',rebel:'反叛者'};
 const AGE_NAME = {young:'青年',prime:'壯年',mid:'中年',senior:'資深',elder:'長者'};
+const PLAN_NAME = {flat:'平注',martin:'倍投',seq1324:'1-3-2-4',fib:'斐波那契',kelly:'凱利',paroli:'帕羅利',labouchere:'拉布雪',dalerob:'達朗伯',contraiser:'逆向',grandmartin:'格蘭倍投',splitmartin:'分流倍投',whittacker:'惠特克'};
 
 async function loadJSON(){
   for(const u of JSON_URLS){
@@ -82,7 +83,7 @@ function render(db, sortBy){
       <td class="name">${a.name}</td>
       <td><span class="tag">${PERSONA_NAME[a.persona]||a.persona}</span></td>
       <td>${AGE_NAME[a.age]||a.age}</td>
-      <td><span class="tag">${a.plan}</span></td>
+      <td><span class="tag">${PLAN_NAME[a.plan]||a.plan}</span></td>
       <td>${a.totalWager.toLocaleString('en-US')}</td>
       <td class="${pc}">${fmt(a.totalProfit)}</td>
       <td class="${bc}">${a.bankrupt}</td>
