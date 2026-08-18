@@ -371,6 +371,43 @@
   .marquee.show{opacity:1;}
   .marquee-track{display:flex; flex-direction:column; gap:4px;}
 
+  /* ===== A級：打橫／短高度適應（只改 CSS，唔掂 game logic） ===== */
+  @media (orientation:landscape){
+    html,body{height:auto;}
+    .app{max-width:100%; min-height:100dvh; padding-bottom:4px;}
+    .roadpanel{margin:2px 6px 0;}
+    .road-section-title{font-size:9px; padding:2px 6px;}
+    /* 路單縮高，唔好佔用大半屏（canvas 略壓扁，紅藍圈變少少橢圓，可接受） */
+    #bigCanvas{height:54px;}
+    #beadCanvas{height:52px;}
+    .road-derived .derived-row{flex:none; height:24px;}
+    .derived-row canvas{height:24px;}
+    .info-strip{height:32px; font-size:8px; padding:2px 5px;}
+    /* 開牌區卡牌縮細 */
+    .hand{min-height:104px; gap:4px;}
+    .cards{grid-template-columns:repeat(2,38px); grid-auto-rows:52px; gap:3px; width:80px; height:104px;}
+    .card{width:38px; height:52px; font-size:16px;}
+    #playerScore,#bankerScore{font-size:17px; transform:translateY(-20px);}
+    /* 投注區壓扁 */
+    .bets{gap:3px; padding:2px 8px 3px;}
+    .betrow.top .bet{min-height:56px; padding:5px 3px;}
+    .betrow.top .bet .chips-stack{min-height:36px; top:18px; gap:3px 4px;}
+    .bet .bn{font-size:11px;} .bet .od{font-size:8px;}
+    .betrow.bottom .bet{min-height:0; padding:4px 3px;}
+    /* 籌碼行 / 預測條 / 跟預測行 */
+    .chips-row{padding:2px 8px 1px; gap:6px;}
+    .chip{width:26px; height:26px; font-size:7px;}
+    .chip-icon{width:26px; height:26px; font-size:11px;}
+    .road-tip{font-size:12px; padding:4px 8px;}
+    .odds-info{font-size:10px; padding:2px 8px;}
+    .follow-wrap{margin-bottom:0;}
+    .controls{padding:3px 8px 0;}
+    .btn{font-size:12px; padding:5px;}
+    .btn.follow,.btn.follow-predict,.btn.shuffle{padding:5px 8px; font-size:11px;}
+    .topbar{padding:2px 8px;}
+    .brand{font-size:12px;} .brand-sub{font-size:9px;}
+  }
+
   /* ===== ① 開局前枱邊閒聊：單一面板，只佔左半（珠盤路位），唔遮右邊下三路 ===== */
   /* #tableChatL 佔左半(珠盤路位)；top:0 喺大路底，標題貼大路第6格底 */
   .tablechat{position:absolute; top:0; bottom:0; z-index:15; margin:0; background:rgba(2,17,10,.9); border:none; border-radius:0; padding:6px 8px; display:flex; flex-direction:column; max-height:none; opacity:0; visibility:hidden; pointer-events:none; transition:opacity .35s ease, visibility .35s;}
