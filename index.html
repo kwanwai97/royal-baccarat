@@ -374,38 +374,47 @@
   /* ===== A級：打橫／短高度適應（只改 CSS，唔掂 game logic） ===== */
   @media (orientation:landscape){
     html,body{height:auto;}
-    .app{max-width:100%; min-height:100dvh; padding-bottom:4px;}
-    .roadpanel{margin:2px 6px 0;}
-    .road-section-title{font-size:9px; padding:2px 6px;}
-    /* 路單縮高，唔好佔用大半屏（canvas 略壓扁，紅藍圈變少少橢圓，可接受） */
-    #bigCanvas{height:54px;}
-    #beadCanvas{height:52px;}
-    .road-derived .derived-row{flex:none; height:24px;}
-    .derived-row canvas{height:24px;}
-    .info-strip{height:32px; font-size:8px; padding:2px 5px;}
+    .app{max-width:100%; min-height:100dvh; padding-bottom:2px; gap:0;}
+    .topbar{padding:1px 6px; gap:4px; align-items:center;}
+    .brand{font-size:11px; line-height:1.05;}
+    .brand-sub{font-size:8px; line-height:1;}
+    .balance small{font-size:8px;} .balance b{font-size:14px;}
+    .odds-row{padding:0 8px 1px;}
+    .roadpanel{margin:1px 6px 0;}
+    .road-section-title{font-size:8px; padding:1px 5px; line-height:1.3;}
+    /* 路單縮到最扁，唔好佔用大半屏（canvas 略壓扁，紅藍圈變少少橢圓，可接受） */
+    #bigCanvas{height:36px;}
+    #beadCanvas{height:34px;}
+    .road-derived .derived-row{flex:none; height:14px;}
+    .derived-row canvas{height:14px;}
+    .info-strip{height:22px; font-size:7px; padding:1px 4px; line-height:1.05;}
     /* 開牌區卡牌縮細 */
-    .hand{min-height:104px; gap:4px;}
-    .cards{grid-template-columns:repeat(2,38px); grid-auto-rows:52px; gap:3px; width:80px; height:104px;}
-    .card{width:38px; height:52px; font-size:16px;}
-    #playerScore,#bankerScore{font-size:17px; transform:translateY(-20px);}
+    .hand{min-height:64px; gap:2px;}
+    .cards{grid-template-columns:repeat(2,28px); grid-auto-rows:38px; gap:2px; width:60px; height:64px;}
+    .card{width:28px; height:38px; font-size:12px;}
+    #playerScore,#bankerScore{font-size:13px; transform:translateY(-12px);}
     /* 投注區壓扁 */
-    .bets{gap:3px; padding:2px 8px 3px;}
-    .betrow.top .bet{min-height:56px; padding:5px 3px;}
-    .betrow.top .bet .chips-stack{min-height:36px; top:18px; gap:3px 4px;}
-    .bet .bn{font-size:11px;} .bet .od{font-size:8px;}
-    .betrow.bottom .bet{min-height:0; padding:4px 3px;}
+    .bets{gap:2px; padding:1px 8px 2px;}
+    .betrow.top .bet{min-height:40px; padding:3px 2px;}
+    .betrow.top .bet .chips-stack{min-height:24px; top:13px; gap:2px 3px;}
+    .bet .bn{font-size:9px;} .bet .od{font-size:7px;}
+    .betrow.bottom .bet{min-height:0; padding:2px 2px;}
     /* 籌碼行 / 預測條 / 跟預測行 */
-    .chips-row{padding:2px 8px 1px; gap:6px;}
-    .chip{width:26px; height:26px; font-size:7px;}
-    .chip-icon{width:26px; height:26px; font-size:11px;}
-    .road-tip{font-size:12px; padding:4px 8px;}
-    .odds-info{font-size:10px; padding:2px 8px;}
+    .chips-row{padding:1px 8px 1px; gap:5px;}
+    .chip{width:22px; height:22px; font-size:6px;}
+    .chip-icon{width:22px; height:22px; font-size:9px;}
+    .road-tip{font-size:10px; padding:2px 6px; line-height:1.2;}
+    .odds-info{font-size:9px; padding:1px 6px;}
     .follow-wrap{margin-bottom:0;}
-    .controls{padding:3px 8px 0;}
-    .btn{font-size:12px; padding:5px;}
-    .btn.follow,.btn.follow-predict,.btn.shuffle{padding:5px 8px; font-size:11px;}
-    .topbar{padding:2px 8px;}
-    .brand{font-size:12px;} .brand-sub{font-size:9px;}
+    .follow-left{padding-left:4px;} .follow-right{padding-right:4px;}
+    .controls{padding:2px 8px 0;}
+    .btn{font-size:10px; padding:3px;}
+    .btn.follow,.btn.follow-predict,.btn.shuffle{padding:3px 6px; font-size:9px;}
+    .streak-bar,.shoe-info{font-size:9px; padding:1px 5px;}
+    /* AI排行榜：打橫由4欄變8欄，省返一行垂直空間 */
+    .ai-balances{grid-template-columns:repeat(8,1fr);}
+    .ai-balances .aib{padding:0 3px;}
+    .ai-balances .aib b{font-size:10px;} .ai-balances .aib small{font-size:7px;}
   }
 
   /* ===== ① 開局前枱邊閒聊：單一面板，只佔左半（珠盤路位），唔遮右邊下三路 ===== */
