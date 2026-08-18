@@ -464,10 +464,42 @@
   .ai-chip.sel{background:var(--goldd); color:#fff; border-color:var(--goldd); font-weight:800;}
   .bet.ai-bet{ outline:2px solid #ffd98a; outline-offset:1px; }
   .bet .ai-amt{ position:absolute; top:-12px; left:50%; transform:translateX(-50%); font-size:9px; color:#ffd98a; font-weight:800; background:rgba(0,0,0,.7); padding:1px 4px; border-radius:6px; white-space:nowrap; pointer-events:none; }
+
+/* ===== 手機打橫(landscape) 兩大區：上=路單, 下=左控制/右資金AI榜 ===== */
+.top-block{display:contents;}
+.bottom-block{display:contents;}
+.lower-wrap{display:contents;}
+.right-panel{display:none;}
+@media (orientation:landscape) and (max-width:960px){
+  .app{flex-direction:column;}
+  .top-block{display:block;}
+  .bottom-block{display:flex; flex-direction:row; align-items:stretch; gap:8px; flex:1 1 auto; min-height:0;}
+  .lower-wrap{display:flex; flex-direction:column; flex:1 1 50%; min-width:0; gap:4px; overflow-y:auto;}
+  .right-panel{display:flex; flex-direction:column; flex:1 1 50%; min-width:0; gap:8px; overflow-y:auto;}
+  .roadpanel{margin:3px 8px 0; flex:0 0 auto; width:100%;}
+  /* 頂欄：拎走資金同AI榜掣（搬去右下欄） */
+  .topright{display:none;}
+  #btnLeaderboard{display:none;}
+  /* 右欄：資金卡 */
+  #balSlot{display:block;}
+  #balSlot .balance{font-size:15px; text-align:left; background:#0a1a12; border:1px solid rgba(212,175,55,.35); border-radius:8px; padding:8px 10px; color:var(--gold2);}
+  #balSlot .balance b{font-size:26px; margin-left:4px;}
+  /* 右欄：AI榜卡 */
+  #lbSlot{display:block; background:#0a1a12; border:1px solid rgba(212,175,55,.35); border-radius:8px; padding:8px 10px; flex:1 1 auto; overflow:auto;}
+  #lbSlot h3{margin:0 0 6px; font-size:14px; color:var(--gold2); letter-spacing:1px;}
+  #lbSlot .lb-row{display:flex; justify-content:space-between; padding:3px 2px; border-bottom:1px solid rgba(212,175,55,.12); font-size:12px; color:#e8e0c0;}
+  #lbSlot .lb-row .rank{color:#ffd45e; font-weight:800; width:26px;}
+  #lbSlot .lb-row .nm{flex:1 1 auto; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  #lbSlot .lb-row .amt{color:#7fffb0; font-weight:700; text-align:right;}
+  /* 左欄控制：保持原樣、可點 */
+  .follow-wrap,.bets,.chips-row,.controls{flex:0 0 auto;}
+}
+
 </style>
 </head>
 <body>
 <div class="app">
+  <div class="top-block">
   <div class="topbar">
     <div class="brand">
       <button id="btnLeaderboard" title="AI 排行榜" style="align-self:flex-start;margin:0;background:linear-gradient(90deg,#3a2d5c,#5a3d7c);color:#fff;border:none;padding:1px 1px;border-radius:6px;font-size:12px;line-height:1.3;cursor:pointer;letter-spacing:.5px;">🏆 AI排行榜<div style="font-size:9px;opacity:.75;letter-spacing:0;">每小時更新</div></button>
@@ -536,6 +568,9 @@
       </div>
     </div>
   </div>
+  </div>
+  <div class="bottom-block">
+  <div class="lower-wrap">
   <div class="modal" id="aiModal">
     <div class="modal-box" style="max-width:400px;">
       <h3>🤖 新增 AI 陪玩</h3>
@@ -664,6 +699,12 @@
     <button class="btn clear" id="btnClear">清除</button>
     <button class="btn repeat" id="btnRepeat">重複</button>
     <button class="btn deal" id="btnDeal">發牌</button>
+  </div>
+  </div>
+  <aside class="right-panel" id="rightPanel">
+    <div id="balSlot"></div>
+    <div id="lbSlot"></div>
+  </aside>
   </div>
 </div>
 
@@ -3050,6 +3091,52 @@ sessionStartBalance=balance;   // 記低開局餘額，畀「本場淨贏/輸」
 if(!loadShoe()) resetShoe();   // 有儲存嘅鞋就續返(派過幾多張繼續)，否則開新鞋
 updateShoeInfo();   // 無論續鞋定開新鞋都刷新剩餘張數顯示
 updateBalance(); updateBetDisplay(); checkDaily(); updateQuest(); drawAllRoads();
+
+/* ===== 手機打橫：將「資金」同「🏆AI排行榜」搬去右下欄 (#rightPanel) ===== */
+(function(){
+  const balSlot=document.getElementById('balSlot');
+  const lbSlot=document.getElementById('lbSlot');
+  if(!balSlot||!lbSlot) return;
+  const bal=document.querySelector('.topright .balance');
+  const lbBtn=document.getElementById('btnLeaderboard');
+  const topright=document.querySelector('.topright');
+  function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+  function fmt(n){return Number(n).toLocaleString('en-US');}
+  function loadLb(box){
+    if(!box) return;
+    fetch('leaderboard.json?_='+Date.now()).then(r=>r.json()).then(d=>{
+      let arr=Array.isArray(d)?d:(d&&d.roster?d.roster:(d&&d.leaderboard?d.leaderboard:[]));
+      if(!arr.length){box.innerHTML='<div style="opacity:.6;">（暫時無排行榜資料）</div>';return;}
+      arr=arr.slice().sort((a,b)=>Number(b.balance||0)-Number(a.balance||0)).slice(0,12);
+      box.innerHTML=arr.map((p,i)=>{
+        const v=p.balance!=null?p.balance:(p.profit!=null?p.profit:(p.win!=null?p.win:0));
+        const nm=p.name||p.id||('AI'+(i+1));
+        return '<div class="lb-row"><span class="rank">'+(i+1)+'.</span><span class="nm">'+esc(nm)+'</span><span class="amt">'+fmt(v)+'</span></div>';
+      }).join('');
+    }).catch(()=>{box.innerHTML='<div style="opacity:.6;">（暫時讀唔到排行榜）</div>';});
+  }
+  function fillRight(){
+    const land=window.matchMedia('(orientation:landscape) and (max-width:960px)').matches;
+    if(land){
+      if(bal && bal.parentElement!==balSlot) balSlot.appendChild(bal);
+      if(lbBtn && lbBtn.parentElement!==lbSlot){
+        lbSlot.innerHTML='<h3>🏆 AI 排行榜 · 每小時更新</h3><div id="lbListSlot"></div>';
+        lbSlot.appendChild(lbBtn);
+        loadLb(lbSlot.querySelector('#lbListSlot'));
+      } else if(lbBtn && lbBtn.parentElement===lbSlot){
+        loadLb(lbSlot.querySelector('#lbListSlot'));
+      }
+    } else {
+      if(bal && topright && bal.parentElement!==topright) topright.insertBefore(bal, topright.firstChild);
+      if(lbBtn && topright && lbBtn.parentElement!==topright) topright.appendChild(lbBtn);
+      if(lbSlot) lbSlot.innerHTML='';
+    }
+  }
+  fillRight();
+  window.addEventListener('resize', fillRight);
+  window.addEventListener('orientationchange', function(){ setTimeout(fillRight, 250); });
+})();
+
 </script>
 </body>
 </html>
