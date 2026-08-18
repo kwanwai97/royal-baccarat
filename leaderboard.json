@@ -6,17 +6,17 @@
    "persona": "analyst",
    "age": "young",
    "plan": "paroli",
-   "balance": 605400.0,
+   "balance": 655200.0,
    "baseBet": 2000,
    "step": 0,
    "emotion": 90,
-   "games": 2820,
-   "wins": 1234,
-   "losses": 1586,
-   "totalWager": 11977395.0,
-   "totalProfit": 155400.0,
+   "games": 2940,
+   "wins": 1286,
+   "losses": 1654,
+   "totalWager": 12441395.0,
+   "totalProfit": 205200.0,
    "bankrupt": 8,
-   "hours": 47,
+   "hours": 49,
    "weights": {
     "trend": 1.5,
     "pattern": 1.5,
@@ -25,36 +25,48 @@
     "memory": 1.5
    },
    "currentBet": null,
-   "prevProfit": 130500.0,
-   "prevRank": 22
+   "prevProfit": 180300.0,
+   "prevRank": 22,
+   "streak": 1,
+   "maxLossStreak": -3,
+   "maxWinStreak": 4,
+   "balanceHistory": [
+    655200
+   ]
   },
   {
    "id": "ai01",
    "name": "賭神",
-   "persona": "banker",
+   "persona": "rebel",
    "age": "young",
-   "plan": "contraiser",
-   "balance": 22550.0,
+   "plan": "martin",
+   "balance": 108600.0,
    "baseBet": 2000,
    "step": 0,
    "emotion": 100,
-   "games": 2820,
-   "wins": 1199,
-   "losses": 1621,
-   "totalWager": 15527283.0,
-   "totalProfit": -1177450.0,
-   "bankrupt": 23,
-   "hours": 47,
+   "games": 60,
+   "wins": 32,
+   "losses": 28,
+   "totalWager": 196000,
+   "totalProfit": 58600.0,
+   "bankrupt": 0,
+   "hours": 1,
    "weights": {
-    "trend": 1.5,
-    "pattern": 0.3,
-    "emotion": 0.5,
-    "crowd": 0.2,
-    "memory": 0.3
+    "trend": -1.5,
+    "pattern": -1,
+    "emotion": 1,
+    "crowd": -2,
+    "memory": -0.5
    },
    "currentBet": null,
-   "prevProfit": -1143400.0,
-   "prevRank": 54
+   "prevProfit": 0,
+   "prevRank": 28,
+   "streak": 1,
+   "maxWinStreak": 5,
+   "maxLossStreak": -3,
+   "balanceHistory": [
+    108600
+   ]
   },
   {
    "id": "ai02",
@@ -62,17 +74,17 @@
    "persona": "dragon",
    "age": "elder",
    "plan": "fib",
-   "balance": 37200.0,
+   "balance": 17600.0,
    "baseBet": 2000,
    "step": 0,
    "emotion": 5,
-   "games": 2820,
-   "wins": 1134,
-   "losses": 1686,
-   "totalWager": 7772234.3625,
-   "totalProfit": -512800.0,
+   "games": 2940,
+   "wins": 1178,
+   "losses": 1762,
+   "totalWager": 8076234.3625,
+   "totalProfit": -532400.0,
    "bankrupt": 10,
-   "hours": 47,
+   "hours": 49,
    "weights": {
     "trend": 2,
     "pattern": 0.5,
@@ -81,8 +93,14 @@
     "memory": 0.6
    },
    "currentBet": null,
-   "prevProfit": -503000.0,
-   "prevRank": 45
+   "prevProfit": -522600.0,
+   "prevRank": 48,
+   "streak": 1,
+   "maxLossStreak": -3,
+   "maxWinStreak": 4,
+   "balanceHistory": [
+    17600
+   ]
   },
   {
    "id": "ai03",
@@ -90,17 +108,17 @@
    "persona": "rebel",
    "age": "prime",
    "plan": "splitmartin",
-   "balance": 1306200.0,
+   "balance": 1404800.0,
    "baseBet": 2000,
    "step": 0,
    "emotion": 100,
-   "games": 2820,
-   "wins": 1408,
-   "losses": 1412,
-   "totalWager": 9234000,
-   "totalProfit": 1256200.0,
+   "games": 2940,
+   "wins": 1472,
+   "losses": 1468,
+   "totalWager": 9582000,
+   "totalProfit": 1354800.0,
    "bankrupt": 0,
-   "hours": 47,
+   "hours": 49,
    "weights": {
     "trend": -1.5,
     "pattern": -1,
@@ -109,8 +127,14 @@
     "memory": -0.5
    },
    "currentBet": null,
-   "prevProfit": 1206900.0,
-   "prevRank": 8
+   "prevProfit": 1305500.0,
+   "prevRank": 9,
+   "streak": 1,
+   "maxWinStreak": 5,
+   "maxLossStreak": -2,
+   "balanceHistory": [
+    1404800
+   ]
   },
   {
    "id": "ai04",
@@ -118,17 +142,17 @@
    "persona": "analyst",
    "age": "prime",
    "plan": "seq1324",
-   "balance": 153600.0,
+   "balance": 164000.0,
    "baseBet": 2000,
    "step": 0,
    "emotion": 90,
-   "games": 2820,
-   "wins": 1233,
-   "losses": 1587,
-   "totalWager": 10277800.0,
-   "totalProfit": -46400.0,
+   "games": 2940,
+   "wins": 1285,
+   "losses": 1655,
+   "totalWager": 10717800.0,
+   "totalProfit": -36000.0,
    "bankrupt": 3,
-   "hours": 47,
+   "hours": 49,
    "weights": {
     "trend": 1.5,
     "pattern": 1.5,
@@ -137,8 +161,14 @@
     "memory": 1.5
    },
    "currentBet": null,
-   "prevProfit": -51600.0,
-   "prevRank": 30
+   "prevProfit": -41200.0,
+   "prevRank": 37,
+   "streak": 1,
+   "maxLossStreak": -3,
+   "maxWinStreak": 4,
+   "balanceHistory": [
+    164000
+   ]
   },
   {
    "id": "ai05",
@@ -146,17 +176,17 @@
    "persona": "dragon",
    "age": "elder",
    "plan": "grandmartin",
-   "balance": 2580200.0,
+   "balance": 2795800.0,
    "baseBet": 2000,
    "step": 0,
    "emotion": 95,
-   "games": 2820,
-   "wins": 1205,
-   "losses": 1615,
-   "totalWager": 25279736.9425,
-   "totalProfit": 1280200.0,
+   "games": 2940,
+   "wins": 1255,
+   "losses": 1685,
+   "totalWager": 26255736.9425,
+   "totalProfit": 1495800.0,
    "bankrupt": 25,
-   "hours": 47,
+   "hours": 49,
    "weights": {
     "trend": 2,
     "pattern": 0.5,
@@ -165,8 +195,14 @@
     "memory": 0.6
    },
    "currentBet": null,
-   "prevProfit": 1172400.0,
-   "prevRank": 9
+   "prevProfit": 1388000.0,
+   "prevRank": 8,
+   "streak": 3,
+   "maxWinStreak": 4,
+   "maxLossStreak": -3,
+   "balanceHistory": [
+    2795800
+   ]
   },
   {
    "id": "ai06",
@@ -174,17 +210,17 @@
    "persona": "pro",
    "age": "senior",
    "plan": "martin",
-   "balance": 645500.0,
+   "balance": 694900.0,
    "baseBet": 2000,
    "step": 0,
    "emotion": 85,
-   "games": 2820,
-   "wins": 1234,
-   "losses": 1586,
-   "totalWager": 13176810.0,
-   "totalProfit": 145500.0,
+   "games": 2940,
+   "wins": 1286,
+   "losses": 1654,
+   "totalWager": 13656810.0,
+   "totalProfit": 194900.0,
    "bankrupt": 9,
-   "hours": 47,
+   "hours": 49,
    "weights": {
     "trend": 1.2,
     "pattern": 1,
@@ -193,8 +229,14 @@
     "memory": 1.8
    },
    "currentBet": null,
-   "prevProfit": 120800.0,
-   "prevRank": 23
+   "prevProfit": 170200.0,
+   "prevRank": 23,
+   "streak": 1,
+   "maxWinStreak": 4,
+   "maxLossStreak": -3,
+   "balanceHistory": [
+    694900
+   ]
   },
   {
    "id": "ai07",
@@ -202,17 +244,17 @@
    "persona": "analyst",
    "age": "mid",
    "plan": "dalerob",
-   "balance": 87150.0,
+   "balance": 93050.0,
    "baseBet": 2000,
    "step": 0,
    "emotion": 90,
-   "games": 2820,
-   "wins": 1225,
-   "losses": 1595,
-   "totalWager": 7879290.0,
-   "totalProfit": -212850.0,
+   "games": 2940,
+   "wins": 1277,
+   "losses": 1663,
+   "totalWager": 8199290.0,
+   "totalProfit": -206950.0,
    "bankrupt": 5,
-   "hours": 47,
+   "hours": 49,
    "weights": {
     "trend": 1.5,
     "pattern": 1.5,
@@ -221,8 +263,14 @@
     "memory": 1.5
    },
    "currentBet": null,
-   "prevProfit": -215800.0,
-   "prevRank": 35
+   "prevProfit": -209900.0,
+   "prevRank": 40,
+   "streak": 1,
+   "maxLossStreak": -3,
+   "maxWinStreak": 4,
+   "balanceHistory": [
+    93050
+   ]
   },
   {
    "id": "ai08",
@@ -230,17 +278,17 @@
    "persona": "pro",
    "age": "young",
    "plan": "martin",
-   "balance": 630600.0,
+   "balance": 675800.0,
    "baseBet": 2000,
    "step": 0,
    "emotion": 85,
-   "games": 2820,
-   "wins": 1208,
-   "losses": 1612,
-   "totalWager": 13277620.0,
-   "totalProfit": 180600.0,
+   "games": 2940,
+   "wins": 1258,
+   "losses": 1682,
+   "totalWager": 13761620.0,
+   "totalProfit": 225800.0,
    "bankrupt": 8,
-   "hours": 47,
+   "hours": 49,
    "weights": {
     "trend": 1.2,
     "pattern": 1,
@@ -249,8 +297,14 @@
     "memory": 1.8
    },
    "currentBet": null,
-   "prevProfit": 158000.0,
-   "prevRank": 21
+   "prevProfit": 203200.0,
+   "prevRank": 20,
+   "streak": 1,
+   "maxWinStreak": 4,
+   "maxLossStreak": -3,
+   "balanceHistory": [
+    675800
+   ]
   },
   {
    "id": "ai09",
@@ -258,17 +312,17 @@
    "persona": "rookie",
    "age": "mid",
    "plan": "martin",
-   "balance": 9875.0,
+   "balance": 52800.0,
    "baseBet": 2000,
    "step": 1,
    "emotion": 5,
-   "games": 2820,
-   "wins": 1185,
-   "losses": 1635,
-   "totalWager": 13771778.0,
-   "totalProfit": -490125.0,
-   "bankrupt": 9,
-   "hours": 47,
+   "games": 2940,
+   "wins": 1231,
+   "losses": 1709,
+   "totalWager": 14348653.0,
+   "totalProfit": -497200.0,
+   "bankrupt": 10,
+   "hours": 49,
    "weights": {
     "trend": 0.3,
     "pattern": 0.2,
@@ -277,8 +331,14 @@
     "memory": 0
    },
    "currentBet": null,
-   "prevProfit": -458500.0,
-   "prevRank": 42
+   "prevProfit": -484100.0,
+   "prevRank": 47,
+   "streak": -1,
+   "maxWinStreak": 4,
+   "maxLossStreak": -5,
+   "balanceHistory": [
+    52800
+   ]
   },
   {
    "id": "ai10",
@@ -286,17 +346,17 @@
    "persona": "banker",
    "age": "prime",
    "plan": "whittacker",
-   "balance": 418444.0,
+   "balance": 443844.0,
    "baseBet": 2000,
    "step": 0,
    "emotion": 5,
-   "games": 2820,
-   "wins": 1157,
-   "losses": 1663,
-   "totalWager": 12734082.0,
-   "totalProfit": 218444.0,
+   "games": 2940,
+   "wins": 1203,
+   "losses": 1737,
+   "totalWager": 13242082.0,
+   "totalProfit": 243844.0,
    "bankrupt": 3,
-   "hours": 47,
+   "hours": 49,
    "weights": {
     "trend": 1.5,
     "pattern": 0.3,
@@ -305,8 +365,14 @@
     "memory": 0.3
    },
    "currentBet": null,
-   "prevProfit": 205744.0,
-   "prevRank": 18
+   "prevProfit": 231144.0,
+   "prevRank": 18,
+   "streak": 1,
+   "maxWinStreak": 3,
+   "maxLossStreak": -3,
+   "balanceHistory": [
+    443844
+   ]
   },
   {
    "id": "ai11",
@@ -314,17 +380,17 @@
    "persona": "player",
    "age": "young",
    "plan": "martin",
-   "balance": 718000.0,
+   "balance": 758400.0,
    "baseBet": 2000,
    "step": 0,
    "emotion": 45,
-   "games": 2820,
-   "wins": 1190,
-   "losses": 1630,
-   "totalWager": 13138300.0,
-   "totalProfit": 468000.0,
+   "games": 2940,
+   "wins": 1238,
+   "losses": 1702,
+   "totalWager": 13642300.0,
+   "totalProfit": 508400.0,
    "bankrupt": 4,
-   "hours": 47,
+   "hours": 49,
    "weights": {
     "trend": 1.5,
     "pattern": 0.3,
@@ -333,8 +399,14 @@
     "memory": 0.3
    },
    "currentBet": null,
-   "prevProfit": 447800.0,
-   "prevRank": 15
+   "prevProfit": 488200.0,
+   "prevRank": 16,
+   "streak": 3,
+   "maxWinStreak": 4,
+   "maxLossStreak": -3,
+   "balanceHistory": [
+    758400
+   ]
   },
   {
    "id": "ai12",
@@ -342,17 +414,17 @@
    "persona": "million",
    "age": "young",
    "plan": "kelly",
-   "balance": 8850.0,
+   "balance": 13550.0,
    "baseBet": 2000,
    "step": 0,
    "emotion": 65,
-   "games": 2820,
-   "wins": 1166,
-   "losses": 1654,
-   "totalWager": 8391126.75,
-   "totalProfit": -891150.0,
-   "bankrupt": 17,
-   "hours": 47,
+   "games": 2940,
+   "wins": 1214,
+   "losses": 1726,
+   "totalWager": 8743176.75,
+   "totalProfit": -936450.0,
+   "bankrupt": 18,
+   "hours": 49,
    "weights": {
     "trend": 1,
     "pattern": 0.5,
@@ -361,8 +433,14 @@
     "memory": 0.5
    },
    "currentBet": null,
-   "prevProfit": -875750.0,
-   "prevRank": 51
+   "prevProfit": -920750.0,
+   "prevRank": 56,
+   "streak": 1,
+   "maxWinStreak": 4,
+   "maxLossStreak": -3,
+   "balanceHistory": [
+    13550
+   ]
   },
   {
    "id": "ai13",
@@ -370,17 +448,17 @@
    "persona": "dragon",
    "age": "young",
    "plan": "flat",
-   "balance": 26600.0,
+   "balance": 35100.0,
    "baseBet": 2000,
    "step": 0,
    "emotion": 5,
-   "games": 2820,
-   "wins": 1137,
-   "losses": 1683,
-   "totalWager": 5602685.75,
-   "totalProfit": -623400.0,
-   "bankrupt": 12,
-   "hours": 47,
+   "games": 2940,
+   "wins": 1181,
+   "losses": 1759,
+   "totalWager": 5840485.75,
+   "totalProfit": -664900.0,
+   "bankrupt": 13,
+   "hours": 49,
    "weights": {
     "trend": 2,
     "pattern": 0.5,
@@ -389,8 +467,14 @@
     "memory": 0.6
    },
    "currentBet": null,
-   "prevProfit": -602100.0,
-   "prevRank": 48
+   "prevProfit": -644700.0,
+   "prevRank": 54,
+   "streak": 1,
+   "maxWinStreak": 4,
+   "maxLossStreak": -3,
+   "balanceHistory": [
+    35100
+   ]
   },
   {
    "id": "ai14",
@@ -398,17 +482,17 @@
    "persona": "rookie",
    "age": "prime",
    "plan": "martin",
-   "balance": 14184.5,
+   "balance": 58700.0,
    "baseBet": 2000,
    "step": 0,
    "emotion": 70,
-   "games": 2820,
-   "wins": 1197,
-   "losses": 1623,
-   "totalWager": 13809358.1375,
-   "totalProfit": -535815.5,
-   "bankrupt": 10,
-   "hours": 47,
+   "games": 2940,
+   "wins": 1245,
+   "losses": 1695,
+   "totalWager": 14384642.6375,
+   "totalProfit": -541300.0,
+   "bankrupt": 11,
+   "hours": 49,
    "weights": {
     "trend": 0.3,
     "pattern": 0.2,
@@ -417,36 +501,48 @@
     "memory": 0
    },
    "currentBet": null,
-   "prevProfit": -506390.0,
-   "prevRank": 46
+   "prevProfit": -530200.0,
+   "prevRank": 51,
+   "streak": 3,
+   "maxWinStreak": 4,
+   "maxLossStreak": -5,
+   "balanceHistory": [
+    58700
+   ]
   },
   {
    "id": "ai15",
    "name": "家豪",
-   "persona": "banker",
-   "age": "elder",
-   "plan": "contraiser",
-   "balance": 44330.0,
+   "persona": "rebel",
+   "age": "mid",
+   "plan": "labouchere",
+   "balance": 85600.0,
    "baseBet": 2000,
-   "step": 0,
-   "emotion": 5,
-   "games": 2820,
-   "wins": 1115,
-   "losses": 1705,
-   "totalWager": 15169205.981125,
-   "totalProfit": -2055670.0,
-   "bankrupt": 41,
-   "hours": 47,
+   "step": 2,
+   "emotion": 90,
+   "games": 60,
+   "wins": 30,
+   "losses": 30,
+   "totalWager": 180000,
+   "totalProfit": 35600.0,
+   "bankrupt": 0,
+   "hours": 1,
    "weights": {
-    "trend": 1.5,
-    "pattern": 0.3,
-    "emotion": 0.5,
-    "crowd": 0.2,
-    "memory": 0.3
+    "trend": -1.5,
+    "pattern": -1,
+    "emotion": 1,
+    "crowd": -2,
+    "memory": -0.5
    },
    "currentBet": null,
-   "prevProfit": -1978890.0,
-   "prevRank": 56
+   "prevProfit": 0,
+   "prevRank": 29,
+   "streak": -2,
+   "maxLossStreak": -3,
+   "maxWinStreak": 5,
+   "balanceHistory": [
+    85600
+   ]
   },
   {
    "id": "ai16",
@@ -454,17 +550,17 @@
    "persona": "hot",
    "age": "elder",
    "plan": "fib",
-   "balance": 337500.0,
+   "balance": 363500.0,
    "baseBet": 2000,
    "step": 0,
    "emotion": 100,
-   "games": 2820,
-   "wins": 1276,
-   "losses": 1544,
-   "totalWager": 7292724.5,
-   "totalProfit": 187500.0,
+   "games": 2940,
+   "wins": 1330,
+   "losses": 1610,
+   "totalWager": 7568724.5,
+   "totalProfit": 213500.0,
    "bankrupt": 2,
-   "hours": 47,
+   "hours": 49,
    "weights": {
     "trend": 0.3,
     "pattern": 0.5,
@@ -473,8 +569,14 @@
     "memory": 0.2
    },
    "currentBet": null,
-   "prevProfit": 174500.0,
-   "prevRank": 20
+   "prevProfit": 200500.0,
+   "prevRank": 21,
+   "streak": 4,
+   "maxLossStreak": -2,
+   "maxWinStreak": 5,
+   "balanceHistory": [
+    363500
+   ]
   },
   {
    "id": "ai17",
@@ -482,17 +584,17 @@
    "persona": "pro",
    "age": "senior",
    "plan": "fib",
-   "balance": 148900.0,
+   "balance": 153300.0,
    "baseBet": 2000,
    "step": 0,
    "emotion": 85,
-   "games": 2820,
-   "wins": 1235,
-   "losses": 1585,
-   "totalWager": 7521300.0,
-   "totalProfit": -101100.0,
+   "games": 2940,
+   "wins": 1287,
+   "losses": 1653,
+   "totalWager": 7813300.0,
+   "totalProfit": -96700.0,
    "bankrupt": 4,
-   "hours": 47,
+   "hours": 49,
    "weights": {
     "trend": 1.2,
     "pattern": 1,
@@ -501,8 +603,14 @@
     "memory": 1.8
    },
    "currentBet": null,
-   "prevProfit": -103300.0,
-   "prevRank": 34
+   "prevProfit": -98900.0,
+   "prevRank": 38,
+   "streak": 1,
+   "maxWinStreak": 4,
+   "maxLossStreak": -3,
+   "balanceHistory": [
+    153300
+   ]
   },
   {
    "id": "ai18",
@@ -510,17 +618,17 @@
    "persona": "granny",
    "age": "senior",
    "plan": "kelly",
-   "balance": 11550.0,
+   "balance": 21950.0,
    "baseBet": 2000,
    "step": 0,
    "emotion": 85,
-   "games": 2820,
-   "wins": 1219,
-   "losses": 1601,
-   "totalWager": 9381092.5,
-   "totalProfit": -638450.0,
-   "bankrupt": 12,
-   "hours": 47,
+   "games": 2940,
+   "wins": 1269,
+   "losses": 1671,
+   "totalWager": 9747892.5,
+   "totalProfit": -678050.0,
+   "bankrupt": 13,
+   "hours": 49,
    "weights": {
     "trend": 0.5,
     "pattern": 0.5,
@@ -529,36 +637,48 @@
     "memory": 1
    },
    "currentBet": null,
-   "prevProfit": -628050.0,
-   "prevRank": 50
+   "prevProfit": -652450.0,
+   "prevRank": 55,
+   "streak": 3,
+   "maxLossStreak": -4,
+   "maxWinStreak": 4,
+   "balanceHistory": [
+    21950
+   ]
   },
   {
    "id": "ai19",
    "name": "世昌",
-   "persona": "gambler",
-   "age": "senior",
-   "plan": "contraiser",
-   "balance": 61100.0,
+   "persona": "rookie",
+   "age": "prime",
+   "plan": "labouchere",
+   "balance": 38400.0,
    "baseBet": 2000,
    "step": 0,
-   "emotion": 100,
-   "games": 2820,
-   "wins": 1198,
-   "losses": 1622,
-   "totalWager": 15432560.250000002,
-   "totalProfit": -1238900.0,
-   "bankrupt": 25,
-   "hours": 47,
+   "emotion": 40,
+   "games": 60,
+   "wins": 23,
+   "losses": 37,
+   "totalWager": 224000,
+   "totalProfit": -11600.0,
+   "bankrupt": 0,
+   "hours": 1,
    "weights": {
-    "trend": 1,
-    "pattern": 0.8,
-    "emotion": 1.5,
-    "crowd": 0.6,
-    "memory": 0.3
+    "trend": 0.3,
+    "pattern": 0.2,
+    "emotion": 1,
+    "crowd": 1.8,
+    "memory": 0
    },
    "currentBet": null,
-   "prevProfit": -1204590.0,
-   "prevRank": 55
+   "prevProfit": 0,
+   "prevRank": 30,
+   "streak": 3,
+   "maxLossStreak": -5,
+   "maxWinStreak": 4,
+   "balanceHistory": [
+    38400
+   ]
   },
   {
    "id": "ai20",
@@ -566,17 +686,17 @@
    "persona": "dragon",
    "age": "prime",
    "plan": "dalerob",
-   "balance": 37700.0,
+   "balance": 6500.0,
    "baseBet": 2000,
    "step": 0,
    "emotion": 5,
-   "games": 2820,
-   "wins": 1134,
-   "losses": 1686,
-   "totalWager": 7984435.0,
-   "totalProfit": -512300.0,
+   "games": 2940,
+   "wins": 1177,
+   "losses": 1763,
+   "totalWager": 8322435.0,
+   "totalProfit": -543500.0,
    "bankrupt": 10,
-   "hours": 47,
+   "hours": 49,
    "weights": {
     "trend": 2,
     "pattern": 0.5,
@@ -585,8 +705,14 @@
     "memory": 0.6
    },
    "currentBet": null,
-   "prevProfit": -499150.0,
-   "prevRank": 44
+   "prevProfit": -525450.0,
+   "prevRank": 50,
+   "streak": 1,
+   "maxLossStreak": -3,
+   "maxWinStreak": 4,
+   "balanceHistory": [
+    6500
+   ]
   },
   {
    "id": "ai21",
@@ -594,17 +720,17 @@
    "persona": "granny",
    "age": "mid",
    "plan": "labouchere",
-   "balance": 226000.0,
+   "balance": 229300.0,
    "baseBet": 2000,
    "step": 0,
    "emotion": 95,
-   "games": 2820,
-   "wins": 1220,
-   "losses": 1600,
-   "totalWager": 10001289.5,
-   "totalProfit": -24000.0,
+   "games": 2940,
+   "wins": 1269,
+   "losses": 1671,
+   "totalWager": 10417289.5,
+   "totalProfit": -20700.0,
    "bankrupt": 4,
-   "hours": 47,
+   "hours": 49,
    "weights": {
     "trend": 0.5,
     "pattern": 0.5,
@@ -613,8 +739,14 @@
     "memory": 1
    },
    "currentBet": null,
-   "prevProfit": -28600.0,
-   "prevRank": 29
+   "prevProfit": -19400.0,
+   "prevRank": 34,
+   "streak": 3,
+   "maxLossStreak": -3,
+   "maxWinStreak": 4,
+   "balanceHistory": [
+    229300
+   ]
   },
   {
    "id": "ai22",
@@ -622,17 +754,17 @@
    "persona": "rebel",
    "age": "prime",
    "plan": "seq1324",
-   "balance": 894500.0,
+   "balance": 967300.0,
    "baseBet": 2000,
    "step": 2,
    "emotion": 90,
-   "games": 2820,
-   "wins": 1363,
-   "losses": 1457,
-   "totalWager": 9761102.0,
-   "totalProfit": 794500.0,
+   "games": 2940,
+   "wins": 1424,
+   "losses": 1516,
+   "totalWager": 10163102.0,
+   "totalProfit": 867300.0,
    "bankrupt": 1,
-   "hours": 47,
+   "hours": 49,
    "weights": {
     "trend": -1.5,
     "pattern": -1,
@@ -641,8 +773,14 @@
     "memory": -0.5
    },
    "currentBet": null,
-   "prevProfit": 763000.0,
-   "prevRank": 12
+   "prevProfit": 826000.0,
+   "prevRank": 12,
+   "streak": -2,
+   "maxWinStreak": 5,
+   "maxLossStreak": -2,
+   "balanceHistory": [
+    967300
+   ]
   },
   {
    "id": "ai23",
@@ -650,17 +788,17 @@
    "persona": "analyst",
    "age": "elder",
    "plan": "splitmartin",
-   "balance": 435000.0,
+   "balance": 469600.0,
    "baseBet": 2000,
    "step": 0,
    "emotion": 90,
-   "games": 2820,
-   "wins": 1250,
-   "losses": 1570,
-   "totalWager": 10086479.25,
-   "totalProfit": 35000.0,
+   "games": 2940,
+   "wins": 1304,
+   "losses": 1636,
+   "totalWager": 10486479.25,
+   "totalProfit": 69600.0,
    "bankrupt": 7,
-   "hours": 47,
+   "hours": 49,
    "weights": {
     "trend": 1.5,
     "pattern": 1.5,
@@ -669,8 +807,14 @@
     "memory": 1.5
    },
    "currentBet": null,
-   "prevProfit": 17700.0,
-   "prevRank": 24
+   "prevProfit": 52300.0,
+   "prevRank": 24,
+   "streak": 1,
+   "maxWinStreak": 4,
+   "maxLossStreak": -3,
+   "balanceHistory": [
+    469600
+   ]
   },
   {
    "id": "ai24",
@@ -678,17 +822,17 @@
    "persona": "million",
    "age": "mid",
    "plan": "dalerob",
-   "balance": 47000.0,
+   "balance": 38100.0,
    "baseBet": 2000,
    "step": 0,
    "emotion": 85,
-   "games": 2820,
-   "wins": 1169,
-   "losses": 1651,
-   "totalWager": 7937813.078749999,
-   "totalProfit": -403000.0,
+   "games": 2940,
+   "wins": 1217,
+   "losses": 1723,
+   "totalWager": 8263813.078749999,
+   "totalProfit": -411900.0,
    "bankrupt": 8,
-   "hours": 47,
+   "hours": 49,
    "weights": {
     "trend": 1,
     "pattern": 0.5,
@@ -697,8 +841,14 @@
     "memory": 0.5
    },
    "currentBet": null,
-   "prevProfit": -393100.0,
-   "prevRank": 41
+   "prevProfit": -407450.0,
+   "prevRank": 46,
+   "streak": 3,
+   "maxWinStreak": 4,
+   "maxLossStreak": -3,
+   "balanceHistory": [
+    38100
+   ]
   },
   {
    "id": "ai25",
@@ -706,17 +856,17 @@
    "persona": "rookie",
    "age": "mid",
    "plan": "splitmartin",
-   "balance": 21400.0,
+   "balance": 53800.0,
    "baseBet": 2000,
    "step": 0,
-   "emotion": 85,
-   "games": 2820,
-   "wins": 1211,
-   "losses": 1609,
-   "totalWager": 10325780.0,
-   "totalProfit": -228600.0,
-   "bankrupt": 4,
-   "hours": 47,
+   "emotion": 75,
+   "games": 2940,
+   "wins": 1260,
+   "losses": 1680,
+   "totalWager": 10763015.0,
+   "totalProfit": -246200.0,
+   "bankrupt": 5,
+   "hours": 49,
    "weights": {
     "trend": 0.3,
     "pattern": 0.2,
@@ -725,8 +875,14 @@
     "memory": 0
    },
    "currentBet": null,
-   "prevProfit": -227000.0,
-   "prevRank": 36
+   "prevProfit": -230200.0,
+   "prevRank": 41,
+   "streak": 3,
+   "maxLossStreak": -5,
+   "maxWinStreak": 6,
+   "balanceHistory": [
+    53800
+   ]
   },
   {
    "id": "ai26",
@@ -734,17 +890,17 @@
    "persona": "banker",
    "age": "prime",
    "plan": "dalerob",
-   "balance": 42550.0,
+   "balance": 11050.0,
    "baseBet": 2000,
    "step": 0,
    "emotion": 5,
-   "games": 2820,
-   "wins": 1139,
-   "losses": 1681,
-   "totalWager": 7965964.5,
-   "totalProfit": -507450.0,
+   "games": 2940,
+   "wins": 1183,
+   "losses": 1757,
+   "totalWager": 8307964.5,
+   "totalProfit": -538950.0,
    "bankrupt": 10,
-   "hours": 47,
+   "hours": 49,
    "weights": {
     "trend": 1.5,
     "pattern": 0.3,
@@ -753,8 +909,14 @@
     "memory": 0.3
    },
    "currentBet": null,
-   "prevProfit": -485950.0,
-   "prevRank": 43
+   "prevProfit": -523200.0,
+   "prevRank": 49,
+   "streak": 1,
+   "maxLossStreak": -4,
+   "maxWinStreak": 3,
+   "balanceHistory": [
+    11050
+   ]
   },
   {
    "id": "ai27",
@@ -762,17 +924,17 @@
    "persona": "hot",
    "age": "senior",
    "plan": "splitmartin",
-   "balance": 506800.0,
+   "balance": 542200.0,
    "baseBet": 2000,
    "step": 0,
    "emotion": 90,
-   "games": 2820,
-   "wins": 1239,
-   "losses": 1581,
-   "totalWager": 9887280.0,
-   "totalProfit": 256800.0,
+   "games": 2940,
+   "wins": 1291,
+   "losses": 1649,
+   "totalWager": 10279280.0,
+   "totalProfit": 292200.0,
    "bankrupt": 4,
-   "hours": 47,
+   "hours": 49,
    "weights": {
     "trend": 0.3,
     "pattern": 0.5,
@@ -781,8 +943,14 @@
     "memory": 0.2
    },
    "currentBet": null,
-   "prevProfit": 239100.0,
-   "prevRank": 17
+   "prevProfit": 274500.0,
+   "prevRank": 17,
+   "streak": 3,
+   "maxLossStreak": -2,
+   "maxWinStreak": 5,
+   "balanceHistory": [
+    542200
+   ]
   },
   {
    "id": "ai28",
@@ -790,17 +958,17 @@
    "persona": "rebel",
    "age": "mid",
    "plan": "grandmartin",
-   "balance": 4152300.0,
+   "balance": 4434000.0,
    "baseBet": 2000,
    "step": 2,
    "emotion": 90,
-   "games": 2820,
-   "wins": 1341,
-   "losses": 1479,
-   "totalWager": 21414000,
-   "totalProfit": 4052300.0,
+   "games": 2940,
+   "wins": 1400,
+   "losses": 1540,
+   "totalWager": 22102000,
+   "totalProfit": 4334000.0,
    "bankrupt": 1,
-   "hours": 47,
+   "hours": 49,
    "weights": {
     "trend": -1.5,
     "pattern": -1,
@@ -809,166 +977,32 @@
     "memory": -0.5
    },
    "currentBet": null,
-   "prevProfit": 3909400.0,
-   "prevRank": 2
+   "prevProfit": 4195200.0,
+   "prevRank": 2,
+   "streak": -2,
+   "maxLossStreak": -2,
+   "maxWinStreak": 5,
+   "balanceHistory": [
+    4434000
+   ]
   },
   {
    "id": "ai29",
    "name": "慶豐",
-   "persona": "analyst",
-   "age": "young",
-   "plan": "contraiser",
-   "balance": 11150.0,
-   "baseBet": 2000,
-   "step": 0,
-   "emotion": 85,
-   "games": 2820,
-   "wins": 1210,
-   "losses": 1610,
-   "totalWager": 15412092.0,
-   "totalProfit": -1038850.0,
-   "bankrupt": 20,
-   "hours": 47,
-   "weights": {
-    "trend": 1.5,
-    "pattern": 1.5,
-    "emotion": 0.3,
-    "crowd": 0.5,
-    "memory": 1.5
-   },
-   "currentBet": null,
-   "prevProfit": -1005670.0,
-   "prevRank": 52
-  },
-  {
-   "id": "ai30",
-   "name": "志明",
-   "persona": "road",
-   "age": "elder",
-   "plan": "fib",
-   "balance": 236400.0,
-   "baseBet": 2000,
-   "step": 0,
-   "emotion": 90,
-   "games": 2820,
-   "wins": 1272,
-   "losses": 1548,
-   "totalWager": 7594835.0,
-   "totalProfit": -13600.0,
-   "bankrupt": 4,
-   "hours": 47,
-   "weights": {
-    "trend": 0.8,
-    "pattern": 2,
-    "emotion": 0.2,
-    "crowd": 0.3,
-    "memory": 1.5
-   },
-   "currentBet": null,
-   "prevProfit": -21800.0,
-   "prevRank": 27
-  },
-  {
-   "id": "ai31",
-   "name": "美玲",
-   "persona": "rebel",
-   "age": "elder",
-   "plan": "labouchere",
-   "balance": 1042100.0,
-   "baseBet": 2000,
-   "step": 2,
-   "emotion": 90,
-   "games": 2820,
-   "wins": 1337,
-   "losses": 1483,
-   "totalWager": 9436000,
-   "totalProfit": 992100.0,
-   "bankrupt": 0,
-   "hours": 47,
-   "weights": {
-    "trend": -1.5,
-    "pattern": -1,
-    "emotion": 1,
-    "crowd": -2,
-    "memory": -0.5
-   },
-   "currentBet": null,
-   "prevProfit": 956500.0,
-   "prevRank": 10
-  },
-  {
-   "id": "ai32",
-   "name": "健華",
-   "persona": "rebel",
-   "age": "elder",
-   "plan": "grandmartin",
-   "balance": 4184815.0,
-   "baseBet": 2000,
-   "step": 2,
-   "emotion": 90,
-   "games": 2820,
-   "wins": 1344,
-   "losses": 1476,
-   "totalWager": 21237700.0,
-   "totalProfit": 4134815.0,
-   "bankrupt": 0,
-   "hours": 47,
-   "weights": {
-    "trend": -1.5,
-    "pattern": -1,
-    "emotion": 1,
-    "crowd": -2,
-    "memory": -0.5
-   },
-   "currentBet": null,
-   "prevProfit": 3991915.0,
-   "prevRank": 1
-  },
-  {
-   "id": "ai33",
-   "name": "嘉欣",
-   "persona": "rebel",
-   "age": "senior",
-   "plan": "martin",
-   "balance": 1754700.0,
-   "baseBet": 2000,
-   "step": 2,
-   "emotion": 90,
-   "games": 2820,
-   "wins": 1385,
-   "losses": 1435,
-   "totalWager": 11520000,
-   "totalProfit": 1704700.0,
-   "bankrupt": 0,
-   "hours": 47,
-   "weights": {
-    "trend": -1.5,
-    "pattern": -1,
-    "emotion": 1,
-    "crowd": -2,
-    "memory": -0.5
-   },
-   "currentBet": null,
-   "prevProfit": 1647900.0,
-   "prevRank": 4
-  },
-  {
-   "id": "ai34",
-   "name": "俊傑",
    "persona": "dragon",
-   "age": "elder",
-   "plan": "paroli",
-   "balance": 413800.0,
+   "age": "senior",
+   "plan": "whittacker",
+   "balance": 70400.0,
    "baseBet": 2000,
    "step": 0,
-   "emotion": 5,
-   "games": 2820,
-   "wins": 1129,
-   "losses": 1691,
-   "totalWager": 12723300.0,
-   "totalProfit": -36200.0,
-   "bankrupt": 8,
-   "hours": 47,
+   "emotion": 70,
+   "games": 60,
+   "wins": 26,
+   "losses": 34,
+   "totalWager": 238000,
+   "totalProfit": 20400.0,
+   "bankrupt": 0,
+   "hours": 1,
    "weights": {
     "trend": 2,
     "pattern": 0.5,
@@ -977,8 +1011,184 @@
     "memory": 0.6
    },
    "currentBet": null,
-   "prevProfit": -52300.0,
-   "prevRank": 31
+   "prevProfit": 0,
+   "prevRank": 31,
+   "streak": 3,
+   "maxWinStreak": 4,
+   "maxLossStreak": -3,
+   "balanceHistory": [
+    70400
+   ]
+  },
+  {
+   "id": "ai30",
+   "name": "志明",
+   "persona": "road",
+   "age": "elder",
+   "plan": "fib",
+   "balance": 252800.0,
+   "baseBet": 2000,
+   "step": 0,
+   "emotion": 90,
+   "games": 2940,
+   "wins": 1326,
+   "losses": 1614,
+   "totalWager": 7874835.0,
+   "totalProfit": 2800.0,
+   "bankrupt": 4,
+   "hours": 49,
+   "weights": {
+    "trend": 0.8,
+    "pattern": 2,
+    "emotion": 0.2,
+    "crowd": 0.3,
+    "memory": 1.5
+   },
+   "currentBet": null,
+   "prevProfit": -5400.0,
+   "prevRank": 33,
+   "streak": 1,
+   "maxLossStreak": -3,
+   "maxWinStreak": 4,
+   "balanceHistory": [
+    252800
+   ]
+  },
+  {
+   "id": "ai31",
+   "name": "美玲",
+   "persona": "rebel",
+   "age": "elder",
+   "plan": "labouchere",
+   "balance": 1113300.0,
+   "baseBet": 2000,
+   "step": 2,
+   "emotion": 90,
+   "games": 2940,
+   "wins": 1395,
+   "losses": 1545,
+   "totalWager": 9812000,
+   "totalProfit": 1063300.0,
+   "bankrupt": 0,
+   "hours": 49,
+   "weights": {
+    "trend": -1.5,
+    "pattern": -1,
+    "emotion": 1,
+    "crowd": -2,
+    "memory": -0.5
+   },
+   "currentBet": null,
+   "prevProfit": 1027700.0,
+   "prevRank": 10,
+   "streak": -2,
+   "maxLossStreak": -2,
+   "maxWinStreak": 5,
+   "balanceHistory": [
+    1113300
+   ]
+  },
+  {
+   "id": "ai32",
+   "name": "健華",
+   "persona": "rebel",
+   "age": "elder",
+   "plan": "grandmartin",
+   "balance": 4470615.0,
+   "baseBet": 2000,
+   "step": 2,
+   "emotion": 90,
+   "games": 2940,
+   "wins": 1402,
+   "losses": 1538,
+   "totalWager": 21941700.0,
+   "totalProfit": 4420615.0,
+   "bankrupt": 0,
+   "hours": 49,
+   "weights": {
+    "trend": -1.5,
+    "pattern": -1,
+    "emotion": 1,
+    "crowd": -2,
+    "memory": -0.5
+   },
+   "currentBet": null,
+   "prevProfit": 4277715.0,
+   "prevRank": 1,
+   "streak": -2,
+   "maxLossStreak": -2,
+   "maxWinStreak": 5,
+   "balanceHistory": [
+    4470615
+   ]
+  },
+  {
+   "id": "ai33",
+   "name": "嘉欣",
+   "persona": "rebel",
+   "age": "senior",
+   "plan": "martin",
+   "balance": 1868300.0,
+   "baseBet": 2000,
+   "step": 2,
+   "emotion": 90,
+   "games": 2940,
+   "wins": 1447,
+   "losses": 1493,
+   "totalWager": 11900000,
+   "totalProfit": 1818300.0,
+   "bankrupt": 0,
+   "hours": 49,
+   "weights": {
+    "trend": -1.5,
+    "pattern": -1,
+    "emotion": 1,
+    "crowd": -2,
+    "memory": -0.5
+   },
+   "currentBet": null,
+   "prevProfit": 1761500.0,
+   "prevRank": 5,
+   "streak": -2,
+   "maxWinStreak": 5,
+   "maxLossStreak": -2,
+   "balanceHistory": [
+    1868300
+   ]
+  },
+  {
+   "id": "ai34",
+   "name": "俊傑",
+   "persona": "dragon",
+   "age": "elder",
+   "plan": "paroli",
+   "balance": 446000.0,
+   "baseBet": 2000,
+   "step": 0,
+   "emotion": 5,
+   "games": 2940,
+   "wins": 1173,
+   "losses": 1767,
+   "totalWager": 13243300.0,
+   "totalProfit": -4000.0,
+   "bankrupt": 8,
+   "hours": 49,
+   "weights": {
+    "trend": 2,
+    "pattern": 0.5,
+    "emotion": 0.3,
+    "crowd": 0.8,
+    "memory": 0.6
+   },
+   "currentBet": null,
+   "prevProfit": -20100.0,
+   "prevRank": 35,
+   "streak": 1,
+   "maxLossStreak": -3,
+   "maxWinStreak": 4,
+   "balanceHistory": [
+    446000
+   ]
   },
   {
    "id": "ai35",
@@ -986,17 +1196,17 @@
    "persona": "analyst",
    "age": "mid",
    "plan": "grandmartin",
-   "balance": 2023900.0,
+   "balance": 2197300.0,
    "baseBet": 2000,
    "step": 0,
    "emotion": 90,
-   "games": 2820,
-   "wins": 1235,
-   "losses": 1585,
-   "totalWager": 23678543.0,
-   "totalProfit": 873900.0,
+   "games": 2940,
+   "wins": 1287,
+   "losses": 1653,
+   "totalWager": 24502543.0,
+   "totalProfit": 1047300.0,
    "bankrupt": 22,
-   "hours": 47,
+   "hours": 49,
    "weights": {
     "trend": 1.5,
     "pattern": 1.5,
@@ -1005,8 +1215,14 @@
     "memory": 1.5
    },
    "currentBet": null,
-   "prevProfit": 787200.0,
-   "prevRank": 11
+   "prevProfit": 960600.0,
+   "prevRank": 11,
+   "streak": 1,
+   "maxWinStreak": 4,
+   "maxLossStreak": -3,
+   "balanceHistory": [
+    2197300
+   ]
   },
   {
    "id": "ai36",
@@ -1014,17 +1230,17 @@
    "persona": "granny",
    "age": "prime",
    "plan": "labouchere",
-   "balance": 225200.0,
+   "balance": 242600.0,
    "baseBet": 2000,
    "step": 0,
    "emotion": 95,
-   "games": 2820,
-   "wins": 1231,
-   "losses": 1589,
-   "totalWager": 9933023.25,
-   "totalProfit": 25200.0,
+   "games": 2940,
+   "wins": 1283,
+   "losses": 1657,
+   "totalWager": 10337023.25,
+   "totalProfit": 42600.0,
    "bankrupt": 3,
-   "hours": 47,
+   "hours": 49,
    "weights": {
     "trend": 0.5,
     "pattern": 0.5,
@@ -1033,8 +1249,14 @@
     "memory": 1
    },
    "currentBet": null,
-   "prevProfit": 16500.0,
-   "prevRank": 25
+   "prevProfit": 33900.0,
+   "prevRank": 26,
+   "streak": 3,
+   "maxLossStreak": -3,
+   "maxWinStreak": 4,
+   "balanceHistory": [
+    242600
+   ]
   },
   {
    "id": "ai37",
@@ -1042,17 +1264,17 @@
    "persona": "dragon",
    "age": "senior",
    "plan": "dalerob",
-   "balance": 24350.0,
+   "balance": 14050.0,
    "baseBet": 2000,
    "step": 0,
    "emotion": 10,
-   "games": 2820,
-   "wins": 1175,
-   "losses": 1645,
-   "totalWager": 7928691.41875,
-   "totalProfit": -375650.0,
+   "games": 2940,
+   "wins": 1223,
+   "losses": 1717,
+   "totalWager": 8256691.41875,
+   "totalProfit": -385950.0,
    "bankrupt": 7,
-   "hours": 47,
+   "hours": 49,
    "weights": {
     "trend": 2,
     "pattern": 0.5,
@@ -1061,8 +1283,14 @@
     "memory": 0.6
    },
    "currentBet": null,
-   "prevProfit": -370500.0,
-   "prevRank": 40
+   "prevProfit": -380800.0,
+   "prevRank": 45,
+   "streak": 1,
+   "maxWinStreak": 4,
+   "maxLossStreak": -3,
+   "balanceHistory": [
+    14050
+   ]
   },
   {
    "id": "ai38",
@@ -1070,17 +1298,17 @@
    "persona": "hot",
    "age": "elder",
    "plan": "labouchere",
-   "balance": 825900.0,
+   "balance": 885100.0,
    "baseBet": 2000,
    "step": 0,
    "emotion": 100,
-   "games": 2820,
-   "wins": 1308,
-   "losses": 1512,
-   "totalWager": 9585695.0625,
-   "totalProfit": 525900.0,
+   "games": 2940,
+   "wins": 1366,
+   "losses": 1574,
+   "totalWager": 9957695.0625,
+   "totalProfit": 585100.0,
    "bankrupt": 5,
-   "hours": 47,
+   "hours": 49,
    "weights": {
     "trend": 0.3,
     "pattern": 0.5,
@@ -1089,8 +1317,14 @@
     "memory": 0.2
    },
    "currentBet": null,
-   "prevProfit": 496300.0,
-   "prevRank": 14
+   "prevProfit": 555500.0,
+   "prevRank": 14,
+   "streak": 3,
+   "maxWinStreak": 5,
+   "maxLossStreak": -2,
+   "balanceHistory": [
+    885100
+   ]
   },
   {
    "id": "ai39",
@@ -1098,17 +1332,17 @@
    "persona": "million",
    "age": "senior",
    "plan": "kelly",
-   "balance": 13200.0,
+   "balance": 23900.0,
    "baseBet": 2000,
    "step": 0,
    "emotion": 100,
-   "games": 2820,
-   "wins": 1210,
-   "losses": 1610,
-   "totalWager": 8124962.5,
-   "totalProfit": -636800.0,
-   "bankrupt": 12,
-   "hours": 47,
+   "games": 2940,
+   "wins": 1260,
+   "losses": 1680,
+   "totalWager": 8507562.5,
+   "totalProfit": -676100.0,
+   "bankrupt": 13,
+   "hours": 49,
    "weights": {
     "trend": 1,
     "pattern": 0.5,
@@ -1117,8 +1351,14 @@
     "memory": 0.5
    },
    "currentBet": null,
-   "prevProfit": -626100.0,
-   "prevRank": 49
+   "prevProfit": -640850.0,
+   "prevRank": 53,
+   "streak": 3,
+   "maxLossStreak": -3,
+   "maxWinStreak": 4,
+   "balanceHistory": [
+    23900
+   ]
   },
   {
    "id": "ai40",
@@ -1126,17 +1366,17 @@
    "persona": "dragon",
    "age": "prime",
    "plan": "paroli",
-   "balance": 481200.0,
+   "balance": 522000.0,
    "baseBet": 2000,
    "step": 0,
    "emotion": 10,
-   "games": 2820,
-   "wins": 1172,
-   "losses": 1648,
-   "totalWager": 12428453.75,
-   "totalProfit": 31200.0,
+   "games": 2940,
+   "wins": 1220,
+   "losses": 1720,
+   "totalWager": 12924453.75,
+   "totalProfit": 72000.0,
    "bankrupt": 8,
-   "hours": 47,
+   "hours": 49,
    "weights": {
     "trend": 2,
     "pattern": 0.5,
@@ -1145,36 +1385,48 @@
     "memory": 0.6
    },
    "currentBet": null,
-   "prevProfit": 10800.0,
-   "prevRank": 26
+   "prevProfit": 51600.0,
+   "prevRank": 25,
+   "streak": 1,
+   "maxWinStreak": 4,
+   "maxLossStreak": -3,
+   "balanceHistory": [
+    522000
+   ]
   },
   {
    "id": "ai41",
    "name": "賭神",
-   "persona": "hot",
-   "age": "senior",
-   "plan": "contraiser",
-   "balance": 20630.0,
+   "persona": "million",
+   "age": "elder",
+   "plan": "grandmartin",
+   "balance": 168900.0,
    "baseBet": 2000,
    "step": 0,
-   "emotion": 90,
-   "games": 2820,
-   "wins": 1213,
-   "losses": 1607,
-   "totalWager": 15410194.507875009,
-   "totalProfit": -1129370.0,
-   "bankrupt": 22,
-   "hours": 47,
+   "emotion": 50,
+   "games": 60,
+   "wins": 24,
+   "losses": 36,
+   "totalWager": 550000,
+   "totalProfit": 18900.0,
+   "bankrupt": 2,
+   "hours": 1,
    "weights": {
-    "trend": 0.3,
+    "trend": 1,
     "pattern": 0.5,
-    "emotion": 2,
-    "crowd": 0.4,
-    "memory": 0.2
+    "emotion": 1.2,
+    "crowd": 0,
+    "memory": 0.5
    },
    "currentBet": null,
-   "prevProfit": -1094220.2,
-   "prevRank": 53
+   "prevProfit": 0,
+   "prevRank": 32,
+   "streak": 1,
+   "maxLossStreak": -5,
+   "maxWinStreak": 5,
+   "balanceHistory": [
+    168900
+   ]
   },
   {
    "id": "ai42",
@@ -1182,17 +1434,17 @@
    "persona": "rookie",
    "age": "prime",
    "plan": "grandmartin",
-   "balance": 2595800.0,
+   "balance": 2794300.0,
    "baseBet": 2000,
    "step": 0,
-   "emotion": 30,
-   "games": 2820,
-   "wins": 1183,
-   "losses": 1637,
-   "totalWager": 25431286.4,
-   "totalProfit": 1695800.0,
+   "emotion": 40,
+   "games": 2940,
+   "wins": 1232,
+   "losses": 1708,
+   "totalWager": 26363286.4,
+   "totalProfit": 1894300.0,
    "bankrupt": 17,
-   "hours": 47,
+   "hours": 49,
    "weights": {
     "trend": 0.3,
     "pattern": 0.2,
@@ -1201,8 +1453,14 @@
     "memory": 0
    },
    "currentBet": null,
-   "prevProfit": 1588100.0,
-   "prevRank": 5
+   "prevProfit": 1803500.0,
+   "prevRank": 4,
+   "streak": 1,
+   "maxWinStreak": 4,
+   "maxLossStreak": -3,
+   "balanceHistory": [
+    2794300
+   ]
   },
   {
    "id": "ai43",
@@ -1210,17 +1468,17 @@
    "persona": "player",
    "age": "elder",
    "plan": "splitmartin",
-   "balance": 27000.0,
+   "balance": 63500.0,
    "baseBet": 2000,
    "step": 0,
    "emotion": 30,
-   "games": 2820,
-   "wins": 1187,
-   "losses": 1633,
-   "totalWager": 10583997.5,
-   "totalProfit": -323000.0,
-   "bankrupt": 6,
-   "hours": 47,
+   "games": 2940,
+   "wins": 1235,
+   "losses": 1705,
+   "totalWager": 11030747.5,
+   "totalProfit": -336500.0,
+   "bankrupt": 7,
+   "hours": 49,
    "weights": {
     "trend": 1.5,
     "pattern": 0.3,
@@ -1229,8 +1487,14 @@
     "memory": 0.3
    },
    "currentBet": null,
-   "prevProfit": -318000.0,
-   "prevRank": 39
+   "prevProfit": -332000.0,
+   "prevRank": 44,
+   "streak": 1,
+   "maxLossStreak": -4,
+   "maxWinStreak": 4,
+   "balanceHistory": [
+    63500
+   ]
   },
   {
    "id": "ai44",
@@ -1238,17 +1502,17 @@
    "persona": "rebel",
    "age": "senior",
    "plan": "whittacker",
-   "balance": 1891500.0,
+   "balance": 2005300.0,
    "baseBet": 2000,
    "step": 1,
    "emotion": 95,
-   "games": 2820,
-   "wins": 1401,
-   "losses": 1419,
-   "totalWager": 10846000,
-   "totalProfit": 1841500.0,
+   "games": 2940,
+   "wins": 1463,
+   "losses": 1477,
+   "totalWager": 11226000,
+   "totalProfit": 1955300.0,
    "bankrupt": 0,
-   "hours": 47,
+   "hours": 49,
    "weights": {
     "trend": -1.5,
     "pattern": -1,
@@ -1257,8 +1521,14 @@
     "memory": -0.5
    },
    "currentBet": null,
-   "prevProfit": 1784600.0,
-   "prevRank": 3
+   "prevProfit": 1898400.0,
+   "prevRank": 3,
+   "streak": -1,
+   "maxWinStreak": 5,
+   "maxLossStreak": -2,
+   "balanceHistory": [
+    2005300
+   ]
   },
   {
    "id": "ai45",
@@ -1266,17 +1536,17 @@
    "persona": "road",
    "age": "elder",
    "plan": "whittacker",
-   "balance": 761300.0,
+   "balance": 819300.0,
    "baseBet": 2000,
    "step": 0,
    "emotion": 90,
-   "games": 2820,
-   "wins": 1294,
-   "losses": 1526,
-   "totalWager": 12042417.0,
-   "totalProfit": 461300.0,
+   "games": 2940,
+   "wins": 1350,
+   "losses": 1590,
+   "totalWager": 12462417.0,
+   "totalProfit": 519300.0,
    "bankrupt": 5,
-   "hours": 47,
+   "hours": 49,
    "weights": {
     "trend": 0.8,
     "pattern": 2,
@@ -1285,8 +1555,14 @@
     "memory": 1.5
    },
    "currentBet": null,
-   "prevProfit": 432300.0,
-   "prevRank": 16
+   "prevProfit": 490300.0,
+   "prevRank": 15,
+   "streak": 1,
+   "maxWinStreak": 4,
+   "maxLossStreak": -3,
+   "balanceHistory": [
+    819300
+   ]
   },
   {
    "id": "ai46",
@@ -1294,17 +1570,17 @@
    "persona": "hot",
    "age": "prime",
    "plan": "dalerob",
-   "balance": 293900.0,
+   "balance": 322700.0,
    "baseBet": 2000,
    "step": 0,
    "emotion": 100,
-   "games": 2820,
-   "wins": 1297,
-   "losses": 1523,
-   "totalWager": 7681305.0,
-   "totalProfit": 193900.0,
+   "games": 2940,
+   "wins": 1354,
+   "losses": 1586,
+   "totalWager": 7991305.0,
+   "totalProfit": 222700.0,
    "bankrupt": 1,
-   "hours": 47,
+   "hours": 49,
    "weights": {
     "trend": 0.3,
     "pattern": 0.5,
@@ -1313,8 +1589,14 @@
     "memory": 0.2
    },
    "currentBet": null,
-   "prevProfit": 183400.0,
-   "prevRank": 19
+   "prevProfit": 204400.0,
+   "prevRank": 19,
+   "streak": 6,
+   "maxWinStreak": 6,
+   "maxLossStreak": -2,
+   "balanceHistory": [
+    322700
+   ]
   },
   {
    "id": "ai47",
@@ -1322,17 +1604,17 @@
    "persona": "banker",
    "age": "mid",
    "plan": "dalerob",
-   "balance": 975.0,
+   "balance": 47400.0,
    "baseBet": 2000,
    "step": 0,
    "emotion": 90,
-   "games": 2820,
-   "wins": 1218,
-   "losses": 1602,
-   "totalWager": 7768090.0,
-   "totalProfit": -99025.0,
-   "bankrupt": 1,
-   "hours": 47,
+   "games": 2940,
+   "wins": 1268,
+   "losses": 1672,
+   "totalWager": 8090966.25,
+   "totalProfit": -102600.0,
+   "bankrupt": 2,
+   "hours": 49,
    "weights": {
     "trend": 1.5,
     "pattern": 0.3,
@@ -1341,8 +1623,14 @@
     "memory": 0.3
    },
    "currentBet": null,
-   "prevProfit": -94000.0,
-   "prevRank": 33
+   "prevProfit": -101250.0,
+   "prevRank": 39,
+   "streak": 1,
+   "maxWinStreak": 4,
+   "maxLossStreak": -3,
+   "balanceHistory": [
+    47400
+   ]
   },
   {
    "id": "ai48",
@@ -1350,17 +1638,17 @@
    "persona": "pro",
    "age": "senior",
    "plan": "whittacker",
-   "balance": 551000.0,
+   "balance": 592600.0,
    "baseBet": 2000,
    "step": 0,
    "emotion": 85,
-   "games": 2820,
-   "wins": 1230,
-   "losses": 1590,
-   "totalWager": 12772600.0,
-   "totalProfit": -49000.0,
+   "games": 2940,
+   "wins": 1282,
+   "losses": 1658,
+   "totalWager": 13240600.0,
+   "totalProfit": -7400.0,
    "bankrupt": 11,
-   "hours": 47,
+   "hours": 49,
    "weights": {
     "trend": 1.2,
     "pattern": 1,
@@ -1369,8 +1657,14 @@
     "memory": 1.8
    },
    "currentBet": null,
-   "prevProfit": -69800.0,
-   "prevRank": 32
+   "prevProfit": -28200.0,
+   "prevRank": 36,
+   "streak": 1,
+   "maxWinStreak": 4,
+   "maxLossStreak": -3,
+   "balanceHistory": [
+    592600
+   ]
   },
   {
    "id": "ai49",
@@ -1378,17 +1672,17 @@
    "persona": "analyst",
    "age": "elder",
    "plan": "paroli",
-   "balance": 550500.0,
+   "balance": 595700.0,
    "baseBet": 2000,
    "step": 0,
    "emotion": 85,
-   "games": 2820,
-   "wins": 1203,
-   "losses": 1617,
-   "totalWager": 12379185.0,
-   "totalProfit": 500.0,
+   "games": 2940,
+   "wins": 1253,
+   "losses": 1687,
+   "totalWager": 12871185.0,
+   "totalProfit": 45700.0,
    "bankrupt": 10,
-   "hours": 47,
+   "hours": 49,
    "weights": {
     "trend": 1.5,
     "pattern": 1.5,
@@ -1397,8 +1691,14 @@
     "memory": 1.5
    },
    "currentBet": null,
-   "prevProfit": -22100.0,
-   "prevRank": 28
+   "prevProfit": 23100.0,
+   "prevRank": 27,
+   "streak": 1,
+   "maxLossStreak": -3,
+   "maxWinStreak": 4,
+   "balanceHistory": [
+    595700
+   ]
   },
   {
    "id": "ai50",
@@ -1406,17 +1706,17 @@
    "persona": "hot",
    "age": "young",
    "plan": "kelly",
-   "balance": 18200.0,
+   "balance": 66750.0,
    "baseBet": 2000,
    "step": 0,
    "emotion": 100,
-   "games": 2820,
-   "wins": 1239,
-   "losses": 1581,
-   "totalWager": 8284426.5,
-   "totalProfit": -531800.0,
-   "bankrupt": 10,
-   "hours": 47,
+   "games": 2940,
+   "wins": 1291,
+   "losses": 1649,
+   "totalWager": 8546721.5,
+   "totalProfit": -533250.0,
+   "bankrupt": 11,
+   "hours": 49,
    "weights": {
     "trend": 0.3,
     "pattern": 0.5,
@@ -1425,8 +1725,14 @@
     "memory": 0.2
    },
    "currentBet": null,
-   "prevProfit": -514950.0,
-   "prevRank": 47
+   "prevProfit": -538100.0,
+   "prevRank": 52,
+   "streak": 3,
+   "maxWinStreak": 4,
+   "maxLossStreak": -3,
+   "balanceHistory": [
+    66750
+   ]
   },
   {
    "id": "ai51",
@@ -1434,17 +1740,17 @@
    "persona": "player",
    "age": "elder",
    "plan": "grandmartin",
-   "balance": 2244300.0,
+   "balance": 2410900.0,
    "baseBet": 2000,
    "step": 0,
    "emotion": 15,
-   "games": 2820,
-   "wins": 1145,
-   "losses": 1675,
-   "totalWager": 28131033.880000003,
-   "totalProfit": 1644300.0,
+   "games": 2940,
+   "wins": 1189,
+   "losses": 1751,
+   "totalWager": 29419033.880000003,
+   "totalProfit": 1810900.0,
    "bankrupt": 11,
-   "hours": 47,
+   "hours": 49,
    "weights": {
     "trend": 1.5,
     "pattern": 0.3,
@@ -1453,8 +1759,14 @@
     "memory": 0.3
    },
    "currentBet": null,
-   "prevProfit": 1561000.0,
-   "prevRank": 7
+   "prevProfit": 1727600.0,
+   "prevRank": 6,
+   "streak": 1,
+   "maxLossStreak": -4,
+   "maxWinStreak": 5,
+   "balanceHistory": [
+    2410900
+   ]
   },
   {
    "id": "ai52",
@@ -1462,17 +1774,17 @@
    "persona": "rebel",
    "age": "prime",
    "plan": "paroli",
-   "balance": 1679000.0,
+   "balance": 1792800.0,
    "baseBet": 2000,
    "step": 1,
    "emotion": 95,
-   "games": 2820,
-   "wins": 1401,
-   "losses": 1419,
-   "totalWager": 10548000,
-   "totalProfit": 1629000.0,
+   "games": 2940,
+   "wins": 1463,
+   "losses": 1477,
+   "totalWager": 10928000,
+   "totalProfit": 1742800.0,
    "bankrupt": 0,
-   "hours": 47,
+   "hours": 49,
    "weights": {
     "trend": -1.5,
     "pattern": -1,
@@ -1481,8 +1793,14 @@
     "memory": -0.5
    },
    "currentBet": null,
-   "prevProfit": 1572100.0,
-   "prevRank": 6
+   "prevProfit": 1685900.0,
+   "prevRank": 7,
+   "streak": -1,
+   "maxWinStreak": 5,
+   "maxLossStreak": -2,
+   "balanceHistory": [
+    1792800
+   ]
   },
   {
    "id": "ai53",
@@ -1490,17 +1808,17 @@
    "persona": "dragon",
    "age": "young",
    "plan": "labouchere",
-   "balance": 37100.0,
+   "balance": 35300.0,
    "baseBet": 2000,
    "step": 0,
    "emotion": 5,
-   "games": 2820,
-   "wins": 1156,
-   "losses": 1664,
-   "totalWager": 10278395.0,
-   "totalProfit": -312900.0,
+   "games": 2940,
+   "wins": 1202,
+   "losses": 1738,
+   "totalWager": 10702395.0,
+   "totalProfit": -314700.0,
    "bankrupt": 6,
-   "hours": 47,
+   "hours": 49,
    "weights": {
     "trend": 2,
     "pattern": 0.5,
@@ -1509,8 +1827,14 @@
     "memory": 0.6
    },
    "currentBet": null,
-   "prevProfit": -312000.0,
-   "prevRank": 38
+   "prevProfit": -313800.0,
+   "prevRank": 43,
+   "streak": 1,
+   "maxLossStreak": -3,
+   "maxWinStreak": 4,
+   "balanceHistory": [
+    35300
+   ]
   },
   {
    "id": "ai54",
@@ -1518,17 +1842,17 @@
    "persona": "player",
    "age": "mid",
    "plan": "grandmartin",
-   "balance": 1609700.0,
+   "balance": 1715500.0,
    "baseBet": 2000,
    "step": 0,
    "emotion": 30,
-   "games": 2820,
-   "wins": 1180,
-   "losses": 1640,
-   "totalWager": 26665185.0,
-   "totalProfit": 559700.0,
+   "games": 2940,
+   "wins": 1228,
+   "losses": 1712,
+   "totalWager": 27745185.0,
+   "totalProfit": 665500.0,
    "bankrupt": 20,
-   "hours": 47,
+   "hours": 49,
    "weights": {
     "trend": 1.5,
     "pattern": 0.3,
@@ -1537,8 +1861,14 @@
     "memory": 0.3
    },
    "currentBet": null,
-   "prevProfit": 506800.0,
-   "prevRank": 13
+   "prevProfit": 612600.0,
+   "prevRank": 13,
+   "streak": 1,
+   "maxWinStreak": 4,
+   "maxLossStreak": -4,
+   "balanceHistory": [
+    1715500
+   ]
   },
   {
    "id": "ai55",
@@ -1546,17 +1876,17 @@
    "persona": "million",
    "age": "mid",
    "plan": "whittacker",
-   "balance": 279000.0,
+   "balance": 299600.0,
    "baseBet": 2000,
    "step": 0,
    "emotion": 65,
-   "games": 2820,
-   "wins": 1179,
-   "losses": 1641,
-   "totalWager": 13200278.75,
-   "totalProfit": -271000.0,
+   "games": 2940,
+   "wins": 1227,
+   "losses": 1713,
+   "totalWager": 13720278.75,
+   "totalProfit": -250400.0,
    "bankrupt": 10,
-   "hours": 47,
+   "hours": 49,
    "weights": {
     "trend": 1,
     "pattern": 0.5,
@@ -1565,11 +1895,17 @@
     "memory": 0.5
    },
    "currentBet": null,
-   "prevProfit": -281300.0,
-   "prevRank": 37
+   "prevProfit": -260700.0,
+   "prevRank": 42,
+   "streak": 1,
+   "maxLossStreak": -4,
+   "maxWinStreak": 4,
+   "balanceHistory": [
+    299600
+   ]
   }
  ],
- "updated": 47,
+ "updated": 49,
  "tested": [
   "analyst|elder|paroli",
   "analyst|elder|splitmartin",
@@ -1589,6 +1925,7 @@
   "dragon|prime|dalerob",
   "dragon|prime|paroli",
   "dragon|senior|dalerob",
+  "dragon|senior|whittacker",
   "dragon|young|flat",
   "dragon|young|labouchere",
   "gambler|senior|contraiser",
@@ -1601,6 +1938,7 @@
   "hot|senior|contraiser",
   "hot|senior|splitmartin",
   "hot|young|kelly",
+  "million|elder|grandmartin",
   "million|mid|dalerob",
   "million|mid|whittacker",
   "million|senior|kelly",
@@ -1616,16 +1954,19 @@
   "rebel|elder|grandmartin",
   "rebel|elder|labouchere",
   "rebel|mid|grandmartin",
+  "rebel|mid|labouchere",
   "rebel|prime|paroli",
   "rebel|prime|seq1324",
   "rebel|prime|splitmartin",
   "rebel|senior|martin",
   "rebel|senior|whittacker",
+  "rebel|young|martin",
   "road|elder|fib",
   "road|elder|whittacker",
   "rookie|mid|martin",
   "rookie|mid|splitmartin",
   "rookie|prime|grandmartin",
+  "rookie|prime|labouchere",
   "rookie|prime|martin"
  ]
 }
