@@ -371,56 +371,6 @@
   .marquee.show{opacity:1;}
   .marquee-track{display:flex; flex-direction:column; gap:4px;}
 
-  /* ===== A級：打橫／短高度適應（只改 CSS，唔掂 game logic） ===== */
-  @media (orientation:landscape){
-    html,body{height:auto;}
-    /* 兩欄版：頂欄跨全闊，下面左路單(返正常厚度) + 右投注/籌碼/掣一欄 */
-    .app{max-width:100%; min-height:100dvh; padding-bottom:2px; gap:0;
-         display:grid; grid-template-columns:1.05fr 1fr; grid-template-areas:"top top" "road play"; align-content:start;}
-    .topbar{grid-area:top; padding:1px 6px; gap:4px; align-items:center;}
-    .brand{font-size:11px; line-height:1.05;}
-    .brand-sub{font-size:8px; line-height:1;}
-    .balance small{font-size:8px;} .balance b{font-size:14px;}
-    .odds-row{padding:0 8px 1px;}
-    .roadpanel{grid-area:road; margin:1px 4px 1px 6px; align-self:start;}
-    .road-section-title{font-size:8px; padding:1px 5px; line-height:1.3;}
-    /* 路單打橫返正常厚度（唔再壓扁到睇唔到） */
-    #bigCanvas{height:84px;}
-    #beadCanvas{height:80px;}
-    .road-derived .derived-row{flex:none; height:30px;}
-    .derived-row canvas{height:30px;}
-    .info-strip{height:30px; font-size:8px; padding:2px 5px; line-height:1.05;}
-    /* 右欄：跟預測 + 投注 + 籌碼 + 掣 一整欄直排 */
-    .play-col{grid-area:play; display:flex; flex-direction:column; gap:2px; padding:1px 6px 1px 4px; min-width:0; overflow-y:auto;}
-    /* 開牌區卡牌縮細 */
-    .hand{min-height:64px; gap:2px;}
-    .cards{grid-template-columns:repeat(2,28px); grid-auto-rows:38px; gap:2px; width:60px; height:64px;}
-    .card{width:28px; height:38px; font-size:12px;}
-    #playerScore,#bankerScore{font-size:13px; transform:translateY(-12px);}
-    /* 投注區 */
-    .bets{gap:2px; padding:1px 0 2px;}
-    .betrow.top .bet{min-height:46px; padding:3px 2px;}
-    .betrow.top .bet .chips-stack{min-height:26px; top:14px; gap:2px 3px;}
-    .bet .bn{font-size:10px;} .bet .od{font-size:7px;}
-    .betrow.bottom .bet{min-height:0; padding:2px 2px;}
-    /* 籌碼行 */
-    .chips-row{padding:1px 0 1px; gap:5px;}
-    .chip{width:24px; height:24px; font-size:6px;}
-    .chip-icon{width:24px; height:24px; font-size:9px;}
-    .road-tip{font-size:10px; padding:2px 6px; line-height:1.2;}
-    .odds-info{font-size:9px; padding:1px 6px;}
-    .follow-wrap{margin-bottom:0; gap:4px;}
-    .follow-left{padding-left:0;} .follow-right{padding-right:0; gap:3px;}
-    .controls{padding:2px 0 0;}
-    .btn{font-size:10px; padding:3px; flex:1;}
-    .btn.follow,.btn.follow-predict,.btn.shuffle{padding:3px 6px; font-size:9px;}
-    .streak-bar,.shoe-info{font-size:9px; padding:1px 5px;}
-    /* AI排行榜：打橫由4欄變8欄，省返一行垂直空間 */
-    .ai-balances{grid-template-columns:repeat(8,1fr);}
-    .ai-balances .aib{padding:0 3px;}
-    .ai-balances .aib b{font-size:10px;} .ai-balances .aib small{font-size:7px;}
-  }
-
   /* ===== ① 開局前枱邊閒聊：單一面板，只佔左半（珠盤路位），唔遮右邊下三路 ===== */
   /* #tableChatL 佔左半(珠盤路位)；top:0 喺大路底，標題貼大路第6格底 */
   .tablechat{position:absolute; top:0; bottom:0; z-index:15; margin:0; background:rgba(2,17,10,.9); border:none; border-radius:0; padding:6px 8px; display:flex; flex-direction:column; max-height:none; opacity:0; visibility:hidden; pointer-events:none; transition:opacity .35s ease, visibility .35s;}
@@ -653,7 +603,6 @@
     </div>
   </div>
 
-  <div class="play-col">
   <div class="follow-wrap">
     <!-- 左半：預測系統 -->
     <div class="follow-left">
@@ -715,7 +664,6 @@
     <button class="btn clear" id="btnClear">清除</button>
     <button class="btn repeat" id="btnRepeat">重複</button>
     <button class="btn deal" id="btnDeal">發牌</button>
-  </div>
   </div>
 </div>
 
