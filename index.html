@@ -497,8 +497,8 @@
     }
     .topright{ flex-direction:column; align-items:flex-start; gap:6px; }
     .topbar{ align-self:start; }          /* 貼頂，唔撐滿 row，避免資金下留空白 */
-    /* 品牌行打橫：百家樂｜AI榜｜剩餘 並排一行（nowrap 逼晒，縮細字體） */
-    .brand{ margin-left:0; flex-direction:row; flex-wrap:nowrap; width:100%; align-items:center; gap:4px 8px; font-size:13px; }
+    /* 品牌行打橫：百家樂／AI榜／剩X張 垂直疊（每件一行），排喺資金前面 */
+    .brand{ margin-left:0; flex-direction:column; align-items:flex-start; gap:2px 8px; font-size:13px; }
     .brand #btnLeaderboard{ font-size:11px; padding:1px 4px; }
     .brand-sub{ font-size:10px; }
     .brand-sub #shoeInfo{ font-size:12px; }
