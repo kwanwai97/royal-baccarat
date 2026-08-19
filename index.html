@@ -469,7 +469,7 @@
   @media (orientation:landscape){
     .app{
       display:grid;
-      grid-template-columns:1fr 270px;   /* 左闊(跟注/投注/籌碼/控制) 右窄(頂欄) */
+      grid-template-columns:1fr 300px;   /* 左=投注9格 右=操作掣 */
       max-width:none;                     /* 打橫填滿，唔再 560px 限死 */
     }
     .roadpanel{ grid-column:1 / -1; }     /* 路單跨兩欄，全寬喺最頂 */
@@ -478,16 +478,17 @@
     #beadCanvas{ height:72px; }
     #beeCanvas, #smallCanvas, #cockCanvas{ height:32px; }
     .info-strip{ height:32px; }
-    .odds-row{ grid-column:1; grid-row:2; }
-    .follow-wrap{ grid-column:1; grid-row:3; }
-    .bets{ grid-column:1; grid-row:4; }
-    .chips-row{ grid-column:1; grid-row:5; }
-    .controls{ grid-column:1; grid-row:6; }
+    .odds-row{ display:none; }            /* 勝率行：直排冇內容，打橫先收，避免空白 */
+    .bets{ grid-column:1; grid-row:2 / 8; }  /* 投注9格留左欄，路單下全高 */
+    /* 右欄（資金下方）由上落排：跟注→籌碼→控制 */
+    .follow-wrap{ grid-column:2; grid-row:2; }
+    .chips-row{ grid-column:2; grid-row:3; }
+    .controls{ grid-column:2; grid-row:4; }
     .topbar{
-      grid-column:2; grid-row:2 / 7;      /* 右欄，由第2行落去底 */
+      grid-column:2; grid-row:1 / 2;       /* 右欄頂（資金位） */
       flex-direction:column; align-items:flex-start; gap:8px;
       justify-content:flex-start; position:static;
-      max-width:270px;
+      max-width:300px;
     }
     .topright{ flex-direction:column; align-items:flex-start; gap:6px; }
     .brand{ margin-left:0; }
