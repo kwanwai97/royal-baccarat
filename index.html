@@ -486,7 +486,7 @@
     .odds-row{ display:none; }            /* 勝率行：打橫收，避免空白 */
     /* 左欄整體包成一格（投注→籌碼→洗牌），打橫跨 row2-4，唔再同行耦合留空 */
     .h-left{ display:contents; }   /* 打橫同直向一樣透明：投注/籌碼/洗牌變 grid item 分別擺位 */
-    .bets{ grid-column:1; grid-row:2; align-self:start; }            /* 左欄：投注區 */
+    .bets{ grid-column:1; grid-row:2 / span 4; align-self:stretch; } /* 左欄投注跨 row2-5：右欄每件各自定行高，跟注緊貼資金底，唔再被投注區高度拖低 */
     .chips-row{ grid-column:2; grid-row:4; align-self:start; }       /* 右欄：預測區下面＝籌碼區 */
     .controls{ grid-column:2; grid-row:5; align-self:start; }        /* 右欄最底：洗牌/發牌區 */
     /* 打橫投注區取消壓縮：用返基礎 bet 大細（唔改 DOM/JS） */
