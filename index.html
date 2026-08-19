@@ -471,6 +471,7 @@
       display:grid;
       grid-template-columns:1fr 340px;   /* 左=投注/籌碼/控制 右=百家樂+資金+跟注 */
       grid-template-rows:auto auto auto auto;
+      align-content:start;                /* 各行內容頂置，唔平均撐開留空白 */
       max-width:none;                     /* 打橫填滿，唔再 560px 限死 */
     }
     .roadpanel{ grid-column:1 / -1; grid-row:1; }   /* 路單跨兩欄，全寬喺最頂 */
@@ -492,6 +493,7 @@
       max-width:340px;
     }
     .topright{ flex-direction:column; align-items:flex-start; gap:6px; }
+    .topbar{ align-self:start; }          /* 貼頂，唔撐滿 row，避免資金下留空白 */
     /* 品牌行打橫：百家樂｜AI榜｜剩餘 並排一行（nowrap 逼晒，縮細字體） */
     .brand{ margin-left:0; flex-direction:row; flex-wrap:nowrap; width:100%; align-items:center; gap:4px 8px; font-size:13px; }
     .brand #btnLeaderboard{ font-size:11px; padding:1px 4px; }
@@ -501,7 +503,7 @@
     .follow-wrap{
       grid-column:2; grid-row:3;
       display:flex; flex-direction:column; gap:6px;
-      width:100%; max-width:340px;
+      width:100%; max-width:340px; align-self:start;   /* 貼頂，唔撐滿 row */
     }
     .follow-left{ width:100%; flex:0 0 auto; padding-left:0; }
     .follow-right{
