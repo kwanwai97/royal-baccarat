@@ -502,16 +502,16 @@
     .brand #btnLeaderboard{ font-size:11px; padding:1px 4px; }
     .brand-sub{ font-size:10px; }
     .brand-sub #shoeInfo{ font-size:12px; }
-    /* 跟注：搬去右欄資金下面，文字在上、5掣在下（上下排） */
+    /* 跟注：預測系統(文字)在左、5掣在右，左右並排（同資金/品牌方案） */
     .follow-wrap{
       grid-column:2; grid-row:3;          /* 返 row3，避免同 topbar 重疊 */
-      display:flex; flex-direction:column; gap:6px;
+      display:flex; flex-direction:row; align-items:flex-start; gap:8px;
       width:100%; max-width:none; align-self:start;
     }
-    .follow-left{ width:100%; flex:0 0 auto; padding-left:0; }
+    .follow-left{ flex:0 0 auto; width:auto; padding-left:0; }
     .follow-right{
-      width:100%; flex:0 0 auto; flex-direction:row; flex-wrap:wrap;
-      padding-right:0; gap:4px;
+      flex:1 1 auto; flex-direction:row; flex-wrap:wrap;
+      padding-right:0; gap:4px; justify-content:flex-start;
     }
     .follow-right .fbtn{
       writing-mode:horizontal-tb; text-orientation:mixed;
