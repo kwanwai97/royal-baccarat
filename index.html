@@ -508,10 +508,9 @@
     .brand-sub #shoeInfo{ font-size:12px; }
     /* 跟注：搬去右欄資金下面，文字在上、5掣在下（上下排） */
     .follow-wrap{
-      grid-column:2; grid-row:3;          /* 右欄，緊接資金（row2）下 */
+      grid-column:2; grid-row:3;          /* 返 row3，避免同 topbar 重疊 */
       display:flex; flex-direction:column; gap:6px;
       width:100%; max-width:340px; align-self:start;
-      margin-top:-72px;                    /* 上移貼住資金底，消除空白 */
     }
     .follow-left{ width:100%; flex:0 0 auto; padding-left:0; }
     .follow-right{
