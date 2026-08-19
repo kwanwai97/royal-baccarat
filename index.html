@@ -471,7 +471,9 @@
       display:grid;
       grid-template-columns:1fr 340px;   /* 左=投注/籌碼/控制 右=百家樂+資金+跟注 */
       grid-template-rows:auto auto auto auto;
-      align-content:start;                /* 各行內容頂置，唔平均撐開留空白 */
+      align-content:start;                /* 整體貼頂，唔平均撐開 */
+      align-items:start;                  /* 每格貼自己行頂、按內容高度，唔再 stretch 撐大留空白 */
+      grid-auto-rows:min-content;         /* 每行取最細內容高度，減少行內底空白 */
       max-width:none;                     /* 打橫填滿，唔再 560px 限死 */
     }
     .roadpanel{ grid-column:1 / -1; grid-row:1; }   /* 路單跨兩欄，全寬喺最頂 */
@@ -511,7 +513,6 @@
       grid-column:2; grid-row:3;          /* 返 row3，避免同 topbar 重疊 */
       display:flex; flex-direction:column; gap:6px;
       width:100%; max-width:340px; align-self:start;
-      margin-top:-11px;                   /* 預測系統小幅上移，試減上方空白（22的一半） */
     }
     .follow-left{ width:100%; flex:0 0 auto; padding-left:0; }
     .follow-right{
