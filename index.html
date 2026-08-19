@@ -473,6 +473,11 @@
       max-width:none;                     /* 打橫填滿，唔再 560px 限死 */
     }
     .roadpanel{ grid-column:1 / -1; }     /* 路單跨兩欄，全寬喺最頂 */
+    /* 打橫壓縮路單高度，騰出下面欄位空間（唔改內部/JS） */
+    #bigCanvas{ height:80px; }
+    #beadCanvas{ height:72px; }
+    #beeCanvas, #smallCanvas, #cockCanvas{ height:32px; }
+    .info-strip{ height:32px; }
     .odds-row{ grid-column:1; grid-row:2; }
     .follow-wrap{ grid-column:1; grid-row:3; }
     .bets{ grid-column:1; grid-row:4; }
