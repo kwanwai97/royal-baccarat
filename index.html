@@ -469,23 +469,25 @@
   @media (orientation:landscape){
     .app{
       display:grid;
-      grid-template-columns:1fr 300px;   /* 左=投注9格 右=操作掣 */
+      grid-template-columns:1fr 300px;   /* 左=跟注/投注/籌碼/控制 右=百家樂+資金 */
+      grid-template-rows:auto auto auto auto auto;
       max-width:none;                     /* 打橫填滿，唔再 560px 限死 */
     }
-    .roadpanel{ grid-column:1 / -1; }     /* 路單跨兩欄，全寬喺最頂 */
+    .roadpanel{ grid-column:1 / -1; grid-row:1; }   /* 路單跨兩欄，全寬喺最頂 */
     /* 打橫壓縮路單高度，騰出下面欄位空間（唔改內部/JS） */
     #bigCanvas{ height:80px; }
     #beadCanvas{ height:72px; }
     #beeCanvas, #smallCanvas, #cockCanvas{ height:32px; }
     .info-strip{ height:32px; }
-    .odds-row{ display:none; }            /* 勝率行：直排冇內容，打橫先收，避免空白 */
-    .bets{ grid-column:1; grid-row:2 / 8; }  /* 投注9格留左欄，路單下全高 */
-    /* 右欄（資金下方）由上落排：跟注→籌碼→控制 */
-    .follow-wrap{ grid-column:2; grid-row:2; }
-    .chips-row{ grid-column:2; grid-row:3; }
-    .controls{ grid-column:2; grid-row:4; }
+    .odds-row{ display:none; }            /* 勝率行：打橫收，避免空白 */
+    /* 左欄（由上落）：跟注→投注→籌碼→控制 */
+    .follow-wrap{ grid-column:1; grid-row:2; }
+    .bets{ grid-column:1; grid-row:3; }
+    .chips-row{ grid-column:1; grid-row:4; }
+    .controls{ grid-column:1; grid-row:5; }
+    /* 右欄（資金位）：百家樂＋資金 */
     .topbar{
-      grid-column:2; grid-row:1 / 2;       /* 右欄頂（資金位） */
+      grid-column:2; grid-row:2;          /* 右欄頂 */
       flex-direction:column; align-items:flex-start; gap:8px;
       justify-content:flex-start; position:static;
       max-width:300px;
