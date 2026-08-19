@@ -469,7 +469,7 @@
   @media (orientation:landscape){
     .app{
       display:grid;
-      grid-template-columns:1fr 240px;   /* 左闊(跟注/投注/籌碼/控制) 右窄(頂欄) */
+      grid-template-columns:1fr 270px;   /* 左闊(跟注/投注/籌碼/控制) 右窄(頂欄) */
       max-width:none;                     /* 打橫填滿，唔再 560px 限死 */
     }
     .roadpanel{ grid-column:1 / -1; }     /* 路單跨兩欄，全寬喺最頂 */
@@ -487,7 +487,7 @@
       grid-column:2; grid-row:2 / 7;      /* 右欄，由第2行落去底 */
       flex-direction:column; align-items:flex-start; gap:8px;
       justify-content:flex-start; position:static;
-      max-width:240px;
+      max-width:270px;
     }
     .topright{ flex-direction:column; align-items:flex-start; gap:6px; }
     .brand{ margin-left:0; }
