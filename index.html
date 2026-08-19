@@ -496,7 +496,7 @@
     .topbar{
       grid-column:2; grid-row:2;          /* 右欄頂（資金位） */
       flex-direction:column; align-items:flex-start; gap:8px;
-      justify-content:flex-start; position:static;
+      justify-content:flex-start; position:relative;   /* 做跟注嘅定位錨點 */
       max-width:340px;
     }
     .topright{ flex-direction:column; align-items:flex-start; gap:6px; }
@@ -508,9 +508,9 @@
     .brand-sub #shoeInfo{ font-size:12px; }
     /* 跟注：搬去右欄資金下面，文字在上、5掣在下（上下排） */
     .follow-wrap{
-      grid-column:2; grid-row:3;          /* 返 row3，避免同 topbar 重疊 */
+      position:absolute; top:100%; left:0; right:0;   /* 緊貼資金底，唔受左欄高度影響 */
       display:flex; flex-direction:column; gap:6px;
-      width:100%; max-width:340px; align-self:start;
+      width:100%; max-width:340px;
     }
     .follow-left{ width:100%; flex:0 0 auto; padding-left:0; }
     .follow-right{
