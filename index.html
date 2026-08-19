@@ -519,10 +519,9 @@
       writing-mode:vertical-rl; text-orientation:upright;
       min-width:auto; height:auto; padding:6px 4px; font-size:11px;
     }
-    .follow-right .limit-row{ writing-mode:vertical-rl; text-orientation:upright; flex-direction:row; flex-wrap:nowrap; align-items:center; justify-content:center; gap:2px; min-width:auto; width:auto; height:auto; padding:6px 4px; margin:0; box-sizing:border-box; }   /* 打橫：vertical-rl+row=＋/4/−上下直排,同4個fbtn一樣窄長整齊貼緊 */
-    .follow-right .fstep{ writing-mode:vertical-rl; text-orientation:upright; width:auto; flex:0 0 auto; }
-    .follow-right .limit-val{ width:auto; flex:0 0 auto; }
-    .follow-right .fstep{ writing-mode:vertical-rl; text-orientation:upright; }
+    .follow-right .limit-row{ writing-mode:vertical-rl; text-orientation:upright; flex-direction:row; flex-wrap:nowrap; align-items:center; justify-content:center; gap:2px; flex:0 0 auto; min-width:auto; width:auto; height:auto; padding:6px 4px; margin:0; box-sizing:border-box; }   /* 打橫：vertical-rl+row=＋/4/−上下直排,同4個fbtn一樣窄長整齊貼緊 */
+    .follow-right .limit-row .fstep{ writing-mode:vertical-rl; text-orientation:upright; width:auto; flex:0 0 auto; }   /* 3-class 壓過 base .limit-row .fstep{width:100%} */
+    .follow-right .limit-row .limit-val{ width:auto; flex:0 0 auto; }
   }
 </style>
 </head>
