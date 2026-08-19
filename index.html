@@ -469,7 +469,7 @@
   @media (orientation:landscape){
     .app{
       display:grid;
-      grid-template-columns:1fr 300px;   /* 左=投注/籌碼/控制 右=百家樂+資金+跟注 */
+      grid-template-columns:1fr 340px;   /* 左=投注/籌碼/控制 右=百家樂+資金+跟注 */
       grid-template-rows:auto auto auto auto;
       max-width:none;                     /* 打橫填滿，唔再 560px 限死 */
     }
@@ -489,16 +489,19 @@
       grid-column:2; grid-row:2;          /* 右欄頂（資金位） */
       flex-direction:column; align-items:flex-start; gap:8px;
       justify-content:flex-start; position:static;
-      max-width:300px;
+      max-width:340px;
     }
     .topright{ flex-direction:column; align-items:flex-start; gap:6px; }
-    /* 品牌行打橫：百家樂｜AI榜｜剩餘 並排一行 */
-    .brand{ margin-left:0; flex-direction:row; flex-wrap:wrap; align-items:center; gap:6px 10px; }
+    /* 品牌行打橫：百家樂｜AI榜｜剩餘 並排一行（nowrap 逼晒，縮細字體） */
+    .brand{ margin-left:0; flex-direction:row; flex-wrap:nowrap; width:100%; align-items:center; gap:4px 8px; font-size:13px; }
+    .brand #btnLeaderboard{ font-size:11px; padding:1px 4px; }
+    .brand-sub{ font-size:10px; }
+    .brand-sub #shoeInfo{ font-size:12px; }
     /* 跟注：搬去右欄資金下面，文字在上、5掣在下（上下排） */
     .follow-wrap{
       grid-column:2; grid-row:3;
       display:flex; flex-direction:column; gap:6px;
-      width:100%; max-width:300px;
+      width:100%; max-width:340px;
     }
     .follow-left{ width:100%; flex:0 0 auto; padding-left:0; }
     .follow-right{
