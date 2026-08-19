@@ -508,24 +508,44 @@
     .brand-sub{ font-size:10px; }
     .brand-sub #shoeInfo{ font-size:12px; }
     /* 跟注：預測系統(文字)在左、5掣在右，左右並排（同資金/品牌方案） */
-    .follow-wrap{
-      grid-column:2; grid-row:3;          /* 返 row3，避免同 topbar 重疊 */
-      display:flex; flex-direction:row; align-items:flex-start; gap:8px;
-      width:100%; max-width:none; align-self:start;
-    }
-    .follow-left{ flex:1 1 0; width:auto; padding-left:0; }
-    .follow-right{
-      flex:1 1 0; flex-direction:row; flex-wrap:wrap;
-      padding-right:0; gap:4px; justify-content:flex-start;
-    }
-    .follow-right .fbtn{
-      writing-mode:vertical-rl; text-orientation:upright;
-      min-width:0; height:34px; flex:1 1 0; padding:6px 2px; font-size:11px;
-    }
-    .follow-right .limit-row{ writing-mode:vertical-rl; text-orientation:upright; flex-direction:row; flex-wrap:nowrap; align-items:center; justify-content:center; gap:2px; flex:0 0 36px; min-width:0; width:auto; height:34px; padding:4px 2px; margin:0; box-sizing:border-box; }
-    .follow-right .limit-row .fstep{ writing-mode:vertical-rl; text-orientation:upright; width:auto; flex:0 0 auto; padding:0; font-size:11px; }
-    .follow-right .limit-row .limit-val{ writing-mode:vertical-rl; text-orientation:upright; width:auto; flex:0 0 auto; }
-  }
+    /* 跟注：預測系統(文字)在左、5掣在右，左右並排（同資金/品牌方案） */
+.follow-wrap{
+  grid-column:2; grid-row:3;
+  display:flex; flex-direction:row; align-items:flex-start; gap:8px;
+  width:100%; max-width:none; align-self:start;
+}
+.follow-left{ flex:1 1 0; width:auto; padding-left:0; }
+.follow-right{
+  flex:1 1 0; flex-direction:row; flex-wrap:wrap;
+  padding-right:0; gap:4px; justify-content:flex-start;
+}
+.follow-right .fbtn{
+  writing-mode:vertical-rl; text-orientation:upright;
+  min-width:0; height:34px; flex:1 1 0; 
+  padding: 0 2px 2px 2px;        /* 上下 padding 改為 0 和 2px，讓文字貼頂 */
+  font-size:11px;
+  line-height: 1;               /* 消除多餘行高 */
+  justify-content: flex-start;  /* 垂直方向（主軸）靠上對齊 */
+  align-items: center;          /* 水平置中，保持文字左右對稱 */
+}
+.follow-right .limit-row{ 
+  writing-mode:vertical-rl; text-orientation:upright; 
+  flex-direction:row; flex-wrap:nowrap; 
+  align-items:center; justify-content:center; gap:2px; 
+  flex:0 0 36px; min-width:0; width:auto; height:34px; 
+  padding:0 2px;               /* 上下 padding 也改為 0，配合貼頂 */
+  margin:0; box-sizing:border-box;
+}
+.follow-right .limit-row .fstep{ 
+  writing-mode:vertical-rl; text-orientation:upright; 
+  width:auto; flex:0 0 auto; padding:0; font-size:11px;
+  line-height: 1;
+}
+.follow-right .limit-row .limit-val{ 
+  writing-mode:vertical-rl; text-orientation:upright; 
+  width:auto; flex:0 0 auto;
+  line-height: 1;
+}
 </style>
 </head>
 <body>
