@@ -19,6 +19,7 @@
     color:#f5f0d8; overflow-x:hidden; user-select:none;
   }
   .app{max-width:560px; margin:0 auto; min-height:100vh; display:flex; flex-direction:column; position:relative; padding-top:0;}
+  .h-left{display:contents;}   /* 直向：透明外殼，內容攤返入 .app flex 直欄；打橫由 media 改為左欄一格 */
 
   /* 頂部 */
   .topbar{
@@ -483,8 +484,9 @@
     #beeCanvas, #smallCanvas, #cockCanvas{ height:32px; }
     .info-strip{ height:32px; }
     .odds-row{ display:none; }            /* 勝率行：打橫收，避免空白 */
-    /* 左欄（由上落）：投注→籌碼→控制 */
-    .bets{ grid-column:1; grid-row:2; }
+    /* 左欄整體包成一格（投注→籌碼→洗牌），打橫跨 row2-4，唔再同行耦合留空 */
+    .h-left{ display:flex; flex-direction:column; align-items:stretch; min-width:0;
+      grid-column:1; grid-row:2 / span 3; }
     /* 打橫壓細投注9格：等第2行高度收返接近資金，減少資金底空白 */
     .betrow.top .bet, .betrow.mid .bet, .betrow.bottom .bet{
       min-height:30px; padding:2px 2px; font-size:10px;
@@ -492,8 +494,6 @@
     .betrow.top .bet .chips-stack{ top:15px; bottom:3px; }
     .betrow .bn{ font-size:11px; line-height:1.1; }
     .betrow .od{ font-size:10px; }
-    .chips-row{ grid-column:1; grid-row:3; }
-    .controls{ grid-column:1; grid-row:4; }
     /* 右欄（資金下）：百家樂＋資金 → 跟注 */
     .topbar{
       grid-column:2; grid-row:2;          /* 右欄頂（資金位） */
@@ -684,6 +684,7 @@
       <div id="followStatus" class="follow-status"></div>
     </div>
   </div>
+  <div class="h-left">
   <div class="bets" id="bets">
     <div class="betrow top">
       <div class="bet player" data-bet="player"><div class="bn">閒 P</div><div class="od">1 : 1</div><div class="chips-stack" data-stack="player"></div></div>
@@ -726,6 +727,7 @@
     <button class="btn clear" id="btnClear">清除</button>
     <button class="btn repeat" id="btnRepeat">重複</button>
     <button class="btn deal" id="btnDeal">發牌</button>
+  </div>
   </div>
 </div>
 
