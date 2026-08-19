@@ -464,6 +464,29 @@
   .ai-chip.sel{background:var(--goldd); color:#fff; border-color:var(--goldd); font-weight:800;}
   .bet.ai-bet{ outline:2px solid #ffd98a; outline-offset:1px; }
   .bet .ai-amt{ position:absolute; top:-12px; left:50%; transform:translateX(-50%); font-size:9px; color:#ffd98a; font-weight:800; background:rgba(0,0,0,.7); padding:1px 4px; border-radius:6px; white-space:nowrap; pointer-events:none; }
+
+  /* ===== 打橫 landscape：純 CSS grid 重排，唔郁 DOM、唔改 id/邏輯 ===== */
+  @media (orientation:landscape){
+    .app{
+      display:grid;
+      grid-template-columns:1fr 240px;   /* 左闊(跟注/投注/籌碼/控制) 右窄(頂欄) */
+      max-width:none;                     /* 打橫填滿，唔再 560px 限死 */
+    }
+    .roadpanel{ grid-column:1 / -1; }     /* 路單跨兩欄，全寬喺最頂 */
+    .odds-row{ grid-column:1; grid-row:2; }
+    .follow-wrap{ grid-column:1; grid-row:3; }
+    .bets{ grid-column:1; grid-row:4; }
+    .chips-row{ grid-column:1; grid-row:5; }
+    .controls{ grid-column:1; grid-row:6; }
+    .topbar{
+      grid-column:2; grid-row:2 / 7;      /* 右欄，由第2行落去底 */
+      flex-direction:column; align-items:flex-start; gap:8px;
+      justify-content:flex-start; position:static;
+      max-width:240px;
+    }
+    .topright{ flex-direction:column; align-items:flex-start; gap:6px; }
+    .brand{ margin-left:0; }
+  }
 </style>
 </head>
 <body>
