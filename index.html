@@ -272,6 +272,14 @@
   /* 新版：左右兩半（左預測，右5格打橫一排） */
 .follow-wrap{display:flex; gap:2px; align-items:stretch; margin-bottom:0px;}
 .follow-left{flex:0 0 50%; display:flex; flex-direction:column; gap:5px; min-width:0; justify-content:flex-start; padding-left:6px;}
+/* 預測系統固定資訊區：標題+主句+統計行，固定空間唔收起，文字斷行唔溢出 */
+.pred-system{ min-height:54px; display:flex; flex-direction:column; gap:3px; padding:4px 8px; border:1px solid #b98a17; border-radius:8px; background:rgba(20,30,20,.55); box-sizing:border-box; }
+.pred-head{ display:flex; align-items:center; gap:4px; font-size:12px; font-weight:800; color:#ffd479; }
+.pred-ico{ font-size:14px; }
+.pred-main{ font-size:15px; font-weight:800; color:#fff; line-height:1.2; word-break:break-word; }
+.pred-stats{ display:flex; flex-wrap:wrap; gap:4px 10px; font-size:10px; color:#9fe6b8; }
+.pred-stats .ps-item{ white-space:nowrap; }
+.pred-stats b{ color:#ffd479; font-weight:800; }
 .follow-right{flex:1 1 50%; display:flex; flex-direction:row; flex-wrap:wrap; gap:2px; align-items:flex-start; justify-content:flex-start; padding-right:6px;}
 
 /* 五個掣統一尺寸：4個策略掣 flex:1 1 0 平均闊度；第5個次數掣固定36px；高度統一44px */
@@ -657,9 +665,17 @@
   </div>
 
   <div class="follow-wrap">
-    <!-- 左半：預測系統 -->
+    <!-- 左半：預測系統（固定空間，唔收起） -->
     <div class="follow-left">
-      <div class="road-tip" id="roadTip"></div>
+      <div class="pred-system">
+        <div class="pred-head"><span class="pred-ico">🔮</span><span class="pred-title">預測系統</span></div>
+        <div class="pred-main" id="predMain">請投注 —</div>
+        <div class="pred-stats">
+          <span class="ps-item">勝率 <b id="predWin">—</b></span>
+          <span class="ps-item">跟注 <b id="predCnt">0</b> 次</span>
+          <span class="ps-item">投注額 <b id="predAmt">0</b></span>
+        </div>
+      </div>
     </div>
     <!-- 右半：打橫一行 5 張卡 (4掣 + 次數) + 底下跟隨次數文字 -->
     <div class="follow-right">
@@ -2701,6 +2717,12 @@ function updatePredict(){
       tip.textContent='請投注 — ｜ '+predHitText();
     }
   }
+  // 預測系統固定資訊區（冇投注都固定顯示，唔收起）
+  const pm=document.getElementById('predMain');
+  if(pm) pm.textContent = pr.side ? ('請投注'+(pr.side==='B'?'莊':'閒')) : '請投注 —';
+  const pw=document.getElementById('predWin'); if(pw) pw.textContent = predHitText().replace('命中 ','').replace('命中','—');
+  const pc=document.getElementById('predCnt'); if(pc) pc.textContent = followStreakCount||0;
+  const pa=document.getElementById('predAmt'); if(pa) pa.textContent = (stats.totalWager||0);
 }
 // 預測命中統計：開牌結果定咗之後 call（deal 內 addResult 後）
 // 規則：觀望(空) skip；開和(tie) skip（唔當中唔當錯）；出咗莊/閒預測先計 total
