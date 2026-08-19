@@ -471,7 +471,7 @@
     .app{
       display:grid;
       grid-template-columns:1fr 1fr;   /* 打橫：左右兩欄 50/50 等寬 */
-      grid-template-rows:auto auto auto auto;
+      grid-template-rows:auto auto auto auto auto;
       align-content:start;                /* 整體貼頂，唔平均撐開 */
       align-items:start;                  /* 每格貼自己行頂、按內容高度，唔再 stretch 撐大留空白 */
       grid-auto-rows:min-content;         /* 每行取最細內容高度，減少行內底空白 */
@@ -485,8 +485,10 @@
     .info-strip{ height:32px; }
     .odds-row{ display:none; }            /* 勝率行：打橫收，避免空白 */
     /* 左欄整體包成一格（投注→籌碼→洗牌），打橫跨 row2-4，唔再同行耦合留空 */
-    .h-left{ display:flex; flex-direction:column; align-items:stretch; min-width:0;
-      grid-column:1; grid-row:2 / span 3; }
+    .h-left{ display:contents; }   /* 打橫同直向一樣透明：投注/籌碼/洗牌變 grid item 分別擺位 */
+    .bets{ grid-column:1; grid-row:2; align-self:start; }            /* 左欄：投注區 */
+    .chips-row{ grid-column:2; grid-row:4; align-self:start; }       /* 右欄：預測區下面＝籌碼區 */
+    .controls{ grid-column:2; grid-row:5; align-self:start; }        /* 右欄最底：洗牌/發牌區 */
     /* 打橫投注區取消壓縮：用返基礎 bet 大細（唔改 DOM/JS） */
     /* 右欄（資金下）：百家樂＋資金 → 跟注 */
     .topbar{
