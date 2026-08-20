@@ -507,9 +507,9 @@
       align-content:start;                /* 整體貼頂 */
       align-items:start;
       grid-auto-rows:min-content;
-      gap:2px 3px;                     /* 三區之間緊貼慳位 */
+      gap:0;                             /* 三區之間零間隙，真正緊貼 */
       max-width:none;                     /* 打橫填滿，唔再 560px 限死 */
-      padding:2px 3px;                    /* 貼鐵，左右近邊 */
+      padding:0;                          /* 貼鐵，左右近邊 */
     }
     /* 下半左：路單（大路+珠盤+下三路）跨左3欄、佔 row2-4 全高 */
     .roadpanel{ grid-column:1 / 4; grid-row:2 / span 3; align-self:stretch; }
