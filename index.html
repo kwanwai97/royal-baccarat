@@ -350,6 +350,19 @@
   padding: 0 2px;
 }
 .follow-right .follow-stats b{ color:#ffd479; font-weight:800; }
+.follow-right .freset{
+  flex-basis:100%;
+  margin:2px 2px 0;
+  padding:5px 8px;
+  font-size:11px;
+  font-weight:700;
+  color:#ffd9a8;
+  background:rgba(255,120,80,0.16);
+  border:1px solid rgba(255,150,110,0.5);
+  border-radius:8px;
+  cursor:pointer;
+}
+.follow-right .freset:hover{ background:rgba(255,120,80,0.3); }
 
 /* 原有其他樣式保留 */
 .follow-right .fbtn.on{
@@ -721,6 +734,7 @@
       </div>
       <div id="followStatus" class="follow-status"></div>
       <div class="follow-stats"><span class="ps-item">跟注 <b id="followTotal">0</b> 次</span><span class="ps-item">勝 <b id="followW">0</b> / 負 <b id="followL">0</b></span></div>
+      <button class="btn freset" id="btnFollowReset" title="重置跟注統計：清空 N次/勝/負（跨靴累計，手動清）">重置跟注統計</button>
     </div>
   </div>
   <div class="h-left">
@@ -2825,6 +2839,14 @@ function updateFollowStats(){
   const fl=document.getElementById('followL'); if(fl) fl.textContent = followLosses||0;
 }
 function saveFollowStats(){ try{ localStorage.setItem('bac_follow', JSON.stringify({t:followTotal,w:followWins,l:followLosses})); }catch(e){} }
+// 手動重置跟注統計：跨靴累計，平時唔自動清；撳呢掣先清零（並清 localStorage 存檔）
+function resetFollowStats(){
+  if(followTotal>0 && !confirm('確定重置跟注統計？\n（跟注 N次/勝/負 將清空，預測系統統計不受影響）')) return;
+  followTotal=0; followWins=0; followLosses=0;
+  saveFollowStats();
+  updateFollowStats();
+  showToast('🧹 跟注統計已重置');
+}
 async function doShuffle(){
   const ov=document.getElementById('shuffleOverlay');
   if(ov){ ov.querySelector('.title').textContent='🔀 洗牌中…'; ov.classList.add('show'); }
@@ -2924,6 +2946,7 @@ function setFollowLimit(v){
   const vu=document.getElementById('btnLimUp');   if(vu) vu.addEventListener('click',()=> setFollowLimit(followLimit+1));
   const vd=document.getElementById('btnLimDown'); if(vd) vd.addEventListener('click',()=> setFollowLimit(followLimit-1));
   setFollowLimit(4);   // 預設 3
+  const fr=document.getElementById('btnFollowReset'); if(fr) fr.addEventListener('click', resetFollowStats);
 })();
 document.getElementById('btnFollowPredict2').addEventListener('click', ()=> setFollow(followPredictOn?'off':'predict'));
 document.getElementById('btnFollowRev').addEventListener('click', ()=> setFollow(followReverseOn?'off':'reverse'));
