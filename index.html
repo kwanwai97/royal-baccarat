@@ -2810,8 +2810,11 @@ function savePredStats(){ try{ localStorage.setItem('bac_pred', JSON.stringify({
 function recordFollowHit(winner){
   if(!lastFollowSide) return;        // 本局冇跟注，skip
   if(winner==='tie') return;          // 開和：skip（退本金，唔計）
+  // 正規化跟注邊：跟旺AI/反旺AI 路徑用 'player'/'banker'，跟預測/反預測 路徑用 'P'/'B'
+  // 唔統一會令 banker 永遠計反（'banker'==='B' 係 false）— 修復「跟旺AI莊贏反紀錄輸」
+  const f = (lastFollowSide==='banker')?'B':(lastFollowSide==='player')?'P':lastFollowSide;
   followTotal++;                       // 跟注咗一鋪
-  const followIsBanker = lastFollowSide==='B';
+  const followIsBanker = f==='B';
   const actualBanker = winner==='banker';
   if(followIsBanker===actualBanker) followWins++; else followLosses++;
   saveFollowStats();
