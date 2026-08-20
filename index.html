@@ -526,6 +526,10 @@
     .controls{ grid-column:4 / 7; grid-row:4; align-self:start; padding:3px 6px 0; gap:4px; }  /* 右欄底：洗牌/發牌區 */
     /* 打橫溫和壓縮底部掣：padding/字/圓角收細 */
     .controls .btn{ padding:5px 6px; font-size:12px; border-radius:6px; letter-spacing:0; }
+    /* 打橫收埋左右 panel 自身 margin/padding，令下半兩邊真·貼住 48% 分界線（根治中間空位） */
+    .roadpanel{ margin:0 1px 0 0; }     /* 路單：收右邊 8px 空白，貼住分界 */
+    .bets{ padding:2px 2px 2px 0; }     /* 投注區：收左右 10px */
+    .chips-row{ padding:4px 2px 2px 0; } /* 籌碼區：收左右 10px */
     /* 頂部3區：brand(左) | 跟注/預測(中) | 餘額+資金(右)，各佔2欄、緊貼慳位 */
     /* 用 display:contents 拆開 topbar，brand 同 topright 各自成 grid item */
     .topbar{ display:contents; }
