@@ -553,19 +553,22 @@
 .follow-left{ grid-column:2 / 4; grid-row:1 / span 2; min-width:0; }
 .follow-right{
   grid-column:1 / 4; grid-row:6;
-  flex:1 1 0; flex-direction:row; flex-wrap:wrap;
-  padding-right:0; gap:4px; justify-content:flex-start;
+  flex:1 1 0; flex-direction:row; flex-wrap:nowrap; align-items:center;
+  padding-right:0; gap:6px; justify-content:flex-start;
 }
 .follow-right .fbtn{
   writing-mode:vertical-rl; text-orientation:upright;
-  min-width:0; height:34px; flex:1 1 0; 
+  min-width:0; height:34px; flex:0 0 auto;
   padding: 0 2px 2px 2px;        /* 上下 padding 改為 0 和 2px，讓文字貼頂 */
   font-size:11px;
   line-height: 1;               /* 消除多餘行高 */
   justify-content: flex-start;  /* 垂直方向（主軸）靠上對齊 */
   align-items: center;          /* 水平置中，保持文字左右對稱 */
 }
-.follow-right .limit-row{ 
+    /* 跟注文字(狀態+統計)放右側同5掣左右並排 */
+    .follow-right #followStatus{ flex:1 1 auto; text-align:right; white-space:nowrap; }
+    .follow-right .follow-stats{ flex:0 0 auto; text-align:right; white-space:nowrap; margin-left:6px; }
+.follow-right .limit-row{
   writing-mode:vertical-rl; text-orientation:upright; 
   flex-direction:row; flex-wrap:nowrap; 
   align-items:center; justify-content:center; gap:2px; 
