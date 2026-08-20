@@ -531,7 +531,7 @@
     }
     .topright{ flex-direction:column; align-items:flex-start; gap:6px; }
     .topbar{ align-self:start; }          /* 貼頂，唔撐滿 row，避免資金下留空白 */
-    /* 品牌行打橫：百家樂／AI榜／剩X張 垂直疊（每件一行），排喺資金前面 */
+    /* 品牌行打橫：AI榜／剩X張 垂直疊（每件一行），AI頂、剩餘第二 */
     .brand{ margin-left:0; flex-direction:column; align-items:flex-start; gap:2px 8px; font-size:13px; }
     .brand #btnLeaderboard{ font-size:11px; padding:1px 4px; }
     .brand-sub{ font-size:10px; }
@@ -581,9 +581,8 @@
 <div class="app">
   <div class="topbar">
     <div class="brand">
-      <span class="brand-title">♛ 百家樂</span>
       <button id="btnLeaderboard" title="AI 排行榜" style="align-self:flex-start;margin:0;background:linear-gradient(90deg,#3a2d5c,#5a3d7c);color:#fff;border:none;padding:1px 1px;border-radius:6px;font-size:12px;line-height:1.3;cursor:pointer;letter-spacing:.5px;">🏆 AI排行榜<div style="font-size:9px;opacity:.75;letter-spacing:0;">每小時更新</div></button>
-      <div class="brand-sub"><span id="shoeInfo"></span>　<span id="youStreak"></span></div>
+      <div class="brand-sub"><span id="shoeInfo"></span></div>
     </div>
     <div class="topright">
       <div class="balance"><small>餘額</small><div><b id="balance">1,000,000</b></div></div>
