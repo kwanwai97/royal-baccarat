@@ -589,6 +589,7 @@
     .betrow{ display:contents; }     /* 三行變 grid 子項，整體 3×3 一齊排 */
     .bet{ min-height:46px; padding:3px 2px; font-size:11px; }   /* 下兩行保持壓縮 */
     /* 頂列(閒/莊/和)不壓縮：移除 landscape 覆寫，還原用 base 86px */
+    .betrow.mid .bet, .betrow.bottom .bet{ min-height:46px; padding:3px 2px; }  /* 第二/三列同高壓縮 */
     .bet .bn{ font-size:11px; }
     .bet .od{ font-size:8px; }
     .bet .chips-stack{ min-height:12px; margin-top:1px; }
