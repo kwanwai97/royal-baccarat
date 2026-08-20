@@ -553,8 +553,8 @@
 .follow-left{ grid-column:2 / 4; grid-row:1 / span 2; min-width:0; }
 .follow-right{
   grid-column:1 / 4; grid-row:6;
-  flex:1 1 0; flex-direction:row; flex-wrap:nowrap; align-items:center;
-  padding-right:0; gap:6px; justify-content:flex-start;
+  display:grid; grid-template-columns:repeat(5,auto) 1fr; align-items:center;
+  column-gap:6px; justify-content:start;
 }
 .follow-right .fbtn{
   writing-mode:vertical-rl; text-orientation:upright;
@@ -566,8 +566,8 @@
   align-items: center;          /* 水平置中，保持文字左右對稱 */
 }
     /* 跟注文字(狀態+統計)放右側同5掣左右並排 */
-    .follow-right #followStatus{ flex:1 1 auto; text-align:right; white-space:nowrap; }
-    .follow-right .follow-stats{ flex:0 0 auto; text-align:right; white-space:nowrap; margin-left:6px; }
+    .follow-right #followStatus{ grid-column:6; grid-row:1; text-align:right; white-space:nowrap; }
+    .follow-right .follow-stats{ grid-column:6; grid-row:2; text-align:right; white-space:nowrap; margin-left:0; }
 .follow-right .limit-row{
   writing-mode:vertical-rl; text-orientation:upright; 
   flex-direction:row; flex-wrap:nowrap; 
