@@ -2748,9 +2748,17 @@ function updatePredict(){
       tip.textContent='請投注 — ｜ '+predHitText();
     }
   }
-  // 預測系統固定資訊區（上面一行：標題+請投注；下面一行：勝率/跟注次/勝負）
+  // 預測系統固定資訊區（上面一行：標題+請投注；下面一行：勝率/預測鋪數/中未中）
   const ps=document.getElementById('predSide');
-  if(ps) ps.textContent = pr.side ? ('請投注'+(pr.side==='B'?'莊':'閒')) : '請投注 —';
+  if(ps){
+    if(pr.side){
+      const col = pr.side==='B' ? '#ff6b6b' : '#6bb6ff';   // 莊紅 / 閒藍
+      const name = pr.side==='B' ? '莊' : '閒';
+      ps.innerHTML = '請投注 <span style="color:'+col+';">'+name+'</span>';
+    } else {
+      ps.textContent = '請投注 —';
+    }
+  }
   updatePredStats();
 }
 // 預測系統統計行：勝率%(predHitText)、跟注次數(followStreakCount)、勝/負(stats.wins/losses)
