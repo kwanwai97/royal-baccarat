@@ -282,8 +282,8 @@
 .pred-row2 .ps-item{ white-space:nowrap; }
 .pred-row2 b{ color:#ffd479; font-weight:800; }
 .pred-row2 .pred-log{ display:inline-flex; align-items:center; gap:3px; }
-.pred-row2 .plog-dot{ width:9px; height:9px; border-radius:50%; display:inline-block; }
-.pred-row2 .plog-empty{ background:rgba(255,255,255,.18); }
+.pred-row2 .plog-dot{ font-style:normal; font-size:10px; font-weight:800; line-height:1; }
+.pred-row2 .plog-empty{ color:rgba(255,255,255,.25); }
 .follow-right{flex:1 1 50%; display:flex; flex-direction:row; flex-wrap:wrap; gap:2px; align-items:flex-start; justify-content:flex-start; padding-right:6px;}
 
 /* 五個掣統一尺寸：4個策略掣 flex:1 1 0 平均闊度；第5個次數掣固定36px；高度統一32px */
@@ -2808,15 +2808,15 @@ function updatePredStats(){
   const pc=document.getElementById('predCnt'); if(pc) pc.textContent = predTotal||0;                     // 預測系統自己：出過幾鋪預測
   const w=document.getElementById('predW'); if(w) w.textContent = predHit||0;                            // 預測中幾鋪
   const l=document.getElementById('predL'); if(l) l.textContent = Math.max(0, predTotal-predHit);         // 預測未中幾鋪
-  // 最近六次預測結果：W中=藍 / L未中=紅 / T和=綠（空位用灰點補到6）
+  // 最近六次預測結果：W中=藍 / L未中=紅 / T和=綠（空位用淡灰「─」補到6）
   const logEl=document.getElementById('predLog');
   if(logEl){
-    const map={W:['#6bb6ff','中'], L:['#ff6b6b','輸'], T:['#2faf5a','和']};
+    const map={W:['#6bb6ff','贏'], L:['#ff6b6b','輸'], T:['#2faf5a','和']};
     let html='';
     for(let i=0;i<6;i++){
       const r=predResultLog[i];
-      if(r){ const c=map[r]; html+='<i class="plog-dot" style="background:'+c[0]+'" title="'+c[1]+'"></i>'; }
-      else { html+='<i class="plog-dot plog-empty"></i>'; }
+      if(r){ const c=map[r]; html+='<i class="plog-dot" style="color:'+c[0]+'">'+c[1]+'</i>'; }
+      else { html+='<i class="plog-dot plog-empty">─</i>'; }
     }
     logEl.innerHTML=html;
   }
