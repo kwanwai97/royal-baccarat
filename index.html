@@ -542,11 +542,11 @@
     .brand #btnLeaderboard{ font-size:11px; padding:1px 4px; }
     .brand-sub{ font-size:10px; }
     .brand-sub #shoeInfo{ font-size:12px; }
-    .topright{ grid-column:6 / 7; grid-row:1; display:flex; flex-direction:column; align-items:flex-start; gap:4px; align-self:start; min-width:0; overflow:hidden; }
+    .topright{ grid-column:6 / 7; grid-row:1; display:flex; flex-direction:column; align-items:flex-start; gap:4px; align-self:start; min-width:0; overflow:visible; }
     .topright .balance{ font-size:13px; }
     .topright .balance b{ font-size:18px; }
-    /* AI陪玩列表（資金）打橫：6個一行 */
-    .ai-balances{ grid-template-columns:repeat(6,1fr); gap:1px 4px; }
+    /* AI陪玩列表（資金）打橫：全部一行橫向排列+可捲動，唔切走、唔撐闊欄保持50/50 */
+    .ai-balances{ display:grid; grid-auto-flow:column; grid-auto-columns:max-content; gap:1px 4px; overflow-x:auto; }
     .follow-wrap{
       grid-column:1 / 4; grid-row:5;
       display:flex; flex-direction:row; align-items:flex-start; gap:8px;
