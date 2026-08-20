@@ -530,6 +530,11 @@
     .roadpanel{ margin:0 1px 0 0; }     /* 路單：收右邊 8px 空白，貼住分界 */
     .bets{ padding:2px 2px 2px 0; }     /* 投注區：收左右 10px */
     .chips-row{ padding:4px 2px 2px 0; } /* 籌碼區：收左右 10px */
+    /* 打橫修復下三路標籤：強行撐住下三路高度，令大眼仔/小路/蟑螂路文字一定貼住每張網格右下角（唔再落到網下方） */
+    .road-derived{ height:96px; flex:0 0 96px; }   /* 下三路固定總高，3張圖各約32px */
+    .derived-row{ height:32px; flex:0 0 32px; display:flex; align-items:stretch; }
+    .derived-row canvas{ width:100%; height:32px; }
+    .derived-label{ position:absolute; right:4px; bottom:1px; font-size:8px; }
     /* 頂部3區：brand(左) | 跟注/預測(中) | 餘額+資金(右)，各佔2欄、緊貼慳位 */
     /* 用 display:contents 拆開 topbar，brand 同 topright 各自成 grid item */
     .topbar{ display:contents; }
