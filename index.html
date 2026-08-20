@@ -557,6 +557,8 @@
   display:flex; flex-direction:row; align-items:flex-start; gap:10px;
   padding:1px 4px 0;
 }
+/* 打橫時跟注組(文字+5掣)經 JS 搬入路單區底(緊貼開牌紀錄)：取消 grid 定位、墊高過開牌疊層 */
+.roadpanel .follow-right{ grid-column:auto; grid-row:auto; position:relative; z-index:11; margin:2px 4px 0; }
 .follow-text{ display:flex; flex-direction:column; gap:2px; order:1; min-width:0; }
 .follow-right .fbtn{ order:2; }
 .follow-right .limit-row{ order:2; }
@@ -3285,6 +3287,20 @@ document.getElementById('btnSaveLimits').addEventListener('click',()=>{
 loadStats(); loadRoads(); loadAiList(); loadQuest(); loadLimits(); updateAiBalances(); renderAiList();   // 修復: 開局重畫AI列表(否則reload後下方無卡片)
 updatePredStats(); updateFollowStats();   // 開局即時刷預測/跟注統計行（載入 localStorage 後）
 sessionStartBalance=balance;   // 記低開局餘額，畀「本場淨贏/輸」用
+
+// 打橫時將跟注組(文字+5掣)搬入路單區底(緊貼開牌紀錄)；打直還原原位（直向100%唔變）
+function placeFollow(){
+  const fr=document.querySelector('.follow-right');
+  const fw=document.querySelector('.follow-wrap');
+  const rp=document.querySelector('.roadpanel');
+  if(!fr||!fw||!rp) return;
+  const land=window.matchMedia('(orientation:landscape)').matches;
+  if(land){ if(fr.parentElement!==rp) rp.appendChild(fr); }
+  else { if(fr.parentElement!==fw) fw.appendChild(fr); }
+}
+placeFollow();
+window.addEventListener('resize', placeFollow);
+if(window.matchMedia){ try{ window.matchMedia('(orientation:landscape)').addEventListener('change', placeFollow); }catch(e){} }
 if(!loadShoe()) resetShoe();   // 有儲存嘅鞋就續返(派過幾多張繼續)，否則開新鞋
 updateShoeInfo();   // 無論續鞋定開新鞋都刷新剩餘張數顯示
 updateBalance(); updateBetDisplay(); checkDaily(); updateQuest(); drawAllRoads();
