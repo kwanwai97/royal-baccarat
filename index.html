@@ -281,6 +281,9 @@
 .pred-row2{ display:flex; flex-wrap:wrap; gap:4px 12px; font-size:10px; color:#9fe6b8; }
 .pred-row2 .ps-item{ white-space:nowrap; }
 .pred-row2 b{ color:#ffd479; font-weight:800; }
+.pred-row2 .pred-log{ display:inline-flex; align-items:center; gap:3px; }
+.pred-row2 .plog-dot{ width:9px; height:9px; border-radius:50%; display:inline-block; }
+.pred-row2 .plog-empty{ background:rgba(255,255,255,.18); }
 .follow-right{flex:1 1 50%; display:flex; flex-direction:row; flex-wrap:wrap; gap:2px; align-items:flex-start; justify-content:flex-start; padding-right:6px;}
 
 /* 五個掣統一尺寸：4個策略掣 flex:1 1 0 平均闊度；第5個次數掣固定36px；高度統一32px */
@@ -720,6 +723,7 @@
           <span class="ps-item">勝率 <b id="predWin">—</b></span>
           <span class="ps-item">預測 <b id="predCnt">0</b> 鋪</span>
           <span class="ps-item">中 <b id="predW">0</b> / 未中 <b id="predL">0</b></span>
+          <span class="ps-item pred-log" id="predLog"></span>
         </div>
       </div>
     </div>
@@ -1284,6 +1288,7 @@ let followLimit=3;            // 連續上限（預設3，可選2/3/4/5）
 let followStreakKey=null;     // 跟緊邊個（旺AI id，或 'predict'）
 let lastPredictSide='';       // 上一局開牌前出嘅預測邊(B/P/空)，開牌後用嚟計命中
 let predHit=0, predTotal=0;   // 預測命中統計（開和/觀望 skip），存 bac_pred
+let predResultLog=[];        // 最近六次預測結果：'W'中(藍) / 'L'未中(紅) / 'T'和(綠)，新尾舊頭，最多6
 let followStreakCount=0;      // 連續跟咗幾多次
 let followTotal=0, followWins=0, followLosses=0;   // 跟注系統自己紀錄（累計，跨靴牌保留）
 let lastFollowSide='';        // 本局跟注落咗邊(B/P/T)，開牌後用嚟計跟注勝負
@@ -2586,6 +2591,7 @@ function resetShoe(){
   shoe=shuffle(buildShoe(8)); shoeDrawn=0;
   shoeCut=shoe.length-138;   // 抽到呢個位（剩138張）自動洗牌
   predTotal=0; predHit=0;    // 新靴牌：預測系統統計全部歸零（按靴牌獨立紀錄）
+  predResultLog=[];         // 新靴牌：最近六次預測結果亦歸零
   saveShoe();
   updateShoeInfo();
   updatePredStats();         // 洗牌後即時刷下面行（變回 勝率 — ｜ 預測 0 鋪 ｜ 中 0 / 未中 0）
@@ -2802,16 +2808,33 @@ function updatePredStats(){
   const pc=document.getElementById('predCnt'); if(pc) pc.textContent = predTotal||0;                     // 預測系統自己：出過幾鋪預測
   const w=document.getElementById('predW'); if(w) w.textContent = predHit||0;                            // 預測中幾鋪
   const l=document.getElementById('predL'); if(l) l.textContent = Math.max(0, predTotal-predHit);         // 預測未中幾鋪
+  // 最近六次預測結果：W中=藍 / L未中=紅 / T和=綠（空位用灰點補到6）
+  const logEl=document.getElementById('predLog');
+  if(logEl){
+    const map={W:['#6bb6ff','中'], L:['#ff6b6b','輸'], T:['#2faf5a','和']};
+    let html='';
+    for(let i=0;i<6;i++){
+      const r=predResultLog[i];
+      if(r){ const c=map[r]; html+='<i class="plog-dot" style="background:'+c[0]+'" title="'+c[1]+'"></i>'; }
+      else { html+='<i class="plog-dot plog-empty"></i>'; }
+    }
+    logEl.innerHTML=html;
+  }
 }
 // 預測命中統計：開牌結果定咗之後 call（deal 內 addResult 後）
 // 規則：觀望(空) skip；開和(tie) skip（唔當中唔當錯）；出咗莊/閒預測先計 total
 function recordPredictHit(winner){
   if(!lastPredictSide) return;          // 觀望：無出預測，skip
-  if(winner==='tie') return;            // 開和：skip（退本金，唔計）
-  predTotal++;                          // 出咗預測就計一鋪
-  const predIsBanker = lastPredictSide==='B';
-  const actualBanker = winner==='banker';
-  if(predIsBanker===actualBanker) predHit++;
+  let result;                            // 本局預測結果：'W'中 / 'L'未中 / 'T'和
+  if(winner==='tie'){ result='T'; }      // 開和：skip 命中統計，但記入最近六次(綠)
+  else {
+    predTotal++;                         // 出咗莊/閒預測就計一鋪
+    const predIsBanker = lastPredictSide==='B';
+    const actualBanker = winner==='banker';
+    if(predIsBanker===actualBanker){ predHit++; result='W'; } else { result='L'; }
+  }
+  predResultLog.push(result);
+  if(predResultLog.length>6) predResultLog.shift();   // 只留最近六次
   savePredStats();
 }
 function predHitText(){
