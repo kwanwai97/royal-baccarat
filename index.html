@@ -339,6 +339,17 @@
   margin-top: -6;
   padding: 0 2px;
 }
+.follow-right .follow-stats {
+  flex-basis: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  font-size: 10px;
+  color: #9fe6b8;
+  text-align: left;
+  padding: 0 2px;
+}
+.follow-right .follow-stats b{ color:#ffd479; font-weight:800; }
 
 /* 原有其他樣式保留 */
 .follow-right .fbtn.on{
@@ -709,6 +720,7 @@
         <button class="btn fstep" id="btnLimDown" title="減1">−</button>
       </div>
       <div id="followStatus" class="follow-status"></div>
+      <div class="follow-stats"><span class="ps-item">跟注 <b id="followTotal">0</b> 次</span><span class="ps-item">勝 <b id="followW">0</b> / 負 <b id="followL">0</b></span></div>
     </div>
   </div>
   <div class="h-left">
@@ -1258,6 +1270,8 @@ let followStreakKey=null;     // 跟緊邊個（旺AI id，或 'predict'）
 let lastPredictSide='';       // 上一局開牌前出嘅預測邊(B/P/空)，開牌後用嚟計命中
 let predHit=0, predTotal=0;   // 預測命中統計（開和/觀望 skip），存 bac_pred
 let followStreakCount=0;      // 連續跟咗幾多次
+let followTotal=0, followWins=0, followLosses=0;   // 跟注系統自己紀錄（累計，跨靴牌保留）
+let lastFollowSide='';        // 本局跟注落咗邊(B/P/T)，開牌後用嚟計跟注勝負
 function followTrack(key){    // 每局 call：回傳 true=可以跟，false=已達上限暫停
   if(followStreakKey===key){ followStreakCount++; }
   else { followStreakKey=key; followStreakCount=1; }   // 對象轉咗 → reset 解禁
@@ -1321,6 +1335,7 @@ function followHotAI(){
   else if(b.pick==='banker') bets.banker=amt;
   else if(b.pick==='tie') bets.tie=amt;
   balance-=amt;
+  lastFollowSide = b.pick;   // 記錄本局跟注邊，開牌後計跟注勝負
   updateBalance(); updateBetDisplay(); sndChip();
   showToast('🔥 跟旺AI「'+hot.name+'」('+b.pick+' '+fmt(amt)+')');
 }
@@ -1754,6 +1769,7 @@ async function deal(auto){
   if(total===0 && auto!==true && ais.length===0 && lastPredictSide){
     showToast('🔍 演示模式 – 僅記錄預測命中率');   // 無下注照開牌，結算唔影響餘額
   }
+  lastFollowSide='';   // 本局先清零跟注邊，落注期跟注函數會寫返；冇跟就保持空（recordFollowHit 會 skip）
   if(shoeDrawn>=shoeCut || shoeStats.round>=60){ await doShuffle(); }
   setControls(false);   // 禁 DEAL/清除/重複掣（唔設 dealing，等落注期人類照落得）
   // 統一次序（自動/手動都一樣）：2秒緩衝 → 5秒局間緩衝 → 枱邊討論 → 落注倒數 → 開牌
@@ -1845,7 +1861,9 @@ async function deal(auto){
   settle(winner, playerPair, bankerPair, big, totalCards, pTotal, bTotal, pc.length, bc.length);
   addResult(winner, playerPair, bankerPair, totalCards);
   recordPredictHit(winner);   // 開牌後：用上一局開牌前出嘅預測計命中
+  recordFollowHit(winner);    // 開牌後：用本局跟注邊計跟注系統勝負
   updatePredStats();          // 開牌後即時更新預測系統統計行（勝率/勝負）
+  updateFollowStats();        // 開牌後即時更新跟注系統統計行（N次/勝/負）
   drawAllRoads();
   saveStats();
   // 開牌3秒後啤牌淡出消失，結果文字保留
@@ -2023,6 +2041,7 @@ function loadStats(){
   try{ const b=localStorage.getItem('bac_balance'); if(b!==null) balance=Math.max(0,+b); }catch(e){}  // 直接用存檔餘額，唔好用 TABLE_MAX(桌注上限)截，否則贏多過5萬reload變返5萬
   try{ const d=JSON.parse(localStorage.getItem('bac_daily')); if(d){ dailyClaim=d; } }catch(e){}
   try{ const p=JSON.parse(localStorage.getItem('bac_pred')); if(p){ predHit=p.hit||0; predTotal=p.total||0; } }catch(e){}  // 預測命中統計恢復
+  try{ const f=JSON.parse(localStorage.getItem('bac_follow')); if(f){ followTotal=f.t||0; followWins=f.w||0; followLosses=f.l||0; } }catch(e){}  // 跟注系統勝負紀錄恢復
 }
 function saveStats(){
   try{ localStorage.setItem('bac_stats',JSON.stringify(stats)); localStorage.setItem('bac_balance',String(balance)); }catch(e){}
@@ -2554,7 +2573,8 @@ function resetShoe(){
   predTotal=0; predHit=0;    // 新靴牌：預測系統統計全部歸零（按靴牌獨立紀錄）
   saveShoe();
   updateShoeInfo();
-  updatePredStats();         // 洗牌後即時刷下面行（變回 勝率 — ｜ 跟注 0 次 ｜ 勝 0 / 負 0）
+  updatePredStats();         // 洗牌後即時刷下面行（變回 勝率 — ｜ 預測 0 鋪 ｜ 中 0 / 未中 0）
+  updateFollowStats();       // 洗牌後跟注統計保留（跨靴牌累計，唔清零）
 }
 function saveShoe(){ try{ localStorage.setItem('bac_shoe', JSON.stringify({shoe, shoeDrawn, shoeCut})); }catch(e){} }
 function loadShoe(){
@@ -2785,6 +2805,23 @@ function predHitText(){
   return '命中 '+pct+'% (中 '+predHit+'/'+predTotal+')';
 }
 function savePredStats(){ try{ localStorage.setItem('bac_pred', JSON.stringify({hit:predHit,total:predTotal})); }catch(e){} }
+// 跟注系統統計：開牌結果定咗之後 call（deal 內 addResult 後）
+// 規則：本局無跟注(lastFollowSide 空) skip；開和(tie) skip（退本金，唔計）；跟咗莊/閒先計 total/勝/負
+function recordFollowHit(winner){
+  if(!lastFollowSide) return;        // 本局冇跟注，skip
+  if(winner==='tie') return;          // 開和：skip（退本金，唔計）
+  followTotal++;                       // 跟注咗一鋪
+  const followIsBanker = lastFollowSide==='B';
+  const actualBanker = winner==='banker';
+  if(followIsBanker===actualBanker) followWins++; else followLosses++;
+  saveFollowStats();
+}
+function updateFollowStats(){
+  const ft=document.getElementById('followTotal'); if(ft) ft.textContent = followTotal||0;
+  const fw=document.getElementById('followW'); if(fw) fw.textContent = followWins||0;
+  const fl=document.getElementById('followL'); if(fl) fl.textContent = followLosses||0;
+}
+function saveFollowStats(){ try{ localStorage.setItem('bac_follow', JSON.stringify({t:followTotal,w:followWins,l:followLosses})); }catch(e){} }
 async function doShuffle(){
   const ov=document.getElementById('shuffleOverlay');
   if(ov){ ov.querySelector('.title').textContent='🔀 洗牌中…'; ov.classList.add('show'); }
@@ -2827,6 +2864,7 @@ function autoFollowPredict(reverse){
   clearBets(true);
   if(side==='B') bets.banker=betAmt; else if(side==='P') bets.player=betAmt;
   balance-=betAmt; updateBalance(); updateBetDisplay(); sndChip();
+  lastFollowSide = side;   // 記錄本局跟注邊，開牌後計跟注勝負(用嚟 display N次/勝/負)
   const fsEl=document.getElementById('followStatus');
   if(fsEl) fsEl.textContent=(reverse?'🔄 反預測':'🔮 跟預測')+'：緊跟路單';
   showToast((reverse?'🔄 反預測':'🔮 跟預測')+'：自動落注'+(side==='B'?'莊':'閒')+' '+fmt(betAmt));
@@ -2853,6 +2891,7 @@ function autoFollowHot(reverse){
   clearBets(true);
   if(pick==='player') bets.player=amt; else if(pick==='banker') bets.banker=amt; else if(pick==='tie') bets.tie=amt;
   balance-=amt; updateBalance(); updateBetDisplay(); sndChip();
+  lastFollowSide = pick;   // 記錄本局跟注邊，開牌後計跟注勝負
   document.getElementById('followStatus').textContent=followStatusText();
   showToast((reverse?'🔥 反旺AI':'🔥 跟旺AI')+'「'+hot.name+'」('+pick+' '+fmt(amt)+')');
 }
@@ -3167,6 +3206,7 @@ document.getElementById('btnSaveLimits').addEventListener('click',()=>{
 
 
 loadStats(); loadRoads(); loadAiList(); loadQuest(); loadLimits(); updateAiBalances(); renderAiList();   // 修復: 開局重畫AI列表(否則reload後下方無卡片)
+updatePredStats(); updateFollowStats();   // 開局即時刷預測/跟注統計行（載入 localStorage 後）
 sessionStartBalance=balance;   // 記低開局餘額，畀「本場淨贏/輸」用
 if(!loadShoe()) resetShoe();   // 有儲存嘅鞋就續返(派過幾多張繼續)，否則開新鞋
 updateShoeInfo();   // 無論續鞋定開新鞋都刷新剩餘張數顯示
