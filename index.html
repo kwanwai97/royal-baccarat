@@ -516,7 +516,7 @@
     /* 打橫壓縮路單高度，騰出下面欄位空間（唔改內部/JS） */
     #bigCanvas{ height:80px; }
     #beadCanvas{ height:72px; }
-    #beeCanvas, #smallCanvas, #cockCanvas{ height:32px; }
+    #beeCanvas, #smallCanvas, #cockCanvas{ height:100%; }
     .info-strip{ height:32px; }
     .odds-row{ display:none; }            /* 勝率行：打橫收，避免空白 */
     /* 右欄：投注→籌碼→洗牌 各自一格，貼頂對齊 */
@@ -530,10 +530,10 @@
     .roadpanel{ margin:0 1px 0 0; }     /* 路單：收右邊 8px 空白，貼住分界 */
     .bets{ padding:2px 2px 2px 0; }     /* 投注區：收左右 10px */
     .chips-row{ padding:4px 2px 2px 0; } /* 籌碼區：收左右 10px */
-    /* 打橫修復下三路標籤：derived-row 鎖死32px唔撐大，令label貼住每張網格右下角；唔鎖容器總高（避免同珠盤路錯位） */
+    /* 打橫下三路：derived-row 改回 flex:1 均分(同直版)，三張自動撐滿高度、貼住珠盤路底對齊；canvas 跟 height:100% */
     .road-derived{ display:flex; flex-direction:column; }
-    .derived-row{ flex:0 0 32px; height:32px; }
-    .derived-row canvas{ width:100%; height:32px; }
+    .derived-row{ flex:1 1 0; min-height:0; }
+    .derived-row canvas{ width:100%; height:100%; }
     .derived-label{ right:4px; bottom:1px; font-size:8px; }
     /* 頂部3區：brand(左) | 跟注/預測(中) | 餘額+資金(右)，各佔2欄、緊貼慳位 */
     /* 用 display:contents 拆開 topbar，brand 同 topright 各自成 grid item */
@@ -589,7 +589,8 @@
     .betrow{ display:contents; }     /* 三行變 grid 子項，整體 3×3 一齊排 */
     .bet{ min-height:40px; padding:3px 2px; font-size:11px; }   /* 下兩行保持壓縮 */
     /* 頂列(閒/莊/和)不壓縮：移除 landscape 覆寫，還原用 base 86px */
-    .betrow.mid .bet, .betrow.bottom .bet{ min-height:40px; padding:3px 2px; }  /* 第二/三列同高壓縮 */
+    .betrow.top .bet{ min-height:80px; padding:5px 2px; }       /* 頂列(閒莊和) 80px 高 */
+    .betrow.mid .bet, .betrow.bottom .bet{ min-height:40px; padding:3px 2px; }  /* 第二/三列各 40px 高 */
     .bet .bn{ font-size:11px; }
     .bet .od{ font-size:8px; }
     .bet .chips-stack{ min-height:12px; margin-top:1px; }
