@@ -512,7 +512,9 @@
       padding:0;                          /* 貼鐵，左右近邊 */
     }
     /* 下半左：路單（大路+珠盤+下三路）跨左3欄、佔 row2-4 全高 */
-    .roadpanel{ grid-column:1 / 4; grid-row:2 / span 3; align-self:stretch; }
+    .roadpanel{ grid-column:1 / 4; grid-row:2 / span 3; align-self:stretch; display:flex; flex-direction:column; }
+    /* 打橫：珠盤+下三路推落左面板底（margin-top:auto），內容唔撐大、唔變形，中間留空 */
+    .road-lower{ margin-top:auto; }
     /* 打橫壓縮路單高度，騰出下面欄位空間（唔改內部/JS） */
     #bigCanvas{ height:80px; }
     #beadCanvas{ height:72px; }
