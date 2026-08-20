@@ -503,17 +503,16 @@
     .app{
       display:grid;
       grid-template-columns:20fr 20fr 20fr 13.33fr 13.33fr 13.33fr;   /* 左右60/40：左3欄共60% 右3欄共40%，下面分界鎖60% */
-      grid-template-rows:auto 1fr auto auto;   /* 第2行(路單)食晒剩餘高度，整個左塊貼底對齊右邊 */
+      grid-template-rows:auto auto auto auto;
       align-content:start;                /* 整體貼頂 */
-      align-items:stretch;                /* 左右兩邊都 stretch 同高，底部對齊 */
+      align-items:start;
       grid-auto-rows:min-content;
       gap:0;                             /* 三區之間零間隙，真正緊貼 */
       max-width:none;                     /* 打橫填滿，唔再 560px 限死 */
       padding:0;                          /* 貼鐵，左右近邊 */
     }
-    /* 下半左：路單跨左3欄、佔 row2-4 全高，stretch 貼底；內容頂置、剩餘空位留底（唔撐大 canvas，文字唔移位） */
-    .roadpanel{ grid-column:1 / 4; grid-row:2 / span 3; align-self:stretch; display:flex; flex-direction:column; }
-    .road-lower{ flex:0 0 auto; }        /* 唔撐大，下三路每行鎖32px，文字留喺網格內 */
+    /* 下半左：路單（大路+珠盤+下三路）跨左3欄、佔 row2-4 全高 */
+    .roadpanel{ grid-column:1 / 4; grid-row:2 / span 3; align-self:stretch; }
     /* 打橫壓縮路單高度，騰出下面欄位空間（唔改內部/JS） */
     #bigCanvas{ height:80px; }
     #beadCanvas{ height:72px; }
