@@ -350,10 +350,11 @@
   padding: 0 2px;
 }
 .follow-right .follow-stats b{ color:#ffd479; font-weight:800; }
+.follow-right .follow-stats .ps-wl{ display:inline-flex; align-items:center; gap:4px; flex-wrap:nowrap; white-space:nowrap; }
 .follow-right .btn.freset{
   flex:0 0 auto;
-  margin:0 0 0 8px;
-  padding:2px 7px;
+  margin:0 0 0 4px;
+  padding:1px 6px;
   font-size:10px;
   font-weight:700;
   color:#ffd9a8;
@@ -734,7 +735,7 @@
         <button class="btn fstep" id="btnLimDown" title="減1">−</button>
       </div>
       <div id="followStatus" class="follow-status"></div>
-      <div class="follow-stats"><span class="ps-item">跟注 <b id="followTotal">0</b> 次</span><span class="ps-item">勝 <b id="followW">0</b> / 負 <b id="followL">0</b></span><button class="btn freset" id="btnFollowReset" title="重置跟注統計：清空 N次/勝/負（跨靴累計，手動清）">重置計算</button></div>
+      <div class="follow-stats"><span class="ps-item">跟注 <b id="followTotal">0</b> 次</span><span class="ps-wl">勝 <b id="followW">0</b> / 負 <b id="followL">0</b><button class="btn freset" id="btnFollowReset" title="重置跟注統計：清空 N次/勝/負（跨靴累計，手動清）">重置</button></span></div>
     </div>
   </div>
   <div class="h-left">
