@@ -523,7 +523,9 @@
     .h-left{ display:contents; }
     .bets{ grid-column:4 / 7; grid-row:2; align-self:start; }     /* 右欄頂：投注區 3×3 */
     .chips-row{ grid-column:4 / 7; grid-row:3; align-self:start; } /* 右欄中：籌碼區 */
-    .controls{ grid-column:4 / 7; grid-row:4; align-self:start; }  /* 右欄底：洗牌/發牌區 */
+    .controls{ grid-column:4 / 7; grid-row:4; align-self:start; padding:3px 6px 0; gap:4px; }  /* 右欄底：洗牌/發牌區 */
+    /* 打橫溫和壓縮底部掣：padding/字/圓角收細 */
+    .controls .btn{ padding:5px 6px; font-size:12px; border-radius:6px; letter-spacing:0; }
     /* 頂部3區：brand(左) | 跟注/預測(中) | 餘額+資金(右)，各佔2欄、緊貼慳位 */
     /* 用 display:contents 拆開 topbar，brand 同 topright 各自成 grid item */
     .topbar{ display:contents; }
