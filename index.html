@@ -692,8 +692,8 @@
         <div class="pred-row1"><span class="pred-ico">🔮</span><span class="pred-title">預測系統</span><span class="pred-side" id="predSide">請投注 —</span></div>
         <div class="pred-row2">
           <span class="ps-item">勝率 <b id="predWin">—</b></span>
-          <span class="ps-item">跟注 <b id="predCnt">0</b> 次</span>
-          <span class="ps-item">勝 <b id="predW">0</b> / 負 <b id="predL">0</b></span>
+          <span class="ps-item">預測 <b id="predCnt">0</b> 鋪</span>
+          <span class="ps-item">中 <b id="predW">0</b> / 未中 <b id="predL">0</b></span>
         </div>
       </div>
     </div>
@@ -2756,9 +2756,9 @@ function updatePredict(){
 // 預測系統統計行：勝率%(predHitText)、跟注次數(followStreakCount)、勝/負(stats.wins/losses)
 function updatePredStats(){
   const pw=document.getElementById('predWin'); if(pw) pw.textContent = predTotal>0 ? (Math.round(predHit/predTotal*100)+'%') : '—';
-  const pc=document.getElementById('predCnt'); if(pc) pc.textContent = followStreakCount||0;
-  const w=document.getElementById('predW'); if(w) w.textContent = stats.wins||0;
-  const l=document.getElementById('predL'); if(l) l.textContent = stats.losses||0;
+  const pc=document.getElementById('predCnt'); if(pc) pc.textContent = predTotal||0;                     // 預測系統自己：出過幾鋪預測
+  const w=document.getElementById('predW'); if(w) w.textContent = predHit||0;                            // 預測中幾鋪
+  const l=document.getElementById('predL'); if(l) l.textContent = Math.max(0, predTotal-predHit);         // 預測未中幾鋪
 }
 // 預測命中統計：開牌結果定咗之後 call（deal 內 addResult 後）
 // 規則：觀望(空) skip；開和(tie) skip（唔當中唔當錯）；出咗莊/閒預測先計 total
