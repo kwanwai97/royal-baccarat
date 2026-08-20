@@ -630,6 +630,10 @@
         <div class="road-section-title" style="font-size:8px;opacity:.55;padding:2px 6px;letter-spacing:0">珠盤路</div>
         <canvas id="beadCanvas" width="270" height="110"></canvas>
         <div class="info-strip" id="infoStrip"></div>
+        <div id="followText" style="position:absolute; left:4px; bottom:1px; text-align:left; font-size:10px; line-height:1.3; pointer-events:none;">
+      <div id="followStatus" class="follow-status"></div>
+      <div class="follow-stats"><span class="ps-item">跟注 <b id="followTotal">0</b> 次</span><span class="ps-wl">勝 <b id="followW">0</b> / 負 <b id="followL">0</b><button class="btn freset" id="btnFollowReset" title="重置跟注統計：清空 N次/勝/負（跨靴累計，手動清）">重置</button></span></div>
+        </div>
       </div>
       <div class="road-derived">
         <div class="derived-row">
@@ -643,6 +647,17 @@
         <div class="derived-row">
           <canvas id="cockCanvas" width="270" height="44"></canvas>
           <div class="road-section-title derived-label">蟑螂路</div>
+        </div>
+        <div id="followBtns" style="position:absolute; right:4px; bottom:1px; display:flex; gap:3px; align-items:center;">
+      <button class="btn fbtn" id="btnFollowPredict2" title="跟預測：長期跟模式，每局自動跟預測建議邊">跟預測</button>
+      <button class="btn fbtn" id="btnFollowRev" title="反預測：長期跟模式，每局自動跟預測相反邊">反預測</button>
+      <button class="btn fbtn" id="btnFollowHot" title="跟旺AI：長期跟模式，每局自動跟連勝最高AI嘅主注邊">跟旺<span class="ai-h">AI</span></button>
+      <button class="btn fbtn" id="btnFollowHotRev" title="反旺AI：長期跟模式，每局自動跟連勝最高AI嘅相反邊">反旺<span class="ai-h">AI</span></button>
+      <div class="limit-row">
+        <button class="btn fstep" id="btnLimUp" title="加1">＋</button>
+        <span class="limit-val" id="followLimitVal">3</span>
+        <button class="btn fstep" id="btnLimDown" title="減1">−</button>
+      </div>
         </div>
       </div>
       <div class="tablechat tc-left" id="tableChatL">
@@ -748,20 +763,8 @@
         </div>
       </div>
     </div>
-    <!-- 右半：打橫一行 5 張卡 (4掣 + 次數) + 底下跟隨次數文字 -->
-    <div class="follow-right">
-      <button class="btn fbtn" id="btnFollowPredict2" title="跟預測：長期跟模式，每局自動跟預測建議邊">跟預測</button>
-      <button class="btn fbtn" id="btnFollowRev" title="反預測：長期跟模式，每局自動跟預測相反邊">反預測</button>
-      <button class="btn fbtn" id="btnFollowHot" title="跟旺AI：長期跟模式，每局自動跟連勝最高AI嘅主注邊">跟旺<span class="ai-h">AI</span></button>
-      <button class="btn fbtn" id="btnFollowHotRev" title="反旺AI：長期跟模式，每局自動跟連勝最高AI嘅相反邊">反旺<span class="ai-h">AI</span></button>
-      <div class="limit-row">
-        <button class="btn fstep" id="btnLimUp" title="加1">＋</button>
-        <span class="limit-val" id="followLimitVal">3</span>
-        <button class="btn fstep" id="btnLimDown" title="減1">−</button>
-      </div>
-      <div id="followStatus" class="follow-status"></div>
-      <div class="follow-stats"><span class="ps-item">跟注 <b id="followTotal">0</b> 次</span><span class="ps-wl">勝 <b id="followW">0</b> / 負 <b id="followL">0</b><button class="btn freset" id="btnFollowReset" title="重置跟注統計：清空 N次/勝/負（跨靴累計，手動清）">重置</button></span></div>
-    </div>
+    <!-- 5掣同跟注文字已搬入路單內部(珠盤路底/下三路底) -->
+    <div class="follow-right" style="display:none;"></div>
   </div>
   <div class="h-left">
   <div class="bets" id="bets">
