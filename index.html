@@ -2129,6 +2129,7 @@ function loadAiList(){
       if(Array.isArray(arr)) {
         ais = arr.map(ai => ({ 
           ...ai, 
+          plan: AI_PLANS[ai.plan] ? ai.plan : 'flat',   // 兼容舊存檔：已移除嘅注碼方案降級做平注
           currentBet: null, 
           emotion: ai.emotion || 50, 
           joy: ai.joy || 0, 
@@ -2387,19 +2388,20 @@ const AI_PERSONAS={
     win:['逆向才是王道','大眾錯我就對','反叛者不跟潮流'], lose:['大眾今次啱咗...','逆向失敗重新評估','就算錯都要反'], tilt:['全世界都錯！！','跟大隊嘅都係羊','我偏要反！！'] }
 };
 
+/* 注碼方案 — 唯一真源 = 排行榜 lb_sim.py 嗰 12 款（代碼/公式/中文名全部對齊） */
 const AI_PLANS={
   flat:{name:'平注', fn:(ai)=>ai.baseBet},
   martin:{name:'倍投', fn:(ai)=>ai.baseBet*Math.pow(2,Math.min(ai.step,4))},
   seq1324:{name:'1-3-2-4', fn:(ai)=>ai.baseBet*[1,3,2,4][ai.step%4]},
   fib:{name:'斐波那契', fn:(ai)=>ai.baseBet*[1,1,2,3,5,8][Math.min(ai.step,5)]},
   kelly:{name:'凱利', fn:(ai)=>Math.max(ai.baseBet, Math.floor(ai.balance*0.12/1000)*1000)},
-  dale:{name:'達朗伯', fn:(ai)=>{const d=ai.step>0?ai.step:0; return ai.baseBet*(1+d);}},
-  lab:{name:'拉比', fn:(ai)=>{const seq=[1,1,2,1,3,1,2,4]; return ai.baseBet*seq[Math.min(ai.step,7)];}},
-  andr:{name:'安德魯', fn:(ai)=>{const seq=[1,2,3,4,5,6,8,10,12,13]; return ai.baseBet*Math.min(seq[ai.step]||13,13);}},
-  osc:{name:'奧克斯', fn:(ai)=>{const seq=[1,1,2,4,7,13,24]; return ai.baseBet*seq[Math.min(ai.step,6)];}},
-  follow:{name:'跟旺', fn:(ai)=>Math.min(ai.baseBet*(1+Math.floor(ai.winStreak||0)*0.5), ai.baseBet*3)},
-  contrarian:{name:'逆向', fn:(ai)=>ai.baseBet},
-  parlay:{name:'連贏加注', fn:(ai)=>Math.min(Math.round(ai.baseBet*Math.pow(1.5,Math.min(ai.winStreak||0,3))), ai.baseBet*4)}
+  paroli:{name:'帕羅利', fn:(ai)=>ai.baseBet*Math.pow(2,Math.min(ai.step,3))},
+  labouchere:{name:'拉布雪', fn:(ai)=>ai.baseBet*Math.max(1,(ai.step+1))},
+  dalerob:{name:'達朗伯', fn:(ai)=>ai.baseBet*(1+0.5*ai.step)},
+  contraiser:{name:'逆向', fn:(ai)=>ai.baseBet*(3-0.3*Math.min(ai.step,5))},
+  grandmartin:{name:'格蘭倍投', fn:(ai)=>ai.baseBet*Math.pow(3,Math.min(ai.step,3))},
+  splitmartin:{name:'分流倍投', fn:(ai)=>ai.baseBet*((Math.pow(2,Math.min(ai.step,3))>>1)+1)},
+  whittacker:{name:'惠特克', fn:(ai)=>ai.baseBet*(1+ai.step*(ai.step+1)/2)}
 };
 function aiPick(ai){ try{ return aiMultiFactor(ai); }catch(e){ return 'banker'; } }
 function aiBetAmount(ai){
