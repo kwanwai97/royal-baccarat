@@ -273,17 +273,17 @@
 .follow-wrap{display:flex; gap:2px; align-items:stretch; margin-bottom:0px;}
 .follow-left{flex:0 0 50%; display:flex; flex-direction:column; gap:5px; min-width:0; justify-content:flex-start; padding-left:6px;}
 /* 預測系統固定資訊區：上面一行(標題+請投注) + 下面一行(勝率/次數/勝負)，固定空間唔收起 */
-.pred-system{ min-height:46px; display:flex; flex-direction:column; gap:3px; padding:4px 8px; border:1px solid #b98a17; border-radius:8px; background:rgba(20,30,20,.55); box-sizing:border-box; justify-content:center; }
-.pred-row1{ display:flex; align-items:center; gap:6px; font-size:13px; font-weight:800; color:#ffd479; }
+.pred-system{ min-height:46px; display:flex; flex-direction:column; gap:2px; padding:2px; border:1px solid #b98a17; border-radius:8px; background:rgba(20,30,20,.55); box-sizing:border-box; justify-content:center; }
+.pred-row1{ display:flex; align-items:center; gap:2px; font-size:13px; font-weight:800; color:#ffd479; }
 .pred-ico{ font-size:14px; }
 .pred-title{ color:#ffd479; }
 .pred-side{ color:#fff; font-size:15px; font-weight:800; margin-left:auto; }
-.pred-row2{ display:flex; flex-wrap:wrap; gap:4px 12px; font-size:10px; color:#9fe6b8; }
+.pred-row2{ display:flex; flex-wrap:wrap; gap:2px; font-size:10px; color:#9fe6b8; }
 .pred-row2 .ps-item{ white-space:nowrap; }
 .pred-row2 b{ color:#ffd479; font-weight:800; }
-.pred-row2 .pred-log{ display:inline-flex; align-items:center; gap:3px; }
-.pred-row3{ display:flex; flex-wrap:wrap; gap:4px 12px; font-size:10px; color:#9fe6b8; margin-top:1px; }
-.pred-row3 .pred-log{ display:inline-flex; align-items:center; gap:3px; white-space:nowrap; }
+.pred-row2 .pred-log{ display:inline-flex; align-items:center; gap:2px; }
+.pred-row3{ display:flex; flex-wrap:wrap; gap:2px; font-size:10px; color:#9fe6b8; margin-top:1px; }
+.pred-row3 .pred-log{ display:inline-flex; align-items:center; gap:2px; white-space:nowrap; }
 .pred-row2 .plog-dot{ font-style:normal; font-size:10px; font-weight:800; line-height:1; }
 .pred-row2 .plog-empty{ color:rgba(255,255,255,.25); }
 .follow-right{flex:1 1 50%; display:flex; flex-direction:row; flex-wrap:wrap; gap:2px; align-items:flex-start; justify-content:flex-start; padding-right:6px;}
@@ -561,7 +561,7 @@
 .follow-left{ grid-column:2 / 4; grid-row:1 / span 2; min-width:0; padding-top:6px; }
 /* 打橫：預測系統區貼第二行最闊位(唔撐開、唔轉行)，保持三行位置唔變 */
 .follow-left .pred-system{ width:max-content; max-width:320px; }
-.follow-left .pred-side{ margin-left:8px; }   /* 取消「請投注」撐開，第一行緊湊貼標題 */
+.follow-left .pred-side{ margin-left:2px; }   /* 取消「請投注」撐開，第一行緊湊貼標題 */
 .follow-right{
   grid-column:1 / 4; grid-row:6;
   display:flex; flex-direction:row; align-items:flex-start; gap:2px;   /* 5個掣緊貼(打橫) */
@@ -759,7 +759,7 @@
         <div class="pred-row2">
           <span class="ps-item">勝率 <b id="predWin">—</b></span>
           <span class="ps-item">預測 <b id="predCnt">0</b> 鋪</span>
-          <span class="ps-item">中 <b id="predW">0</b> / 未中 <b id="predL">0</b></span>
+          <span class="ps-item">中 <b id="predW">0</b> / 輸 <b id="predL">0</b></span>
         </div>
         <div class="pred-row3"><span class="ps-item pred-log" id="predLog"></span></div>
       </div>
@@ -2637,7 +2637,7 @@ function resetShoe(){
   predResultLog=[];         // 新靴牌：最近六次預測結果亦歸零
   saveShoe();
   updateShoeInfo();
-  updatePredStats();         // 洗牌後即時刷下面行（變回 勝率 — ｜ 預測 0 鋪 ｜ 中 0 / 未中 0）
+  updatePredStats();         // 洗牌後即時刷下面行（變回 勝率 — ｜ 預測 0 鋪 ｜ 中 0 / 輸 0）
   updateFollowStats();       // 洗牌後跟注統計保留（跨靴牌累計，唔清零）
 }
 function saveShoe(){ try{ localStorage.setItem('bac_shoe', JSON.stringify({shoe, shoeDrawn, shoeCut})); }catch(e){} }
