@@ -1705,16 +1705,14 @@ function cardEl(card){
       if(e.propertyName==='transform'){ cf.removeEventListener('transitionend',handler); d.classList.add('show-num'); }
     });
   } else {
-    // 搣牌模式：自動(animation)或人手(transition)掀完後顯示數字
+    // 搣牌模式：數字只喺張牌真·完全掀開嗰陣先顯示
+    // 自動開(sqAutoOpen 加 .flip → CSS animation)完成 → animationend 顯示數字
+    // 手動完全開(sqManualOpen 把 clip 推到 full) → 由 sqManualOpen 喺 clip-path 過渡完才加 show-num
     const back=d.querySelector('.back');
     const sqShowNum=()=>{ d.classList.add('show-num'); };
-    back.addEventListener('animationend', sqShowNum, {once:true});          // 自動 timeout ● animationend
-    back.addEventListener('transitionend', function h(e){                   // 人手拖動 ● transitionend
-      if(e.propertyName==='clip-path'){ back.removeEventListener('transitionend',h); sqShowNum(); }
-    });
+    back.addEventListener('animationend', sqShowNum, {once:true});          // 自動全開 ● animationend
+    // ⚠ 取消舊有過早顯示：人手拖動中途 / 手指離開牌彈返合埋(clip 回 0) / 牌一出現(opacity) 都唔准顯示數字
   }
-  // 卡牌揭開後，喚醒卡面數字（.card.show-num 經已加；呢度保險：牌一現身即標記，實際顯示由 show-num 控制）
-  d.addEventListener('transitionend', function onShow(e){ if(e.propertyName==='all'||e.propertyName==='opacity'){ if(d.classList.contains('show')) d.classList.add('show-num'); } });
   return d;
 }
 /* ===== 手動搣牌系統 ===== */
@@ -1774,7 +1772,10 @@ function sqManualOpen(el, sec){
       el.removeEventListener('pointerdown',onDown); window.removeEventListener('pointermove',onMove); window.removeEventListener('pointerup',onUp);
       el.removeEventListener('touchstart',onDown); window.removeEventListener('touchmove',onMove); window.removeEventListener('touchend',onUp);
       if(auto && prog<0.5){ el.classList.add('flip'); }               // 超時：自動掀開動畫
-      else { back.style.transition='clip-path .45s'; back.style.clipPath=clipFor(dir,1.01); }  // 手動：順住你嘅方向全開
+      else { back.style.transition='clip-path .45s'; back.style.clipPath=clipFor(dir,1.01);    // 手動：順住你嘅方向全開
+        // 數字只喺張牌真·完全掀開(clip 過渡到 full)嗰陣先顯示；中途/未過半收返合都唔准顯示
+        back.addEventListener('transitionend', function hn(e){ if(e.propertyName==='clip-path'){ back.removeEventListener('transitionend',hn); el.classList.add('show-num'); } });
+      }
       setTimeout(()=>{ el.style.transform=''; el.style.zIndex=''; if(scoreEl) scoreEl.classList.remove('squeeze-pin'); if(scoreElB) scoreElB.classList.remove('squeeze-pin'); sndDeal(); res(); }, auto?4000:1000);
     }
     el.addEventListener('pointerdown',onDown); window.addEventListener('pointermove',onMove); window.addEventListener('pointerup',onUp);
