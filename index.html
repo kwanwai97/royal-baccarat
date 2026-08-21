@@ -1924,16 +1924,17 @@ async function deal(auto){
       setTimeout(function(){ if(box) box.innerHTML=''; },520);
     });
   },3000);
-  // 牌淡出後收起發牌區 + 結果文字一齊消失（單人版/自動版共用，保持一致）
-  setTimeout(()=>{ const dz=document.getElementById('dealzoneOverlay'); if(dz) dz.classList.remove('show'); hideMsg(); },4000);
+  // 牌淡出後收起發牌區 + 結果文字一齊消失（單人版/自動版共用，保持一致）；籌碼/牌面清走後先解鎖跟注四掣，避免轉模式同舊局混淆
+  setTimeout(()=>{ const dz=document.getElementById('dealzoneOverlay'); if(dz) dz.classList.remove('show'); hideMsg(); lockFollow(true); },4000);
   } catch(err){
     console.error('deal() 錯誤已攔截:', err);
     showToast('⚠ 發牌異常，已自動重置');
+    lockFollow(true);   // 異常早退：發牌無成，即刻解鎖（唔會有舊局混淆）
   } finally {
-    dealing=false; setControls(true); lockFollow(true);   // 結算完解鎖跟注四掣
+    dealing=false; setControls(true);
   }
   } finally {
-    dealing=false; setControls(true); lockFollow(true);   // 外層：確保「請先下注」等早退都會解鎖，唔會卡死
+    dealing=false; setControls(true);   // 外層：確保「請先下注」等早退都會解鎖，唔會卡死（跟注四掣由4000ms timeout/catch負責解鎖）
   }
 }
 
