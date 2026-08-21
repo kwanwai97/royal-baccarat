@@ -535,12 +535,9 @@
     .roadpanel{ margin:0 1px 0 0; }     /* 路單：收右邊 8px 空白，貼住分界 */
     .bets{ padding:2px 2px 2px 0; }     /* 投注區：收左右 10px */
     .chips-row{ padding:4px 2px 2px 0; } /* 籌碼區：收左右 10px */
-    /* 打橫：推拉式籌碼。預設隱藏50K(最唔常用)，容納5個唔遮右掣；撳 › 展開睇50K(橫向scroll) */
-    .chips-row .chips{ max-width:168px; overflow:hidden; }
+    /* 打橫：隱藏50K(最唔常用)，淨顯示5個(100/500/1K/5K/10K)，唔遮右掣；唔加推拉掣 */
+    .chips-row .chips{ max-width:none; overflow:visible; }
     .chips-row .chip.c50k{ display:none; }
-    .chips-row .chips.expand{ max-width:205px; overflow-x:auto; scrollbar-width:none; }
-    .chips-row .chips.expand .c50k{ display:flex; }
-    #chipToggle{ font-weight:800; }
     /* 打橫下三路：derived-row 改回 flex:1 均分(同直版)，三張自動撐滿高度、貼住珠盤路底對齊；canvas 跟 height:100% */
     .road-derived{ display:flex; flex-direction:column; }
     .derived-row{ flex:1 1 0; min-height:0; }
@@ -812,7 +809,6 @@
     <div class="chip c10k" data-chip="10000">10K</div>
     <div class="chip c50k" data-chip="50000">50K</div>
   </div>
-  <button class="iconbtn chip-icon" id="chipToggle" title="更多籌碼">›</button>
   <button class="iconbtn chip-icon" id="btnDaily" title="每日免費籌碼">🎁</button>
   <button class="iconbtn chip-icon" id="btnStats" title="戰績">📊</button>
   <button class="iconbtn chip-icon" id="btnMute" title="音效">🔊</button>
@@ -3073,9 +3069,6 @@ document.getElementById('btnAuto').addEventListener('click',function(){
 });
 document.getElementById('btnShuffle').addEventListener('click',()=>{ if(dealing) return; doShuffle().then(()=>showToast('🔀 已重新洗牌並清空路單')); });
 document.getElementById('btnDaily').addEventListener('click',claimDaily);
-// 打橫推拉式籌碼：撳 › 展開/收埋 50K（手機直向唔受影響）
-const chipToggle=document.getElementById('chipToggle');
-if(chipToggle){ chipToggle.addEventListener('click',()=>{ const c=document.getElementById('chips'); const ex=c.classList.toggle('expand'); chipToggle.textContent=ex?'‹':'›'; chipToggle.title=ex?'收起籌碼':'更多籌碼'; }); }
 document.getElementById('btnClaimQuest').addEventListener('click',claimQuest);
 document.getElementById('btnStats').addEventListener('click',showStats);
 document.getElementById('btnCloseStats').addEventListener('click',()=>document.getElementById('statsModal').classList.remove('show'));
