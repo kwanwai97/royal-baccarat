@@ -1837,6 +1837,7 @@ async function deal(auto){
   try{
 
   const dz=document.getElementById('dealzoneOverlay'); if(dz) dz.classList.add('show');
+  lockFollow(false);   // 請開牌一刻：鎖跟注四掣，開牌派彩期唔可以轉模式
   dealerCall('請開牌','#f4d97b');
   document.getElementById('bankerCards').innerHTML='';
   document.getElementById('playerCards').innerHTML='';
@@ -1929,10 +1930,10 @@ async function deal(auto){
     console.error('deal() 錯誤已攔截:', err);
     showToast('⚠ 發牌異常，已自動重置');
   } finally {
-    dealing=false; setControls(true);
+    dealing=false; setControls(true); lockFollow(true);   // 結算完解鎖跟注四掣
   }
   } finally {
-    dealing=false; setControls(true);   // 外層：確保「請先下注」等早退都會解鎖，唔會卡死
+    dealing=false; setControls(true); lockFollow(true);   // 外層：確保「請先下注」等早退都會解鎖，唔會卡死
   }
 }
 
@@ -2082,10 +2083,9 @@ function resultText(label, pTotal, bTotal, pp, bp, big, pCards, bCards, net){
 }
 function extra(pp,bp,b){ let a=[]; if(pp)a.push('閒對'); if(bp)a.push('莊對'); a.push(b?'大':'小'); return a.join(' '); }
 
-function setControls(en){ document.getElementById('btnClear').disabled=!en; document.getElementById('btnRepeat').disabled=!en; document.getElementById('btnDeal').disabled= !en || autoOn;
-  // 開牌期間(en=false)鎖跟注四掣(跟預測/反預測/跟旺AI/反旺AI)，唔可以轉模式；開牌完解鎖
-  ['btnFollowPredict2','btnFollowRev','btnFollowHot','btnFollowHotRev'].forEach(id=>{ const b=document.getElementById(id); if(b) b.disabled=!en; });
-}
+function setControls(en){ document.getElementById('btnClear').disabled=!en; document.getElementById('btnRepeat').disabled=!en; document.getElementById('btnDeal').disabled= !en || autoOn; }
+// 跟注四掣開牌鎖：落注倒數期(en=true)照開俾人轉；請開牌一刻(false)鎖死；結算完(true)解鎖
+function lockFollow(v){ ['btnFollowPredict2','btnFollowRev','btnFollowHot','btnFollowHotRev'].forEach(id=>{ const b=document.getElementById(id); if(b) b.disabled=!v; }); }
 
 /* ===================== 戰績 localStorage ===================== */
 function loadStats(){
