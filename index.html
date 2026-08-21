@@ -282,6 +282,8 @@
 .pred-row2 .ps-item{ white-space:nowrap; }
 .pred-row2 b{ color:#ffd479; font-weight:800; }
 .pred-row2 .pred-log{ display:inline-flex; align-items:center; gap:3px; }
+.pred-row3{ display:flex; flex-wrap:wrap; gap:4px 12px; font-size:10px; color:#9fe6b8; margin-top:1px; }
+.pred-row3 .pred-log{ display:inline-flex; align-items:center; gap:3px; white-space:nowrap; }
 .pred-row2 .plog-dot{ font-style:normal; font-size:10px; font-weight:800; line-height:1; }
 .pred-row2 .plog-empty{ color:rgba(255,255,255,.25); }
 .follow-right{flex:1 1 50%; display:flex; flex-direction:row; flex-wrap:wrap; gap:2px; align-items:flex-start; justify-content:flex-start; padding-right:6px;}
@@ -755,8 +757,8 @@
           <span class="ps-item">勝率 <b id="predWin">—</b></span>
           <span class="ps-item">預測 <b id="predCnt">0</b> 鋪</span>
           <span class="ps-item">中 <b id="predW">0</b> / 未中 <b id="predL">0</b></span>
-          <span class="ps-item pred-log" id="predLog"></span>
         </div>
+        <div class="pred-row3"><span class="ps-item pred-log" id="predLog"></span></div>
       </div>
     </div>
     <!-- 右半：打橫一行 5 張卡 (4掣 + 次數) + 底下跟隨次數文字 -->
