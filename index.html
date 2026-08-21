@@ -2082,7 +2082,10 @@ function resultText(label, pTotal, bTotal, pp, bp, big, pCards, bCards, net){
 }
 function extra(pp,bp,b){ let a=[]; if(pp)a.push('閒對'); if(bp)a.push('莊對'); a.push(b?'大':'小'); return a.join(' '); }
 
-function setControls(en){ document.getElementById('btnClear').disabled=!en; document.getElementById('btnRepeat').disabled=!en; document.getElementById('btnDeal').disabled= !en || autoOn; }
+function setControls(en){ document.getElementById('btnClear').disabled=!en; document.getElementById('btnRepeat').disabled=!en; document.getElementById('btnDeal').disabled= !en || autoOn;
+  // 開牌期間(en=false)鎖跟注四掣(跟預測/反預測/跟旺AI/反旺AI)，唔可以轉模式；開牌完解鎖
+  ['btnFollowPredict2','btnFollowRev','btnFollowHot','btnFollowHotRev'].forEach(id=>{ const b=document.getElementById(id); if(b) b.disabled=!en; });
+}
 
 /* ===================== 戰績 localStorage ===================== */
 function loadStats(){
