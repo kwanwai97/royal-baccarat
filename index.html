@@ -1696,6 +1696,7 @@ function cardEl(card){
   const sq = dealMode==='squeeze';
   const dir = 'd'+Math.floor(Math.random()*4);   // 隨機搣牌方向：d0下上 d1上下 d2左右 d3右左
   d.className='card f3d '+(sq?'sq '+dir+' ':'')+(red?'red':'black');
+  d.dataset.rank=card.rank;   // 記低牌面，等電腦自動搣牌按套別做 choreography
   d.innerHTML='<div class="cf"><div class="face">'+inner+'</div><div class="back"></div></div>';
   if(!sq){ 
     setTimeout(()=>d.classList.add('flip'), 800);
@@ -1733,8 +1734,59 @@ function sqWaitClick(cards, sec){
     function cleanup(){ clearInterval(iv); sqTimerShow(0); cards.forEach(c=>c.removeEventListener('click',h)); }
   });
 }
-/* 自動開一張（用原有隨機方向掀開動畫） */
-function sqAutoOpen(el){ if(el && !el.dataset.open){ el.dataset.open='1'; el.classList.add('flip'); } }
+/* 電腦自動搣牌：仿真人荷官 choreography（按牌面三套 + 起手方向做多段揭開）
+   手動嗰邊唔受影響；數字仍然只喺完全掀開嗰下先 show */
+function sqAutoOpen(el){
+  if(!el || el.dataset.open){ return Promise.resolve(); }
+  el.dataset.open='1';
+  const back=el.querySelector('.back');
+  const rank=el.dataset.rank||'';
+  const isCourt=['J','Q','K'].includes(rank);            // 套三 J/Q/K
+  const isLow=(rank==='A'||rank==='2'||rank==='3');      // 套一 A/2/3
+  const dirCls=[...el.classList].find(c=>c[0]==='d'&&'0123'.includes(c[1]))||'d0';  // d0下上 d1上下 d2左右 d3右左
+  const start=dirCls.slice(1);                            // '0'/'1'/'2'/'3'
+  const upDown=start==='0'||start==='1';                  // 起手頂/底
+
+  const clipFor=(d,p)=>{ const q=(p*100).toFixed(1)+'%';
+    return d==='u'?'inset(0 0 '+q+' 0)': d==='d'?'inset('+q+' 0 0 0)': d==='l'?'inset(0 0 0 '+q+')':'inset(0 '+q+' 0 0)'; };
+  const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+  function setClip(d,p,ms){ back.style.transition='clip-path '+ms+'ms'; back.style.clipPath=clipFor(d,p);
+    if(p>=1.005){ return new Promise(res=>{ back.addEventListener('transitionend', function h(e){ if(e.propertyName==='clip-path'){ back.removeEventListener('transitionend',h); res(); } }); }); }
+    return Promise.resolve(); }
+  function showNum(){ el.classList.add('show-num'); }      // 數字只喺呢度（完全掀開）先 show
+  function fullOpen(){ return setClip('u',1.01,450).then(showNum); }   // 完全掀開：牌面全露 + 出數字
+
+  if(isCourt){
+    // 套三：任何方向起手，揭到見牌面任何位 → 直接全開（1 動作）
+    return fullOpen();
+  }
+  if(isLow){
+    if(upDown){
+      // 起手頂/底：一路揭到底（1 動作）；Ace 頂部空白一見就開
+      return fullOpen();
+    }
+    // 起手左/右：先揭 1/3（冇花紋）停 → 轉頂揭到底（2 段）
+    return (async()=>{ await sleep(260); await setClip(start==='2'?'l':'r',0.34,650); await sleep(360); await fullOpen(); })();
+  }
+  // 套二 4–10：3 個動作
+  return (async()=>{
+    await sleep(260);
+    if(upDown){
+      await setClip(start==='0'?'u':'d',0.5,700);          // ① 頂/底起手：揭到圖案一半停
+      await sleep(380);
+      const side=Math.random()<0.5?'l':'r';
+      await setClip(side,0.5,650);                          // ② 向左/右撇，見圖案一部停
+      await sleep(360);
+      await fullOpen();                                     // ③ 再喺頂/底揭連結全開
+    } else {
+      await setClip(start==='2'?'l':'r',0.34,650);          // ① 左/右起手：先揭 1/3 停
+      await sleep(360);
+      await setClip('u',0.6,650);                           // ② 轉頂揭
+      await sleep(340);
+      await fullOpen();                                     // ③ 連結全開
+    }
+  })();
+}
 /* 手動搣牌：升起放大，10秒內拖動揭開（拖邊個方向就向嗰邊掀），超時自動開 */
 function sqManualOpen(el, sec){
   return new Promise(res=>{
@@ -1789,7 +1841,7 @@ async function revealThird(containerId){
   const el=kids[kids.length-1]; if(!el) return;
   const pick=await sqWaitClick([el],5);
   if(pick){ await sqManualOpen(pick,10); }
-  else { sqAutoOpen(el); await sleep(4000); }
+  else { await sqAutoOpen(el); await sleep(4000); }
 }
 function renderCards(container, cards, delay){
   container.innerHTML='';
@@ -1879,16 +1931,16 @@ async function deal(auto){
         const isPlayer=pick.parentElement.id==='playerCards';
         const otherKids=isPlayer?bk:pk;
         const mate=[otherKids[0],otherKids[1]].filter(el=>el && !el.dataset.open)[0];
-        if(mate){ sqAutoOpen(mate); await sleep(4000); }
+        if(mate){ await sqAutoOpen(mate); await sleep(4000); }
       } else {
         // 冇點：順序同時開兩隻（閒+莊各一）
         const a=order[0], b=order[1];
-        sqAutoOpen(a); if(b) sqAutoOpen(b);
+        await sqAutoOpen(a); if(b) await sqAutoOpen(b);
         await sleep(4000);
       }
     }
     // 保險：4隻牌全部開晒先計分
-    [pk[0],pk[1],bk[0],bk[1]].forEach(el=>{ if(el&&!el.dataset.open) sqAutoOpen(el); });
+    await Promise.all([pk[0],pk[1],bk[0],bk[1]].map(el=> el&&!el.dataset.open ? sqAutoOpen(el) : null));
     await sleep(300);
   } else {
     await sleep(1600);
