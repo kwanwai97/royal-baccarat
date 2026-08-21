@@ -514,6 +514,8 @@
     }
     /* 下半左：路單（大路+珠盤+下三路）跨左3欄、佔 row2-4 全高 */
     .roadpanel{ grid-column:1 / 4; grid-row:3 / span 4; align-self:stretch; }   /* 打橫：路單頂部落一格，同右投注區(row3)頂部水平並排 */
+    /* 打橫：發牌區張卡貼頂(緊貼藍色結果文字下方)，唔再跌去路單區底(直版感一致) */
+    .dealzone{ align-items:start; padding-top:54px; }
     /* 打橫壓縮路單高度，騰出下面欄位空間（唔改內部/JS） */
     #bigCanvas{ height:80px; }
     #beadCanvas{ height:72px; }
