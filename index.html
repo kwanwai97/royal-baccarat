@@ -625,89 +625,6 @@
     .chip{ width:26px; height:26px; font-size:8px; }
 </style>
 </head>
-<!-- 📢 廣告 Banner (固定頂部輪播, server 唯一真源, 唔阻 game) -->
-<div id="adBar"><a id="adLink" href="#" target="_blank" rel="noopener"><img id="adImg" alt="廣告" style="height:54px;width:100%;object-fit:cover;display:block"></a></div>
-<style>
-#adBar{position:fixed;top:0;left:0;right:0;z-index:90000;height:54px;overflow:hidden;
-  border-bottom:1px solid #3cb85a;background:#0a1124}
-#adBar img{cursor:pointer;opacity:0;transition:opacity .6s ease}
-body{padding-top:54px}
-</style>
-<script>
-(function(){
-  var $ = function(id){ return document.getElementById(id); };
-  function rotateAds(list, i){
-    if(!list || !list.length) return;
-    i = i || 0;
-    var ad = list[i % list.length];
-    var img = $('adImg'), link = $('adLink');
-    img.style.opacity = 0;                       // 先淡出
-    setTimeout(function(){
-      img.src = ad.image; img.alt = ad.alt || '廣告';
-      img.style.opacity = 1;                     // 再淡入
-      if(ad.link && ad.link.indexOf('#') === 0){
-        link.removeAttribute('target'); link.href = 'javascript:void(0)';
-        link.onclick = function(){ if(ad.link==='#shop'){ var sb=$('cloudShopBtn'); if(sb) sb.click(); } };
-      } else {
-        link.target = '_blank'; link.rel = 'noopener'; link.href = ad.link || '#';
-        link.onclick = null;
-      }
-    }, 600);
-    setTimeout(function(){ rotateAds(list, i+1); }, 8000);   // 8 秒輪換，唔咁跳
-  }
-  fetch('/api/ads').then(function(r){ return r.json(); }).then(function(a){
-    rotateAds(a.banners, 0);
-    window.__adReward = a.reward || { chips:0, cooldownMin:0 };
-  }).catch(function(){ /* 無廣告就無顯示 */ });
-
-  // 加 chips 助手：加 delta，唔會洗走未存雲端嘅贏錢
-  function addChips(delta){
-    if(typeof balance === 'undefined') return;
-    balance = (Number(balance) || 0) + delta;
-    if(typeof updateBalance === 'function') updateBalance();
-    if(typeof saveStats === 'function') saveStats();
-  }
-  // 廣告提示（用 game 自己嘅 toast，唔彈 alert）
-  function adToast(msg){ if(typeof showToast === 'function') showToast(msg); else alert(msg); }
-  // 冷卻倒數顯示：Xs 字面
-  function cooldownLabel(sec){
-    sec = Math.max(0, Math.ceil(sec));
-    if(sec >= 60){ var m = Math.floor(sec/60); var s = sec%60; return m+'分'+(s? s+'秒':'')+'後再領'; }
-    return sec+'秒後再領';
-  }
-
-  var ab = $('cloudAdBtn');
-  if(ab) ab.onclick = function(){
-    var u = localStorage.getItem('cloud_user'), t = localStorage.getItem('cloud_token');
-    if(!u || !t){ adToast('請先喺☁️雲端帳號 登入/註冊'); return; }
-    ab.disabled = true; ab.textContent = '處理中…';
-    fetch('/api/ad-claim', {method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({username:u, token:t})})
-      .then(function(r){ return r.json().then(function(j){ return {ok:r.ok, j:j, code:r.status}; }); })
-      .then(function(o){
-        if(o.ok){
-          addChips(o.j.added);                 // 加 delta，唔洗走贏錢
-          if(typeof refreshCloud === 'function') refreshCloud();
-          adToast('✅ 睇完廣告送 '+o.j.added.toLocaleString()+' chips');
-          ab.disabled = false; ab.textContent = '📺 睇廣告送chips';
-        } else if(o.code === 429){
-          // 冷卻中：顯示倒數，5 秒後恢復掣
-          var left = o.j.left || 0;
-          ab.textContent = '⏳ '+cooldownLabel(left);
-          var iv = setInterval(function(){
-            left -= 5;
-            if(left <= 0){ clearInterval(iv); ab.disabled = false; ab.textContent = '📺 睇廣告送chips'; }
-            else ab.textContent = '⏳ '+cooldownLabel(left);
-          }, 5000);
-        } else {
-          adToast('⏳ '+(o.j.error||'未領到'));
-          ab.disabled = false; ab.textContent = '📺 睇廣告送chips';
-        }
-      })
-      .catch(function(){ adToast('⚠️ 連唔到 server'); ab.disabled = false; ab.textContent = '📺 睇廣告送chips'; });
-  };
-})();
-</script>
 <div class="app">
   <div class="topbar">
     <div class="brand">
@@ -1333,7 +1250,7 @@ function launchConfetti(){
 
 /* ===================== UI 互動 ===================== */
 function showToast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(t._tm); t._tm=setTimeout(()=>t.classList.remove('show'),2000); }
-function fmt(n){ return Math.round(n).toLocaleString('en-US'); }
+function fmt(n){ n=Math.round(n); if(n>=10000000) return Math.round(n/10000)+'萬'; return n.toLocaleString('en-US'); }
 function fmtK(n){ n=Math.round(n); if(n>=1000) return (n/1000)+'k'; return ''+n; }
 function updateBalance(){ document.getElementById('balance').textContent=fmt(balance); if(balance>stats.peak) stats.peak=balance; updateStreakBar(); }
 // 你嘅連續顯示：圖案(你🔥)，≤2次只顯圖案；>2次先顯次數（十格連續條已取消）
@@ -3481,9 +3398,6 @@ updateBalance(); updateBetDisplay(); checkDaily(); updateQuest(); drawAllRoads()
       <div class="cloudRow">
         <button id="cloudShopBtn" class="sec" style="background:#ffd66b;color:#3a2a00">🛒 商店</button>
       </div>
-      <div class="cloudRow">
-        <button id="cloudAdBtn" class="sec" style="background:#5fd07a">📺 睇廣告送chips</button>
-      </div>
       <div id="cloudMsg"></div>
     </div>
   </div>
@@ -3611,10 +3525,6 @@ updateBalance(); updateBetDisplay(); checkDaily(); updateQuest(); drawAllRoads()
 <div id="shopModal">
   <div id="shopBox">
     <div id="shopHead">🛒 商店（虛擬道具 · 試玩版） <span id="shopClose" style="cursor:pointer">✕</span></div>
-    <div id="shopTabs">
-      <button data-tab="chips" class="active">💰 Chips 包</button>
-      <button data-tab="skins">🎨 皮膚</button>
-    </div>
     <div id="shopBody"></div>
     <div id="shopMsg"></div>
   </div>
@@ -3663,46 +3573,10 @@ updateBalance(); updateBetDisplay(); checkDaily(); updateQuest(); drawAllRoads()
       };
     });
   }
-  function renderSkins(){
-    var h = shopItems.skins.map(function(s){
-      return '<div class="shopItem"><div class="info"><span class="skinSwatch" style="background:'+s.bg+';border-color:'+s.accent+'"></span><b>'+s.name+'</b></div>'+
-        '<button class="shopBuy" data-skin="'+s.id+'">揀呢款</button></div>';
-    }).join('');
-    $('shopBody').innerHTML = h;
-    Array.prototype.forEach.call($('shopBody').querySelectorAll('.shopBuy'), function(btn){
-      btn.onclick = function(){
-        fetch('/api/skin', {method:'POST', headers:{'Content-Type':'application/json'},
-          body: JSON.stringify({username:cloudUser(), token:cloudTok(), skinId: btn.getAttribute('data-skin')})})
-          .then(function(r){ return r.json(); })
-          .then(function(j){
-            if(j.ok){ applySkin(j.skin); smsg('✅ 已套用 '+j.skin); }
-            else smsg('❌ '+(j.error||'失敗'));
-          });
-      };
-    });
-  }
-  function applySkin(id){
-    var s = (shopItems.skins||[]).find(function(x){ return x.id===id; });
-    if(!s) return;
-    document.body.style.setProperty('--skin-bg', s.bg);
-    document.body.style.setProperty('--skin-accent', s.accent);
-    // 即時改背景漸變（唔郁 game 排版，只改底色）
-    document.body.style.background = 'linear-gradient(160deg,'+s.bg+',#05080f)';
-  }
-  // tab 切換
-  Array.prototype.forEach.call(document.querySelectorAll('#shopTabs button'), function(b){
-    b.onclick = function(){
-      Array.prototype.forEach.call(document.querySelectorAll('#shopTabs button'), function(x){ x.classList.remove('active'); });
-      b.classList.add('active');
-      if(b.getAttribute('data-tab')==='chips') renderChips(); else renderSkins();
-    };
-  });
-  $('shopClose').onclick = function(){ $('shopModal').style.display='none'; };
+  $('shopClose').onclick = function(){ $('shopModal').style.display='none'; }
   $('shopModal').addEventListener('click', function(e){ if(e.target===$('shopModal')) $('shopModal').style.display='none'; });
   // 雲端面板商店掣
   var sb = $('cloudShopBtn'); if(sb) sb.onclick = openShop;
-  // 登入後自動套用已揀皮膚
-  window.__applyCloudSkin = function(){ if(cloudUser()&&cloudTok()){ fetch('/api/state?user='+encodeURIComponent(cloudUser())+'&token='+encodeURIComponent(cloudTok())).then(function(r){return r.json();}).then(function(j){ if(j.skin&&j.skin!=='classic') applySkin(j.skin); }); } };
 })();
 </script>
 

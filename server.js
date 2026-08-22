@@ -73,24 +73,7 @@ const STORE = {
     { id: 'c2', name: '小注包', chips: 200000, priceLabel: 'HK$8', price: 8 },
     { id: 'c3', name: '豪客包', chips: 1000000, priceLabel: 'HK$30', price: 30 },
     { id: 'c4', name: '富豪包', chips: 5000000, priceLabel: 'HK$98', price: 98 }
-  ],
-  skins: [
-    { id: 'classic', name: '經典綠', bg: '#0d1530', accent: '#3cb85a' },
-    { id: 'gold', name: '土豪金', bg: '#1a1206', accent: '#e0b84a' },
-    { id: 'neon', name: '霓虹紫', bg: '#160a26', accent: '#b15cff' },
-    { id: 'ruby', name: '紅寶石', bg: '#26090f', accent: '#ff5a7a' }
   ]
-};
-
-// ---- 廣告設定（server 係唯一真源，後台改呢度就全民生效） ----
-// banners: 輪播 banner 廣告（image 支援外鏈 URL 或本地 /ad-img/ 路徑；link 係點擊跳轉）
-// reward: 「睇廣告送 chips」設定（chips=送幾多, cooldownMin=冷卻分鐘）
-const ADS = {
-  banners: [
-    { id: 'a1', image: 'https://via.placeholder.com/728x90/3cb85a/0d1530?text=Royal+Baccarat+VIP', link: 'https://github.com/kwanwai97/royal-baccarat', alt: '皇家百家樂 VIP' },
-    { id: 'a2', image: 'https://via.placeholder.com/728x90/e0b84a/1a1206?text=%E5%AF%8C%E8%B1%AA%E5%8C%85+98%E5%85%83%E9%80%81500%E8%90%AC', link: '#shop', alt: '富豪包優惠' }
-  ],
-  reward: { chips: 5000, cooldownMin: 3 }
 };
 
 // ---- API ----
@@ -128,7 +111,7 @@ async function handleApi(req, res, url) {
     const token = url.searchParams.get('token');
     const acc = accounts[user];
     if (!acc || acc.token !== token) return sendJSON(res, 401, { error: '未登入或過期' });
-    return sendJSON(res, 200, { username: user, balance: acc.balance, skin: acc.skin || 'classic' });
+    return sendJSON(res, 200, { username: user, balance: acc.balance });
   }
 
   if (p === '/api/save' && req.method === 'POST') {
@@ -148,27 +131,6 @@ async function handleApi(req, res, url) {
     return sendJSON(res, 200, STORE);
   }
 
-  if (p === '/api/ads' && req.method === 'GET') {
-    return sendJSON(res, 200, ADS);
-  }
-
-  if (p === '/api/ad-claim' && req.method === 'POST') {
-    const b = await readBody(req);
-    const user = b.username, token = b.token;
-    const acc = accounts[user];
-    if (!acc || acc.token !== token) return sendJSON(res, 401, { error: '未登入或過期' });
-    const now = Date.now();
-    const cd = (ADS.reward.cooldownMin || 0) * 60000;
-    if (acc.lastAdClaim && (now - acc.lastAdClaim) < cd) {
-      const left = Math.ceil((cd - (now - acc.lastAdClaim)) / 1000);
-      return sendJSON(res, 429, { error: '冷卻中，仲有 ' + left + ' 秒', left });
-    }
-    acc.lastAdClaim = now;
-    acc.balance = (acc.balance || 0) + (ADS.reward.chips || 0);
-    saveAccounts(accounts);
-    return sendJSON(res, 200, { ok: true, added: ADS.reward.chips, balance: acc.balance });
-  }
-
   if (p === '/api/buy' && req.method === 'POST') {
     const b = await readBody(req);
     const user = b.username, token = b.token, packId = b.packId;
@@ -180,18 +142,6 @@ async function handleApi(req, res, url) {
     acc.balance = (acc.balance || 0) + pack.chips;
     saveAccounts(accounts);
     return sendJSON(res, 200, { ok: true, added: pack.chips, balance: acc.balance, note: '測試下單(未接真錢)' });
-  }
-
-  if (p === '/api/skin' && req.method === 'POST') {
-    const b = await readBody(req);
-    const user = b.username, token = b.token, skinId = b.skinId;
-    const acc = accounts[user];
-    if (!acc || acc.token !== token) return sendJSON(res, 401, { error: '未登入或過期' });
-    const skin = STORE.skins.find((s) => s.id === skinId);
-    if (!skin) return sendJSON(res, 400, { error: '皮膚唔存在' });
-    acc.skin = skinId;
-    saveAccounts(accounts);
-    return sendJSON(res, 200, { ok: true, skin: skinId });
   }
 
   return sendJSON(res, 404, { error: 'unknown api' });
