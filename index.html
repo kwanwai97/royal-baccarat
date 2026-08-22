@@ -3352,5 +3352,149 @@ if(!loadShoe()) resetShoe();   // 有儲存嘅鞋就續返(派過幾多張繼續
 updateShoeInfo();   // 無論續鞋定開新鞋都刷新剩餘張數顯示
 updateBalance(); updateBetDisplay(); checkDaily(); updateQuest(); drawAllRoads();
 </script>
+<!-- ☁️ 雲端帳號面板 (server 版，固定右上角，唔影響 game 排版) -->
+<style>
+#cloudPanel{position:fixed;top:8px;right:8px;z-index:99999;width:236px;
+  font-family:-apple-system,Segoe UI,Roboto,sans-serif;font-size:13px;color:#fff;
+  background:linear-gradient(135deg,#1b2a4a,#0d1530);border:1px solid #3b5;
+  border-radius:10px;box-shadow:0 6px 24px rgba(0,0,0,.5);overflow:hidden}
+#cloudPanel *{box-sizing:border-box}
+#cloudHeader{background:rgba(60,187,85,.18);padding:7px 10px;font-weight:700;
+  cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+#cloudBody{padding:9px 10px;display:block}
+#cloudPanel.collapsed #cloudBody{display:none}
+#cloudPanel input{width:100%;margin:3px 0;padding:5px 7px;border-radius:6px;
+  border:1px solid #2b3b5e;background:#0a1124;color:#fff;font-size:12px}
+.cloudRow{display:flex;gap:5px;margin-top:6px}
+#cloudPanel button{flex:1;padding:6px 4px;border:0;border-radius:6px;cursor:pointer;
+  font-size:12px;font-weight:700;color:#06210f;background:#5fd07a}
+#cloudPanel button.sec{background:#3b5;color:#fff}
+#cloudPanel button:hover{filter:brightness(1.1)}
+#cloudDash>div{margin:3px 0;line-height:1.4}
+#cloudMsg{margin-top:6px;font-size:11px;color:#9fe;min-height:14px}
+.cloudLocal{color:#ffd66b}.cloudCloud{color:#7fffa8}
+</style>
+<div id="cloudPanel">
+  <div id="cloudHeader">☁️ 雲端帳號 <span id="cloudToggle">▾</span></div>
+  <div id="cloudBody">
+    <div id="cloudLogin">
+      <input id="cloudUser" placeholder="用戶名 (3-20 英數/底線)">
+      <input id="cloudPass" type="password" placeholder="密碼 (至少 4 字)">
+      <div class="cloudRow">
+        <button id="cloudRegBtn">註冊</button>
+        <button id="cloudLoginBtn" class="sec">登入</button>
+      </div>
+    </div>
+    <div id="cloudDash" style="display:none">
+      <div>👤 <b id="cloudName"></b></div>
+      <div class="cloudLocal">🖥️ 本機餘額 <b id="cloudLocal">0</b></div>
+      <div class="cloudCloud">☁️ 雲端餘額 <b id="cloudCloud">0</b></div>
+      <div class="cloudRow">
+        <button id="cloudSaveBtn">存到雲端</button>
+      </div>
+      <div class="cloudRow">
+        <button id="cloudLoadBtn" class="sec">讀回雲端</button>
+        <button id="cloudLogoutBtn" class="sec">登出</button>
+      </div>
+      <div id="cloudMsg"></div>
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+  var $ = function(id){ return document.getElementById(id); };
+  var panel = $('cloudPanel');
+  var LS_U = 'cloud_user', LS_T = 'cloud_token';
+  var username = localStorage.getItem(LS_U) || '';
+  var token = localStorage.getItem(LS_T) || '';
+  var loggedIn = false;
+
+  function msg(t){ $('cloudMsg').textContent = t || ''; }
+  function showLogin(){
+    loggedIn = false;
+    $('cloudLogin').style.display = 'block';
+    $('cloudDash').style.display = 'none';
+  }
+  function showDash(){
+    loggedIn = true;
+    $('cloudLogin').style.display = 'none';
+    $('cloudDash').style.display = 'block';
+    $('cloudName').textContent = username;
+    refreshCloud();
+  }
+  function refreshLocal(){
+    if(loggedIn){
+      var b = (typeof balance !== 'undefined') ? balance : 0;
+      $('cloudLocal').textContent = b;
+    }
+  }
+  function refreshCloud(){
+    if(!loggedIn) return;
+    fetch('/api/state?user='+encodeURIComponent(username)+'&token='+encodeURIComponent(token))
+      .then(function(r){ return r.json().then(function(j){ return {ok:r.ok, j:j}; }); })
+      .then(function(o){
+        if(o.ok){ $('cloudCloud').textContent = o.j.balance; }
+        else { msg('⚠️ '+ (o.j.error||'已過期')); showLogin(); }
+      }).catch(function(){ msg('⚠️ 連唔到 server'); });
+  }
+  function api(path, body){
+    return fetch(path, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body)})
+      .then(function(r){ return r.json().then(function(j){ return {ok:r.ok, j:j}; }); });
+  }
+  $('cloudToggle').onclick = function(){
+    panel.classList.toggle('collapsed');
+    $('cloudToggle').textContent = panel.classList.contains('collapsed') ? '▸' : '▾';
+  };
+  $('cloudRegBtn').onclick = function(){
+    msg('');
+    api('/api/register', {username:$('cloudUser').value, password:$('cloudPass').value})
+      .then(function(o){
+        if(o.ok){ username=o.j.username; token=o.j.token;
+          localStorage.setItem(LS_U,username); localStorage.setItem(LS_T,token);
+          showDash(); msg('✅ 註冊成功，已登入'); }
+        else msg('❌ '+(o.j.error||'失敗'));
+      });
+  };
+  $('cloudLoginBtn').onclick = function(){
+    msg('');
+    api('/api/login', {username:$('cloudUser').value, password:$('cloudPass').value})
+      .then(function(o){
+        if(o.ok){ username=o.j.username; token=o.j.token;
+          localStorage.setItem(LS_U,username); localStorage.setItem(LS_T,token);
+          showDash(); msg('✅ 登入成功'); }
+        else msg('❌ '+(o.j.error||'失敗'));
+      });
+  };
+  $('cloudSaveBtn').onclick = function(){
+    msg('');
+    var b = (typeof balance !== 'undefined') ? balance : 0;
+    api('/api/save', {username:username, token:token, balance:b})
+      .then(function(o){
+        if(o.ok){ $('cloudCloud').textContent = o.j.balance; msg('✅ 已存到雲端'); }
+        else { msg('❌ '+(o.j.error||'失敗')); }
+      });
+  };
+  $('cloudLoadBtn').onclick = function(){
+    msg('');
+    refreshCloud();
+    fetch('/api/state?user='+encodeURIComponent(username)+'&token='+encodeURIComponent(token))
+      .then(function(r){ return r.json(); })
+      .then(function(j){
+        if(typeof j.balance !== 'undefined'){
+          if(typeof balance !== 'undefined'){ balance = j.balance; if(typeof updateBalance==='function') updateBalance(); if(typeof saveStats==='function') saveStats(); }
+          $('cloudLocal').textContent = j.balance; $('cloudCloud').textContent = j.balance;
+          msg('✅ 已從雲端讀回');
+        }
+      });
+  };
+  $('cloudLogoutBtn').onclick = function(){
+    localStorage.removeItem(LS_U); localStorage.removeItem(LS_T);
+    username=''; token=''; showLogin(); msg('已登出');
+  };
+  // 初始化
+  if(username && token){ showDash(); } else { showLogin(); }
+  setInterval(refreshLocal, 1000);
+})();
+</script>
 </body>
 </html>
