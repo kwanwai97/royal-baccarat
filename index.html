@@ -3362,6 +3362,12 @@ updateBalance(); updateBetDisplay(); checkDaily(); updateQuest(); drawAllRoads()
 #cloudHeader{background:rgba(60,187,85,.18);padding:7px 10px;font-weight:700;
   cursor:pointer;display:flex;justify-content:space-between;align-items:center}
 #cloudBody{padding:9px 10px;display:block}
+#cloudDash, #cloudLogin{display:flex; justify-content:space-between; align-items:flex-start; gap:10px}
+.cloudInfo{flex:1 1 0; min-width:0}
+.cloudInfo input{width:100%}
+.cloudActions{flex:1 1 0; display:flex; flex-direction:column; gap:6px; align-items:stretch; min-width:0}
+.cloudActions .cloudRow{margin-top:0}
+#cloudDash{display:none}
 #cloudPanel.collapsed #cloudBody{display:none}
 #cloudPanel input{width:100%;margin:3px 0;padding:5px 7px;border-radius:6px;
   border:1px solid #2b3b5e;background:#0a1124;color:#fff;font-size:12px}
@@ -3378,26 +3384,34 @@ updateBalance(); updateBetDisplay(); checkDaily(); updateQuest(); drawAllRoads()
   <div id="cloudHeader">☁️ 雲端帳號 <span id="cloudToggle">▾</span></div>
   <div id="cloudBody">
     <div id="cloudLogin">
-      <input id="cloudUser" placeholder="用戶名 (3-20 英數/底線)">
-      <input id="cloudPass" type="password" placeholder="密碼 (至少 4 字)">
-      <div class="cloudRow">
-        <button id="cloudRegBtn">註冊</button>
-        <button id="cloudLoginBtn" class="sec">登入</button>
+      <div class="cloudInfo">
+        <input id="cloudUser" placeholder="用戶名 (3-20 英數/底線)">
+        <input id="cloudPass" type="password" placeholder="密碼 (至少 4 字)">
+      </div>
+      <div class="cloudActions">
+        <div class="cloudRow">
+          <button id="cloudRegBtn">註冊</button>
+          <button id="cloudLoginBtn" class="sec">登入</button>
+        </div>
       </div>
     </div>
     <div id="cloudDash" style="display:none">
-      <div>👤 <b id="cloudName"></b></div>
-      <div class="cloudLocal">🖥️ 本機餘額 <b id="cloudLocal">0</b></div>
-      <div class="cloudCloud">☁️ 雲端餘額 <b id="cloudCloud">0</b></div>
-      <div class="cloudRow">
-        <button id="cloudSaveBtn">存到雲端</button>
+      <div class="cloudInfo">
+        <div>👤 <b id="cloudName"></b></div>
+        <div class="cloudLocal">🖥️ 本機餘額 <b id="cloudLocal">0</b></div>
+        <div class="cloudCloud">☁️ 雲端餘額 <b id="cloudCloud">0</b></div>
       </div>
-      <div class="cloudRow">
-        <button id="cloudLoadBtn" class="sec">讀回雲端</button>
-        <button id="cloudLogoutBtn" class="sec">登出</button>
-      </div>
-      <div class="cloudRow">
-        <button id="cloudShopBtn" class="sec" style="background:#ffd66b;color:#3a2a00">🛒 商店</button>
+      <div class="cloudActions">
+        <div class="cloudRow">
+          <button id="cloudSaveBtn">存到雲端</button>
+        </div>
+        <div class="cloudRow">
+          <button id="cloudLoadBtn" class="sec">讀回雲端</button>
+          <button id="cloudLogoutBtn" class="sec">登出</button>
+        </div>
+        <div class="cloudRow">
+          <button id="cloudShopBtn" class="sec" style="background:#ffd66b;color:#3a2a00">🛒 商店</button>
+        </div>
       </div>
       <div id="cloudMsg"></div>
     </div>
