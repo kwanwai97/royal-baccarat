@@ -2891,6 +2891,7 @@ function recordPredictHit(winner){
   // 永久勝負紀錄：中(W)/輸(L) 累加，開和(T) 唔計（同命中統計一致）；跨靴保留，唔受60局洗牌清
   if(result==='W') predPermW++;
   else if(result==='L') predPermL++;
+  savePredPerm();   // ★ 一定要寫落 localStorage，否則退出/reload 後讀返變 0
   savePredStats();
 }
 function predHitText(){
