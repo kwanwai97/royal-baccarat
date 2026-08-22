@@ -10,7 +10,7 @@ const crypto = require('crypto');
 
 const PORT = process.env.PORT || 3000;
 const ROOT = __dirname;                 // 直接 serve 個 repo
-const DATA_DIR = path.join(ROOT, 'data');
+const DATA_DIR = process.env.DATA_DIR || path.join(ROOT, 'data');
 const ACCOUNTS_FILE = path.join(DATA_DIR, 'accounts.json');
 
 // 確保 data 目錄存在
@@ -64,6 +64,24 @@ function readBody(req, limit = 1e6) {
 }
 const validUser = (u) => typeof u === 'string' && /^[a-zA-Z0-9_]{3,20}$/.test(u);
 
+// ---- 商店目錄（server 係唯一真源，前端唔好寫死） ----
+// 注意：全部係「虛擬道具娛樂版」，唔到真錢，唔係賭博。
+// price 係「虛擬代幣(VT)」或顯示價錢；而家係測試下單，唔接真錢。
+const STORE = {
+  chips: [
+    { id: 'c1', name: '新手包', chips: 50000, priceLabel: '免費試玩', price: 0 },
+    { id: 'c2', name: '小注包', chips: 200000, priceLabel: 'HK$8', price: 8 },
+    { id: 'c3', name: '豪客包', chips: 1000000, priceLabel: 'HK$30', price: 30 },
+    { id: 'c4', name: '富豪包', chips: 5000000, priceLabel: 'HK$98', price: 98 }
+  ],
+  skins: [
+    { id: 'classic', name: '經典綠', bg: '#0d1530', accent: '#3cb85a' },
+    { id: 'gold', name: '土豪金', bg: '#1a1206', accent: '#e0b84a' },
+    { id: 'neon', name: '霓虹紫', bg: '#160a26', accent: '#b15cff' },
+    { id: 'ruby', name: '紅寶石', bg: '#26090f', accent: '#ff5a7a' }
+  ]
+};
+
 // ---- API ----
 async function handleApi(req, res, url) {
   const p = url.pathname;
@@ -99,7 +117,7 @@ async function handleApi(req, res, url) {
     const token = url.searchParams.get('token');
     const acc = accounts[user];
     if (!acc || acc.token !== token) return sendJSON(res, 401, { error: '未登入或過期' });
-    return sendJSON(res, 200, { username: user, balance: acc.balance });
+    return sendJSON(res, 200, { username: user, balance: acc.balance, skin: acc.skin || 'classic' });
   }
 
   if (p === '/api/save' && req.method === 'POST') {
@@ -113,6 +131,35 @@ async function handleApi(req, res, url) {
     acc.balance = Math.floor(bal);
     saveAccounts(accounts);
     return sendJSON(res, 200, { ok: true, balance: acc.balance });
+  }
+
+  if (p === '/api/store' && req.method === 'GET') {
+    return sendJSON(res, 200, STORE);
+  }
+
+  if (p === '/api/buy' && req.method === 'POST') {
+    const b = await readBody(req);
+    const user = b.username, token = b.token, packId = b.packId;
+    const acc = accounts[user];
+    if (!acc || acc.token !== token) return sendJSON(res, 401, { error: '未登入或過期' });
+    const pack = STORE.chips.find((c) => c.id === packId);
+    if (!pack) return sendJSON(res, 400, { error: '包唔存在' });
+    // 測試下單：唔接真錢，直接加 chips（price>0 嘅包喺真錢版會先過支付）
+    acc.balance = (acc.balance || 0) + pack.chips;
+    saveAccounts(accounts);
+    return sendJSON(res, 200, { ok: true, added: pack.chips, balance: acc.balance, note: '測試下單(未接真錢)' });
+  }
+
+  if (p === '/api/skin' && req.method === 'POST') {
+    const b = await readBody(req);
+    const user = b.username, token = b.token, skinId = b.skinId;
+    const acc = accounts[user];
+    if (!acc || acc.token !== token) return sendJSON(res, 401, { error: '未登入或過期' });
+    const skin = STORE.skins.find((s) => s.id === skinId);
+    if (!skin) return sendJSON(res, 400, { error: '皮膚唔存在' });
+    acc.skin = skinId;
+    saveAccounts(accounts);
+    return sendJSON(res, 200, { ok: true, skin: skinId });
   }
 
   return sendJSON(res, 404, { error: 'unknown api' });

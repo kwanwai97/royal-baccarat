@@ -3396,6 +3396,9 @@ updateBalance(); updateBetDisplay(); checkDaily(); updateQuest(); drawAllRoads()
         <button id="cloudLoadBtn" class="sec">讀回雲端</button>
         <button id="cloudLogoutBtn" class="sec">登出</button>
       </div>
+      <div class="cloudRow">
+        <button id="cloudShopBtn" class="sec" style="background:#ffd66b;color:#3a2a00">🛒 商店</button>
+      </div>
       <div id="cloudMsg"></div>
     </div>
   </div>
@@ -3496,5 +3499,126 @@ updateBalance(); updateBetDisplay(); checkDaily(); updateQuest(); drawAllRoads()
   setInterval(refreshLocal, 1000);
 })();
 </script>
-</body>
+<!-- 🛒 商店 Modal (虛擬道具娛樂版，唔接真錢) -->
+<style>
+#shopModal{position:fixed;inset:0;z-index:100000;display:none;align-items:center;justify-content:center;
+  background:rgba(0,0,0,.7);font-family:-apple-system,Segoe UI,Roboto,sans-serif}
+#shopBox{width:min(440px,94vw);max-height:88vh;overflow:auto;background:#0d1530;border:1px solid #3cb85a;
+  border-radius:14px;color:#fff;box-shadow:0 10px 40px rgba(0,0,0,.6)}
+#shopHead{padding:12px 14px;background:rgba(60,184,90,.18);font-weight:800;font-size:16px;
+  display:flex;justify-content:space-between;align-items:center}
+#shopTabs{display:flex;gap:6px;padding:10px 14px 0}
+#shopTabs button{flex:1;padding:8px;border:0;border-radius:8px 8px 0 0;cursor:pointer;
+  background:#16203c;color:#9fb;font-weight:700;font-size:13px}
+#shopTabs button.active{background:#3cb85a;color:#06210f}
+#shopBody{padding:12px 14px 16px}
+.shopItem{display:flex;justify-content:space-between;align-items:center;gap:10px;
+  padding:10px;margin:7px 0;border:1px solid #233; border-radius:10px;background:#0a1124}
+.shopItem .info b{font-size:14px}.shopItem .info small{display:block;color:#9fb;font-size:11px;margin-top:2px}
+.shopItem .price{color:#ffd66b;font-weight:800;font-size:14px;white-space:nowrap}
+.shopBuy{padding:7px 12px;border:0;border-radius:8px;background:#ffd66b;color:#3a2a00;
+  font-weight:800;cursor:pointer;white-space:nowrap}
+.shopBuy:disabled{opacity:.5;cursor:default}
+.skinSwatch{width:22px;height:22px;border-radius:6px;border:2px solid #fff;display:inline-block;vertical-align:middle;margin-right:6px}
+#shopMsg{padding:8px 14px;min-height:18px;color:#9fe;font-size:12px}
+#shopLogin{text-align:center;color:#ffd66b;padding:18px 14px}
+</style>
+<div id="shopModal">
+  <div id="shopBox">
+    <div id="shopHead">🛒 商店（虛擬道具 · 試玩版） <span id="shopClose" style="cursor:pointer">✕</span></div>
+    <div id="shopTabs">
+      <button data-tab="chips" class="active">💰 Chips 包</button>
+      <button data-tab="skins">🎨 皮膚</button>
+    </div>
+    <div id="shopBody"></div>
+    <div id="shopMsg"></div>
+  </div>
+</div>
+<script>
+(function(){
+  var $ = function(id){ return document.getElementById(id); };
+  var shopItems = { chips: [], skins: [] };
+  var cloudUser = function(){ return localStorage.getItem('cloud_user') || ''; };
+  var cloudTok = function(){ return localStorage.getItem('cloud_token') || ''; };
+
+  function smsg(t){ if($('shopMsg')) $('shopMsg').textContent = t || ''; }
+
+  function openShop(){
+    if(!cloudUser() || !cloudTok()){ renderLogin(); $('shopModal').style.display='flex'; return; }
+    fetch('/api/store').then(function(r){ return r.json(); }).then(function(s){
+      shopItems = s; renderChips(); $('shopModal').style.display='flex';
+    }).catch(function(){ smsg('⚠️ 連唔到商店'); });
+  }
+  function renderLogin(){
+    $('shopBody').innerHTML = '<div id="shopLogin">請先喺右上角☁️雲端帳號 登入／註冊，<br>先可以買虛擬道具（測試版，暫唔收錢）。</div>';
+  }
+  function renderChips(){
+    var h = shopItems.chips.map(function(c){
+      var free = c.price === 0;
+      return '<div class="shopItem"><div class="info"><b>'+c.name+'</b>'+
+        '<small>+'+c.chips.toLocaleString()+' 虛擬 chips</small></div>'+
+        '<div class="price">'+c.priceLabel+'</div>'+
+        '<button class="shopBuy" data-buy="'+c.id+'">'+(free?'領取':'測試下單')+'</button></div>';
+    }).join('');
+    $('shopBody').innerHTML = h;
+    Array.prototype.forEach.call($('shopBody').querySelectorAll('.shopBuy'), function(btn){
+      btn.onclick = function(){
+        btn.disabled = true; btn.textContent = '處理中…';
+        fetch('/api/buy', {method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({username:cloudUser(), token:cloudTok(), packId: btn.getAttribute('data-buy')})})
+          .then(function(r){ return r.json(); })
+          .then(function(j){
+            if(j.ok){
+              if(typeof balance !== 'undefined'){ balance = j.balance; if(typeof updateBalance==='function') updateBalance(); if(typeof saveStats==='function') saveStats(); }
+              if(typeof refreshCloud==='function') refreshCloud();
+              smsg('✅ 已加 '+j.added.toLocaleString()+' chips（'+j.note+'）');
+              btn.textContent = '已加';
+            } else { smsg('❌ '+(j.error||'失敗')); btn.disabled=false; btn.textContent='再試'; }
+          });
+      };
+    });
+  }
+  function renderSkins(){
+    var h = shopItems.skins.map(function(s){
+      return '<div class="shopItem"><div class="info"><span class="skinSwatch" style="background:'+s.bg+';border-color:'+s.accent+'"></span><b>'+s.name+'</b></div>'+
+        '<button class="shopBuy" data-skin="'+s.id+'">揀呢款</button></div>';
+    }).join('');
+    $('shopBody').innerHTML = h;
+    Array.prototype.forEach.call($('shopBody').querySelectorAll('.shopBuy'), function(btn){
+      btn.onclick = function(){
+        fetch('/api/skin', {method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({username:cloudUser(), token:cloudTok(), skinId: btn.getAttribute('data-skin')})})
+          .then(function(r){ return r.json(); })
+          .then(function(j){
+            if(j.ok){ applySkin(j.skin); smsg('✅ 已套用 '+j.skin); }
+            else smsg('❌ '+(j.error||'失敗'));
+          });
+      };
+    });
+  }
+  function applySkin(id){
+    var s = (shopItems.skins||[]).find(function(x){ return x.id===id; });
+    if(!s) return;
+    document.body.style.setProperty('--skin-bg', s.bg);
+    document.body.style.setProperty('--skin-accent', s.accent);
+    // 即時改背景漸變（唔郁 game 排版，只改底色）
+    document.body.style.background = 'linear-gradient(160deg,'+s.bg+',#05080f)';
+  }
+  // tab 切換
+  Array.prototype.forEach.call(document.querySelectorAll('#shopTabs button'), function(b){
+    b.onclick = function(){
+      Array.prototype.forEach.call(document.querySelectorAll('#shopTabs button'), function(x){ x.classList.remove('active'); });
+      b.classList.add('active');
+      if(b.getAttribute('data-tab')==='chips') renderChips(); else renderSkins();
+    };
+  });
+  $('shopClose').onclick = function(){ $('shopModal').style.display='none'; };
+  $('shopModal').addEventListener('click', function(e){ if(e.target===$('shopModal')) $('shopModal').style.display='none'; });
+  // 雲端面板商店掣
+  var sb = $('cloudShopBtn'); if(sb) sb.onclick = openShop;
+  // 登入後自動套用已揀皮膚
+  window.__applyCloudSkin = function(){ if(cloudUser()&&cloudTok()){ fetch('/api/state?user='+encodeURIComponent(cloudUser())+'&token='+encodeURIComponent(cloudTok())).then(function(r){return r.json();}).then(function(j){ if(j.skin&&j.skin!=='classic') applySkin(j.skin); }); } };
+})();
+</script>
+
 </html>
