@@ -82,6 +82,17 @@ const STORE = {
   ]
 };
 
+// ---- 廣告設定（server 係唯一真源，後台改呢度就全民生效） ----
+// banners: 輪播 banner 廣告（image 支援外鏈 URL 或本地 /ad-img/ 路徑；link 係點擊跳轉）
+// reward: 「睇廣告送 chips」設定（chips=送幾多, cooldownMin=冷卻分鐘）
+const ADS = {
+  banners: [
+    { id: 'a1', image: 'https://via.placeholder.com/728x90/3cb85a/0d1530?text=Royal+Baccarat+VIP', link: 'https://github.com/kwanwai97/royal-baccarat', alt: '皇家百家樂 VIP' },
+    { id: 'a2', image: 'https://via.placeholder.com/728x90/e0b84a/1a1206?text=%E5%AF%8C%E8%B1%AA%E5%8C%85+98%E5%85%83%E9%80%81500%E8%90%AC', link: '#shop', alt: '富豪包優惠' }
+  ],
+  reward: { chips: 5000, cooldownMin: 3 }
+};
+
 // ---- API ----
 async function handleApi(req, res, url) {
   const p = url.pathname;
@@ -135,6 +146,27 @@ async function handleApi(req, res, url) {
 
   if (p === '/api/store' && req.method === 'GET') {
     return sendJSON(res, 200, STORE);
+  }
+
+  if (p === '/api/ads' && req.method === 'GET') {
+    return sendJSON(res, 200, ADS);
+  }
+
+  if (p === '/api/ad-claim' && req.method === 'POST') {
+    const b = await readBody(req);
+    const user = b.username, token = b.token;
+    const acc = accounts[user];
+    if (!acc || acc.token !== token) return sendJSON(res, 401, { error: '未登入或過期' });
+    const now = Date.now();
+    const cd = (ADS.reward.cooldownMin || 0) * 60000;
+    if (acc.lastAdClaim && (now - acc.lastAdClaim) < cd) {
+      const left = Math.ceil((cd - (now - acc.lastAdClaim)) / 1000);
+      return sendJSON(res, 429, { error: '冷卻中，仲有 ' + left + ' 秒', left });
+    }
+    acc.lastAdClaim = now;
+    acc.balance = (acc.balance || 0) + (ADS.reward.chips || 0);
+    saveAccounts(accounts);
+    return sendJSON(res, 200, { ok: true, added: ADS.reward.chips, balance: acc.balance });
   }
 
   if (p === '/api/buy' && req.method === 'POST') {

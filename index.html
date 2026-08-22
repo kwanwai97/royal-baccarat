@@ -625,7 +625,58 @@
     .chip{ width:26px; height:26px; font-size:8px; }
 </style>
 </head>
-<body>
+<!-- 📢 廣告 Banner (固定頂部輪播, server 唯一真源, 唔阻 game) -->
+<div id="adBar"><a id="adLink" href="#" target="_blank" rel="noopener"><img id="adImg" alt="廣告" style="height:54px;width:100%;object-fit:cover;display:block"></a></div>
+<style>
+#adBar{position:fixed;top:0;left:0;right:0;z-index:90000;height:54px;overflow:hidden;
+  border-bottom:1px solid #3cb85a;background:#0a1124}
+#adBar img{cursor:pointer}
+body{padding-top:54px}
+</style>
+<script>
+(function(){
+  var $ = function(id){ return document.getElementById(id); };
+  function rotateAds(list, i){
+    if(!list || !list.length) return;
+    i = i || 0;
+    var ad = list[i % list.length];
+    $('adImg').src = ad.image; $('adImg').alt = ad.alt || '廣告';
+    var link = $('adLink');
+    if(ad.link && ad.link.indexOf('#') === 0){
+      link.removeAttribute('target'); link.href = 'javascript:void(0)';
+      link.onclick = function(){ if(ad.link==='#shop'){ var sb=$('cloudShopBtn'); if(sb) sb.click(); } };
+    } else {
+      link.target = '_blank'; link.rel = 'noopener'; link.href = ad.link || '#';
+      link.onclick = null;
+    }
+    setTimeout(function(){ rotateAds(list, i+1); }, 5000);
+  }
+  fetch('/api/ads').then(function(r){ return r.json(); }).then(function(a){
+    rotateAds(a.banners, 0);
+    window.__adReward = a.reward || { chips:0, cooldownMin:0 };
+  }).catch(function(){ /* 無廣告就無顯示 */ });
+  var ab = $('cloudAdBtn');
+  if(ab) ab.onclick = function(){
+    var u = localStorage.getItem('cloud_user'), t = localStorage.getItem('cloud_token');
+    if(!u || !t){ alert('請先喺☁️雲端帳號 登入/註冊'); return; }
+    ab.disabled = true; ab.textContent = '播緊廣告…';
+    // 真實環境呢度會播一段廣告影片/彈窗，測試版直接領取
+    fetch('/api/ad-claim', {method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({username:u, token:t})})
+      .then(function(r){ return r.json().then(function(j){ return {ok:r.ok, j:j}; }); })
+      .then(function(o){
+        if(o.ok){
+          if(typeof balance !== 'undefined'){ balance = o.j.balance; if(typeof updateBalance==='function') updateBalance(); if(typeof saveStats==='function') saveStats(); }
+          if(typeof refreshCloud==='function') refreshCloud();
+          alert('✅ 睇完廣告，送咗 '+o.j.added.toLocaleString()+' chips！');
+        } else {
+          alert('⏳ '+(o.j.error||'未領到'));
+        }
+        ab.disabled = false; ab.textContent = '📺 睇廣告送chips';
+      });
+  };
+})();
+</script>
 <div class="app">
   <div class="topbar">
     <div class="brand">
@@ -3398,6 +3449,9 @@ updateBalance(); updateBetDisplay(); checkDaily(); updateQuest(); drawAllRoads()
       </div>
       <div class="cloudRow">
         <button id="cloudShopBtn" class="sec" style="background:#ffd66b;color:#3a2a00">🛒 商店</button>
+      </div>
+      <div class="cloudRow">
+        <button id="cloudAdBtn" class="sec" style="background:#5fd07a">📺 睇廣告送chips</button>
       </div>
       <div id="cloudMsg"></div>
     </div>
