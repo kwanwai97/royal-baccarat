@@ -864,15 +864,23 @@
       <div>總盈虧：<span id="sTotalProfit">0</span></div>
     </div>
     <div id="humanBetsBox" style="margin-top:8px;"><div style="font-weight:700;color:#f5f0d8;margin-bottom:4px;">👤 人類投注明細（這一靴牌）</div><div id="humanBetsList" style="max-height:180px;overflow:auto;font-size:11px;line-height:1.6;"></div></div>
-    <div class="quest-box" id="questBox">
-      <div class="quest-title">🎯 每日挑戰</div>
-      <div class="quest-desc" id="questDesc">載入中…</div>
-      <div class="quest-prog"><div class="quest-bar" id="questBar"></div></div>
-      <div class="quest-reward">完成獎勵：+5,000 籌碼</div>
-      <button class="modal-close" id="btnClaimQuest" style="background:#2faf5a;">領取獎勵</button>
+    <div class="quest-row" style="display:flex; gap:10px; align-items:center; margin-top:10px;">
+      <!-- 左：每日挑戰（1行排） -->
+      <div class="quest-box" id="questBox" style="flex:1; margin:0;">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <div class="quest-title" style="white-space:nowrap;">🎯 每日挑戰</div>
+          <div class="quest-desc" id="questDesc" style="margin:0; white-space:nowrap;">今日贏 0 / 5 局</div>
+        </div>
+        <div class="quest-prog"><div class="quest-bar" id="questBar"></div></div>
+        <div class="quest-reward">完成獎勵：+5,000 籌碼</div>
+        <button class="modal-close" id="btnClaimQuest" style="background:#2faf5a;">領取獎勵</button>
+      </div>
+      <!-- 右：清除/關閉 上下疊（關閉在清除下方） -->
+      <div style="display:flex; flex-direction:column; gap:8px; flex:0 0 auto;">
+        <button class="modal-close" id="btnClearStats" style="background:#7a2626; margin:0; padding:8px 14px;">🗑 清除歷史記錄</button>
+        <button class="modal-close" id="btnCloseStats" style="background:var(--goldd); margin:0; padding:8px 14px;">關閉</button>
+      </div>
     </div>
-    <button class="modal-close" id="btnClearStats" style="background:#7a2626; margin-bottom:6px;">🗑 清除歷史記錄</button>
-    <button class="modal-close" id="btnCloseStats">關閉</button>
   </div>
 </div>
 
