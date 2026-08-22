@@ -3429,13 +3429,13 @@ updateBalance(); updateBetDisplay(); checkDaily(); updateQuest(); drawAllRoads()
   function msg(t){ $('cloudMsg').textContent = t || ''; }
   function showLogin(){
     loggedIn = false;
-    $('cloudLogin').style.display = 'block';
+    $('cloudLogin').style.display = 'flex';
     $('cloudDash').style.display = 'none';
   }
   function showDash(){
     loggedIn = true;
     $('cloudLogin').style.display = 'none';
-    $('cloudDash').style.display = 'block';
+    $('cloudDash').style.display = 'flex';
     $('cloudName').textContent = username;
     refreshCloud();
   }
