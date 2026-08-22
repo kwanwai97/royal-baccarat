@@ -178,7 +178,7 @@
   .bet .od{font-size:9px; opacity:.8; margin-top:1px;}
   .bet.hot-predict{ border:2px solid #ffd479 !important; box-shadow:0 0 10px rgba(255,212,121,.6), inset 0 0 8px rgba(255,212,121,.25); }
   /* 頂列3格(閒/莊/和)：高度加大，籌碼疊上覆蓋賠率，籌碼間留空間，4+人自動分兩層 */
-  .betrow.top .bet{position:relative; min-height:86px; padding:7px 3px 7px; display:flex; flex-direction:column; justify-content:flex-start; align-items:center;}
+  .betrow.top .bet{position:relative; min-height:90px; padding:7px 3px 7px; display:flex; flex-direction:column; justify-content:flex-start; align-items:center;}
   .betrow.top .bet .od{position:relative; z-index:1;}
   .betrow.top .bet .chips-stack{position:absolute; left:0; right:0; bottom:6px; top:24px; z-index:2;
     display:grid; grid-template-columns:repeat(4,1fr); align-content:center; justify-items:center; gap:4px 6px; min-height:60px; margin-top:0;}
@@ -196,6 +196,8 @@
   .betrow.bottom .bet{display:flex; flex-direction:column; justify-content:center;}
   .betrow.bottom .bet .chips-stack{display:flex; justify-content:center; align-items:center; gap:2px; flex-wrap:nowrap; min-height:18px; margin-top:3px;}
   .betrow.bottom .bet .chips-stack .pc{justify-self:center;}
+  /* 直版：中列/底列統一 35px 高（與橫版一致） */
+  .betrow.mid .bet, .betrow.bottom .bet{ min-height:35px; }
   .bet.banker{border-color:var(--red); color:#ffb3b3;}
   .bet.player{border-color:var(--blue); color:#a9d2ff;}
   .bet.tie{border-color:var(--green); color:#8fe0ab;}
@@ -610,9 +612,9 @@
     .bets{ display:grid; grid-template-columns:repeat(3,1fr); gap:3px; }
     .betrow{ display:contents; }     /* 三行變 grid 子項，整體 3×3 一齊排 */
     .bet{ min-height:40px; padding:3px 2px; font-size:11px; }   /* 下兩行保持壓縮 */
-    /* 頂列(閒/莊/和)不壓縮：移除 landscape 覆寫，還原用 base 86px */
-    .betrow.top .bet{ min-height:80px; padding:5px 2px; }       /* 頂列(閒莊和) 80px 高 */
-    .betrow.mid .bet, .betrow.bottom .bet{ min-height:40px; padding:3px 2px; }  /* 第二/三列各 40px 高 */
+    /* 橫版：頂/中/底 統一 90/35/35（與直版一致） */
+    .betrow.top .bet{ min-height:90px; padding:5px 2px; }       /* 頂列(閒莊和) 90px 高 */
+    .betrow.mid .bet, .betrow.bottom .bet{ min-height:35px; padding:3px 2px; }  /* 第二/三列各 35px 高 */
     .bet .bn{ font-size:11px; }
     .bet .od{ font-size:8px; }
     .bet .chips-stack{ min-height:12px; margin-top:1px; }
