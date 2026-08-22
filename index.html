@@ -278,7 +278,7 @@
 .pred-ico{ font-size:14px; }
 .pred-title{ color:#ffd479; }
 .pred-side{ color:#fff; font-size:15px; font-weight:800; margin-left:auto; }
-.pred-row1 .freset{ margin-left:5px; padding:1px 7px; font-size:10px; border-radius:6px; background:rgba(255,120,80,.25); border:1px solid rgba(255,120,80,.5); color:#ffb3a0; cursor:pointer; flex:0 0 auto; }
+.pred-row1 .freset{ margin-left:0; padding:1px 7px; font-size:10px; border-radius:6px; background:rgba(255,120,80,.25); border:1px solid rgba(255,120,80,.5); color:#ffb3a0; cursor:pointer; flex:0 0 auto; }
 .pred-row1 .freset:hover{ background:rgba(255,120,80,.4); }
 .pred-row2{ display:flex; flex-wrap:wrap; gap:2px; font-size:10px; color:#9fe6b8; }
 .pred-row2 .ps-item{ white-space:nowrap; }
@@ -506,6 +506,7 @@
 
   /* ===== 打橫 landscape：純 CSS grid 重排，唔郁 DOM、唔改 id/邏輯 ===== */
   @media (orientation:landscape){
+    .pred-row1 .freset{ margin-left:5px; }   /* 橫版清除掣距請投注5px（直版0px） */
     .app{
       display:grid;
       grid-template-columns:16.667fr 16.667fr 16.667fr 16.667fr 16.667fr 16.667fr;   /* 左右50/50：左3欄共50% 右3欄共50% */
