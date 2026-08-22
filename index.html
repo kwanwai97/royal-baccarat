@@ -697,6 +697,17 @@
   <div class="modal" id="aiModal">
     <div class="modal-box" style="max-width:400px;">
       <h3>🤖 新增 AI 陪玩</h3>
+      <!-- 頂部常駐區塊：名字＋新增AI＋退出＋拆除全部AI（擺第一位） -->
+      <div class="ai-opt" style="display:flex;gap:8px;align-items:flex-end;">
+        <div style="flex:1;"><div class="ai-opt-label">名字</div><input id="aiNameInput" maxlength="6" value="阿龍" style="width:100%;padding:6px;border-radius:6px;border:1px solid #555;background:#0d1f15;color:#f5f0d8;" /></div>
+        <button class="modal-close" id="aiConfirm" style="background:#2faf5a;margin:0;height:36px;align-self:flex-end;">確認 · 新增 AI</button>
+      </div>
+      <div class="ai-modal-btns" style="display:flex;gap:8px;justify-content:space-between;">
+        <button class="modal-close" id="aiExit" style="background:#555;margin:0;flex:1;">退出</button>
+        <button class="modal-close" id="aiStop" style="background:#7a2d2d;margin:0;flex:1;display:none;">拆除全部 AI</button>
+      </div>
+      <!-- AI 名單：新 AI 擺最頂，向上伸展 -->
+      <div id="aiList" class="ai-list"></div>
       <div class="ai-opt"><div class="ai-opt-label">性格（人物百態）</div>
         <div class="ai-chips" id="aiPersona" style="display:grid;grid-template-columns:repeat(6,1fr);">
           <span class="ai-chip" data-v="banker">🏦 死忠莊</span>
@@ -739,15 +750,6 @@
           <span class="ai-chip" data-v="elder">👴 長者</span>
         </div>
       </div>
-      <div class="ai-opt" style="display:flex;gap:8px;align-items:flex-end;">
-        <div style="flex:1;"><div class="ai-opt-label">名字</div><input id="aiNameInput" maxlength="6" value="阿龍" style="width:100%;padding:6px;border-radius:6px;border:1px solid #555;background:#0d1f15;color:#f5f0d8;" /></div>
-        <button class="modal-close" id="aiConfirm" style="background:#2faf5a;margin:0;height:36px;align-self:flex-end;">確認 · 新增 AI</button>
-      </div>
-      <div class="ai-modal-btns" style="display:flex;gap:8px;justify-content:space-between;">
-        <button class="modal-close" id="aiExit" style="background:#555;margin:0;flex:1;">退出</button>
-        <button class="modal-close" id="aiStop" style="background:#7a2d2d;margin:0;flex:1;display:none;">拆除全部 AI</button>
-      </div>
-      <div id="aiList" class="ai-list"></div>
     </div>
   </div>
 
@@ -3188,7 +3190,8 @@ function renderAiList(){
   if(stopBtn) stopBtn.style.display = ais.length>0 ? 'flex' : 'none';
   list.innerHTML='';
   if(ais.length===0){ list.innerHTML='<div class="ai-empty">尚未有 AI 陪玩</div>'; return; }
-  ais.forEach(ai=>{
+  // 倒轉渲染：新 AI 擺最頂，名單向上伸展
+  ais.slice().reverse().forEach(ai=>{
     const row=document.createElement('div');
     row.className='ai-row';
     const personaTxt=(AI_PERSONAS[ai.persona]&&AI_PERSONAS[ai.persona].name)||ai.persona;
