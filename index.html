@@ -3402,14 +3402,16 @@ function placeFollow(){
 placeFollow();
 window.addEventListener('resize', placeFollow);
 if(window.matchMedia){ try{ window.matchMedia('(orientation:landscape)').addEventListener('change', placeFollow); }catch(e){} }
-// 橫版：洗牌留籌碼區(.chips-row)，自動+13秒搬返剩餘卡牌(.brand-sub)下方並排；直版三掣全部還原返左上 brand(原樣，唔改HTML)
+// 橫版：洗牌留籌碼區(.chips-row)，自動+13秒搬返剩餘卡牌(.brand-sub)下方並排；直版：自動+13秒回左上 brand，洗牌搬去籌碼區發牌右邊
 function placeTopBtns(){
   const tb=document.getElementById('topBtns');
   const brand=document.querySelector('.brand');
   const chips=document.querySelector('.chips-row');
+  const deal=document.getElementById('btnDeal');
   const auto=document.getElementById('btnAuto');
   const aint=document.getElementById('btnAutoInt');
-  if(!tb||!brand||!chips||!auto||!aint) return;
+  const shuf=document.getElementById('btnShuffle');
+  if(!tb||!brand||!chips||!deal||!auto||!aint||!shuf) return;
   let autoWrap=document.getElementById('autoBtns');
   if(!autoWrap){ autoWrap=document.createElement('div'); autoWrap.id='autoBtns'; autoWrap.className='auto-btns'; }
   const land=window.matchMedia('(orientation:landscape)').matches;
@@ -3421,7 +3423,8 @@ function placeTopBtns(){
   } else {
     if(auto.parentElement!==tb) tb.appendChild(auto);            // 直版：自動回 topBtns
     if(aint.parentElement!==tb) tb.appendChild(aint);            // 13秒回 topBtns
-    if(tb.parentElement!==brand) brand.appendChild(tb);
+    if(tb.parentElement!==brand) brand.appendChild(tb);          // 自動/13秒回左上
+    if(shuf.parentElement!==chips) chips.appendChild(shuf);      // 直版：洗牌搬去籌碼區(發牌右)
     if(autoWrap.parentElement) autoWrap.remove();               // 直版唔使 wrapper
   }
 }
