@@ -289,7 +289,7 @@
   .odds-row.predict-row{align-items:flex-start;}
   .follow-col{display:flex; flex-direction:row; flex-wrap:wrap; gap:4px; flex:0 1 auto; margin-left:8px; align-items:center;}
   /* 新版：左右兩半（左預測，右5格打橫一排） */
-.follow-wrap{display:flex; gap:2px; align-items:stretch; margin-bottom:0px;}
+.follow-wrap{display:flex; flex-wrap:wrap; gap:2px; align-items:stretch; margin-bottom:0px;}
 .follow-left{flex:0 0 50%; display:flex; flex-direction:column; gap:5px; min-width:0; justify-content:flex-start; padding-left:6px;}
 /* 預測系統固定資訊區：上面一行(標題+請投注) + 下面一行(勝率/次數/勝負)，固定空間唔收起 */
 .pred-system{ min-height:46px; display:flex; flex-direction:column; gap:2px; padding:2px; border:1px solid #b98a17; border-radius:8px; background:rgba(20,30,20,.55); box-sizing:border-box; justify-content:center; }
@@ -309,7 +309,7 @@
 .pred-row2 .plog-dot{ font-style:normal; font-size:10px; font-weight:800; line-height:1; }
 .pred-row2 .plog-empty{ color:rgba(255,255,255,.25); }
 .follow-right{flex:1 1 50%; display:flex; flex-direction:row; flex-wrap:wrap; gap:2px; align-items:flex-start; justify-content:flex-start; padding-right:6px;}
-.follow-text{display:flex; flex-direction:row; flex-wrap:nowrap; align-items:center; gap:5px; font-size:9px; color:#cfe9d8; margin-top:2px;}
+.follow-text{display:flex; flex-direction:row; flex-wrap:nowrap; align-items:center; gap:5px; font-size:9px; color:#cfe9d8; margin-top:2px; flex-basis:100%; width:100%;}
 
 /* 五個掣統一尺寸：4個策略掣 flex:1 1 0 平均闊度；第5個次數掣固定36px；高度統一32px */
 .follow-right .fbtn{
@@ -3396,11 +3396,11 @@ function placeFollow(){
   const land=window.matchMedia('(orientation:landscape)').matches;
   // 直版/橫版都留喺 follow-wrap（5掣位置靠 grid 定位）
   if(fr.parentElement!==fw) fw.appendChild(fr);
-  // 跟注文字：橫版/直版都搬入預測系統(.follow-left)底部打橫一行（取消直版兩項分行）
+  // 跟注文字：橫版搬入預測系統(.follow-left)底部打橫一行；直版搬入 .follow-wrap 做全闊底行(100%左右一行)
   const ft=document.querySelector('.follow-text');
-  const fl=document.querySelector('.follow-left');
-  if(ft&&fl){
-    if(ft.parentElement!==fl) fl.appendChild(ft);
+  if(ft){
+    if(land){ if(fl && ft.parentElement!==fl) fl.appendChild(ft); }
+    else { if(fw && ft.parentElement!==fw) fw.appendChild(ft); }
   }
   // 橫版：重置掣做6掣底層(搬入 follow-right)；直版留返 follow-stats「勝/負」後(原樣，唔改HTML)
   const reset=document.getElementById('btnFollowReset');
