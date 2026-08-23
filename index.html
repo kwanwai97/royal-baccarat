@@ -576,6 +576,9 @@
     .brand #btnLeaderboard{ font-size:11px; padding:1px 4px; }
     .brand-sub{ font-size:10px; }
     .brand-sub #shoeInfo{ font-size:12px; }
+    /* 橫版：自動+13秒搬返剩餘卡牌下，橫排細掣 */
+    .brand .auto-btns{ display:flex; flex-direction:row; gap:2px; margin-top:1px; align-items:center; }
+    .brand .auto-btns .btn{ writing-mode:horizontal-tb; display:inline-flex; align-items:center; justify-content:center; width:auto; height:auto; padding:1px 4px; font-size:9px; margin:0; line-height:1; }
     .topright{ grid-column:4 / 7; grid-row:1 / span 2; display:flex; flex-direction:column; align-items:flex-start; gap:4px; align-self:start; min-width:0; overflow:visible; padding-top:6px; }
     .topright .balance{ font-size:13px; }
     .topright .balance b{ font-size:18px; }
@@ -3396,15 +3399,28 @@ function placeFollow(){
 placeFollow();
 window.addEventListener('resize', placeFollow);
 if(window.matchMedia){ try{ window.matchMedia('(orientation:landscape)').addEventListener('change', placeFollow); }catch(e){} }
-// 橫版：將左上三掣(#topBtns：洗牌/自動/13秒)搬入籌碼區(.chips-row)；直版留返左上 brand（純搬位，唔改邏輯）
+// 橫版：洗牌留籌碼區(.chips-row)，自動+13秒搬返剩餘卡牌(.brand-sub)下方並排；直版三掣全部還原返左上 brand(原樣，唔改HTML)
 function placeTopBtns(){
   const tb=document.getElementById('topBtns');
   const brand=document.querySelector('.brand');
   const chips=document.querySelector('.chips-row');
-  if(!tb||!brand||!chips) return;
+  const auto=document.getElementById('btnAuto');
+  const aint=document.getElementById('btnAutoInt');
+  if(!tb||!brand||!chips||!auto||!aint) return;
+  let autoWrap=document.getElementById('autoBtns');
+  if(!autoWrap){ autoWrap=document.createElement('div'); autoWrap.id='autoBtns'; autoWrap.className='auto-btns'; }
   const land=window.matchMedia('(orientation:landscape)').matches;
-  if(land){ if(tb.parentElement!==chips) chips.appendChild(tb); }
-  else { if(tb.parentElement!==brand) brand.appendChild(tb); }
+  if(land){
+    if(tb.parentElement!==chips) chips.appendChild(tb);          // 洗牌留籌碼區
+    if(auto.parentElement!==autoWrap) autoWrap.appendChild(auto); // 自動入 wrapper
+    if(aint.parentElement!==autoWrap) autoWrap.appendChild(aint); // 13秒入 wrapper
+    if(autoWrap.parentElement!==brand) brand.appendChild(autoWrap); // wrapper 插 brand-sub 下
+  } else {
+    if(auto.parentElement!==tb) tb.appendChild(auto);            // 直版：自動回 topBtns
+    if(aint.parentElement!==tb) tb.appendChild(aint);            // 13秒回 topBtns
+    if(tb.parentElement!==brand) brand.appendChild(tb);
+    if(autoWrap.parentElement) autoWrap.remove();               // 直版唔使 wrapper
+  }
 }
 placeTopBtns();
 window.addEventListener('resize', placeTopBtns);
