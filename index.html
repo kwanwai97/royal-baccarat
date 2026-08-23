@@ -595,12 +595,11 @@
   display:flex; flex-direction:row; flex-wrap:wrap; align-items:flex-start; gap:2px;
   align-self:start; padding:1px 1px 0;       /* 左右緊貼唔漏空 */
 }
-/* 橫版5掣+重置分兩層：頂層跟預測/反預測/+-次；底層跟旺AI/反旺AI/重置；每層3個 */
-.follow-right .fbtn, .follow-right .limit-row{ order:1; flex:0 0 auto; flex-basis:calc(33% - 2px); max-width:calc(33% - 2px); }
-.follow-right .fbtn:nth-of-type(3){ order:1; }            /* +-次 頂層第3 */
-.follow-right .btnFollowHot{ order:2; }                   /* 跟旺AI 底層第1 */
-.follow-right .btnFollowHotRev{ order:2; }                /* 反旺AI 底層第2 */
-.follow-text{ display:flex; flex-direction:column; gap:2px; flex-basis:100%; min-width:0; order:3; }  /* 跟注文字落最底 */
+/* 橫版6掣兩層：頂層跟旺AI/反旺AI/±次數；底層跟預測/反預測/重置；每層3個各1/3欄 */
+.follow-right .btnFollowHot, .follow-right .btnFollowHotRev, .follow-right .limit-row{ order:1; flex:0 0 auto; flex-basis:calc(33% - 2px); max-width:calc(33% - 2px); }
+.follow-right .btnFollowPredict2, .follow-right .btnFollowRev, .follow-right #btnFollowReset{ order:2; flex:0 0 auto; flex-basis:calc(33% - 2px); max-width:calc(33% - 2px); }
+/* 重置掣做6掣之一：直排細掣，同fbtn一致 */
+.follow-right #btnFollowReset{ writing-mode:vertical-rl; text-orientation:upright; min-width:24px; height:30px; padding:0 1px 1px 1px; font-size:10px; line-height:1; justify-content:flex-start; align-items:center; }
 .follow-right .fbtn{
   writing-mode:vertical-rl; text-orientation:upright;
   min-width:24px; height:30px; flex:0 0 auto;
@@ -613,8 +612,6 @@
     /* 跟注文字(狀態+統計)打橫一行、縮細、緊貼預測系統 */
     .follow-text #followStatus{ text-align:left; white-space:nowrap; flex-basis:auto; font-size:9px; }
     .follow-text .follow-stats{ text-align:left; white-space:nowrap; margin-left:0; font-size:9px; }
-    /* 橫版：重置掣喺「跟注N次」右邊、文字直排 */
-    .follow-left #btnFollowReset{ writing-mode:vertical-rl; text-orientation:upright; padding:1px 2px; font-size:9px; line-height:1; margin-left:2px; height:auto; }
 .follow-right .limit-row{
   writing-mode:vertical-rl; text-orientation:upright; 
   flex-direction:row; flex-wrap:nowrap; 
@@ -3388,13 +3385,12 @@ function placeFollow(){
     if(land){ if(ft.parentElement!==fl) fl.appendChild(ft); }
     else { if(ft.parentElement!==fr) fr.appendChild(ft); }
   }
-  // 橫版：重置掣搬去「跟注N次」右邊、文字直排；直版還原去「勝/負」後（唔改HTML，保直版原樣）
+  // 橫版：重置掣做6掣底層(搬入 follow-right)；直版留返 follow-stats「勝/負」後(原樣，唔改HTML)
   const reset=document.getElementById('btnFollowReset');
-  const stats=document.querySelector('.follow-stats');
-  if(reset&&stats){
-    const wlItem=stats.querySelector('.ps-wl');
-    if(land){ if(reset.parentElement!==stats) stats.insertBefore(reset, wlItem); }
-    else { if(reset.parentElement!==wlItem) wlItem.appendChild(reset); }
+  const wlItem=document.querySelector('.follow-stats .ps-wl');
+  if(reset&&fr){
+    if(land){ if(reset.parentElement!==fr) fr.appendChild(reset); }
+    else { if(wlItem && reset.parentElement!==wlItem) wlItem.appendChild(reset); }
   }
 }
 placeFollow();
