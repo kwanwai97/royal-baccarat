@@ -3009,7 +3009,12 @@ document.getElementById('btnRepeat').addEventListener('click',repeatBets);
 document.getElementById('btnDeal').addEventListener('click',function(){ if(autoOn){ showToast('自動開牌進行中，請先按「自動」停止'); return; } deal(); });
 function autoFollowPredict(reverse){
   const pr=predictScore();
-  if(!pr.side){ return; }  // 觀望唔跟（正常）
+  if(!pr.side){   // 觀望唔跟（正常）：仍要顯示一句，話畀用家知而家觀望緊
+    const fsEl=document.getElementById('followStatus');
+    if(fsEl) fsEl.textContent=(reverse?'🔄 反預測':'🔮 跟預測')+'：觀望中（等路單）';
+    showToast((reverse?'🔄 反預測':'🔮 跟預測')+'：暫時觀望，等開出路單再跟');
+    return;
+  }
   // 跟預測/反預測：緊跟路單，唔設連續上限（上限只用於跟旺AI防死跟）；轉邊自然跟到
   let side = reverse ? (pr.side==='B'?'P':'B') : pr.side;
   const amt = currentChip>0 ? currentChip : 1000;
@@ -3030,7 +3035,12 @@ function getHotAI(){
 }
 function autoFollowHot(reverse){
   const hot=getHotAI();
-  if(!hot || !hot.currentBet || !hot.currentBet.pick) return;
+  if(!hot || !hot.currentBet || !hot.currentBet.pick){   // 無旺AI：顯示一句話畀用家知
+    const fsEl=document.getElementById('followStatus');
+    if(fsEl) fsEl.textContent=(reverse?'🔥 反旺AI':'🔥 跟旺AI')+'：暫無旺AI';
+    showToast((reverse?'🔥 反旺AI':'🔥 跟旺AI')+'：暫時無連勝AI，等佢哋旺起上嚟');
+    return;
+  }
   // 連續次數上限：同一旺AI 跟足 limit 次就暫停，轉咗旺AI 先再跟
   if(!followTrack(hot.id)){
     const fs2=followStatusText();
