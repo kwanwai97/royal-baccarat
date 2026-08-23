@@ -584,47 +584,47 @@
     .follow-wrap{
       display:contents;
     }
-.follow-left{ grid-column:2 / 4; grid-row:1 / span 2; min-width:0; padding:6px 0 0 1px; }
+.follow-left{ grid-column:2 / 3; grid-row:1 / span 2; min-width:0; padding:6px 0 0 1px; }
 /* 打橫：預測系統區貼第二行最闊位(唔撐開、唔轉行)，保持三行位置唔變 */
 .follow-left .pred-system{ width:max-content; max-width:320px; }
 .follow-left .pred-side{ margin-left:2px; }   /* 取消「請投注」撐開，第一行緊湊貼標題 */
 .follow-right{
-  grid-column:2 / 4; grid-row:1 / span 2;   /* 橫版：頂部左半邊，貼住預測系統右邊(喺資金區左)，5掣一行 + 文字落底 */
+  grid-column:3 / 4; grid-row:1 / span 2;   /* 橫版：預測系統右邊緊貼(2/3→3/4)，唔重疊 */
   display:flex; flex-direction:row; flex-wrap:wrap; align-items:flex-start; gap:2px;
-  align-self:start; padding:1px 2px 0;       /* 左右緊貼唔漏空 */
+  align-self:start; padding:1px 1px 0;       /* 左右緊貼唔漏空 */
 }
 .follow-text{ display:flex; flex-direction:column; gap:2px; flex-basis:100%; min-width:0; order:3; }  /* 落 5掣底緊貼 */
 .follow-right .fbtn{ order:2; }
 .follow-right .limit-row{ order:2; }
 .follow-right .fbtn{
   writing-mode:vertical-rl; text-orientation:upright;
-  min-width:30px; height:34px; flex:0 0 auto;   /* min-width:30px 同直版一致，打橫直排掣闊度參考直版 */
-  padding: 0 2px 2px 2px;        /* 上下 padding 改為 0 和 2px，讓文字貼頂 */
-  font-size:11px;
-  line-height: 1;               /* 消除多餘行高 */
-  justify-content: flex-start;  /* 垂直方向（主軸）靠上對齊 */
-  align-items: center;          /* 水平置中，保持文字左右對稱 */
+  min-width:24px; height:30px; flex:0 0 auto;   /* 收細：30→24闊、34→30高 */
+  padding: 0 1px 1px 1px;
+  font-size:10px;
+  line-height: 1;
+  justify-content: flex-start;
+  align-items: center;
 }
     /* 跟注文字(狀態+統計)放右側同5掣左右並排 */
-    .follow-right #followStatus{ text-align:left; white-space:nowrap; flex-basis:auto; }
-    .follow-right .follow-stats{ text-align:left; white-space:nowrap; margin-left:0; }
+    .follow-right #followStatus{ text-align:left; white-space:nowrap; flex-basis:auto; font-size:10px; }
+    .follow-right .follow-stats{ text-align:left; white-space:nowrap; margin-left:0; font-size:10px; }
 .follow-right .limit-row{
   writing-mode:vertical-rl; text-orientation:upright; 
   flex-direction:row; flex-wrap:nowrap; 
   align-items:center; justify-content:center; gap:2px; 
-  flex:0 0 36px; min-width:0; width:auto; height:34px; 
-  padding:0 2px;               /* 上下 padding 也改為 0，配合貼頂 */
+  flex:0 0 28px; min-width:0; width:auto; height:30px;   /* 收細：36→28闊、34→30高 */
+  padding:0 1px;
   margin:0; box-sizing:border-box;
 }
 .follow-right .limit-row .fstep{ 
   writing-mode:vertical-rl; text-orientation:upright; 
-  width:auto; flex:0 0 auto; padding:0; font-size:11px;
+  width:auto; flex:0 0 auto; padding:0; font-size:10px;
   line-height: 1;
 }
 .follow-right .limit-row .limit-val{ 
   writing-mode:vertical-rl; text-orientation:upright; 
   width:auto; flex:0 0 auto;
-  line-height: 1;
+  font-size:10px; line-height: 1;
 }
     /* 打橫投注區壓縮：3×3 貼頂、第2/3行細啲，令右欄同左路單水平並排唔溢出 */
     .bets{ display:grid; grid-template-columns:repeat(3,1fr); gap:3px; }
