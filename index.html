@@ -551,6 +551,8 @@
     .h-left{ display:contents; }
     .bets{ grid-column:4 / 7; grid-row:3; align-self:start; }     /* 右欄投注區 3×3：頂欄(行1-2)下 */
     .chips-row{ grid-column:4 / 7; grid-row:4; align-self:start; } /* 右欄中：籌碼區 */
+    /* 橫版：左上三掣(#topBtns)已按 orientation 搬入籌碼區，跟籌碼區水平並排 */
+    .chips-row #topBtns{ order:0; margin-top:0; display:flex; gap:3px; align-items:center; }
     .controls{ grid-column:4 / 7; grid-row:5; align-self:start; padding:3px 6px 0; gap:4px; }  /* 右欄底：洗牌/發牌區 */
     /* 打橫溫和壓縮底部掣：padding/字/圓角收細 */
     .controls .btn{ padding:5px 6px; font-size:12px; border-radius:6px; letter-spacing:0; }
@@ -3377,6 +3379,19 @@ function placeFollow(){
 placeFollow();
 window.addEventListener('resize', placeFollow);
 if(window.matchMedia){ try{ window.matchMedia('(orientation:landscape)').addEventListener('change', placeFollow); }catch(e){} }
+// 橫版：將左上三掣(#topBtns：洗牌/自動/13秒)搬入籌碼區(.chips-row)；直版留返左上 brand（純搬位，唔改邏輯）
+function placeTopBtns(){
+  const tb=document.getElementById('topBtns');
+  const brand=document.querySelector('.brand');
+  const chips=document.querySelector('.chips-row');
+  if(!tb||!brand||!chips) return;
+  const land=window.matchMedia('(orientation:landscape)').matches;
+  if(land){ if(tb.parentElement!==chips) chips.appendChild(tb); }
+  else { if(tb.parentElement!==brand) brand.appendChild(tb); }
+}
+placeTopBtns();
+window.addEventListener('resize', placeTopBtns);
+if(window.matchMedia){ try{ window.matchMedia('(orientation:landscape)').addEventListener('change', placeTopBtns); }catch(e){} }
 if(!loadShoe()) resetShoe();   // 有儲存嘅鞋就續返(派過幾多張繼續)，否則開新鞋
 updateShoeInfo();   // 無論續鞋定開新鞋都刷新剩餘張數顯示
 updateBalance(); updateBetDisplay(); checkDaily(); updateQuest(); drawAllRoads();
