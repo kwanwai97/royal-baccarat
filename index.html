@@ -560,7 +560,7 @@
     /* 打橫收埋左右 panel 自身 margin/padding，令下半兩邊真·貼住 48% 分界線（根治中間空位） */
     .roadpanel{ margin:0 1px 0 0; }     /* 路單：收右邊 8px 空白，貼住分界 */
     .bets{ padding:2px 2px 2px 0; }     /* 投注區：收左右 10px */
-    .chips-row{ padding:4px 2px 2px 0; } /* 籌碼區：收左右 10px */
+    .chips-row{ padding:4px 2px 2px 0; gap:0; } /* 籌碼區：收左右 10px；全部掣左右緊貼零空隙 */
     /* 打橫：同直板一樣——限4個籌碼顯示，其餘(10K/50K)靠橫向推拉揭示，唔隱藏任何籌碼 */
     .chips-row .chips{ flex-wrap:wrap; }
     .chips-row .chip.c50k{ display:flex; }   /* 唔再隱藏50K，改由推拉揭示 */
@@ -578,9 +578,9 @@
     .brand #btnLeaderboard{ font-size:11px; padding:1px 4px; }
     .brand-sub{ font-size:10px; }
     .brand-sub #shoeInfo{ font-size:12px; }
-    /* 橫版：自動+13秒掣(放籌碼區最左)，橫排細掣；文字唔改(自動上下排/13秒) */
-    .auto-btns{ display:flex; flex-direction:row; gap:2px; margin-top:0; align-items:center; order:0; flex:0 0 auto; }
-    .auto-btns .btn{ writing-mode:horizontal-tb; display:inline-flex; align-items:center; justify-content:center; width:auto; height:auto; padding:2px 8px; min-width:36px; font-size:9px; margin:0; line-height:1; }
+    /* 橫版：自動+13秒掣(放籌碼區最左)，同其他四掣一樣高(35px)、闊度收細；全部掣左右緊貼零空隙 */
+    .auto-btns{ display:flex; flex-direction:row; gap:0; margin:0; align-items:center; order:0; flex:0 0 auto; }
+    .auto-btns .btn{ writing-mode:horizontal-tb; display:inline-flex; align-items:center; justify-content:center; width:30px; height:35px; padding:0; min-width:30px; max-width:30px; font-size:9px; margin:0; line-height:1; box-sizing:border-box; }
     .auto-btns #btnAuto{ flex-direction:column; gap:1px; }
     .auto-btns #btnAuto .a-label{ writing-mode:horizontal-tb; font-size:9px; line-height:1; }
     .auto-btns #btnAuto .a-state{ writing-mode:horizontal-tb; font-size:9px; line-height:1; }
