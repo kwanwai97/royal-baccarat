@@ -529,7 +529,7 @@
     .pred-row1 .freset{ margin-left:5px; }   /* 橫版清除掣距請投注5px（直版0px） */
     .app{
       display:grid;
-      grid-template-columns:auto 16.667fr 16.667fr 16.667fr 16.667fr 16.667fr;   /* 第1欄(auto)=排行榜內容闊度，預測系統跟住左移緊貼；右5欄各1/6 */
+      grid-template-columns:auto minmax(0,1.4fr) 90px minmax(0,1fr) minmax(0,1fr) minmax(0,1fr);   /* 第1欄(auto)=排行榜；第2欄預測系統(1.4fr)；第3欄5掣固定90px逼3+2換行填滿；第4-6欄資金/投注(各1fr) */
       grid-template-rows:auto auto auto auto auto auto;
       align-content:start;                /* 整體貼頂 */
       align-items:start;
@@ -588,7 +588,7 @@
 /* 橫版：跟注文字搬入預測系統底部，打橫一行 */
 .follow-left .follow-text{ display:flex; flex-direction:row; flex-wrap:wrap; gap:6px; flex-basis:auto; min-width:0; order:3; margin-top:2px; }
 /* 打橫：預測系統區貼第二行最闊位(唔撐開、唔轉行)，保持三行位置唔變 */
-.follow-left .pred-system{ width:max-content; max-width:320px; }
+.follow-left .pred-system{ width:max-content; max-width:200px; }
 .follow-left .pred-side{ margin-left:2px; }   /* 取消「請投注」撐開，第一行緊湊貼標題 */
 .follow-right{
   grid-column:3 / 4; grid-row:1 / span 2;   /* 橫版：預測系統右邊緊貼(2/3→3/4)，唔重疊 */
