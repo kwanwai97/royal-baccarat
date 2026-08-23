@@ -550,8 +550,8 @@
     .odds-row{ display:none; }            /* 勝率行：打橫收，避免空白 */
     /* 右欄：投注→籌碼→洗牌 各自一格，貼頂對齊 */
     .h-left{ display:contents; }
-    .bets{ grid-column:4 / 7; grid-row:3; align-self:start; }     /* 右欄投注區 3×3：頂欄(行1-2)下 */
-    .chips-row{ grid-column:4 / 7; grid-row:4; align-self:start; } /* 右欄中：籌碼區 */
+    .bets{ grid-column:4 / 7; grid-row:4; align-self:start; }     /* 右欄投注區：籌碼區之下 */
+    .chips-row{ grid-column:4 / 7; grid-row:3; align-self:start; } /* 右欄頂：籌碼區搬去投注區上面 */
     /* 橫版：左上三掣(#topBtns)已按 orientation 搬入籌碼區，跟籌碼區水平並排 */
     .chips-row #topBtns{ order:0; margin-top:0; display:flex; gap:3px; align-items:center; }
     .controls{ grid-column:4 / 7; grid-row:5; align-self:start; padding:3px 6px 0; gap:4px; }  /* 右欄底：洗牌/發牌區 */
@@ -604,37 +604,30 @@
 /* 橫版6掣兩層：頂層跟旺AI/反旺AI/±次數；底層跟預測/反預測/重置；每層3個各1/3欄 */
 .follow-right .btnFollowHot, .follow-right .btnFollowHotRev, .follow-right .limit-row{ order:1; flex:0 0 auto; flex-basis:calc(33% - 2px); max-width:calc(33% - 2px); }
 .follow-right .btnFollowPredict2, .follow-right .btnFollowRev, .follow-right #btnFollowReset{ order:2; flex:0 0 auto; flex-basis:calc(33% - 2px); max-width:calc(33% - 2px); }
-/* 重置掣做6掣之一：直排細掣，同fbtn一致 */
-.follow-right #btnFollowReset{ writing-mode:vertical-rl; text-orientation:upright; min-width:24px; height:30px; padding:0 1px 1px 1px; font-size:10px; line-height:1; justify-content:flex-start; align-items:center; }
+/* 橫版：全部按鈕文字打橫(override 直排) */
+.follow-right #btnFollowReset,
+.follow-right .fbtn,
+.follow-right .limit-row,
+.follow-right .limit-row .fstep,
+.follow-right .limit-row .limit-val,
+.baction .vlabel,
+.vbtn,
+.vnum .vsec,
+.btn.auto .a-label{
+  writing-mode:horizontal-tb !important;
+  text-orientation:initial !important;
+}
+/* 6掣轉橫排：由窄長直排改矮闊橫排 */
+.follow-right #btnFollowReset,
 .follow-right .fbtn{
-  writing-mode:vertical-rl; text-orientation:upright;
-  min-width:24px; height:30px; flex:0 0 auto;
-  padding: 0 1px 1px 1px;
-  font-size:10px;
-  line-height: 1;
-  justify-content: flex-start;
-  align-items: center;
+  min-width:0; height:auto; padding:4px 2px; font-size:10px; line-height:1.1; justify-content:center; align-items:center;
 }
-    /* 跟注文字(狀態+統計)打橫一行、縮細、緊貼預測系統 */
-    .follow-text #followStatus{ text-align:left; white-space:nowrap; flex-basis:auto; font-size:9px; }
-    .follow-text .follow-stats{ text-align:left; white-space:nowrap; margin-left:0; font-size:9px; }
 .follow-right .limit-row{
-  writing-mode:vertical-rl; text-orientation:upright; 
-  flex-direction:row; flex-wrap:nowrap; 
-  align-items:center; justify-content:center; gap:2px; 
-  flex:0 0 28px; min-width:0; width:auto; height:30px;
-  padding:0 1px;
-  margin:0; box-sizing:border-box;
+  flex:0 0 auto; width:auto; min-width:0; height:auto; padding:4px 2px;
 }
-.follow-right .limit-row .fstep{ 
-  writing-mode:vertical-rl; text-orientation:upright; 
-  width:auto; flex:0 0 auto; padding:0; font-size:10px;
-  line-height: 1;
-}
-.follow-right .limit-row .limit-val{ 
-  writing-mode:vertical-rl; text-orientation:upright; 
-  width:auto; flex:0 0 auto;
-  font-size:10px; line-height: 1;
+.follow-right .limit-row .fstep,
+.follow-right .limit-row .limit-val{
+  font-size:10px; line-height:1.1;
 }
     /* 打橫投注區壓縮：3×3 貼頂、第2/3行細啲，令右欄同左路單水平並排唔溢出 */
     .bets{ display:grid; grid-template-columns:repeat(3,1fr); gap:3px; }
