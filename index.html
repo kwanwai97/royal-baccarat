@@ -309,7 +309,7 @@
 .pred-row2 .plog-dot{ font-style:normal; font-size:10px; font-weight:800; line-height:1; }
 .pred-row2 .plog-empty{ color:rgba(255,255,255,.25); }
 .follow-right{flex:1 1 50%; display:flex; flex-direction:row; flex-wrap:wrap; gap:2px; align-items:flex-start; justify-content:flex-start; padding-right:6px;}
-.follow-text{display:flex; flex-direction:row; flex-wrap:nowrap; align-items:center; gap:5px; font-size:9px; color:#cfe9d8; margin-top:2px;}
+.follow-text{display:contents;}
 
 /* 五個掣統一尺寸：4個策略掣 flex:1 1 0 平均闊度；第5個次數掣固定36px；高度統一32px */
 .follow-right .fbtn{
@@ -603,9 +603,9 @@
   display:flex; flex-direction:row; flex-wrap:wrap; align-items:flex-start; gap:2px;
   align-self:start; padding:6px 1px 0;       /* 頂部6px同其他區水平空間一致 */
 }
-/* 橫版6掣兩層：上層跟旺AI/反旺AI/±次數；下層跟預測/反預測/重置；每層3個各1/3欄 */
-.follow-right .btnFollowHot, .follow-right .btnFollowHotRev, .follow-right .limit-row{ order:0; flex:0 0 auto; flex-basis:calc(33% - 2px); max-width:calc(33% - 2px); }
-.follow-right .btnFollowPredict2, .follow-right .btnFollowRev, .follow-right #btnFollowReset{ order:1; flex:0 0 auto; flex-basis:calc(33% - 2px); max-width:calc(33% - 2px); }
+/* 橫版6掣兩層：頂層跟旺AI/反旺AI/±次數；底層跟預測/反預測/重置；每層3個各1/3欄 */
+.follow-right .btnFollowHot, .follow-right .btnFollowHotRev, .follow-right .limit-row{ order:1; flex:0 0 auto; flex-basis:calc(33% - 2px); max-width:calc(33% - 2px); }
+.follow-right .btnFollowPredict2, .follow-right .btnFollowRev, .follow-right #btnFollowReset{ order:2; flex:0 0 auto; flex-basis:calc(33% - 2px); max-width:calc(33% - 2px); }
 /* 重置掣做6掣之一：直排細掣，同fbtn一致 */
 .follow-right #btnFollowReset{ writing-mode:vertical-rl; text-orientation:upright; min-width:24px; height:30px; padding:0 1px 1px 1px; font-size:10px; line-height:1; justify-content:flex-start; align-items:center; }
 .follow-right .fbtn{
@@ -624,7 +624,7 @@
   writing-mode:vertical-rl; text-orientation:upright; 
   flex-direction:row; flex-wrap:nowrap; 
   align-items:center; justify-content:center; gap:2px; 
-  flex:0 0 auto; flex-basis:calc(33% - 2px); max-width:calc(33% - 2px); min-width:0; width:auto; height:30px;
+  flex:0 0 28px; min-width:0; width:auto; height:30px;
   padding:0 1px;
   margin:0; box-sizing:border-box;
 }
@@ -3396,10 +3396,12 @@ function placeFollow(){
   const land=window.matchMedia('(orientation:landscape)').matches;
   // 直版/橫版都留喺 follow-wrap（5掣位置靠 grid 定位）
   if(fr.parentElement!==fw) fw.appendChild(fr);
-  // 跟注文字：橫版搬入預測系統(.follow-left)底部打橫一行；直版留返右邊五掣(.follow-right)底(HTML原樣，唔搬)
+  // 跟注文字：橫版搬入預測系統(.follow-left)底部打橫一行；直版留返5掣(.follow-right)底
   const ft=document.querySelector('.follow-text');
-  if(ft){
-    if(land){ if(fl && ft.parentElement!==fl) fl.appendChild(ft); }
+  const fl=document.querySelector('.follow-left');
+  if(ft&&fl){
+    if(land){ if(ft.parentElement!==fl) fl.appendChild(ft); }
+    else { if(ft.parentElement!==fr) fr.appendChild(ft); }
   }
   // 橫版：重置掣做6掣底層(搬入 follow-right)；直版留返 follow-stats「勝/負」後(原樣，唔改HTML)
   const reset=document.getElementById('btnFollowReset');
