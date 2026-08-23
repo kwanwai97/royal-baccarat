@@ -3396,11 +3396,10 @@ function placeFollow(){
   const land=window.matchMedia('(orientation:landscape)').matches;
   // 直版/橫版都留喺 follow-wrap（5掣位置靠 grid 定位）
   if(fr.parentElement!==fw) fw.appendChild(fr);
-  // 跟注文字：橫版/直版都搬入預測系統(.follow-left)底部打橫一行（取消直版兩項分行）
+  // 跟注文字：橫版搬入預測系統(.follow-left)底部打橫一行；直版留返右邊五掣(.follow-right)底(HTML原樣，唔搬)
   const ft=document.querySelector('.follow-text');
-  const fl=document.querySelector('.follow-left');
-  if(ft&&fl){
-    if(ft.parentElement!==fl) fl.appendChild(ft);
+  if(ft){
+    if(land){ if(fl && ft.parentElement!==fl) fl.appendChild(ft); }
   }
   // 橫版：重置掣做6掣底層(搬入 follow-right)；直版留返 follow-stats「勝/負」後(原樣，唔改HTML)
   const reset=document.getElementById('btnFollowReset');
