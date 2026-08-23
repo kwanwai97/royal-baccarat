@@ -578,12 +578,12 @@
     .brand #btnLeaderboard{ font-size:11px; padding:1px 4px; }
     .brand-sub{ font-size:10px; }
     .brand-sub #shoeInfo{ font-size:12px; }
-    /* 橫版：自動+13秒搬返剩餘卡牌下，橫排細掣 */
-    .brand .auto-btns{ display:flex; flex-direction:row; gap:2px; margin-top:3px; align-items:center; order:3; }
-    .brand .auto-btns .btn{ writing-mode:horizontal-tb; display:inline-flex; align-items:center; justify-content:center; width:auto; height:auto; padding:2px 8px; min-width:36px; font-size:9px; margin:0; line-height:1; }
-    .brand .auto-btns #btnAuto{ flex-direction:column; gap:1px; }
-    .brand .auto-btns #btnAuto .a-label{ writing-mode:horizontal-tb; font-size:9px; line-height:1; }
-    .brand .auto-btns #btnAuto .a-state{ writing-mode:horizontal-tb; font-size:9px; line-height:1; }
+    /* 橫版：自動+13秒掣(放籌碼區最左)，橫排細掣；文字唔改(自動上下排/13秒) */
+    .auto-btns{ display:flex; flex-direction:row; gap:2px; margin-top:0; align-items:center; order:0; flex:0 0 auto; }
+    .auto-btns .btn{ writing-mode:horizontal-tb; display:inline-flex; align-items:center; justify-content:center; width:auto; height:auto; padding:2px 8px; min-width:36px; font-size:9px; margin:0; line-height:1; }
+    .auto-btns #btnAuto{ flex-direction:column; gap:1px; }
+    .auto-btns #btnAuto .a-label{ writing-mode:horizontal-tb; font-size:9px; line-height:1; }
+    .auto-btns #btnAuto .a-state{ writing-mode:horizontal-tb; font-size:9px; line-height:1; }
     .topright{ grid-column:4 / 7; grid-row:1 / span 2; display:flex; flex-direction:column; align-items:flex-start; gap:4px; align-self:start; min-width:0; overflow:visible; padding-top:6px; }
     .topright .balance{ font-size:13px; }
     .topright .balance b{ font-size:18px; }
@@ -3428,10 +3428,10 @@ function placeTopBtns(){
   if(!autoWrap){ autoWrap=document.createElement('div'); autoWrap.id='autoBtns'; autoWrap.className='auto-btns'; }
   const land=window.matchMedia('(orientation:landscape)').matches;
   if(land){
-    if(tb.parentElement!==chips) chips.appendChild(tb);          // 洗牌留籌碼區
     if(auto.parentElement!==autoWrap) autoWrap.appendChild(auto); // 自動入 wrapper
     if(aint.parentElement!==autoWrap) autoWrap.appendChild(aint); // 13秒入 wrapper
-    if(autoWrap.parentElement!==brand) brand.appendChild(autoWrap); // wrapper 插 brand-sub 下
+    if(autoWrap.parentElement!==chips) chips.insertBefore(autoWrap, chips.firstChild); // 橫版：自動/13秒搬去籌碼區最左(籌碼左邊)
+    if(tb.parentElement!==chips) chips.appendChild(tb);          // 洗牌留籌碼區
   } else {
     if(auto.parentElement!==tb) tb.appendChild(auto);            // 直版：自動回 topBtns
     if(aint.parentElement!==tb) tb.appendChild(aint);            // 13秒回 topBtns
