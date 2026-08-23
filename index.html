@@ -213,7 +213,16 @@
   .bet.luck7{border-color:#ff5d8f; color:#ffb3cd;}
 
   /* 籌碼行：左標籤 / 中籌碼 / 右剩餘牌數 */
-  .chips-row{display:flex; align-items:center; gap:8px; padding:4px 10px 2px;}
+  .chips-row{display:flex; align-items:center; gap:3px; padding:4px 10px 2px; flex-wrap:nowrap; overflow-x:auto;}
+  .chips-row .btn, .chips-row .btn.shuffle{margin:0; flex:0 0 auto; width:35px; height:35px; padding:2px; display:flex; align-items:center; justify-content:center; box-sizing:border-box;}
+  .chips-row .btn.auto-int-btn{margin-left:0;}
+  .top-btns{display:flex; gap:3px; margin-top:2px; order:3;}
+  .top-btns .btn, .top-btns .btn.shuffle{margin:0; flex:0 0 auto; width:35px; height:35px; padding:2px; display:flex; align-items:center; justify-content:center; box-sizing:border-box;}
+  .vbtn{writing-mode:vertical-rl; text-orientation:upright; line-height:1.1; padding:4px 6px; letter-spacing:1px;}
+  .vbtn .hnum{writing-mode:horizontal-tb; text-orientation:initial; letter-spacing:0;}
+  .vnum{display:flex; flex-direction:column; align-items:center; justify-content:center; line-height:1; padding:3px 6px;}
+  .vnum .hnum{writing-mode:horizontal-tb; text-orientation:initial; letter-spacing:0;}
+  .vnum .vsec{writing-mode:vertical-rl; text-orientation:upright; font-size:9px; line-height:1; margin-top:1px;}
   .chips-label{font-size:11px; font-weight:700; color:var(--gold2); white-space:nowrap; opacity:.85;}
   .chips{flex:0 0 auto; display:flex; gap:3px; justify-content:flex-start; flex-wrap:nowrap; overflow-x:auto; max-width:129px; scrollbar-width:none; -ms-overflow-style:none;}
   .chips::-webkit-scrollbar{display:none;}
@@ -512,6 +521,7 @@
 
   /* ===== 打橫 landscape：純 CSS grid 重排，唔郁 DOM、唔改 id/邏輯 ===== */
   @media (orientation:landscape){
+  #cloudSlot{display:none;}
     .pred-row1 .freset{ margin-left:5px; }   /* 橫版清除掣距請投注5px（直版0px） */
     .app{
       display:grid;
@@ -631,6 +641,11 @@
     <div class="brand">
       <button id="btnLeaderboard" title="AI 排行榜" style="align-self:flex-start;margin:0;background:linear-gradient(90deg,#3a2d5c,#5a3d7c);color:#fff;border:none;padding:1px 1px;border-radius:6px;font-size:12px;line-height:1.3;cursor:pointer;letter-spacing:.5px;">🏆 AI排行榜<div style="font-size:9px;opacity:.75;letter-spacing:0;">每小時更新</div></button>
       <div class="brand-sub"><span id="shoeInfo"></span></div>
+      <div id="topBtns" class="top-btns">
+        <button class="btn shuffle vbtn" id="btnShuffle" title="重新洗牌">洗牌</button>
+        <button class="btn auto vbtn" id="btnAuto" title="自動開牌">自動</button>
+        <button class="btn auto-int-btn vnum" id="btnAutoInt"><span class="hnum">13</span><span class="vsec">秒</span></button>
+      </div>
     </div>
     <div class="topright">
       <div class="balance"><small>餘額</small><div><b id="balance">1,000,000</b></div></div>
@@ -642,9 +657,17 @@
   <div class="odds-row"></div>
 
   <div class="roadpanel">
-    <div style="display:flex;align-items:center;padding:4px 8px;position:relative;">
-      <div class="road-section-title" style="border:none;background:none;padding:0;">🔝 大路 BIG ROAD</div>
-      <button class="dealmode-btn" id="btnDealMode" style="position:absolute;left:50%;transform:translateX(-50%);">普通開牌 ▾</button>
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:4px 8px;">
+      <div class="road-section-title" style="border:none;background:none;padding:0;">🔝 大路</div>
+      <div style="display:flex;align-items:center;gap:4px;">
+        <button class="iconbtn chip-icon" id="btnStats" title="戰績">📊</button>
+        <button class="iconbtn chip-icon" id="btnAi" title="陪玩AI管理">🤖</button>
+        <button class="dealmode-btn" id="btnDealMode">普通開牌 ▾</button>
+        <button class="iconbtn chip-icon" id="btnDaily" title="每日免費籌碼">🎁</button>
+        <button class="iconbtn chip-icon" id="btnMute" title="音效">🔊</button>
+        <button class="iconbtn chip-icon" id="btnLlm" title="AI腦即時聊天(本地Ollama)">🧠</button>
+        <button class="iconbtn chip-icon" id="btnLimits" title="限紅自選">🎚</button>
+      </div>
     </div>
     <div class="road-big">
       <canvas id="bigCanvas" width="540" height="110"></canvas>
@@ -821,23 +844,13 @@
     <div class="chip c10k" data-chip="10000">10K</div>
     <div class="chip c50k" data-chip="50000">50K</div>
   </div>
-  <button class="iconbtn chip-icon" id="btnDaily" title="每日免費籌碼">🎁</button>
-  <button class="iconbtn chip-icon" id="btnStats" title="戰績">📊</button>
-  <button class="iconbtn chip-icon" id="btnMute" title="音效">🔊</button>
-  <button class="iconbtn chip-icon" id="btnLlm" title="AI腦即時聊天(本地Ollama)">🧠</button>
-  <button class="iconbtn chip-icon" id="btnAi" title="陪玩AI管理">🤖</button>
-  <button class="iconbtn chip-icon" id="btnLimits" title="限紅自選">🎚</button>
+  <button class="btn clear vbtn" id="btnClear">清除</button>
+  <button class="btn repeat vbtn" id="btnRepeat">重複</button>
+  <button class="btn deal vbtn" id="btnDeal">發牌</button>
   </div>
 
-  <div class="controls">
-    <button class="btn shuffle" id="btnShuffle" title="重新洗牌">洗牌</button>
-    <button class="btn auto" id="btnAuto" title="自動開牌">自動:關</button>
-    <button class="btn auto-int-btn" id="btnAutoInt">🌟 中 13秒</button>
-    <button class="btn clear" id="btnClear">清除</button>
-    <button class="btn repeat" id="btnRepeat">重複</button>
-    <button class="btn deal" id="btnDeal">發牌</button>
   </div>
-  </div>
+
 </div>
 
 <div class="toast" id="toast"></div>
