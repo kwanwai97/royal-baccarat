@@ -593,12 +593,15 @@
   display:flex; flex-direction:row; flex-wrap:wrap; align-items:flex-start; gap:2px;
   align-self:start; padding:1px 1px 0;       /* 左右緊貼唔漏空 */
 }
-.follow-text{ display:flex; flex-direction:column; gap:2px; flex-basis:100%; min-width:0; order:3; }  /* 落 5掣底緊貼 */
-.follow-right .fbtn{ order:2; }
-.follow-right .limit-row{ order:2; }
+/* 橫版5掣+重置分兩層：頂層跟預測/反預測/+-次；底層跟旺AI/反旺AI/重置；每層3個 */
+.follow-right .fbtn, .follow-right .limit-row{ order:1; flex:0 0 auto; flex-basis:calc(33% - 2px); max-width:calc(33% - 2px); }
+.follow-right .fbtn:nth-of-type(3){ order:1; }            /* +-次 頂層第3 */
+.follow-right .btnFollowHot{ order:2; }                   /* 跟旺AI 底層第1 */
+.follow-right .btnFollowHotRev{ order:2; }                /* 反旺AI 底層第2 */
+.follow-text{ display:flex; flex-direction:column; gap:2px; flex-basis:100%; min-width:0; order:3; }  /* 跟注文字落最底 */
 .follow-right .fbtn{
   writing-mode:vertical-rl; text-orientation:upright;
-  min-width:24px; height:30px; flex:0 0 auto;   /* 收細：30→24闊、34→30高 */
+  min-width:24px; height:30px; flex:0 0 auto;
   padding: 0 1px 1px 1px;
   font-size:10px;
   line-height: 1;
@@ -612,7 +615,7 @@
   writing-mode:vertical-rl; text-orientation:upright; 
   flex-direction:row; flex-wrap:nowrap; 
   align-items:center; justify-content:center; gap:2px; 
-  flex:0 0 28px; min-width:0; width:auto; height:30px;   /* 收細：36→28闊、34→30高 */
+  flex:0 0 28px; min-width:0; width:auto; height:30px;
   padding:0 1px;
   margin:0; box-sizing:border-box;
 }
