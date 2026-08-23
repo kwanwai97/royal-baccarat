@@ -815,8 +815,10 @@
         <div class="pred-row3"><span class="ps-item pred-log" id="predLog"></span><span class="ps-item pred-perm" id="predPerm">永久 中 0 / 輸 0</span></div>
       </div>
     </div>
-    <!-- 右半：6掣兩層(橫版) 上:跟旺AI/反旺AI/±次數 下:跟預測/反預測/重置 -->
+    <!-- 右半：打橫一行 5 張卡 (4掣 + 次數) + 底下跟隨次數文字 -->
     <div class="follow-right">
+      <button class="btn fbtn" id="btnFollowPredict2" title="跟預測：長期跟模式，每局自動跟預測建議邊">跟預測</button>
+      <button class="btn fbtn" id="btnFollowRev" title="反預測：長期跟模式，每局自動跟預測相反邊">反預測</button>
       <button class="btn fbtn" id="btnFollowHot" title="跟旺AI：長期跟模式，每局自動跟連勝最高AI嘅主注邊">跟旺<span class="ai-h">AI</span></button>
       <button class="btn fbtn" id="btnFollowHotRev" title="反旺AI：長期跟模式，每局自動跟連勝最高AI嘅相反邊">反旺<span class="ai-h">AI</span></button>
       <div class="limit-row">
@@ -824,8 +826,6 @@
         <span class="limit-val" id="followLimitVal">3</span>
         <button class="btn fstep" id="btnLimDown" title="減1">−</button>
       </div>
-      <button class="btn fbtn" id="btnFollowPredict2" title="跟預測：長期跟模式，每局自動跟預測建議邊">跟預測</button>
-      <button class="btn fbtn" id="btnFollowRev" title="反預測：長期跟模式，每局自動跟預測相反邊">反預測</button>
       <div class="follow-text">
         <div id="followStatus" class="follow-status"></div>
         <div class="follow-stats"><span class="ps-item">跟注 <b id="followTotal">0</b> 次</span><span class="ps-wl">勝 <b id="followW">0</b> / 負 <b id="followL">0</b><button class="btn freset" id="btnFollowReset" title="重置跟注統計：清空 N次/勝/負（跨靴累計，手動清）">重置</button></span></div>
