@@ -584,7 +584,9 @@
     .follow-wrap{
       display:contents;
     }
-.follow-left{ grid-column:2 / 3; grid-row:1 / span 2; min-width:0; padding:6px 0 0 1px; }
+.follow-left{ grid-column:2 / 3; grid-row:1 / span 2; min-width:0; padding:6px 0 0 1px; display:flex; flex-direction:column; align-items:flex-start; }
+/* 橫版：跟注文字搬入預測系統底部，打橫一行 */
+.follow-left .follow-text{ display:flex; flex-direction:row; flex-wrap:wrap; gap:6px; flex-basis:auto; min-width:0; order:3; margin-top:2px; }
 /* 打橫：預測系統區貼第二行最闊位(唔撐開、唔轉行)，保持三行位置唔變 */
 .follow-left .pred-system{ width:max-content; max-width:320px; }
 .follow-left .pred-side{ margin-left:2px; }   /* 取消「請投注」撐開，第一行緊湊貼標題 */
@@ -3375,8 +3377,15 @@ function placeFollow(){
   const rp=document.querySelector('.roadpanel');
   if(!fr||!fw||!rp) return;
   const land=window.matchMedia('(orientation:landscape)').matches;
-  // 直版/橫版都留喺 follow-wrap：橫版靠 grid 定位到頂部右欄(預測系統右)，唔再搬去路單底
+  // 直版/橫版都留喺 follow-wrap（5掣位置靠 grid 定位）
   if(fr.parentElement!==fw) fw.appendChild(fr);
+  // 跟注文字：橫版搬入預測系統(.follow-left)底部打橫一行；直版留返5掣(.follow-right)底
+  const ft=document.querySelector('.follow-text');
+  const fl=document.querySelector('.follow-left');
+  if(ft&&fl){
+    if(land){ if(ft.parentElement!==fl) fl.appendChild(ft); }
+    else { if(ft.parentElement!==fr) fr.appendChild(ft); }
+  }
 }
 placeFollow();
 window.addEventListener('resize', placeFollow);
