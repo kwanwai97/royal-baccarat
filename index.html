@@ -309,7 +309,7 @@
 .pred-row2 .plog-dot{ font-style:normal; font-size:10px; font-weight:800; line-height:1; }
 .pred-row2 .plog-empty{ color:rgba(255,255,255,.25); }
 .follow-right{flex:1 1 50%; display:flex; flex-direction:row; flex-wrap:wrap; gap:2px; align-items:flex-start; justify-content:flex-start; padding-right:6px;}
-.follow-text{display:contents;}
+.follow-text{display:flex; flex-direction:row; flex-wrap:nowrap; align-items:center; gap:5px; font-size:9px; color:#cfe9d8; margin-top:2px;}
 
 /* 五個掣統一尺寸：4個策略掣 flex:1 1 0 平均闊度；第5個次數掣固定36px；高度統一32px */
 .follow-right .fbtn{
@@ -3396,12 +3396,11 @@ function placeFollow(){
   const land=window.matchMedia('(orientation:landscape)').matches;
   // 直版/橫版都留喺 follow-wrap（5掣位置靠 grid 定位）
   if(fr.parentElement!==fw) fw.appendChild(fr);
-  // 跟注文字：橫版搬入預測系統(.follow-left)底部打橫一行；直版留返5掣(.follow-right)底
+  // 跟注文字：橫版/直版都搬入預測系統(.follow-left)底部打橫一行（取消直版兩項分行）
   const ft=document.querySelector('.follow-text');
   const fl=document.querySelector('.follow-left');
   if(ft&&fl){
-    if(land){ if(ft.parentElement!==fl) fl.appendChild(ft); }
-    else { if(ft.parentElement!==fr) fr.appendChild(ft); }
+    if(ft.parentElement!==fl) fl.appendChild(ft);
   }
   // 橫版：重置掣做6掣底層(搬入 follow-right)；直版留返 follow-stats「勝/負」後(原樣，唔改HTML)
   const reset=document.getElementById('btnFollowReset');
