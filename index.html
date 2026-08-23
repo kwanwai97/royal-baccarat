@@ -529,7 +529,7 @@
     .pred-row1 .freset{ margin-left:5px; }   /* 橫版清除掣距請投注5px（直版0px） */
     .app{
       display:grid;
-      grid-template-columns:16.667fr 16.667fr 16.667fr 16.667fr 16.667fr 16.667fr;   /* 左右50/50：左3欄共50% 右3欄共50% */
+      grid-template-columns:auto 16.667fr 16.667fr 16.667fr 16.667fr 16.667fr;   /* 第1欄(auto)=排行榜內容闊度，預測系統跟住左移緊貼；右5欄各1/6 */
       grid-template-rows:auto auto auto auto auto auto;
       align-content:start;                /* 整體貼頂 */
       align-items:start;
