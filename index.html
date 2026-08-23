@@ -219,6 +219,9 @@
   .top-btns{display:flex; gap:3px; margin-top:2px; order:3;}
   .top-btns .btn, .top-btns .btn.shuffle{margin:0; flex:0 0 auto; width:35px; height:35px; padding:2px; display:flex; align-items:center; justify-content:center; box-sizing:border-box;}
   .vbtn{writing-mode:vertical-rl; text-orientation:upright; line-height:1.1; padding:4px 6px; letter-spacing:1px;}
+  .btn.auto.vbtn{writing-mode:horizontal-tb; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px;}
+  .btn.auto .a-label{writing-mode:vertical-rl; text-orientation:upright; line-height:1.1;}
+  .btn.auto .a-state{writing-mode:horizontal-tb; font-size:10px;}
   .vbtn .hnum{writing-mode:horizontal-tb; text-orientation:initial; letter-spacing:0;}
   .vnum{display:flex; flex-direction:column; align-items:center; justify-content:center; line-height:1; padding:3px 6px;}
   .vnum .hnum{writing-mode:horizontal-tb; text-orientation:initial; letter-spacing:0;}
@@ -643,7 +646,7 @@
       <div class="brand-sub"><span id="shoeInfo"></span></div>
       <div id="topBtns" class="top-btns">
         <button class="btn shuffle vbtn" id="btnShuffle" title="重新洗牌">洗牌</button>
-        <button class="btn auto vbtn" id="btnAuto" title="自動開牌">自動</button>
+        <button class="btn auto vbtn" id="btnAuto" title="自動開牌"><span class="a-label">自動</span><span class="a-state">關</span></button>
         <button class="btn auto-int-btn vnum" id="btnAutoInt"><span class="hnum">13</span><span class="vsec">秒</span></button>
       </div>
     </div>
@@ -3088,23 +3091,24 @@ function autoTick(gen){
 }
 // 自動間隔：單一按鈕點擊循環四狀態（極快3/快7/中13/慢18秒）
 const AUTO_SPEEDS=[
-  {ms:3000, label:'極 3秒'},
-  {ms:7000, label:'快 7秒'},
-  {ms:13000,label:'中 13秒'},
-  {ms:20000,label:'慢 18秒'}
+  {ms:3000, sec:'3'},
+  {ms:7000, sec:'7'},
+  {ms:13000,sec:'13'},
+  {ms:20000,sec:'18'}
 ];
-let autoSpeedIdx=2;   // 預設「中 13秒」
+let autoSpeedIdx=2;   // 預設 13秒
 (function(){
   const btn=document.getElementById('btnAutoInt'); if(!btn) return;
+  const hnum=btn.querySelector('.hnum');
   function refresh(){
     autoInterval=AUTO_SPEEDS[autoSpeedIdx].ms;
-    btn.textContent=AUTO_SPEEDS[autoSpeedIdx].label;
+    if(hnum) hnum.textContent=AUTO_SPEEDS[autoSpeedIdx].sec;
   }
   refresh();
   btn.addEventListener('click', function(){
     autoSpeedIdx=(autoSpeedIdx+1)%AUTO_SPEEDS.length;
     refresh();
-    showToast('自動間隔：'+AUTO_SPEEDS[autoSpeedIdx].label);
+    showToast('自動間隔：'+AUTO_SPEEDS[autoSpeedIdx].sec+'秒');
   });
 })();
 function startAuto(){
@@ -3116,11 +3120,13 @@ function stopAuto(){
   autoGen++; autoOn=false;                       // 失效所有在途循環
   autoTimer=null;
   const b=document.getElementById('btnAuto');
-  b.textContent='自動:關'; b.classList.remove('on'); hideTableChat();
+  const st=b.querySelector('.a-state'); if(st) st.textContent='關';
+  b.classList.remove('on'); hideTableChat();
 }
 document.getElementById('btnAuto').addEventListener('click',function(){
   if(autoTimer){ stopAuto(); showToast('⏹ 自動開牌已停止'); return; }
-  this.classList.add('on'); this.textContent='自動:開';
+  this.classList.add('on');
+  const st=this.querySelector('.a-state'); if(st) st.textContent='開';
   startAuto();
 });
 document.getElementById('btnShuffle').addEventListener('click',()=>{ if(dealing) return; doShuffle().then(()=>showToast('🔀 已重新洗牌並清空路單')); });
