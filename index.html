@@ -603,9 +603,9 @@
   display:flex; flex-direction:row; flex-wrap:wrap; align-items:flex-start; gap:2px;
   align-self:start; padding:6px 1px 0;       /* 頂部6px同其他區水平空間一致 */
 }
-/* 橫版6掣兩層：頂層跟旺AI/反旺AI/±次數；底層跟預測/反預測/重置；每層3個各1/3欄 */
-.follow-right .btnFollowHot, .follow-right .btnFollowHotRev, .follow-right .limit-row{ order:1; flex:0 0 auto; flex-basis:calc(33% - 2px); max-width:calc(33% - 2px); }
-.follow-right .btnFollowPredict2, .follow-right .btnFollowRev, .follow-right #btnFollowReset{ order:2; flex:0 0 auto; flex-basis:calc(33% - 2px); max-width:calc(33% - 2px); }
+/* 橫版6掣兩層：上層跟旺AI/反旺AI/±次數；下層跟預測/反預測/重置；每層3個各1/3欄 */
+.follow-right .btnFollowHot, .follow-right .btnFollowHotRev, .follow-right .limit-row{ order:0; flex:0 0 auto; flex-basis:calc(33% - 2px); max-width:calc(33% - 2px); }
+.follow-right .btnFollowPredict2, .follow-right .btnFollowRev, .follow-right #btnFollowReset{ order:1; flex:0 0 auto; flex-basis:calc(33% - 2px); max-width:calc(33% - 2px); }
 /* 重置掣做6掣之一：直排細掣，同fbtn一致 */
 .follow-right #btnFollowReset{ writing-mode:vertical-rl; text-orientation:upright; min-width:24px; height:30px; padding:0 1px 1px 1px; font-size:10px; line-height:1; justify-content:flex-start; align-items:center; }
 .follow-right .fbtn{
@@ -624,7 +624,7 @@
   writing-mode:vertical-rl; text-orientation:upright; 
   flex-direction:row; flex-wrap:nowrap; 
   align-items:center; justify-content:center; gap:2px; 
-  flex:0 0 28px; min-width:0; width:auto; height:30px;
+  flex:0 0 auto; flex-basis:calc(33% - 2px); max-width:calc(33% - 2px); min-width:0; width:auto; height:30px;
   padding:0 1px;
   margin:0; box-sizing:border-box;
 }
