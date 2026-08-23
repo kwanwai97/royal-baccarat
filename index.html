@@ -550,8 +550,8 @@
     .odds-row{ display:none; }            /* 勝率行：打橫收，避免空白 */
     /* 右欄：投注→籌碼→洗牌 各自一格，貼頂對齊 */
     .h-left{ display:contents; }
-    .bets{ grid-column:4 / 7; grid-row:3; align-self:start; }     /* 右欄投注區 3×3：頂欄(行1-2)下 */
-    .chips-row{ grid-column:4 / 7; grid-row:4; align-self:start; } /* 右欄中：籌碼區 */
+    .bets{ grid-column:4 / 7; grid-row:4; align-self:start; }     /* 右欄投注區：籌碼區之下 */
+    .chips-row{ grid-column:4 / 7; grid-row:3; align-self:start; } /* 右欄頂：籌碼區搬去投注區上方 */
     /* 橫版：左上三掣(#topBtns)已按 orientation 搬入籌碼區，跟籌碼區水平並排 */
     .chips-row #topBtns{ order:0; margin-top:0; display:flex; gap:3px; align-items:center; }
     .controls{ grid-column:4 / 7; grid-row:5; align-self:start; padding:3px 6px 0; gap:4px; }  /* 右欄底：洗牌/發牌區 */
@@ -564,6 +564,8 @@
     /* 打橫：同直板一樣——限4個籌碼顯示，其餘(10K/50K)靠橫向推拉揭示，唔隱藏任何籌碼 */
     .chips-row .chips{ flex-wrap:wrap; }
     .chips-row .chip.c50k{ display:flex; }   /* 唔再隱藏50K，改由推拉揭示 */
+    /* 橫版：籌碼區內四個掣(清除/重複/發牌/洗牌)文字打橫；其他位置不變 */
+    .chips-row .vbtn{ writing-mode:horizontal-tb; text-orientation:initial; flex-direction:row; }
     /* 打橫下三路：derived-row 改回 flex:1 均分(同直版)，三張自動撐滿高度、貼住珠盤路底對齊；canvas 跟 height:100% */
     .road-derived{ display:flex; flex-direction:column; }
     .derived-row{ flex:1 1 0; min-height:0; }
