@@ -340,6 +340,14 @@
   }
   .follow-right .auto-int-btn .hnum, .follow-right .auto-int-btn .vsec{ writing-mode:horizontal-tb; font-size:11px; line-height:1; }
   .follow-right .auto .a-label, .follow-right .auto .a-state{ writing-mode:horizontal-tb; font-size:11px; line-height:1; }
+  /* 直版：AI排行榜搬到跟注區最底(13秒右)，統一 .fbtn 尺寸 */
+  .follow-right #btnLeaderboard{
+    flex:1 1 0; min-width:0;
+    height:34px; padding:6px 4px; font-size:11px; font-weight:800; line-height:1.15;
+    text-align:center; white-space:nowrap; letter-spacing:0;
+    border-radius:8px; border:1px solid #ffb347; background:linear-gradient(180deg,#ffd479,#e6a417); color:#241a00; opacity:.7; box-sizing:border-box;
+    align-self:stretch;
+  }
 }
 .follow-right .limit-row{
   flex:0 0 34px; min-width:0;
@@ -3482,6 +3490,7 @@ function placeTopBtns(){
   const aint=document.getElementById('btnAutoInt');
   const shuf=document.getElementById('btnShuffle');
   if(!tb||!brand||!chips||!deal||!auto||!aint||!shuf) return;
+  const lb=document.getElementById('btnLeaderboard');
   let autoWrap=document.getElementById('autoBtns');
   if(!autoWrap){ autoWrap=document.createElement('div'); autoWrap.id='autoBtns'; autoWrap.className='auto-btns'; }
   const land=window.matchMedia('(orientation:landscape)').matches;
@@ -3490,12 +3499,14 @@ function placeTopBtns(){
     if(aint.parentElement!==autoWrap) autoWrap.appendChild(aint); // 13秒入 wrapper
     if(autoWrap.parentElement!==chips) chips.insertBefore(autoWrap, chips.firstChild); // 橫版：自動/13秒搬去籌碼區最左(籌碼左邊)
     if(tb.parentElement!==chips) chips.appendChild(tb);          // 洗牌留籌碼區
+    if(lb && lb.parentElement!==brand) brand.appendChild(lb);     // 橫版：AI排行榜留左上角
   } else {
-    // 直版：自動+13秒搬去 follow-right 最底(跟注區下、緊貼投注區)；洗牌留 topBtns；autoBtns wrapper 唔使
+    // 直版：自動+13秒+AI排行榜搬去 follow-right 最底；洗牌留 topBtns；autoBtns wrapper 唔使
     const fr=document.querySelector('.follow-right');
     if(fr){
       if(auto.parentElement!==fr) fr.appendChild(auto);
       if(aint.parentElement!==fr) fr.appendChild(aint);
+      if(lb && lb.parentElement!==fr) fr.appendChild(lb);         // AI排行榜排13秒右
     }
     if(tb.parentElement!==brand) brand.appendChild(tb);          // topBtns 留 brand(得洗牌)
     if(shuf.parentElement!==chips) chips.appendChild(shuf);      // 直版：洗牌搬去籌碼區(發牌右)
