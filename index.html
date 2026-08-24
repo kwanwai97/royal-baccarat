@@ -308,15 +308,6 @@
 .pred-row3 .pred-perm{ color:#ffd479; font-weight:700; white-space:nowrap; }
 .pred-row2 .plog-dot{ font-style:normal; font-size:10px; font-weight:800; line-height:1; }
 .pred-row2 .plog-empty{ color:rgba(255,255,255,.25); }
-/* 5行固定：行4=跟路單狀態, 行5=預測/中輸/永久/跟注勝負(由右半搬入) */
-.pred-road{ display:flex; align-items:center; gap:2px; min-height:12px; }
-.pred-road .follow-status{ color:#7fffb0; font-size:10px; white-space:normal; text-align:left; margin:0; min-height:10px; }
-.pred-record{ display:flex; flex-wrap:wrap; gap:3px 8px; align-items:center; font-size:10px; color:#9fe6b8; border-top:1px dashed rgba(255,212,121,.25); padding-top:2px; margin-top:1px; }
-.pred-record .ps-item{ white-space:nowrap; }
-.pred-record b{ color:#ffd479; font-weight:800; }
-.pred-record .pred-perm{ color:#ffd479; font-weight:700; white-space:nowrap; }
-.pred-record .ps-wl{ display:inline-flex; align-items:center; gap:3px; flex-wrap:nowrap; white-space:nowrap; }
-.pred-record .btn.freset{ flex:0 0 auto; margin:0 0 0 2px; padding:1px 6px; font-size:9px; font-weight:700; color:#ffd9a8; background:rgba(255,120,80,0.16); border:1px solid rgba(255,150,110,0.5); border-radius:8px; cursor:pointer; white-space:nowrap; }
 .follow-right{flex:1 1 50%; display:flex; flex-direction:row; flex-wrap:wrap; gap:2px; align-items:flex-start; justify-content:flex-start; padding-right:6px;}
 .follow-text{display:flex; flex-direction:row; flex-wrap:nowrap; align-items:center; gap:6px; white-space:nowrap; order:-1; margin:2px 0;}   /* 直版：獨立成整行(投注區#bets頂, 閒P正上方), column flex 下 order:-1 排最前; 唔再關聯跟注掣 */
 /* 直版 .follow-text 被 JS 搬入 #bets, 原有 .follow-right scoped rule 失效 → 呢度補返狀態+統計成一行(狀態左統計右) */
@@ -621,8 +612,8 @@
 .follow-left{ grid-column:2 / 3; grid-row:1 / span 2; min-width:0; padding:6px 0 0 1px; display:flex; flex-direction:column; align-items:flex-start; }
 /* 橫版：跟注文字搬入預測系統底部，打橫一行(取消疊牌)，緊貼預測系統、縮細 */
 .follow-left .follow-text{ display:flex; flex-direction:row; flex-wrap:nowrap; align-items:center; gap:5px; flex-basis:auto; min-width:0; order:3; margin-top:1px; font-size:9px; }
-/* 打橫：預測系統區貼第二行最闊位，5行排版，放寬闊度容納跟注/勝負 */
-.follow-left .pred-system{ width:max-content; max-width:320px; }
+/* 打橫：預測系統區貼第二行最闊位(唔撐開、唔轉行)，保持三行位置唔變 */
+.follow-left .pred-system{ width:max-content; max-width:200px; }
 .follow-left .pred-side{ margin-left:2px; }   /* 取消「請投注」撐開，第一行緊湊貼標題 */
 .follow-right{
   grid-column:3 / 4; grid-row:1 / span 2;   /* 橫版：預測系統右邊緊貼(2/3→3/4)，唔重疊 */
@@ -843,23 +834,19 @@
   </div>
 
   <div class="follow-wrap">
-    <!-- 左半：預測系統（5行固定空間，唔收起） -->
+    <!-- 左半：預測系統（固定空間，唔收起） -->
     <div class="follow-left">
       <div class="pred-system">
         <div class="pred-row1"><span class="pred-ico">🔮</span><span class="pred-title">預測系統</span><span class="pred-side" id="predSide">請投注 —</span><button class="btn freset" id="btnPredPermReset" title="清除永久勝負紀錄（只清永久，唔影響60局/最近6次紀錄）">清除</button></div>
-        <div class="pred-row2"><span class="ps-item">勝率 <b id="predWin">—</b></span></div>
-        <div class="pred-row3"><span class="ps-item pred-log" id="predLog"></span></div>
-        <div class="pred-road"><div id="followStatus" class="follow-status"></div></div>
-        <div class="pred-record">
+        <div class="pred-row2">
+          <span class="ps-item">勝率 <b id="predWin">—</b></span>
           <span class="ps-item">預測 <b id="predCnt">0</b> 鋪</span>
           <span class="ps-item">中 <b id="predW">0</b> / 輸 <b id="predL">0</b></span>
-          <span class="ps-item pred-perm" id="predPerm">永久 中 0 / 輸 0</span>
-          <span class="ps-item">跟注 <b id="followTotal">0</b> 次</span>
-          <span class="ps-wl">勝 <b id="followW">0</b> / 負 <b id="followL">0</b><button class="btn freset" id="btnFollowReset" title="重置跟注統計：清空 N次/勝/負（跨靴累計，手動清）">重置</button></span>
         </div>
+        <div class="pred-row3"><span class="ps-item pred-log" id="predLog"></span><span class="ps-item pred-perm" id="predPerm">永久 中 0 / 輸 0</span></div>
       </div>
     </div>
-    <!-- 右半：打橫一行 5 張卡 (4掣 + 次數)；跟路單/跟注統計已搬入預測系統 -->
+    <!-- 右半：打橫一行 5 張卡 (4掣 + 次數) + 底下跟隨次數文字 -->
     <div class="follow-right">
       <button class="btn fbtn" id="btnFollowPredict2" title="跟預測：長期跟模式，每局自動跟預測建議邊">跟預測</button>
       <button class="btn fbtn" id="btnFollowRev" title="反預測：長期跟模式，每局自動跟預測相反邊">反預測</button>
@@ -869,6 +856,10 @@
         <button class="btn fstep" id="btnLimUp" title="加1">＋</button>
         <span class="limit-val" id="followLimitVal">3</span>
         <button class="btn fstep" id="btnLimDown" title="減1">−</button>
+      </div>
+      <div class="follow-text">
+        <div id="followStatus" class="follow-status"></div>
+        <div class="follow-stats"><span class="ps-item">跟注 <b id="followTotal">0</b> 次</span><span class="ps-wl">勝 <b id="followW">0</b> / 負 <b id="followL">0</b><button class="btn freset" id="btnFollowReset" title="重置跟注統計：清空 N次/勝/負（跨靴累計，手動清）">重置</button></span></div>
       </div>
     </div>
   </div>
