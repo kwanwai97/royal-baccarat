@@ -295,7 +295,9 @@
   .follow-wrap{ gap:0; margin-bottom:0; }  /* align-items 留 stretch 令頂5掣貼頂 */
   .follow-right{ align-content:space-between; }  /* 換行三行：頂行貼頂、中行(5圖案掣)中間、底行貼底(投注區) */
   .follow-right > .fbtn{ order:0; }                                  /* 頂5掣排第一行 */
-  .follow-mid{ flex:0 0 100%; display:flex; flex-direction:row; flex-wrap:nowrap; align-items:center; justify-content:center; gap:6px; order:1; }  /* 中間一行：100%寬強制換行到第二行，置中排5圖案掣 */
+  .follow-mid{ flex:0 0 100%; display:flex; flex-direction:row; flex-wrap:nowrap; align-items:center; justify-content:center; gap:6px; order:1; }  /* 中間一行：100%寬強制換行到第二行，置中排5圖案掣+普通開牌+剩餘數 */
+  .follow-mid #shoeInfo{ font-size:10px; color:#ffd479; font-weight:800; white-space:nowrap; }
+  .follow-mid #btnDealMode{ flex:0 0 auto; }
   .follow-right > #btnMute, .follow-right > #btnAuto, .follow-right > #btnAutoInt, .follow-right > #btnLeaderboard{ order:2; }  /* 底層掣排最後一行(貼投注區) */
   .follow-mid .iconbtn{ flex:0 0 auto; }
   .bets{ padding-top:0; }
@@ -3516,6 +3518,8 @@ function placeTopBtns(){
   const roadTools=document.getElementById('roadTools');
   if(!tb||!brand||!chips||!deal||!auto||!aint||!shuf) return;
   const lb=document.getElementById('btnLeaderboard');
+  const dealMode=document.getElementById('btnDealMode');
+  const shoeInfo=document.getElementById('shoeInfo');
   let autoWrap=document.getElementById('autoBtns');
   if(!autoWrap){ autoWrap=document.createElement('div'); autoWrap.id='autoBtns'; autoWrap.className='auto-btns'; }
   const land=window.matchMedia('(orientation:landscape)').matches;
@@ -3538,6 +3542,9 @@ function placeTopBtns(){
       // 中間行 wrapper（只建立一次）
       let mid=document.getElementById('followMid');
       if(!mid){ mid=document.createElement('div'); mid.id='followMid'; mid.className='follow-mid'; fr.appendChild(mid); }
+      // 中間行：剩餘卡牌數目(最左) → 普通開牌 → 5圖案掣
+      if(shoeInfo && shoeInfo.parentElement!==mid) mid.appendChild(shoeInfo);
+      if(dealMode && dealMode.parentElement!==mid) mid.appendChild(dealMode);
       ['btnStats','btnDaily','btnLlm','btnLimits','btnAi'].forEach(id=>{
         const el=document.getElementById(id);
         if(el && el.parentElement!==mid) mid.appendChild(el);
