@@ -332,14 +332,18 @@
 /* 直版：自動開/13秒搬入 follow-right 最底，統一 .fbtn 尺寸；@media portrait 限定，橫版唔受 */
 @media (orientation:portrait){
   .follow-right .btn.auto, .follow-right .auto-int-btn{
-    flex:1 1 0; min-width:0;
-    height:34px; padding:6px 4px; font-size:11px; font-weight:800; line-height:1.15;
-    text-align:center; white-space:nowrap; letter-spacing:0;
+    flex:0 0 33px; min-width:33px; width:33px;
+    height:34px; padding:4px 1px; font-size:11px; font-weight:800; line-height:1;
+    text-align:center; letter-spacing:0;
     border-radius:8px; border:1px solid #ffb347; background:linear-gradient(180deg,#ffd479,#e6a417); color:#241a00; opacity:.7; box-sizing:border-box;
-    display:flex; flex-direction:row; align-items:center; justify-content:center; gap:2px;
   }
-  .follow-right .auto-int-btn .hnum, .follow-right .auto-int-btn .vsec{ writing-mode:horizontal-tb; font-size:11px; line-height:1; }
-  .follow-right .auto .a-label, .follow-right .auto .a-state{ writing-mode:horizontal-tb; font-size:11px; line-height:1; }
+  /* 自動開：文字垂直（自/動/關 由上到下） */
+  .follow-right .btn.auto{ display:flex; align-items:center; justify-content:center; writing-mode:vertical-rl; text-orientation:upright; }
+  .follow-right .auto .a-label, .follow-right .auto .a-state{ writing-mode:vertical-rl; text-orientation:upright; font-size:11px; line-height:1; }
+  /* 13秒：13上層、秒下層 */
+  .follow-right .auto-int-btn{ display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1px; }
+  .follow-right .auto-int-btn .hnum{ writing-mode:horizontal-tb; font-size:13px; font-weight:800; line-height:1; }
+  .follow-right .auto-int-btn .vsec{ writing-mode:horizontal-tb; font-size:9px; line-height:1; }
   /* 直版：AI排行榜搬到跟注區最底(13秒右)，統一 .fbtn 尺寸 */
   .follow-right #btnLeaderboard{
     flex:1 1 0; min-width:0;
