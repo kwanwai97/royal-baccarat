@@ -310,9 +310,9 @@
 .pred-row2 .plog-empty{ color:rgba(255,255,255,.25); }
 .follow-right{flex:1 1 50%; display:flex; flex-direction:row; flex-wrap:wrap; gap:2px; align-items:flex-start; justify-content:flex-start; padding-right:6px;}
 .follow-text{display:flex; flex-direction:row; flex-wrap:nowrap; align-items:center; gap:6px; white-space:nowrap; order:-1; margin:2px 0;}   /* 直版：獨立成整行(投注區#bets頂, 閒P正上方), column flex 下 order:-1 排最前; 唔再關聯跟注掣 */
-/* 直版 .follow-text 被 JS 搬入 #bets, 原有 .follow-right scoped rule 失效 → 呢度補返狀態+統計成一行(狀態左統計右) */
-.bets .follow-status, .bets .follow-stats{ display:inline-flex; flex:0 0 auto; flex-wrap:nowrap; white-space:nowrap; align-items:center; font-size:10px; }
-.bets .follow-text{ display:flex; flex-direction:row; flex-wrap:nowrap; }
+/* 直版(.bets)/橫版(.brand) .follow-text 被 JS 搬到呢兩區, 原 .follow-right scoped rule 失效 → 補返狀態+統計成一行(狀態左統計右), 字型統一10px */
+.bets .follow-status, .brand .follow-status, .bets .follow-stats, .brand .follow-stats{ display:inline-flex; flex:0 0 auto; flex-wrap:nowrap; white-space:nowrap; align-items:center; font-size:10px; }
+.bets .follow-text, .brand .follow-text{ display:flex; flex-direction:row; flex-wrap:nowrap; align-items:center; gap:6px; }
 
 /* 五個掣統一尺寸：4個策略掣 flex:1 1 0 平均闊度；第5個次數掣固定36px；高度統一32px */
 .follow-right .fbtn{
@@ -583,7 +583,7 @@
     /* 頂部3區：brand(左) | 跟注/預測(中) | 餘額+資金(右)，各佔2欄、緊貼慳位 */
     /* 用 display:contents 拆開 topbar，brand 同 topright 各自成 grid item */
     .topbar{ display:contents; }
-    .brand{ grid-column:1 / 2; grid-row:1; align-self:start; margin-left:0; flex-direction:column; align-items:flex-start; gap:2px 8px; font-size:13px; padding-top:6px; }
+    .brand{ grid-column:1 / 2; grid-row:1; align-self:start; margin-left:0; flex-direction:row; flex-wrap:wrap; align-items:center; gap:2px 8px; font-size:13px; padding-top:6px; }   /* 橫版：row 令 🏆排行榜+剩餘卡牌+跟注文字水平並排(最左) */
     .brand #btnLeaderboard{ font-size:11px; padding:1px 4px; }
     .brand-sub{ font-size:10px; }
     .brand-sub #shoeInfo{ font-size:12px; }
@@ -3413,7 +3413,11 @@ function placeFollow(){
   const ft=document.querySelector('.follow-text');
   const fl=document.querySelector('.follow-left');
   if(ft&&fl){
-    if(land){ if(ft.parentElement!==fl) fl.appendChild(ft); }
+    if(land){   // 橫版：文字搬去頂部最左, 同剩餘卡牌(.brand-sub)水平並排
+      const brand=document.querySelector('.brand');
+      const brandSub=document.querySelector('.brand-sub');
+      if(brand){ if(brandSub && brandSub.parentElement===brand && ft.parentElement!==brand){ brand.insertBefore(ft, brandSub.nextSibling); } else if(ft.parentElement!==brand){ brand.appendChild(ft); } }
+    }
     else {   // 直版：文字獨立，搬去投注區(#bets)頂(閒P正上方)，唔再關聯跟注掣區
       const bets=document.getElementById('bets');
       if(bets && ft.parentElement!==bets) bets.insertBefore(ft, bets.firstChild);
