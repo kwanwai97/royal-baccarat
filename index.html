@@ -611,13 +611,15 @@
 .follow-left .pred-system{ width:max-content; max-width:200px; }
 .follow-left .pred-side{ margin-left:2px; }   /* 取消「請投注」撐開，第一行緊湊貼標題 */
 .follow-right{
-  grid-column:3 / 4; grid-row:1 / span 2;   /* 橫版：預測系統右邊緊貼, 4掣上下兩層跨兩行 */
-  display:flex; flex-direction:row; flex-wrap:wrap; align-items:flex-start; gap:2px;
+  grid-column:3 / 4; grid-row:1 / 2;   /* 橫版：預測系統右邊緊貼, 一行掣唔跨兩行 */
+  display:flex; flex-direction:row; flex-wrap:nowrap; align-items:stretch; gap:2px;
   align-self:start; padding:6px 1px 0;
 }
-/* 橫版4個策略掣上下兩層(字打橫, 高46px同預測系統對齊): 上層跟預測/反預測, 下層跟旺AI/反旺AI; ±次數掣唔改動 */
-.follow-right .btnFollowPredict2, .follow-right .btnFollowRev{ order:1; flex:1 1 0; flex-basis:auto; max-width:none; writing-mode:horizontal-tb; text-orientation:initial; min-width:0; height:46px; padding:2px 4px; font-size:11px; line-height:1.1; justify-content:center; align-items:center; }
-.follow-right .btnFollowHot, .follow-right .btnFollowHotRev{ order:2; flex:1 1 0; flex-basis:auto; max-width:none; writing-mode:horizontal-tb; text-orientation:initial; min-width:0; height:46px; padding:2px 4px; font-size:11px; line-height:1.1; justify-content:center; align-items:center; }
+/* 橫版5掣一行水平並排(跟預測/反預測/跟旺AI/反旺AI/±次數), 字打橫, 高度同預測系統(46px)對齊 */
+.follow-right .btnFollowPredict2, .follow-right .btnFollowRev, .follow-right .btnFollowHot, .follow-right .btnFollowHotRev, .follow-right .limit-row{
+  order:0; flex:1 1 0; flex-basis:auto; max-width:none; writing-mode:horizontal-tb; text-orientation:initial;
+  min-width:0; height:46px; padding:2px 4px; font-size:11px; line-height:1.1; justify-content:center; align-items:center;
+}
 .follow-right .fbtn{
   writing-mode:horizontal-tb; text-orientation:initial;
   min-width:0; height:46px; flex:1 1 0;
@@ -634,13 +636,13 @@
     #followStatus{ text-align:left; }
     .follow-text{ text-align:left; }
 .follow-right .limit-row{
-  writing-mode:vertical-rl; text-orientation:upright; 
+  writing-mode:horizontal-tb; text-orientation:initial;
   flex-direction:row; flex-wrap:nowrap; 
   align-items:center; justify-content:center; gap:2px; 
-  flex:0 0 28px; min-width:0; width:auto; height:30px;
-  padding:0 1px;
+  flex:1 1 0; min-width:0; width:auto; height:46px;
+  padding:0 2px;
   margin:0; box-sizing:border-box;
-}   /* ±次數掣: 不改动, 維持直排細掣30px */
+}
 .follow-right .limit-row .fstep{ 
   writing-mode:vertical-rl; text-orientation:upright; 
   width:auto; flex:0 0 auto; padding:0; font-size:10px;
