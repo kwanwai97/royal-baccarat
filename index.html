@@ -382,12 +382,10 @@
 }
 .follow-right .follow-stats b{ color:#ffd479; font-weight:800; }
 .follow-right .follow-stats .ps-wl{ display:inline-flex; align-items:center; gap:4px; flex-wrap:nowrap; white-space:nowrap; }
-/* 重置掣(橫版在 .follow-stats 內 / 直版在 .bets 內) 統一細款打橫, 同統計字一致 */
-.follow-stats .btn.freset, .bets .btn.freset{
-  display:inline-flex; flex:0 0 auto; margin:0 0 0 4px; padding:1px 6px; font-size:10px; font-weight:700;
-  writing-mode:horizontal-tb; text-orientation:initial;
+.bets .btn.freset{   /* 直版重置掣被 JS 搬入 .follow-stats, 原 .follow-right scoped 失效 → 補返細款同統計統一 */
+  flex:0 0 auto; margin:0 0 0 4px; padding:1px 6px; font-size:10px; font-weight:700;
   color:#ffd9a8; background:rgba(255,120,80,0.16); border:1px solid rgba(255,150,110,0.5);
-  border-radius:8px; cursor:pointer; white-space:nowrap; align-items:center; justify-content:center;
+  border-radius:8px; cursor:pointer; white-space:nowrap;
 }
 .follow-right .btn.freset{
   flex:0 0 auto;
@@ -611,23 +609,23 @@
 .follow-left .pred-system{ width:max-content; max-width:200px; }
 .follow-left .pred-side{ margin-left:2px; }   /* 取消「請投注」撐開，第一行緊湊貼標題 */
 .follow-right{
-  grid-column:3 / 4; grid-row:1 / 2;   /* 橫版：預測系統右邊緊貼, 一行掣唔跨兩行 */
-  display:flex; flex-direction:row; flex-wrap:nowrap; align-items:stretch; gap:2px;
-  align-self:start; padding:6px 1px 0;
+  grid-column:3 / 4; grid-row:1 / span 2;   /* 橫版：預測系統右邊緊貼(2/3→3/4)，唔重疊 */
+  display:flex; flex-direction:row; flex-wrap:wrap; align-items:flex-start; gap:2px;
+  align-self:start; padding:6px 1px 0;       /* 頂部6px同其他區水平空間一致 */
 }
-/* 橫版5掣一行水平並排(跟預測/反預測/跟旺AI/反旺AI/±次數), 字打橫, 高度同預測系統(46px)對齊 */
-.follow-right .btnFollowPredict2, .follow-right .btnFollowRev, .follow-right .btnFollowHot, .follow-right .btnFollowHotRev, .follow-right .limit-row{
-  order:0; flex:1 1 0; flex-basis:auto; max-width:none; writing-mode:horizontal-tb; text-orientation:initial;
-  min-width:0; height:46px; padding:2px 4px; font-size:11px; line-height:1.1; justify-content:center; align-items:center;
-}
+/* 橫版6掣兩層：頂層跟旺AI/反旺AI/±次數；底層跟預測/反預測/重置；每層3個各1/3欄 */
+.follow-right .btnFollowHot, .follow-right .btnFollowHotRev, .follow-right .limit-row{ order:1; flex:0 0 auto; flex-basis:calc(33% - 2px); max-width:calc(33% - 2px); }
+.follow-right .btnFollowPredict2, .follow-right .btnFollowRev, .follow-right #btnFollowReset{ order:2; flex:0 0 auto; flex-basis:calc(33% - 2px); max-width:calc(33% - 2px); }
+/* 重置掣做6掣之一：直排細掣，同fbtn一致 */
+.follow-right #btnFollowReset{ writing-mode:vertical-rl; text-orientation:upright; min-width:24px; height:30px; padding:0 1px 1px 1px; font-size:10px; line-height:1; justify-content:flex-start; align-items:center; }
 .follow-right .fbtn{
-  writing-mode:horizontal-tb; text-orientation:initial;
-  min-width:0; height:46px; flex:1 1 0;
-  padding:2px 4px;
-  font-size:11px;
-  line-height:1.1;
-  justify-content:center;
-  align-items:center;
+  writing-mode:vertical-rl; text-orientation:upright;
+  min-width:24px; height:30px; flex:0 0 auto;
+  padding: 0 1px 1px 1px;
+  font-size:10px;
+  line-height: 1;
+  justify-content: flex-start;
+  align-items: center;
 }
     /* 跟注文字(狀態+統計)打橫一行、縮細、緊貼預測系統 */
     .follow-text #followStatus{ text-align:left; white-space:nowrap; flex-basis:auto; font-size:9px; }
@@ -636,11 +634,11 @@
     #followStatus{ text-align:left; }
     .follow-text{ text-align:left; }
 .follow-right .limit-row{
-  writing-mode:horizontal-tb; text-orientation:initial;
+  writing-mode:vertical-rl; text-orientation:upright; 
   flex-direction:row; flex-wrap:nowrap; 
   align-items:center; justify-content:center; gap:2px; 
-  flex:1 1 0; min-width:0; width:auto; height:46px;
-  padding:0 2px;
+  flex:0 0 28px; min-width:0; width:auto; height:30px;
+  padding:0 1px;
   margin:0; box-sizing:border-box;
 }
 .follow-right .limit-row .fstep{ 
@@ -3425,10 +3423,7 @@ function placeFollow(){
   const reset=document.getElementById('btnFollowReset');
   const wlItem=document.querySelector('.follow-stats .ps-wl');
   if(reset&&fr){
-    if(land){   // 橫版：重置掣移出6掣區, 放回統計輸贏(.follow-stats)後方打橫
-      const stats=document.querySelector('.follow-stats');
-      if(stats && reset.parentElement!==stats) stats.appendChild(reset);
-    }
+    if(land){ if(reset.parentElement!==fr) fr.appendChild(reset); }
     else { if(wlItem && reset.parentElement!==wlItem) wlItem.appendChild(reset); }
   }
 }
