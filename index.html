@@ -320,20 +320,6 @@
 .follow-text{display:flex; flex-direction:row; flex-wrap:nowrap; align-items:center; gap:6px; white-space:nowrap; order:-1; margin:2px 0;}   /* 直版：獨立成整行(投注區#bets頂, 閒P正上方), column flex 下 order:-1 排最前; 唔再關聯跟注掣 */
 /* 直版 .follow-text 被 JS 搬入 #bets, 原有 .follow-right scoped rule 失效 → 呢度補返狀態+統計成一行(狀態左統計右) */
 .bets .follow-status, .bets .follow-stats{ display:inline-flex; flex:0 0 auto; flex-wrap:nowrap; white-space:nowrap; align-items:center; font-size:10px; }
-/* 直版：自動開+13秒搬入 follow-right（跟預測/反預測下、貼投注區），同跟注掣同高同寬 */
-@media (orientation:portrait){
-  .follow-right #btnAuto,
-  .follow-right #btnAutoInt{
-    writing-mode:vertical-rl; text-orientation:upright;
-    width:30px; height:30px; padding:2px; margin:0;
-    font-size:11px; font-weight:700; line-height:1;
-    display:inline-flex; align-items:center; justify-content:center;
-    box-sizing:border-box; flex:0 0 auto;
-  }
-  .follow-right #btnAuto{ flex-direction:column; gap:1px; }
-  .follow-right #btnAuto .a-label,
-  .follow-right #btnAuto .a-state{ writing-mode:horizontal-tb; font-size:10px; line-height:1; }
-}
 .bets .follow-text{ display:flex; flex-direction:row; flex-wrap:nowrap; }
 
 /* 五個掣統一尺寸：4個策略掣 flex:1 1 0 平均闊度；第5個次數掣固定36px；高度統一32px */
@@ -712,6 +698,8 @@
       <div class="brand-sub"><span id="shoeInfo"></span></div>
       <div id="topBtns" class="top-btns">
         <button class="btn shuffle vbtn" id="btnShuffle" title="重新洗牌">洗牌</button>
+        <button class="btn auto vbtn" id="btnAuto" title="自動開牌"><span class="a-label">自動</span><span class="a-state">關</span></button>
+        <button class="btn auto-int-btn vnum" id="btnAutoInt"><span class="hnum">13</span><span class="vsec">秒</span></button>
       </div>
     </div>
     <div class="topright">
@@ -871,12 +859,10 @@
         </div>
       </div>
     </div>
-    <!-- 右半：打橫一行 5 張卡 (4掣 + 次數)；跟路單/跟注統計已搬入預測系統；自動開+13秒直版搬入此區貼投注區 -->
+    <!-- 右半：打橫一行 5 張卡 (4掣 + 次數)；跟路單/跟注統計已搬入預測系統 -->
     <div class="follow-right">
       <button class="btn fbtn" id="btnFollowPredict2" title="跟預測：長期跟模式，每局自動跟預測建議邊">跟預測</button>
       <button class="btn fbtn" id="btnFollowRev" title="反預測：長期跟模式，每局自動跟預測相反邊">反預測</button>
-      <button class="btn auto vbtn" id="btnAuto" title="自動開牌"><span class="a-label">自動</span><span class="a-state">關</span></button>
-      <button class="btn auto-int-btn vnum" id="btnAutoInt"><span class="hnum">13</span><span class="vsec">秒</span></button>
       <button class="btn fbtn" id="btnFollowHot" title="跟旺AI：長期跟模式，每局自動跟連勝最高AI嘅主注邊">跟旺<span class="ai-h">AI</span></button>
       <button class="btn fbtn" id="btnFollowHotRev" title="反旺AI：長期跟模式，每局自動跟連勝最高AI嘅相反邊">反旺<span class="ai-h">AI</span></button>
       <div class="limit-row">
@@ -3493,11 +3479,10 @@ function placeTopBtns(){
     if(autoWrap.parentElement!==chips) chips.insertBefore(autoWrap, chips.firstChild); // 橫版：自動/13秒搬去籌碼區最左(籌碼左邊)
     if(tb.parentElement!==chips) chips.appendChild(tb);          // 洗牌留籌碼區
   } else {
-    // 直版：自動/13秒留喺 follow-right（跟預測/反預測下、貼投注區），唔搬返 topBtns
-    if(auto.parentElement!==fr) fr.appendChild(auto);            // 自動入 follow-right
-    if(aint.parentElement!==fr) fr.appendChild(aint);            // 13秒入 follow-right
-    if(tb.parentElement!==brand) brand.appendChild(tb);          // 洗牌留 topBtns（brand 內）
-    if(shuf.parentElement!==tb) tb.appendChild(shuf);            // 直版：洗牌留 topBtns
+    if(auto.parentElement!==tb) tb.appendChild(auto);            // 直版：自動回 topBtns
+    if(aint.parentElement!==tb) tb.appendChild(aint);            // 13秒回 topBtns
+    if(tb.parentElement!==brand) brand.appendChild(tb);          // 自動/13秒回左上
+    if(shuf.parentElement!==chips) chips.appendChild(shuf);      // 直版：洗牌搬去籌碼區(發牌右)
     if(autoWrap.parentElement) autoWrap.remove();               // 直版唔使 wrapper
   }
 }
