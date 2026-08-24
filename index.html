@@ -381,6 +381,13 @@
   padding: 0 2px;
 }
 .follow-right .follow-stats b{ color:#ffd479; font-weight:800; }
+/* 重置掣(橫版在 .follow-stats 內 / 直版在 .bets 內) 統一細款打橫, 同統計字一致 */
+.follow-stats .btn.freset, .bets .btn.freset{
+  display:inline-flex; flex:0 0 auto; margin:0 0 0 4px; padding:1px 6px; font-size:10px; font-weight:700;
+  writing-mode:horizontal-tb; text-orientation:initial;
+  color:#ffd9a8; background:rgba(255,120,80,0.16); border:1px solid rgba(255,150,110,0.5);
+  border-radius:8px; cursor:pointer; white-space:nowrap; align-items:center; justify-content:center;
+}
 .follow-right .follow-stats .ps-wl{ display:inline-flex; align-items:center; gap:4px; flex-wrap:nowrap; white-space:nowrap; }
 .bets .btn.freset{   /* 直版重置掣被 JS 搬入 .follow-stats, 原 .follow-right scoped 失效 → 補返細款同統計統一 */
   flex:0 0 auto; margin:0 0 0 4px; padding:1px 6px; font-size:10px; font-weight:700;
@@ -3423,7 +3430,10 @@ function placeFollow(){
   const reset=document.getElementById('btnFollowReset');
   const wlItem=document.querySelector('.follow-stats .ps-wl');
   if(reset&&fr){
-    if(land){ if(reset.parentElement!==fr) fr.appendChild(reset); }
+    if(land){   // 橫版：重置掣移出6掣區, 放回統計輸贏(.follow-stats)後方打橫
+      const stats=document.querySelector('.follow-stats');
+      if(stats && reset.parentElement!==stats) stats.appendChild(reset);
+    }
     else { if(wlItem && reset.parentElement!==wlItem) wlItem.appendChild(reset); }
   }
 }
