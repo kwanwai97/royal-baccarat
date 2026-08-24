@@ -309,7 +309,7 @@
 .pred-row2 .plog-dot{ font-style:normal; font-size:10px; font-weight:800; line-height:1; }
 .pred-row2 .plog-empty{ color:rgba(255,255,255,.25); }
 .follow-right{flex:1 1 50%; display:flex; flex-direction:row; flex-wrap:wrap; gap:2px; align-items:flex-start; justify-content:flex-start; padding-right:6px;}
-.follow-text{display:flex; flex-direction:row; flex-wrap:nowrap; align-items:center; gap:6px; white-space:nowrap;}
+.follow-text{display:flex; flex-direction:row; flex-wrap:nowrap; align-items:center; gap:6px; white-space:nowrap; order:-1; margin:2px 0;}   /* 直版：獨立成整行(投注區#bets頂, 閒P正上方), column flex 下 order:-1 排最前; 唔再關聯跟注掣 */
 
 /* 五個掣統一尺寸：4個策略掣 flex:1 1 0 平均闊度；第5個次數掣固定36px；高度統一32px */
 .follow-right .fbtn{
@@ -3407,7 +3407,10 @@ function placeFollow(){
   const fl=document.querySelector('.follow-left');
   if(ft&&fl){
     if(land){ if(ft.parentElement!==fl) fl.appendChild(ft); }
-    else { if(ft.parentElement!==fr) fr.appendChild(ft); }
+    else {   // 直版：文字獨立，搬去投注區(#bets)頂(閒P正上方)，唔再關聯跟注掣區
+      const bets=document.getElementById('bets');
+      if(bets && ft.parentElement!==bets) bets.insertBefore(ft, bets.firstChild);
+    }
   }
   // 橫版：重置掣做6掣底層(搬入 follow-right)；直版留返 follow-stats「勝/負」後(原樣，唔改HTML)
   const reset=document.getElementById('btnFollowReset');
