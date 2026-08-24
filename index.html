@@ -309,7 +309,7 @@
 .pred-row2 .plog-dot{ font-style:normal; font-size:10px; font-weight:800; line-height:1; }
 .pred-row2 .plog-empty{ color:rgba(255,255,255,.25); }
 .follow-right{flex:1 1 50%; display:flex; flex-direction:row; flex-wrap:wrap; gap:2px; align-items:flex-start; justify-content:flex-start; padding-right:6px;}
-.follow-text{display:contents;}
+.follow-text{display:flex; flex-direction:row; flex-wrap:wrap; align-items:center; gap:6px;}
 
 /* 五個掣統一尺寸：4個策略掣 flex:1 1 0 平均闊度；第5個次數掣固定36px；高度統一32px */
 .follow-right .fbtn{
@@ -358,17 +358,17 @@
 }
 
 .follow-right .follow-status {
-  flex-basis: 100%;
+  flex: 0 0 auto;
   font-size: 10px;
   color: #7fffb0;
   min-height: 16px;
-  white-space: normal;
+  white-space: nowrap;
   text-align: left;
-  margin-top: -6;
+  margin-top: 0;
   padding: 0 2px;
 }
 .follow-right .follow-stats {
-  flex-basis: 100%;
+  flex: 0 0 auto;
   display: flex;
   flex-wrap: wrap;
   gap: 4px 12px;
@@ -405,8 +405,8 @@
 
 .follow-right .limit-val{font-weight:800; color:#241a00; font-size:9px;}
 .follow-right .fstep{background:none; border:none; color:#241a00; font-size:9px; font-weight:800; padding:0 3px; line-height:1; writing-mode:vertical-rl; text-orientation:upright;}
-.follow-status{flex-basis:100%; font-size:10px; color:#7fffb0; min-height:10px; white-space:normal; text-align:left; margin-top:0;}
-#followStatus{ text-align:right; }   /* 直版：狀態列靠右；統計列(.follow-stats)維持靠左。橫版由 landscape media query 覆蓋為左 */
+.follow-status{flex:0 0 auto; font-size:10px; color:#7fffb0; min-height:10px; white-space:nowrap; text-align:left; margin-top:0;}
+#followStatus{ text-align:left; }   /* 直版做一行：狀態在統計左邊，文字靠左；橫版同樣靠左 */
 .btn.fbtn{background:linear-gradient(180deg,#ffd479,#e6a417); color:#241a00; border:1px solid #ffb347; font-size:10px; font-weight:800; padding:1px 2px; border-radius:8px; opacity:.6; writing-mode:vertical-rl; text-orientation:upright; white-space:nowrap; letter-spacing:0; min-width:30px; line-height:1.0; text-align:center;}
 .btn.fbtn.on{background:linear-gradient(180deg,#5fffa0,#1faf5a); color:#06240f; border:1px solid #3fdf7a; opacity:1; box-shadow:0 2px 0 #0a7a3a;}
 .btn.fbtn.rev{background:linear-gradient(180deg,#ffd0a0,#d9804a); color:#2a1400; border:1px solid #ef9b6f; opacity:.7;}
