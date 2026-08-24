@@ -292,7 +292,7 @@
 .follow-wrap{display:flex; gap:2px; align-items:stretch; margin-bottom:0px;}
 /* 直版：跟注區同投注區緊貼 0px */
 @media (orientation:portrait){
-  .follow-wrap{ gap:0; margin-bottom:0; }
+  .follow-wrap{ gap:0; margin-bottom:0; align-items:flex-end; }  /* flex-end: 右邊掣群貼底(貼投注區)；唔用 stretch 免左邊預測系統較高時掣底留空 */
   .bets{ padding-top:0; }
 }
 .follow-left{flex:0 0 50%; display:flex; flex-direction:column; gap:5px; min-width:0; justify-content:flex-start; padding-left:6px;}
