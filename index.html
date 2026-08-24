@@ -310,6 +310,9 @@
 .pred-row2 .plog-empty{ color:rgba(255,255,255,.25); }
 .follow-right{flex:1 1 50%; display:flex; flex-direction:row; flex-wrap:wrap; gap:2px; align-items:flex-start; justify-content:flex-start; padding-right:6px;}
 .follow-text{display:flex; flex-direction:row; flex-wrap:nowrap; align-items:center; gap:6px; white-space:nowrap; order:-1; margin:2px 0;}   /* 直版：獨立成整行(投注區#bets頂, 閒P正上方), column flex 下 order:-1 排最前; 唔再關聯跟注掣 */
+/* 直版 .follow-text 被 JS 搬入 #bets, 原有 .follow-right scoped rule 失效 → 呢度補返狀態+統計成一行(狀態左統計右) */
+.bets .follow-status, .bets .follow-stats{ display:inline-flex; flex:0 0 auto; flex-wrap:nowrap; white-space:nowrap; align-items:center; }
+.bets .follow-text{ display:flex; flex-direction:row; flex-wrap:nowrap; }
 
 /* 五個掣統一尺寸：4個策略掣 flex:1 1 0 平均闊度；第5個次數掣固定36px；高度統一32px */
 .follow-right .fbtn{
@@ -377,7 +380,6 @@
   text-align: left;
   padding: 0 2px;
 }
-.follow-right .follow-text{ flex-basis:100%; order:999; }   /* 直版：強迫佔滿整行排最底，內部狀態+統計一行(狀態左統計右)，唔同掣擠埋跳行搖動 */
 .follow-right .follow-stats b{ color:#ffd479; font-weight:800; }
 .follow-right .follow-stats .ps-wl{ display:inline-flex; align-items:center; gap:4px; flex-wrap:nowrap; white-space:nowrap; }
 .follow-right .btn.freset{
