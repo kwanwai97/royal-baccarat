@@ -290,9 +290,10 @@
   .follow-col{display:flex; flex-direction:row; flex-wrap:wrap; gap:4px; flex:0 1 auto; margin-left:8px; align-items:center;}
   /* 新版：左右兩半（左預測，右5格打橫一排） */
 .follow-wrap{display:flex; gap:2px; align-items:stretch; margin-bottom:0px;}
-/* 直版：跟注區同投注區緊貼 0px（改用 stretch：頂5掣貼頂不變，底層掣同投注區中間留空由預測系統高度自然形成） */
+/* 直版：跟注區 — 頂5掣貼頂不變，底層掣(🔊自動13秒AI榜)貼投注區，中間留空 */
 @media (orientation:portrait){
-  .follow-wrap{ gap:0; margin-bottom:0; }  /* 唔用 flex-end，免頂5掣被推落底；align-items 留 stretch 令頂5掣貼頂 */
+  .follow-wrap{ gap:0; margin-bottom:0; }  /* align-items 留 stretch 令頂5掣貼頂 */
+  .follow-right{ align-content:space-between; }  /* 換行兩行：頂行貼頂、底行貼底(投注區)；中間自然留空 */
   .bets{ padding-top:0; }
 }
 .follow-left{flex:0 0 50%; display:flex; flex-direction:column; gap:5px; min-width:0; justify-content:flex-start; padding-left:6px;}
