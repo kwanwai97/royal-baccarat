@@ -617,12 +617,23 @@
 .follow-left .pred-side{ margin-left:2px; }   /* 取消「請投注」撐開，第一行緊湊貼標題 */
 .follow-right{
   grid-column:3 / 4; grid-row:1 / span 2;   /* 橫版：預測系統右邊緊貼(2/3→3/4)，唔重疊 */
-  display:flex; flex-direction:row; flex-wrap:wrap; align-items:flex-start; gap:2px;
+  display:grid;                              /* 橫版跟注區：2上3下網格(決定性，唔受直排文字影響) */
+  grid-template-columns:auto auto auto;      /* 3欄：上層2個各佔1欄, 下層3個各佔1欄 */
+  grid-template-areas:
+    "bPredict bRev   ."
+    "bHot     bHotRev bLim"
+    "ftxt     ftxt    ftxt";
+  align-items:start; gap:2px;
   align-self:start; padding:6px 1px 0;       /* 頂部6px同其他區水平空間一致 */
 }
-/* 橫版5掣(重置移出)兩層：上層跟預測/反預測(2個)；下層跟旺AI/反旺AI/±次數(3個)；每層平分 */
-.follow-right .btnFollowPredict2, .follow-right .btnFollowRev{ order:1; flex:0 0 auto; flex-basis:calc(50% - 2px); max-width:calc(50% - 2px); }
-.follow-right .btnFollowHot, .follow-right .btnFollowHotRev, .follow-right .limit-row{ order:2; flex:0 0 auto; flex-basis:calc(33% - 2px); max-width:calc(33% - 2px); }
+/* 橫版5掣(重置移出)兩層：上層跟預測/反預測(2個)；下層跟旺AI/反旺AI/±次數(3個) */
+.follow-right #btnFollowPredict2{ grid-area:bPredict; }
+.follow-right #btnFollowRev{ grid-area:bRev; }
+.follow-right #btnFollowHot{ grid-area:bHot; }
+.follow-right #btnFollowHotRev{ grid-area:bHotRev; }
+.follow-right .limit-row{ grid-area:bLim; }
+/* 跟注文字+重置掣：放網格最底一行全寬(唔入5掣區) */
+.follow-right .follow-text{ grid-area:ftxt; display:flex; flex-direction:row; align-items:center; gap:4px; flex-wrap:wrap; }
 /* 重置掣做6掣之一：直排細掣，同fbtn一致 */
 .follow-right #btnFollowReset{ writing-mode:vertical-rl; text-orientation:upright; min-width:24px; height:30px; padding:0 1px 1px 1px; font-size:10px; line-height:1; justify-content:flex-start; align-items:center; }
 .follow-right .fbtn{
