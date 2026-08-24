@@ -1,0 +1,38 @@
+{
+  "123": {
+    "salt": "2d6f9b4787e1a5ac1c3e483420a9332f",
+    "hash": "d3b37edafb5256cc4876738307c52f881cc61868a5952a3df559fd4a0cb55578",
+    "token": "0fb8a659c3020853b2c615e2c5c6314a2bb05bde234f26ce29707a242acedace",
+    "balance": 50000,
+    "createdAt": 1787371099617
+  },
+  "1234": {
+    "salt": "ea8b68abfddf211c853b8b0af27bbf6d",
+    "hash": "3fe101ea1177f9565dbde0c5645dcbc03c77ee3480f089c0b720cd6d889438ab",
+    "token": "61e3c27ac8bad03c47464e091268097bbd23734daf11c05e78f29bd74386ba0f",
+    "balance": 18800000,
+    "createdAt": 1787374347512,
+    "skin": "gold"
+  },
+  "2222": {
+    "salt": "be918e3d5d1e1b0ed28e7a3f4f682411",
+    "hash": "6f95a96be44b1e144d99c6a6b4da3f14b6da202c79f2102ce87d4cdb9fbec5f5",
+    "token": "dc7b21163c8c19595d7f19663fb6dd552d71d12e453567ccb769410355eaa911",
+    "balance": 100000,
+    "createdAt": 1787384915138
+  },
+  "testuser": {
+    "salt": "0488290ef884ec1254bf8c73ee304902",
+    "hash": "fc0385c26f869dc671e8784077fa7dc28026bdf6c54864d5baca164c4a19b57c",
+    "token": "452d2006ab863f39b8fc1f8236c390036589aba80b881070e5f28a7d374b6ec7",
+    "balance": 88888,
+    "createdAt": 1787370875561
+  },
+  "shopuser": {
+    "salt": "3a9d8575573890436a20b296fb47cf63",
+    "hash": "812e53ce71515ca5dfb0fbe3306e80d5ebc17a51d6325119962e5cd2ca6b12da",
+    "token": "55dc5a71f54d91cd5e9687a8dc1053015ca69af3f6b0664ca401bbee1597ad73",
+    "balance": 50000,
+    "createdAt": 1787371872602
+  }
+}
