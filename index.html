@@ -329,6 +329,18 @@
   text-align:center; white-space:nowrap; letter-spacing:0;
   border-radius:8px; border:1px solid #ffb347; background:linear-gradient(180deg,#ffd479,#e6a417); color:#241a00; opacity:.7; box-sizing:border-box;
 }
+/* 直版：自動開/13秒搬入 follow-right 最底，統一 .fbtn 尺寸；@media portrait 限定，橫版唔受 */
+@media (orientation:portrait){
+  .follow-right .btn.auto, .follow-right .auto-int-btn{
+    flex:1 1 0; min-width:0;
+    height:34px; padding:6px 4px; font-size:11px; font-weight:800; line-height:1.15;
+    text-align:center; white-space:nowrap; letter-spacing:0;
+    border-radius:8px; border:1px solid #ffb347; background:linear-gradient(180deg,#ffd479,#e6a417); color:#241a00; opacity:.7; box-sizing:border-box;
+    display:flex; flex-direction:row; align-items:center; justify-content:center; gap:2px;
+  }
+  .follow-right .auto-int-btn .hnum, .follow-right .auto-int-btn .vsec{ writing-mode:horizontal-tb; font-size:11px; line-height:1; }
+  .follow-right .auto .a-label, .follow-right .auto .a-state{ writing-mode:horizontal-tb; font-size:11px; line-height:1; }
+}
 .follow-right .limit-row{
   flex:0 0 34px; min-width:0;
   height:34px; padding:4px 2px;
@@ -3479,10 +3491,13 @@ function placeTopBtns(){
     if(autoWrap.parentElement!==chips) chips.insertBefore(autoWrap, chips.firstChild); // 橫版：自動/13秒搬去籌碼區最左(籌碼左邊)
     if(tb.parentElement!==chips) chips.appendChild(tb);          // 洗牌留籌碼區
   } else {
-    if(auto.parentElement!==tb) tb.appendChild(auto);            // 直版：自動回 topBtns
-    if(aint.parentElement!==tb) tb.appendChild(aint);            // 13秒回 topBtns
-    if(tb.parentElement!==brand) brand.appendChild(tb);          // 自動/13秒回左上
-    if(shuf.parentElement!==chips) chips.appendChild(shuf);      // 直版：洗牌搬去籌碼區(發牌右)
+    // 直版：自動+13秒搬去 follow-right 最底(跟注區下、緊貼投注區)；洗牌留 topBtns；autoBtns wrapper 唔使
+    const fr=document.querySelector('.follow-right');
+    if(fr){
+      if(auto.parentElement!==fr) fr.appendChild(auto);
+      if(aint.parentElement!==fr) fr.appendChild(aint);
+    }
+    if(tb.parentElement!==brand) brand.appendChild(tb);          // topBtns 留 brand(得洗牌)
     if(autoWrap.parentElement) autoWrap.remove();               // 直版唔使 wrapper
   }
 }
