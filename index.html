@@ -623,7 +623,7 @@
     "bPredict bRev   ."
     "bHot     bHotRev bLim"
     "ftxt     ftxt    ftxt";
-  align-items:end; gap:2px;
+  align-items:start; gap:2px;
   align-self:start; padding:6px 1px 0;       /* 頂部6px同其他區水平空間一致 */
 }
 /* 橫版5掣(重置移出)兩層：上層跟預測/反預測(2個)；下層跟旺AI/反旺AI/±次數(3個) */
@@ -631,7 +631,7 @@
 .follow-right #btnFollowRev{ grid-area:bRev; }
 .follow-right #btnFollowHot{ grid-area:bHot; }
 .follow-right #btnFollowHotRev{ grid-area:bHotRev; }
-.follow-right .limit-row{ grid-area:bLim; }
+.follow-right .limit-row{ grid-area:bLim; grid-row:1 / span 2; align-self:stretch; }
 /* 跟注文字+重置掣：放網格最底一行全寬(唔入5掣區) */
 .follow-right .follow-text{ grid-area:ftxt; display:flex; flex-direction:row; align-items:center; gap:4px; flex-wrap:wrap; }
 /* 重置掣做6掣之一：直排細掣，同fbtn一致 */
