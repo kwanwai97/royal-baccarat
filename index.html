@@ -290,10 +290,14 @@
   .follow-col{display:flex; flex-direction:row; flex-wrap:wrap; gap:4px; flex:0 1 auto; margin-left:8px; align-items:center;}
   /* 新版：左右兩半（左預測，右5格打橫一排） */
 .follow-wrap{display:flex; gap:2px; align-items:stretch; margin-bottom:0px;}
-/* 直版：跟注區 — 頂5掣貼頂不變，底層掣(🔊自動13秒AI榜)貼投注區，中間留空 */
+/* 直版：跟注區 — 頂5掣貼頂不變，底層掣(🔊自動13秒AI榜)貼投注區，中間空隙擺5圖案掣(戰績/禮物/腦袋/限額/陪玩) */
 @media (orientation:portrait){
   .follow-wrap{ gap:0; margin-bottom:0; }  /* align-items 留 stretch 令頂5掣貼頂 */
-  .follow-right{ align-content:space-between; }  /* 換行兩行：頂行貼頂、底行貼底(投注區)；中間自然留空 */
+  .follow-right{ align-content:space-between; }  /* 換行三行：頂行貼頂、中行(5圖案掣)中間、底行貼底(投注區) */
+  .follow-right > .fbtn{ order:0; }                                  /* 頂5掣排第一行 */
+  .follow-mid{ flex:0 0 100%; display:flex; flex-direction:row; flex-wrap:nowrap; align-items:center; justify-content:center; gap:6px; order:1; }  /* 中間一行：100%寬強制換行到第二行，置中排5圖案掣 */
+  .follow-right > #btnMute, .follow-right > #btnAuto, .follow-right > #btnAutoInt, .follow-right > #btnLeaderboard{ order:2; }  /* 底層掣排最後一行(貼投注區) */
+  .follow-mid .iconbtn{ flex:0 0 auto; }
   .bets{ padding-top:0; }
 }
 .follow-left{flex:0 0 50%; display:flex; flex-direction:column; gap:5px; min-width:0; justify-content:flex-start; padding-left:6px;}
@@ -3524,12 +3528,20 @@ function placeTopBtns(){
     if(mute && roadTools && mute.parentElement!==roadTools) roadTools.appendChild(mute); // 橫版：喇叭留返大路右上
   } else {
     // 直版：喇叭+自動+13秒+AI排行榜搬去 follow-right 最底；洗牌留 topBtns；autoBtns wrapper 唔使
+    // 5圖案掣(戰績/禮物/腦袋/限額/陪玩)搬去 follow-right 中間行(.follow-mid)
     const fr=document.querySelector('.follow-right');
     if(fr){
       if(mute && mute.parentElement!==fr) fr.appendChild(mute);   // 喇叭排最左
       if(auto.parentElement!==fr) fr.appendChild(auto);
       if(aint.parentElement!==fr) fr.appendChild(aint);
       if(lb && lb.parentElement!==fr) fr.appendChild(lb);         // AI排行榜排13秒右
+      // 中間行 wrapper（只建立一次）
+      let mid=document.getElementById('followMid');
+      if(!mid){ mid=document.createElement('div'); mid.id='followMid'; mid.className='follow-mid'; fr.appendChild(mid); }
+      ['btnStats','btnDaily','btnLlm','btnLimits','btnAi'].forEach(id=>{
+        const el=document.getElementById(id);
+        if(el && el.parentElement!==mid) mid.appendChild(el);
+      });
     }
     if(tb.parentElement!==brand) brand.appendChild(tb);          // topBtns 留 brand(得洗牌)
     if(shuf.parentElement!==chips) chips.appendChild(shuf);      // 直版：洗牌搬去籌碼區(發牌右)
