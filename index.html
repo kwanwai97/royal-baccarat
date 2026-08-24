@@ -298,9 +298,10 @@
   .follow-mid{ flex:0 0 100%; display:flex; flex-direction:row; flex-wrap:nowrap; align-items:center; justify-content:center; gap:6px; order:1; }  /* 中間一行：100%寬強制換行到第二行，置中排5圖案掣 */
   .follow-right > #btnMute, .follow-right > #btnAuto, .follow-right > #btnAutoInt, .follow-right > #btnLeaderboard{ order:2; }  /* 底層掣排最後一行(貼投注區) */
   .follow-mid .iconbtn{ flex:0 0 auto; }
-  /* 直版：大路標題 header 行 — 普通開牌掣置中 */
+  /* 直版：大路標題 header 行 — 普通開牌掣+剩餘數置中 */
   .roadpanel > div:first-child{ position:relative; }   /* header 行做定位參考 */
-  .dealmode-wrap{ position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); display:flex; align-items:center; }
+  .dealmode-wrap{ position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); display:flex; align-items:center; gap:6px; }
+  .dealmode-wrap #shoeInfo{ font-size:10px; color:#ffd479; font-weight:800; white-space:nowrap; }
   .bets{ padding-top:0; }
 }
 .follow-left{flex:0 0 50%; display:flex; flex-direction:column; gap:5px; min-width:0; justify-content:flex-start; padding-left:6px;}
@@ -3520,6 +3521,7 @@ function placeTopBtns(){
   if(!tb||!brand||!chips||!deal||!auto||!aint||!shuf) return;
   const lb=document.getElementById('btnLeaderboard');
   const dealModeBtn=document.getElementById('btnDealMode');
+  const shoeInfo=document.getElementById('shoeInfo');
   let autoWrap=document.getElementById('autoBtns');
   if(!autoWrap){ autoWrap=document.createElement('div'); autoWrap.id='autoBtns'; autoWrap.className='auto-btns'; }
   const land=window.matchMedia('(orientation:landscape)').matches;
@@ -3546,12 +3548,13 @@ function placeTopBtns(){
         const el=document.getElementById(id);
         if(el && el.parentElement!==mid) mid.appendChild(el);
       });
-      // 直版：普通開牌/3D開牌掣由 roadTools 抽出，放去大路標題 header 行正中間
+      // 直版：普通開牌/3D開牌掣 + 剩餘卡牌數目 由 roadTools/brand 抽出，放去大路標題 header 行正中間（剩N張緊貼普通開牌左）
       if(dealModeBtn && roadTools && roadTools.parentElement){
         const header=roadTools.parentElement;  // 大路標題 header 行
         let dwrap=document.getElementById('dealModeWrap');
         if(!dwrap){ dwrap=document.createElement('div'); dwrap.id='dealModeWrap'; dwrap.className='dealmode-wrap'; }
-        if(dealModeBtn.parentElement!==dwrap) dwrap.appendChild(dealModeBtn);
+        if(shoeInfo && shoeInfo.parentElement!==dwrap) dwrap.appendChild(shoeInfo);   // 剩N張排左
+        if(dealModeBtn.parentElement!==dwrap) dwrap.appendChild(dealModeBtn);          // 普通開牌排右(緊貼剩N張)
         if(dwrap.parentElement!==header) header.insertBefore(dwrap, roadTools);  // 插喺 roadTools 之前(中間)
       }
     }
