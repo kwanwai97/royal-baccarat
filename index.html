@@ -680,7 +680,7 @@
 .follow-left .pred-side{ margin-left:2px; }   /* 取消「請投注」撐開，第一行緊湊貼標題 */
 .follow-right{
   grid-column:3 / 5; grid-row:1 / span 2;   /* 橫版：跨第3-4欄容納5掣一行(179px),右緣貼資金(第5欄左)緊貼 */
-  display:flex; flex-direction:row; flex-wrap:nowrap; align-items:stretch; justify-content:flex-end; gap:1px;  /* 橫版5掣一行排列,靠右貼資金,掣左右距1px */
+  display:flex; flex-direction:row; flex-wrap:wrap; align-items:stretch; justify-content:flex-end; gap:1px;  /* 橫版5掣一行+5圖案行換行; 靠右貼資金; 掣左右距1px */
   align-self:start; padding:6px 0 0;       /* 頂部6px; 左右padding清0緊貼 */
 }
 /* 橫版5掣一行：跟預測/反預測/跟旺AI/反旺AI/±次數 全部一行(移除舊2上3下grid) */
@@ -689,6 +689,10 @@
 .follow-right #btnFollowHot{ order:3; }
 .follow-right #btnFollowHotRev{ order:4; }
 .follow-right .limit-row{ order:5; align-self:stretch; }
+/* 橫版：5圖案掣(.follow-mid)放5掣行下方,跟直版尺寸(前4個35x26,陪玩40x26) */
+.follow-right .follow-mid{ flex:0 0 100%; display:flex; flex-direction:row; flex-wrap:nowrap; align-items:center; justify-content:flex-end; gap:1px; order:6; margin-top:2px; }  /* 靠右對齊貼資金 */
+.follow-right .follow-mid .iconbtn{ flex:0 0 auto; width:35px; height:26px; font-size:15px; display:inline-flex; align-items:center; justify-content:center; box-sizing:border-box; }  /* 跟直版前4圖案 35x26 */
+.follow-right .follow-mid #btnAi{ width:40px; height:26px; }  /* 跟直版陪玩 40x26 */
 /* 跟注文字+重置掣：換行到5掣下(唔入一行) */
 .follow-right .follow-text{ display:flex; flex-direction:row; align-items:center; gap:4px; flex-wrap:wrap; flex:1 0 100%; order:10; margin-top:2px; }
 /* 重置掣做6掣之一：直排細掣，同fbtn一致 */
@@ -3546,6 +3550,16 @@ function placeTopBtns(){
       const bs=document.querySelector('.brand-sub');
       if(bs && shoeInfo.parentElement!==bs) bs.appendChild(shoeInfo);
       shoeInfo.style.left='';
+    }
+    // 橫版：5圖案掣(戰績/禮物/腦袋/限額/陪玩)搬入 follow-right 中間行(.follow-midLand),放5掣行下方(跟直版)
+    const frL=document.querySelector('.follow-right');
+    if(frL){
+      let midL=document.getElementById('followMidLand');
+      if(!midL){ midL=document.createElement('div'); midL.id='followMidLand'; midL.className='follow-mid'; frL.appendChild(midL); }
+      ['btnStats','btnDaily','btnLlm','btnLimits','btnAi'].forEach(id=>{
+        const el=document.getElementById(id);
+        if(el && el.parentElement!==midL) midL.appendChild(el);
+      });
     }
   } else {
     // 直版：喇叭+自動+13秒+AI排行榜搬去 follow-right 最底；洗牌留 topBtns；autoBtns wrapper 唔使
