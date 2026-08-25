@@ -615,9 +615,9 @@
       align-content:start;                /* 整體貼頂 */
       align-items:start;
       grid-auto-rows:min-content;
-      gap:0;                             /* 三區之間零間隙，真正緊貼 */
+      column-gap:1px; row-gap:0;          /* 頂部四區左右距1px，行距保持0 */
       max-width:none;                     /* 打橫填滿，唔再 560px 限死 */
-      padding:0;                          /* 貼鐵，左右近邊 */
+      padding:0 3px;                      /* 兩邊各預留3px空白 */
     }
     /* 下半左：路單（大路+珠盤+下三路）跨左3欄、佔 row2-4 全高 */
     .roadpanel{ grid-column:1 / 4; grid-row:3 / span 4; align-self:stretch; }   /* 打橫：路單頂部落一格，同右投注區(row3)頂部水平並排 */
@@ -666,7 +666,7 @@
     .auto-btns #btnAuto{ flex-direction:column; gap:1px; }
     .auto-btns #btnAuto .a-label{ writing-mode:horizontal-tb; font-size:11px; font-weight:800; line-height:1; }
     .auto-btns #btnAuto .a-state{ writing-mode:horizontal-tb; font-size:11px; font-weight:800; line-height:1; }
-    .topright{ grid-column:5 / 7; grid-row:1 / span 2; display:flex; flex-direction:column; align-items:stretch; gap:4px; align-self:start; min-width:0; overflow:visible; padding-top:6px; padding-right:3px; }  /* 橫版：資金區跨兩欄,子元素撐滿靠左消除視覺空間; 右邊緣預留3px */
+    .topright{ grid-column:5 / 7; grid-row:1 / span 2; display:flex; flex-direction:column; align-items:stretch; gap:4px; align-self:start; min-width:0; overflow:visible; padding-top:6px; padding-right:0; }  /* 橫版：資金區跨兩欄,子元素撐滿靠左消除視覺空間; 右邊緣3px由.app padding:0 3px統一 */
     .topright .balance{ font-size:13px; text-align:left; width:100%; }  /* 文字靠左, 貼資金區最左消除視覺空間 */
     .topright .balance b{ font-size:18px; }
     /* AI陪玩列表（資金）打橫：6個一行、2行顯示(6x2)，全部見到唔切走；頂欄span2行容納 */
