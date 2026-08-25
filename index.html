@@ -647,8 +647,8 @@
     .chips-row .chip.c50k{ display:flex; }   /* 唔再隱藏50K，改由推拉揭示 */
     /* 橫版：籌碼區內四個掣(清除/重複/發牌/洗牌)文字打橫；其他位置不變 */
     .chips-row .vbtn{ writing-mode:horizontal-tb; text-orientation:initial; flex-direction:row; }
-    /* 橫版：籌碼區下方四掣(清除/重複/發牌/洗牌)高度收窄4px(35→31) */
-    .chips-row .btn, .chips-row .btn.shuffle{ height:31px !important; }
+    /* 橫版：籌碼區下方四掣(清除/重複/發牌/洗牌)高度收窄4px(35→30) */
+    .chips-row .btn, .chips-row .btn.shuffle{ height:30px !important; }
     /* 打橫下三路：derived-row 改回 flex:1 均分(同直版)，三張自動撐滿高度、貼住珠盤路底對齊；canvas 跟 height:100% */
     .road-derived{ display:flex; flex-direction:column; }
     .derived-row{ flex:1 1 0; min-height:0; }
@@ -662,9 +662,9 @@
     .brand-sub{ font-size:10px; }
     .brand-sub #shoeInfo{ font-size:12px; }
     .brand-sub{ text-align:left; }   /* 橫版：剩餘卡牌N數由最左邊開始 */
-    /* 橫版：自動+13秒掣(放籌碼區最左)，同其他四掣一樣高(35px)、闊度收細；全部掣左右緊貼零空隙 */
+    /* 橫版：自動+13秒掣(放籌碼區最左)，同其他四掣一樣高(33px)、闊度收細；全部掣左右緊貼零空隙 */
     .auto-btns{ display:flex; flex-direction:row; gap:0; margin:0; align-items:center; order:0; flex:0 0 auto; }
-    .auto-btns .btn{ writing-mode:horizontal-tb; display:inline-flex; align-items:center; justify-content:center; width:35px; height:35px; padding:0; min-width:35px; max-width:35px; font-size:12px; margin:0; line-height:1; box-sizing:border-box; }
+    .auto-btns .btn{ writing-mode:horizontal-tb; display:inline-flex; align-items:center; justify-content:center; width:35px; height:33px; padding:0; min-width:35px; max-width:35px; font-size:12px; margin:0; line-height:1; box-sizing:border-box; }
     .auto-btns #btnAuto{ flex-direction:column; gap:1px; }
     .auto-btns #btnAuto .a-label{ writing-mode:horizontal-tb; font-size:11px; font-weight:800; line-height:1; }
     .auto-btns #btnAuto .a-state{ writing-mode:horizontal-tb; font-size:11px; font-weight:800; line-height:1; }
@@ -696,10 +696,10 @@
 .follow-right #btnFollowHot{ order:3; }
 .follow-right #btnFollowHotRev{ order:4; }
 .follow-right .limit-row{ order:5; align-self:stretch; width:40px !important; flex:0 0 40px !important; min-width:40px !important; }  /* 橫版±次數掣闊度40(強制壓過繼承) */
-/* 橫版：5圖案掣(.follow-mid)放5掣行下方,跟直版尺寸(前4個35x26,陪玩40x26) */
-.follow-right .follow-mid{ flex:0 0 100%; display:flex; flex-direction:row; flex-wrap:nowrap; align-items:center; justify-content:flex-end; gap:1px; order:6; margin-top:2px; }  /* 靠右對齊貼資金 */
-.follow-right .follow-mid .iconbtn{ flex:0 0 auto; width:35px; height:26px; font-size:15px; display:inline-flex; align-items:center; justify-content:center; box-sizing:border-box; }  /* 跟直版前4圖案 35x26 */
-.follow-right .follow-mid #btnAi{ width:40px; height:26px; }  /* 跟直版陪玩 40x26 */
+/* 橫版：5圖案掣(.follow-mid)放5掣行下方,跟直版尺寸(前4個35x25,陪玩40x25) */
+.follow-right .follow-mid{ flex:0 0 100%; display:flex; flex-direction:row; flex-wrap:nowrap; align-items:center; justify-content:flex-end; gap:0px; order:6; margin-top:0px; }  /* 靠右對齊貼資金 */
+.follow-right .follow-mid .iconbtn{ flex:0 0 auto; width:35px; height:25px; font-size:15px; display:inline-flex; align-items:center; justify-content:center; box-sizing:border-box; }  /* 跟直版前4圖案 35x25 */
+.follow-right .follow-mid #btnAi{ width:40px; height:25px; }  /* 跟直版陪玩 40x25 */
 /* 跟注文字+重置掣：換行到5掣下(唔入一行) */
 .follow-right .follow-text{ display:flex; flex-direction:row; align-items:center; gap:4px; flex-wrap:wrap; flex:1 0 100%; order:10; margin-top:2px; }
 /* 橫版：底層4掣(🔊自動/13秒/AI榜/洗牌)跟直版 order:2 排5圖案下方 */
