@@ -326,9 +326,11 @@
 .pred-row2 .plog-dot{ font-style:normal; font-size:10px; font-weight:800; line-height:1; }
 .pred-row2 .plog-empty{ color:rgba(255,255,255,.25); }
 /* 預測系統內額外兩段：跟路單狀態 + 跟注統計（由投注區頂搬入） */
-.pred-road{ display:flex; align-items:center; gap:2px; min-height:12px; margin-top:1px; }
+/* 狀態欄貼底（推落框最底） */
+.pred-road{ display:flex; align-items:center; gap:2px; min-height:12px; margin-top:auto; order:5; }
 .pred-road .follow-status{ color:#7fffb0; font-size:10px; white-space:normal; text-align:left; margin:0; min-height:10px; }
-.pred-record{ display:flex; flex-wrap:wrap; gap:3px 10px; align-items:center; font-size:10px; color:#9fe6b8; border-top:1px dashed rgba(255,212,121,.25); padding-top:2px; margin-top:1px; }
+/* 紀錄+重置貼右（靠右排） */
+.pred-record{ display:flex; flex-wrap:wrap; gap:3px 10px; align-items:center; justify-content:flex-end; font-size:10px; color:#9fe6b8; border-top:1px dashed rgba(255,212,121,.25); padding-top:2px; margin-top:1px; }
 .pred-record .ps-item{ white-space:nowrap; }
 .pred-record b{ color:#ffd479; font-weight:800; }
 .pred-record .ps-wl{ display:inline-flex; align-items:center; gap:3px; flex-wrap:nowrap; white-space:nowrap; }
