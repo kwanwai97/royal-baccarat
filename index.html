@@ -695,6 +695,10 @@
 .follow-right .follow-mid #btnAi{ width:40px; height:26px; }  /* 跟直版陪玩 40x26 */
 /* 跟注文字+重置掣：換行到5掣下(唔入一行) */
 .follow-right .follow-text{ display:flex; flex-direction:row; align-items:center; gap:4px; flex-wrap:wrap; flex:1 0 100%; order:10; margin-top:2px; }
+/* 橫版：底層4掣(🔊自動/13秒/AI榜/洗牌)跟直版 order:2 排5圖案下方 */
+.follow-right > #btnMute, .follow-right > #btnAuto, .follow-right > #btnAutoInt, .follow-right > #btnLeaderboard, .follow-right > #autoBtns{ order:7; flex:0 0 auto; }  /* 橫版：跟直版排5圖案下方(5圖案order6,此排7) */
+.follow-right #btnMute, .follow-right #btnAuto, .follow-right #btnAutoInt, .follow-right #btnLeaderboard{ width:35px; height:34px; font-size:11px; }
+.follow-right #btnLeaderboard{ width:70px; }  /* AI榜較闊跟直版 */
 /* 重置掣做6掣之一：直排細掣，同fbtn一致 */
 .follow-right #btnFollowReset{ writing-mode:vertical-rl; text-orientation:upright; min-width:24px; height:30px; padding:0 1px 1px 1px; font-size:10px; line-height:1; justify-content:flex-start; align-items:center; }
 .follow-right .fbtn{
@@ -3534,10 +3538,18 @@ function placeTopBtns(){
   if(land){
     if(auto.parentElement!==autoWrap) autoWrap.appendChild(auto); // 自動入 wrapper
     if(aint.parentElement!==autoWrap) autoWrap.appendChild(aint); // 13秒入 wrapper
-    if(autoWrap.parentElement!==chips) chips.insertBefore(autoWrap, chips.firstChild); // 橫版：自動/13秒搬去籌碼區最左(籌碼左邊)
-    if(tb.parentElement!==chips) chips.appendChild(tb);          // 洗牌留籌碼區
-    if(lb && lb.parentElement!==brand) brand.appendChild(lb);     // 橫版：AI排行榜留左上角
-    if(mute && roadTools && mute.parentElement!==roadTools) roadTools.appendChild(mute); // 橫版：喇叭留返大路右上
+    if(autoWrap.parentElement!==chips) chips.insertBefore(autoWrap, chips.firstChild); // 暫留(下面會搬入follow-right)
+    if(shuf && shuf.parentElement!==chips) chips.appendChild(shuf);  // 洗牌留籌碼區(跟直版)
+    if(tb.parentElement!==brand) brand.appendChild(tb);              // topBtns留brand(跟直版)
+    if(lb && lb.parentElement!==brand) brand.appendChild(lb);        // 暫留(下面會搬入follow-right)
+    if(mute && roadTools && mute.parentElement!==roadTools) roadTools.appendChild(mute); // 暫留(下面會搬入follow-right)
+    // 橫版：底層掣(自動/13秒/喇叭/AI榜)跟直版搬入follow-right底層(5圖案下方)；洗牌留籌碼區
+    const frLand=document.querySelector('.follow-right');
+    if(frLand){
+      if(autoWrap.parentElement!==frLand) frLand.appendChild(autoWrap);
+      if(lb && lb.parentElement!==frLand) frLand.appendChild(lb);
+      if(mute && mute.parentElement!==frLand) frLand.appendChild(mute);
+    }
     // 橫版：普通開牌掣搬去大路標題行(header行)正中央(dealModeWrap絕對置中，相對header行)；剩餘數留brand-sub
     if(dealModeBtn){
       const header=document.querySelector('.roadpanel > div');  // 大路標題行(header)
