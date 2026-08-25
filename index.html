@@ -3556,11 +3556,10 @@ function placeTopBtns(){
         if(dealModeBtn.parentElement!==dwrap) dwrap.appendChild(dealModeBtn);          // 普通開牌入 wrapper(置中)
         if(dwrap.parentElement!==header) header.insertBefore(dwrap, roadTools);  // 插喺 roadTools 之前(中間)
         if(shoeInfo && shoeInfo.parentElement!==header) header.appendChild(shoeInfo);   // 剩N張直接入 header(絕對定位緊貼普通開牌左)
-        // 普通開牌掣正中央(JS保證)，剩N張動態緊貼其左（同步量度，不用rAF）
+        // 普通開牌掣正中央(唔郁)，剩N張動態緊貼其右（同步量度，不用rAF）
         const dmRect=dealModeBtn.getBoundingClientRect();
-        const siRect=shoeInfo.getBoundingClientRect();
         const hRect=header.getBoundingClientRect();
-        shoeInfo.style.left=(dmRect.left - hRect.left - siRect.width - 6)+'px';
+        shoeInfo.style.left=(dmRect.right - hRect.left + 6)+'px';
       }
     }
     if(tb.parentElement!==brand) brand.appendChild(tb);          // topBtns 留 brand(得洗牌)
