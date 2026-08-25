@@ -3544,7 +3544,6 @@ function placeTopBtns(){
     if(autoWrap.parentElement!==chips) chips.insertBefore(autoWrap, chips.firstChild); // 暫留(下面會搬入follow-right)
     if(shuf && shuf.parentElement!==chips) chips.appendChild(shuf);  // 洗牌留籌碼區(跟直版)
     if(tb.parentElement!==brand) brand.appendChild(tb);              // topBtns留brand(跟直版)
-    if(lb && lb.parentElement!==brand) brand.appendChild(lb);        // 暫留(下面會搬入follow-right)
     if(mute && roadTools && mute.parentElement!==roadTools) roadTools.appendChild(mute); // 暫留(下面會搬入follow-right)
     // 橫版：底層掣(自動/13秒/喇叭/AI榜)跟直版搬入follow-right底層(5圖案下方)；洗牌留籌碼區
     const frLand=document.querySelector('.follow-right');
@@ -3552,6 +3551,7 @@ function placeTopBtns(){
       if(autoWrap.parentElement!==frLand) frLand.appendChild(autoWrap);
       if(lb && lb.parentElement!==frLand) frLand.appendChild(lb);
       if(mute && mute.parentElement!==frLand) frLand.appendChild(mute);
+      if(lb) lb.style.order='9';  // inline鎖死, 避免旋轉race fallback全局order:1跳最左
     }
     // 橫版：普通開牌掣搬去大路標題行(header行)正中央(dealModeWrap絕對置中，相對header行)；剩餘數留brand-sub
     if(dealModeBtn){
@@ -3609,6 +3609,7 @@ function placeTopBtns(){
       if(auto.parentElement!==fr) fr.appendChild(auto);
       if(aint.parentElement!==fr) fr.appendChild(aint);
       if(lb && lb.parentElement!==fr) fr.appendChild(lb);         // AI排行榜排13秒右
+      if(lb) lb.style.order='2';  // inline鎖死, 避免旋轉race fallback全局order:1跳最左
       // 中間行 wrapper（只建立一次）
       let mid=document.getElementById('followMid');
       if(!mid){ mid=document.createElement('div'); mid.id='followMid'; mid.className='follow-mid'; fr.appendChild(mid); }
