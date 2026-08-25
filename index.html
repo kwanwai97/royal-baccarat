@@ -3575,11 +3575,17 @@ function placeTopBtns(){
     // 橫版：5圖案掣(戰績/禮物/腦袋/限額/陪玩)搬入 follow-right 中間行(.follow-midLand),放5掣行下方(跟直版)
     const frL=document.querySelector('.follow-right');
     if(frL){
-      // 清理直版分支殘留嘅 followMid 容器(旋轉後會並存, 導致直版AI榜跳掣)
-      const oldMid=document.getElementById('followMid');
-      if(oldMid && oldMid.parentElement===frL) oldMid.remove();
       let midL=document.getElementById('followMidLand');
       if(!midL){ midL=document.createElement('div'); midL.id='followMidLand'; midL.className='follow-mid'; frL.appendChild(midL); }
+      // 先將直版殘留 followMid 入面嘅5圖案掣救出(避免直接remove連掣一齊刪→收埋), 再移除空容器
+      const oldMid=document.getElementById('followMid');
+      if(oldMid && oldMid.parentElement===frL){
+        ['btnStats','btnDaily','btnLlm','btnLimits','btnAi'].forEach(id=>{
+          const el=document.getElementById(id);
+          if(el && el.parentElement===oldMid) midL.appendChild(el);
+        });
+        oldMid.remove();
+      }
       ['btnStats','btnDaily','btnLlm','btnLimits','btnAi'].forEach(id=>{
         const el=document.getElementById(id);
         if(el && el.parentElement!==midL) midL.appendChild(el);
@@ -3590,9 +3596,15 @@ function placeTopBtns(){
     // 5圖案掣(戰績/禮物/腦袋/限額/陪玩)搬去 follow-right 中間行(.follow-mid)
     const fr=document.querySelector('.follow-right');
     if(fr){
-      // 清理橫版分支殘留嘅 followMidLand 容器(旋轉後會並存)
+      // 清理橫版分支殘留嘅 followMidLand 容器(旋轉後會並存), 先救出5圖案掣再移除空容器
       const oldMidL=document.getElementById('followMidLand');
-      if(oldMidL && oldMidL.parentElement===fr) oldMidL.remove();
+      if(oldMidL && oldMidL.parentElement===fr){
+        ['btnStats','btnDaily','btnLlm','btnLimits','btnAi'].forEach(id=>{
+          const el=document.getElementById(id);
+          if(el && el.parentElement===oldMidL) fr.appendChild(el);
+        });
+        oldMidL.remove();
+      }
       if(mute && mute.parentElement!==fr) fr.appendChild(mute);   // 喇叭排最左
       if(auto.parentElement!==fr) fr.appendChild(auto);
       if(aint.parentElement!==fr) fr.appendChild(aint);
@@ -3626,8 +3638,11 @@ function placeTopBtns(){
   }
 }
 placeTopBtns();
-window.addEventListener('resize', placeTopBtns);
-if(window.matchMedia){ try{ window.matchMedia('(orientation:landscape)').addEventListener('change', placeTopBtns); }catch(e){} }
+// 防抖：旋轉/resize連發時等layout settle(150ms)再跑一次, 避免中間態race令5圖案收埋
+let _ptbT=null;
+function placeTopBtnsDebounced(){ if(_ptbT) clearTimeout(_ptbT); _ptbT=setTimeout(placeTopBtns,150); }
+window.addEventListener('resize', placeTopBtnsDebounced);
+if(window.matchMedia){ try{ window.matchMedia('(orientation:landscape)').addEventListener('change', placeTopBtnsDebounced); }catch(e){} }
 if(!loadShoe()) resetShoe();   // 有儲存嘅鞋就續返(派過幾多張繼續)，否則開新鞋
 updateShoeInfo();   // 無論續鞋定開新鞋都刷新剩餘張數顯示
 updateBalance(); updateBetDisplay(); checkDaily(); updateQuest(); drawAllRoads();
