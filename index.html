@@ -689,10 +689,6 @@
 .follow-right #btnFollowHot{ order:3; }
 .follow-right #btnFollowHotRev{ order:4; }
 .follow-right .limit-row{ order:5; align-self:stretch; }
-/* 橫版：5圖案掣(.follow-mid)放5掣行下方，跟直版一樣尺寸(前4個35x26,陪玩40x26)，一行置中 */
-.follow-right .follow-mid{ flex:0 0 100%; display:flex; flex-direction:row; flex-wrap:nowrap; align-items:center; justify-content:flex-start; gap:1px; order:6; margin-top:2px; }
-.follow-right .follow-mid .iconbtn{ flex:0 0 auto; width:35px; height:26px; font-size:15px; display:inline-flex; align-items:center; justify-content:center; box-sizing:border-box; }  /* 跟直版前4圖案 35x26 */
-.follow-right .follow-mid #btnAi{ width:40px; height:26px; }  /* 跟直版陪玩 40x26 */
 /* 跟注文字+重置掣：放網格最底一行全寬(唔入5掣區) */
 .follow-right .follow-text{ display:flex; flex-direction:row; align-items:center; gap:4px; flex-wrap:wrap; flex:1 0 100%; order:10; margin-top:2px; }  /* 跟注文字換行到5掣下(唔入一行); grid-area失效因follow-right改flex */
 /* 重置掣做6掣之一：直排細掣，同fbtn一致 */
@@ -3551,16 +3547,7 @@ function placeTopBtns(){
       if(bs && shoeInfo.parentElement!==bs) bs.appendChild(shoeInfo);
       shoeInfo.style.left='';
     }
-    // 橫版：5圖案掣(戰績/禮物/腦袋/限額/陪玩)搬入 follow-right 中間行(.follow-mid)，放5掣行下方(跟直版)
-    const frL=document.querySelector('.follow-right');
-    if(frL){
-      let mid=document.getElementById('followMid');
-      if(!mid){ mid=document.createElement('div'); mid.id='followMid'; mid.className='follow-mid'; frL.appendChild(mid); }
-      ['btnStats','btnDaily','btnLlm','btnLimits','btnAi'].forEach(id=>{
-        const el=document.getElementById(id);
-        if(el && el.parentElement!==mid) mid.appendChild(el);
-      });
-    }
+  } else {
     // 直版：喇叭+自動+13秒+AI排行榜搬去 follow-right 最底；洗牌留 topBtns；autoBtns wrapper 唔使
     // 5圖案掣(戰績/禮物/腦袋/限額/陪玩)搬去 follow-right 中間行(.follow-mid)
     const fr=document.querySelector('.follow-right');
