@@ -604,7 +604,7 @@
   .roadpanel > div:first-child{ position:relative; }   /* 大路標題行做定位參考(橫版都啟用) */
   .dealmode-wrap{ display:contents; }  /* 橫版wrapper唔做box，btnDealMode靠自身absolute置中 */
   .dealmode-wrap #btnDealMode{ position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); }  /* 橫版絕對置中(相對大路標題行header,因dealModeWrap係display:contents唔成box) */
-  .roadpanel > div:first-child #shoeInfo{ position:static; left:auto; top:auto; transform:none; }
+  .roadpanel > div:first-child #shoeInfo{ position:absolute; top:50%; transform:translateY(-50%); font-size:13px; color:#5fe08a; font-weight:800; white-space:nowrap; }  /* 橫版：剩餘數緊貼普通開牌左(JS動態left),普通開牌保持中央 */
     .pred-row1 .freset{ margin-left:5px; }   /* 橫版清除掣距請投注5px（直版0px） */
     .app{
       display:grid;
@@ -3547,9 +3547,15 @@ function placeTopBtns(){
       if(dwrap.parentElement!==header) header.appendChild(dwrap);   // 插去大路標題行(header)，絕對置中喺佢正中
     }
     if(shoeInfo){
-      const bs=document.querySelector('.brand-sub');
-      if(bs && shoeInfo.parentElement!==bs) bs.appendChild(shoeInfo);
+      const headerL=document.querySelector('.roadpanel > div');  // 大路標題 header 行
+      if(headerL && shoeInfo.parentElement!==headerL) headerL.appendChild(shoeInfo);
       shoeInfo.style.left='';
+      // 普通開牌掣正中央(唔郁)，剩N張動態緊貼其左（等layout穩定再量，避免同步讀唔到寬度）
+      setTimeout(()=>{
+        const dmRect=dealModeBtn.getBoundingClientRect();
+        const hRect=headerL.getBoundingClientRect();
+        shoeInfo.style.left=(dmRect.left - hRect.left - shoeInfo.offsetWidth - 6)+'px';
+      },100);
     }
     // 橫版：5圖案掣(戰績/禮物/腦袋/限額/陪玩)搬入 follow-right 中間行(.follow-midLand),放5掣行下方(跟直版)
     const frL=document.querySelector('.follow-right');
