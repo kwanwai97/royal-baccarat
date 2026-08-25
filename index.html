@@ -647,6 +647,8 @@
     .chips-row .chip.c50k{ display:flex; }   /* 唔再隱藏50K，改由推拉揭示 */
     /* 橫版：籌碼區內四個掣(清除/重複/發牌/洗牌)文字打橫；其他位置不變 */
     .chips-row .vbtn{ writing-mode:horizontal-tb; text-orientation:initial; flex-direction:row; }
+    /* 橫版：籌碼區下方四掣(清除/重複/發牌/洗牌)高度收窄4px(35→31) */
+    .chips-row .btn, .chips-row .btn.shuffle{ height:31px !important; }
     /* 打橫下三路：derived-row 改回 flex:1 均分(同直版)，三張自動撐滿高度、貼住珠盤路底對齊；canvas 跟 height:100% */
     .road-derived{ display:flex; flex-direction:column; }
     .derived-row{ flex:1 1 0; min-height:0; }
