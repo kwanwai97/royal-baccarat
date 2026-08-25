@@ -597,10 +597,10 @@
   /* ===== 打橫 landscape：純 CSS grid 重排，唔郁 DOM、唔改 id/邏輯 ===== */
   @media (orientation:landscape){
   #cloudSlot{display:none;}
-  /* 橫版：直版專用大路標題置中無效，普通開牌/剩餘數恢復正常流 */
-  .roadpanel > div:first-child{ position:static; }
-  .dealmode-wrap{ position:static; transform:none; display:contents; }
-  .dealmode-wrap #btnDealMode{ position:static; left:auto; top:auto; transform:none; }
+  /* 橫版：直版專用大路標題置中對普通開牌有效(共用絕對置中)；剩餘數留喺brand-sub正常流 */
+  .roadpanel > div:first-child{ position:relative; }   /* 大路標題行做定位參考(橫版都啟用) */
+  .dealmode-wrap{ display:contents; }  /* 橫版wrapper唔做box，btnDealMode靠自身absolute置中 */
+  .dealmode-wrap #btnDealMode{ position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); }  /* 橫版都絕對置中(相對整個roadpanel) */
   .roadpanel > div:first-child #shoeInfo{ position:static; left:auto; top:auto; transform:none; }
     .pred-row1 .freset{ margin-left:5px; }   /* 橫版清除掣距請投注5px（直版0px） */
     .app{
@@ -3537,15 +3537,19 @@ function placeTopBtns(){
     if(tb.parentElement!==chips) chips.appendChild(tb);          // 洗牌留籌碼區
     if(lb && lb.parentElement!==brand) brand.appendChild(lb);     // 橫版：AI排行榜留左上角
     if(mute && roadTools && mute.parentElement!==roadTools) roadTools.appendChild(mute); // 橫版：喇叭留返大路右上
-    // 橫版：普通開牌掣搬返 roadTools、剩餘數搬返 brand-sub、清走直版專用 wrapper
-    if(dealModeBtn && roadTools && dealModeBtn.parentElement!==roadTools) roadTools.appendChild(dealModeBtn);
+    // 橫版：普通開牌掣搬去大路路單區正中間(dealModeWrap絕對置中，相對.roadpanel)；剩餘數留brand-sub
+    if(dealModeBtn){
+      const rp=document.querySelector('.roadpanel');
+      let dwrap=document.getElementById('dealModeWrap');
+      if(!dwrap){ dwrap=document.createElement('div'); dwrap.id='dealModeWrap'; dwrap.className='dealmode-wrap'; }
+      if(dealModeBtn.parentElement!==dwrap) dwrap.appendChild(dealModeBtn);
+      if(dwrap.parentElement!==rp) rp.appendChild(dwrap);   // 插去成個 roadpanel(唔係header行)，絕對置中唔同roadTools撞
+    }
     if(shoeInfo){
       const bs=document.querySelector('.brand-sub');
       if(bs && shoeInfo.parentElement!==bs) bs.appendChild(shoeInfo);
-      shoeInfo.style.left='';  // 清走直版動態定位
+      shoeInfo.style.left='';
     }
-    const dwrap=document.getElementById('dealModeWrap');
-    if(dwrap && dwrap.parentElement) dwrap.parentElement.removeChild(dwrap);
   } else {
     // 直版：喇叭+自動+13秒+AI排行榜搬去 follow-right 最底；洗牌留 topBtns；autoBtns wrapper 唔使
     // 5圖案掣(戰績/禮物/腦袋/限額/陪玩)搬去 follow-right 中間行(.follow-mid)
