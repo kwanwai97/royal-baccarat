@@ -678,16 +678,16 @@
     }
 .follow-left{ grid-column:2 / 3; grid-row:1 / span 2; min-width:0; padding:6px 0 0 1px; position:relative; left:37px; display:flex; flex-direction:column; align-items:stretch; }  /* 橫版：預測系統框再向左移3px(left:37px), 框右緣與跟隨掣留39px空位; 寬度不變/直版不變 */
 /* 橫版：跟注文字搬入預測系統底部，打橫一行(取消疊牌)，緊貼預測系統、縮細 */
-.follow-left .follow-text{ display:flex; flex-direction:row; flex-wrap:nowrap; align-items:center; gap:5px; flex-basis:auto; min-width:0; order:3; margin-top:1px; font-size:9px; }
+.follow-left .follow-text{ display:flex; flex-direction:row; flex-wrap:nowrap; align-items:center; gap:5px; flex-basis:auto; min-width:0; order:3; margin-top:0; font-size:9px; }
 /* 打橫：預測系統區貼第二行最闊位(唔撐開、唔轉行)，保持三行位置唔變 */
-.follow-left .pred-system{ width:100% !important; max-width:none; justify-content:flex-start; gap:0; padding:1px 2px; min-height:0; }  /* 橫版：預測框內三行向上緊貼(消除垂直空隙), 收padding */
+.follow-left .pred-system{ width:100% !important; max-width:none; justify-content:flex-start; gap:0; padding:0 2px; min-height:0; }  /* 橫版：預測框內三行向上緊貼(消除垂直空隙), 收padding, 頂0(框頂→首行1px) */
 .follow-left .pred-road{ justify-content:flex-start; }  /* 橫版：狀態欄向左 */
 .follow-left #followStatus{ text-align:left; }  /* 橫版：狀態文字向左 */
 .follow-left .pred-record{ justify-content:flex-start; }  /* 橫版：跟注次數紀錄向左 */
 .follow-left .pred-side{ margin-left:2px; }   /* 取消「請投注」撐開，第一行緊湊貼標題 */
 .follow-right{
   grid-column:3 / 5; grid-row:1 / span 2;   /* 橫版：跨第3-4欄容納5掣一行(179px),右緣貼資金(第5欄左)緊貼 */
-  display:flex; flex-direction:row; flex-wrap:wrap; align-items:stretch; justify-content:flex-end; gap:1px;  /* 橫版5掣一行+5圖案行換行; 靠右貼資金; 掣左右距1px */
+  display:flex; flex-direction:row; flex-wrap:wrap; align-items:stretch; justify-content:flex-end; gap:0;  /* 橫版5掣一行+5圖案行換行; 靠右貼資金; 掣左右距0 */
   align-self:start; padding:6px 0 0;       /* 頂部6px; 左右padding清0緊貼 */
 }
 /* 橫版5掣一行：跟預測/反預測/跟旺AI/反旺AI/±次數 全部一行(移除舊2上3下grid) */
@@ -698,16 +698,16 @@
 .follow-right .limit-row{ order:5; align-self:stretch; width:40px !important; flex:0 0 40px !important; min-width:40px !important; }  /* 橫版±次數掣闊度40(強制壓過繼承) */
 /* 橫版：5圖案掣(.follow-mid)放5掣行下方,跟直版尺寸(前4個35x25,陪玩40x25) */
 .follow-right .follow-mid{ flex:0 0 100%; display:flex; flex-direction:row; flex-wrap:nowrap; align-items:center; justify-content:flex-end; gap:0px; order:6; margin-top:0px; }  /* 靠右對齊貼資金 */
-.follow-right .follow-mid .iconbtn{ flex:0 0 auto; width:35px; height:25px; font-size:15px; display:inline-flex; align-items:center; justify-content:center; box-sizing:border-box; }  /* 跟直版前4圖案 35x25 */
-.follow-right .follow-mid #btnAi{ width:40px; height:25px; }  /* 跟直版陪玩 40x25 */
+.follow-right .follow-mid .iconbtn{ flex:0 0 auto; width:35px; height:24px; font-size:15px; display:inline-flex; align-items:center; justify-content:center; box-sizing:border-box; }  /* 跟直版前4圖案 35x24 */
+.follow-right .follow-mid #btnAi{ width:40px; height:24px; }  /* 跟直版陪玩 40x24 */
 /* 跟注文字+重置掣：換行到5掣下(唔入一行) */
-.follow-right .follow-text{ display:flex; flex-direction:row; align-items:center; gap:4px; flex-wrap:wrap; flex:1 0 100%; order:10; margin-top:2px; }
+.follow-right .follow-text{ display:flex; flex-direction:row; align-items:center; gap:4px; flex-wrap:wrap; flex:1 0 100%; order:10; margin-top:0; }  /* 跟注文字貼上(垂直空間0) */
 /* 橫版：底層4掣(🔊自動/13秒/AI榜/洗牌)跟直版 order:2 排5圖案下方 */
 /* 橫版：底層3掣跟直版排5圖案下方, 順序: 喇叭第一 → 自動/13秒 → AI榜最後 */
 .follow-right > #btnMute{ order:7; flex:0 0 auto; }  /* 喇叭第一位 */
 .follow-right > #autoBtns{ order:8; flex:0 0 auto; }  /* 自動/13秒 中 */
 .follow-right > #btnLeaderboard{ order:9; flex:0 0 auto; }  /* AI榜最後 */
-.follow-right #btnMute, .follow-right #btnAuto, .follow-right #btnAutoInt, .follow-right #btnLeaderboard{ width:35px; height:34px; font-size:11px; }
+.follow-right #btnMute, .follow-right #btnAuto, .follow-right #btnAutoInt, .follow-right #btnLeaderboard{ width:35px; height:31px; font-size:11px; }  /* 底行4掣統一31px(自動/13秒/AI榜/🔊) */
 .follow-right #btnLeaderboard{ width:75px; }  /* AI榜闊度75 */
 /* 重置掣做6掣之一：直排細掣，同fbtn一致 */
 .follow-right #btnFollowReset{ writing-mode:vertical-rl; text-orientation:upright; min-width:24px; height:30px; padding:0 1px 1px 1px; font-size:10px; line-height:1; justify-content:flex-start; align-items:center; }
