@@ -607,7 +607,7 @@
   .roadpanel > div:first-child #shoeInfo{ position:absolute; top:50%; transform:translateY(-50%); font-size:13px; color:#5fe08a; font-weight:800; white-space:nowrap; }  /* 橫版：剩餘數緊貼普通開牌左(JS動態left),普通開牌保持中央 */
     .pred-row1 .freset{ margin-left:5px; }   /* 橫版清除掣距請投注5px（直版0px） */
     /* 橫版：預測系統框內三行撐滿框, 消除框右側留白(框外已貼跟注區) */
-    .follow-left .pred-row1, .follow-left .pred-row2, .follow-left .pred-row3{ width:100%; justify-content:flex-end; }  /* 橫版：預測框內5行全部向右緊貼按鈕(清除/重置) */
+    .follow-left .pred-row1, .follow-left .pred-row2, .follow-left .pred-row3{ width:100%; justify-content:flex-start; }  /* 橫版：預測框內5行全部向左(反轉舊嘅向右) */
     .app{
       display:grid;
       grid-template-columns:60px minmax(0,1.4fr) 90px minmax(0,1fr) minmax(0,1fr) minmax(0,1fr);   /* 第1欄固定60px預留左邊空間(對應直版左上漏空); 第2欄預測系統(1.4fr); 第3欄5掣固定90px; 第4-6欄資金/投注(各1fr) */
@@ -679,9 +679,9 @@
 .follow-left .follow-text{ display:flex; flex-direction:row; flex-wrap:nowrap; align-items:center; gap:5px; flex-basis:auto; min-width:0; order:3; margin-top:1px; font-size:9px; }
 /* 打橫：預測系統區貼第二行最闊位(唔撐開、唔轉行)，保持三行位置唔變 */
 .follow-left .pred-system{ width:100% !important; max-width:none; }  /* 撐滿第2欄減少預測↔跟注空間(強制壓過任何繼承) */
-.follow-left .pred-road{ justify-content:flex-end; }  /* 橫版：狀態欄向右 */
-.follow-left #followStatus{ text-align:right; }  /* 橫版：狀態文字向右(壓過#followStatus left) */
-.follow-left .pred-record{ justify-content:flex-end; }  /* 橫版：跟注次數紀錄向右貼重置掣 */
+.follow-left .pred-road{ justify-content:flex-start; }  /* 橫版：狀態欄向左 */
+.follow-left #followStatus{ text-align:left; }  /* 橫版：狀態文字向左 */
+.follow-left .pred-record{ justify-content:flex-start; }  /* 橫版：跟注次數紀錄向左 */
 .follow-left .pred-side{ margin-left:2px; }   /* 取消「請投注」撐開，第一行緊湊貼標題 */
 .follow-right{
   grid-column:3 / 5; grid-row:1 / span 2;   /* 橫版：跨第3-4欄容納5掣一行(179px),右緣貼資金(第5欄左)緊貼 */
