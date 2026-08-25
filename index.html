@@ -293,7 +293,7 @@
 /* 直版：跟注區 — 頂5掣貼頂不變，底層掣(🔊自動13秒AI榜)貼投注區，中間空隙擺5圖案掣(戰績/禮物/腦袋/限額/陪玩) */
 @media (orientation:portrait){
   .follow-wrap{ gap:0; margin-bottom:0; }  /* align-items 留 stretch 令頂5掣貼頂 */
-  .follow-right{ align-content:space-between; }  /* 換行三行：頂行貼頂、中行(5圖案掣)中間、底行貼底(投注區) */
+  .follow-right{ align-content:space-between; gap:1px !important; }  /* 換行三行：頂行貼頂、中行(5圖案掣)中間、底行貼底(投注區)；水平掣距1px */
   .follow-right > .fbtn{ order:0; }                                  /* 頂5掣排第一行 */
   .follow-mid{ flex:0 0 100%; display:flex; flex-direction:row; flex-wrap:nowrap; align-items:center; justify-content:center; gap:1px; order:1; }  /* 中間一行：100%寬強制換行到第二行，置中排5圖案掣，左右距1px */
   .follow-right > #btnMute, .follow-right > #btnAuto, .follow-right > #btnAutoInt, .follow-right > #btnLeaderboard{ order:2; }  /* 底層掣排最後一行(貼投注區) */
@@ -347,7 +347,7 @@
 /* 直版：自動開/13秒搬入 follow-right 最底，統一 .fbtn 尺寸；@media portrait 限定，橫版唔受 */
 @media (orientation:portrait){
   .follow-right .btn.auto, .follow-right .auto-int-btn{
-    flex:0 0 30px; min-width:30px; width:30px;
+    flex:0 0 35px; min-width:35px; width:35px;
     height:34px; padding:4px 1px; font-size:11px; font-weight:800; line-height:1;
     text-align:center; letter-spacing:0;
     border-radius:8px; border:1px solid #ffb347; background:linear-gradient(180deg,#ffd479,#e6a417); color:#241a00; opacity:.7; box-sizing:border-box;
@@ -369,13 +369,13 @@
   }
   /* 喇叭搬入底層自動左：統一 .btn.auto 尺寸，作 icon 掣 */
   .follow-right #btnMute{
-    flex:0 0 30px; min-width:30px; width:30px;
+    flex:0 0 35px; min-width:35px; width:35px;
     height:34px; padding:4px 1px; font-size:14px; line-height:1;
     text-align:center;
     border-radius:8px; border:1px solid #ffb347; background:linear-gradient(180deg,#ffd479,#e6a417); color:#241a00; opacity:.7; box-sizing:border-box;
   }
-  /* 底層全部掣 左右空間1px */
-  .follow-right #btnMute, .follow-right #btnAuto, .follow-right #btnAutoInt, .follow-right #btnLeaderboard{ margin:0 0.5px; }
+  /* 底層全部掣 左右空間0（由 .follow-right gap:1px 統一控制） */
+  .follow-right #btnMute, .follow-right #btnAuto, .follow-right #btnAutoInt, .follow-right #btnLeaderboard{ margin:0; }
 }
 .follow-right .limit-row{
   flex:0 0 34px; min-width:0;
