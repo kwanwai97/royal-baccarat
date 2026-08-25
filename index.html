@@ -688,7 +688,7 @@
 .follow-right #btnFollowRev{ order:2; }
 .follow-right #btnFollowHot{ order:3; }
 .follow-right #btnFollowHotRev{ order:4; }
-.follow-right .limit-row{ order:5; align-self:stretch; }
+.follow-right .limit-row{ order:5; align-self:stretch; width:40px !important; flex:0 0 40px !important; min-width:40px !important; }  /* 橫版±次數掣闊度40(強制壓過繼承) */
 /* 橫版：5圖案掣(.follow-mid)放5掣行下方,跟直版尺寸(前4個35x26,陪玩40x26) */
 .follow-right .follow-mid{ flex:0 0 100%; display:flex; flex-direction:row; flex-wrap:nowrap; align-items:center; justify-content:flex-end; gap:1px; order:6; margin-top:2px; }  /* 靠右對齊貼資金 */
 .follow-right .follow-mid .iconbtn{ flex:0 0 auto; width:35px; height:26px; font-size:15px; display:inline-flex; align-items:center; justify-content:center; box-sizing:border-box; }  /* 跟直版前4圖案 35x26 */
@@ -701,7 +701,7 @@
 .follow-right > #autoBtns{ order:8; flex:0 0 auto; }  /* 自動/13秒 中 */
 .follow-right > #btnLeaderboard{ order:9; flex:0 0 auto; }  /* AI榜最後 */
 .follow-right #btnMute, .follow-right #btnAuto, .follow-right #btnAutoInt, .follow-right #btnLeaderboard{ width:35px; height:34px; font-size:11px; }
-.follow-right #btnLeaderboard{ width:70px; }  /* AI榜較闊跟直版 */
+.follow-right #btnLeaderboard{ width:75px; }  /* AI榜闊度75 */
 /* 重置掣做6掣之一：直排細掣，同fbtn一致 */
 .follow-right #btnFollowReset{ writing-mode:vertical-rl; text-orientation:upright; min-width:24px; height:30px; padding:0 1px 1px 1px; font-size:10px; line-height:1; justify-content:flex-start; align-items:center; }
 .follow-right .fbtn{
