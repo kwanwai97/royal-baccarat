@@ -297,7 +297,7 @@
   .follow-right > .fbtn{ order:0; }                                  /* 頂5掣排第一行 */
   .follow-mid{ flex:0 0 100%; display:flex; flex-direction:row; flex-wrap:nowrap; align-items:center; justify-content:center; gap:6px; order:1; }  /* 中間一行：100%寬強制換行到第二行，置中排5圖案掣 */
   .follow-right > #btnMute, .follow-right > #btnAuto, .follow-right > #btnAutoInt, .follow-right > #btnLeaderboard{ order:2; }  /* 底層掣排最後一行(貼投注區) */
-  .follow-mid .iconbtn{ flex:0 0 auto; }
+  .follow-mid .iconbtn{ flex:0 0 auto; width:38px; height:34px; font-size:15px; display:inline-flex; align-items:center; justify-content:center; box-sizing:border-box; }  /* 中間圖案掣尺寸跟上面頂5(fbtn 38x34) */
   /* 直版：大路標題 header 行 — 普通開牌掣正中央，剩餘數緊貼其左跟掣走 */
   .roadpanel > div:first-child{ position:relative; }   /* header 行做定位參考 */
   .dealmode-wrap #btnDealMode{ position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); }
@@ -306,7 +306,7 @@
 }
 .follow-left{flex:0 0 50%; display:flex; flex-direction:column; gap:5px; min-width:0; justify-content:flex-start; padding-left:6px;}
 /* 預測系統固定資訊區：上面一行(標題+請投注) + 下面一行(勝率/次數/勝負)，固定空間唔收起 */
-.pred-system{ min-height:46px; display:flex; flex-direction:column; gap:2px; padding:2px; border:1px solid #b98a17; border-radius:8px; background:rgba(20,30,20,.55); box-sizing:border-box; justify-content:center; }
+.pred-system{ min-height:160px; display:flex; flex-direction:column; gap:2px; padding:2px; border:1px solid #b98a17; border-radius:8px; background:rgba(20,30,20,.55); box-sizing:border-box; justify-content:center; }  /* 直版預設高160 */
 .pred-row1{ display:flex; align-items:center; gap:5px; font-size:12px; font-weight:800; color:#ffd479; flex-wrap:nowrap; white-space:nowrap; }
 .pred-ico{ font-size:13px; }
 .pred-title{ color:#ffd479; }
@@ -597,6 +597,7 @@
   /* ===== 打橫 landscape：純 CSS grid 重排，唔郁 DOM、唔改 id/邏輯 ===== */
   @media (orientation:landscape){
   #cloudSlot{display:none;}
+  .pred-system{ min-height:46px; }  /* 橫版：預測系統唔使160，還原原本高度 */
   /* 橫版：直版專用大路標題置中對普通開牌有效(共用絕對置中)；剩餘數留喺brand-sub正常流 */
   .roadpanel > div:first-child{ position:relative; }   /* 大路標題行做定位參考(橫版都啟用) */
   .dealmode-wrap{ display:contents; }  /* 橫版wrapper唔做box，btnDealMode靠自身absolute置中 */
