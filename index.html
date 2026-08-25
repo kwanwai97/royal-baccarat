@@ -679,6 +679,10 @@
 .follow-left .follow-text{ display:flex; flex-direction:row; flex-wrap:nowrap; align-items:center; gap:5px; flex-basis:auto; min-width:0; order:3; margin-top:1px; font-size:9px; }
 /* 打橫：預測系統區貼第二行最闊位(唔撐開、唔轉行)，保持三行位置唔變 */
 .follow-left .pred-system{ width:85% !important; max-width:none; margin-left:auto; }  /* 擴闊後由右縮細: box 貼住右邊跟注掣, 文字右對齊 */
+/* 橫版新邏輯：狀態欄+跟注次數紀錄搬到框頂, 水平排, 左對齊「預測系統」標題文字 */
+.follow-left .pred-road{ order:-2; margin-top:1px; align-self:flex-start; justify-content:flex-start; }
+.follow-left .pred-record{ order:-1; margin-top:1px; padding-top:0; border-top:none; align-self:flex-start; justify-content:flex-start; gap:3px 6px; }
+.follow-left .pred-row1{ justify-content:flex-start !important; }  /* 橫版標題都貼左, 等狀態/紀錄與標題頭位對齊 */
 .follow-left .pred-side{ margin-left:2px; }   /* 取消「請投注」撐開，第一行緊湊貼標題 */
 .follow-right{
   grid-column:3 / 5; grid-row:1 / span 2;   /* 橫版：跨第3-4欄容納5掣一行(179px),右緣貼資金(第5欄左)緊貼 */
