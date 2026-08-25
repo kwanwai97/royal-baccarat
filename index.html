@@ -679,29 +679,23 @@
 .follow-left .pred-system{ width:max-content; max-width:200px; }
 .follow-left .pred-side{ margin-left:2px; }   /* 取消「請投注」撐開，第一行緊湊貼標題 */
 .follow-right{
-  grid-column:3 / 4; grid-row:1 / span 2;   /* 橫版：預測系統右邊緊貼(2/3→3/4)，唔重疊 */
-  display:grid;                              /* 橫版跟注區：2上3下網格(決定性，唔受直排文字影響) */
-  grid-template-columns:auto auto auto;      /* 3欄：上層2個各佔1欄, 下層3個各佔1欄 */
-  grid-template-areas:
-    "bPredict bRev   ."
-    "bHot     bHotRev bLim"
-    "ftxt     ftxt    ftxt";
-  align-items:start; gap:2px;
-  align-self:start; padding:6px 1px 0;       /* 頂部6px同其他區水平空間一致 */
+  grid-column:4 / 5; grid-row:1 / span 2;   /* 橫版：搬去資金左側(第4欄)緊貼資金(第5欄),左右距1px */
+  display:flex; flex-direction:row; flex-wrap:nowrap; align-items:stretch; justify-content:flex-start; gap:1px;  /* 橫版5掣一行排列,掣左右距1px */
+  align-self:start; padding:6px 0 0;       /* 頂部6px; 左右padding清0緊貼 */
 }
-/* 橫版5掣(重置移出)兩層：上層跟預測/反預測(2個)；下層跟旺AI/反旺AI/±次數(3個) */
-.follow-right #btnFollowPredict2{ grid-area:bPredict; }
-.follow-right #btnFollowRev{ grid-area:bRev; }
-.follow-right #btnFollowHot{ grid-area:bHot; }
-.follow-right #btnFollowHotRev{ grid-area:bHotRev; }
-.follow-right .limit-row{ grid-area:bLim; grid-row:1 / span 2; align-self:stretch; }
-/* 跟注文字+重置掣：放網格最底一行全寬(唔入5掣區) */
-.follow-right .follow-text{ grid-area:ftxt; display:flex; flex-direction:row; align-items:center; gap:4px; flex-wrap:wrap; }
+/* 橫版5掣一行：跟預測/反預測/跟旺AI/反旺AI/±次數 全部一行(移除舊2上3下grid) */
+.follow-right #btnFollowPredict2{ order:1; }
+.follow-right #btnFollowRev{ order:2; }
+.follow-right #btnFollowHot{ order:3; }
+.follow-right #btnFollowHotRev{ order:4; }
+.follow-right .limit-row{ order:5; align-self:stretch; }
+/* 跟注文字+重置掣：換行到5掣下(唔入一行) */
+.follow-right .follow-text{ display:flex; flex-direction:row; align-items:center; gap:4px; flex-wrap:wrap; flex:1 0 100%; order:10; margin-top:2px; }
 /* 重置掣做6掣之一：直排細掣，同fbtn一致 */
 .follow-right #btnFollowReset{ writing-mode:vertical-rl; text-orientation:upright; min-width:24px; height:30px; padding:0 1px 1px 1px; font-size:10px; line-height:1; justify-content:flex-start; align-items:center; }
 .follow-right .fbtn{
   writing-mode:vertical-rl; text-orientation:upright;
-  min-width:28px; height:28px; flex:0 0 auto;
+  min-width:35px; width:35px; height:34px; flex:0 0 auto;  /* 橫版5掣 35x34 統一 */
   padding: 0 1px 1px 1px;
   font-size:10px;
   line-height: 1;
@@ -718,7 +712,7 @@
   writing-mode:vertical-rl; text-orientation:upright; 
   flex-direction:row; flex-wrap:nowrap; 
   align-items:center; justify-content:center; gap:2px; 
-  flex:0 0 28px; min-width:28px; width:28px; height:56px; align-self:end;
+  flex:0 0 35px; min-width:35px; width:35px; height:34px; align-self:stretch;  /* 橫版±次數 35x34 統一 */
   padding:0 1px;
   margin:0; box-sizing:border-box;
 }
