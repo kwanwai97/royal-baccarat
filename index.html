@@ -641,7 +641,7 @@
     /* 打橫收埋左右 panel 自身 margin/padding，令下半兩邊真·貼住 48% 分界線（根治中間空位） */
     .roadpanel{ margin:0 1px 0 0; }     /* 路單：收右邊 8px 空白，貼住分界 */
     .bets{ padding:2px 2px 2px 0; }     /* 投注區：收左右 10px */
-    .chips-row{ padding:4px 2px 2px 0; gap:0; } /* 籌碼區：收左右 10px；全部掣左右緊貼零空隙 */
+    .chips-row{ padding:2px 2px 2px 0; gap:0; } /* 橫版：籌碼區頂padding收2px, 左右緊貼零空隙 */
     /* 打橫：同直板一樣——限4個籌碼顯示，其餘(10K/50K)靠橫向推拉揭示，唔隱藏任何籌碼 */
     .chips-row .chips{ flex-wrap:wrap; }
     .chips-row .chip.c50k{ display:flex; }   /* 唔再隱藏50K，改由推拉揭示 */
@@ -680,7 +680,7 @@
 /* 橫版：跟注文字搬入預測系統底部，打橫一行(取消疊牌)，緊貼預測系統、縮細 */
 .follow-left .follow-text{ display:flex; flex-direction:row; flex-wrap:nowrap; align-items:center; gap:5px; flex-basis:auto; min-width:0; order:3; margin-top:1px; font-size:9px; }
 /* 打橫：預測系統區貼第二行最闊位(唔撐開、唔轉行)，保持三行位置唔變 */
-.follow-left .pred-system{ width:100% !important; max-width:none; }  /* 撐滿第2欄減少預測↔跟注空間(強制壓過任何繼承) */
+.follow-left .pred-system{ width:100% !important; max-width:none; justify-content:flex-start; gap:0; padding:1px 2px; min-height:0; }  /* 橫版：預測框內三行向上緊貼(消除垂直空隙), 收padding */
 .follow-left .pred-road{ justify-content:flex-start; }  /* 橫版：狀態欄向左 */
 .follow-left #followStatus{ text-align:left; }  /* 橫版：狀態文字向左 */
 .follow-left .pred-record{ justify-content:flex-start; }  /* 橫版：跟注次數紀錄向左 */
@@ -747,14 +747,14 @@
     /* 打橫投注區壓縮：3×3 貼頂、第2/3行細啲，令右欄同左路單水平並排唔溢出 */
     .bets{ display:grid; grid-template-columns:repeat(3,1fr); gap:3px; }
     .betrow{ display:contents; }     /* 三行變 grid 子項，整體 3×3 一齊排 */
-    .bet{ min-height:40px; padding:3px 2px; font-size:11px; }   /* 下兩行保持壓縮 */
-    /* 橫版：頂/中/底 統一 90/35/35（與直版一致） */
-    .betrow.top .bet{ min-height:90px; padding:5px 2px; }       /* 頂列(閒莊和) 90px 高 */
-    .betrow.mid .bet, .betrow.bottom .bet{ min-height:35px; padding:3px 2px; }  /* 第二/三列各 35px 高 */
+    .bet{ min-height:35px; padding:2px 2px; font-size:11px; }   /* 下兩行保持壓縮 */
+    /* 橫版：頂/中/底 統一 70/30/30（與直版對齊緊貼） */
+    .betrow.top .bet{ min-height:70px; padding:4px 2px; }       /* 頂列(閒莊和) 70px 高 */
+    .betrow.mid .bet, .betrow.bottom .bet{ min-height:30px; padding:2px 2px; }  /* 第二/三列各 30px 高 */
     .bet .bn{ font-size:11px; }
     .bet .od{ font-size:8px; }
     .bet .chips-stack{ min-height:12px; margin-top:1px; }
-    .chip{ width:26px; height:26px; font-size:8px; }
+    .chip{ width:22px; height:22px; font-size:8px; }
 </style>
 </head>
 <body>
