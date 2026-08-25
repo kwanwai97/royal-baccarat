@@ -685,6 +685,8 @@
   display:flex; flex-direction:row; flex-wrap:wrap; align-items:stretch; justify-content:flex-start; gap:1px;  /* 橫版5掣一行+5圖案行換行; 靠左貼預測框(消除預測↔掣之間84px空白); 掣左右距1px */
   align-self:start; padding:6px 0 0;       /* 頂部6px; 左右padding清0緊貼 */
 }
+/* 雙保險：橫版跟注區強制靠左貼預測框(壓過任何繼承/rule順序問題, 根治預測↔掣84px空白) */
+.follow-right{ justify-content:flex-start !important; }
 /* 橫版5掣一行：跟預測/反預測/跟旺AI/反旺AI/±次數 全部一行(移除舊2上3下grid) */
 .follow-right #btnFollowPredict2{ order:1; }
 .follow-right #btnFollowRev{ order:2; }
