@@ -793,6 +793,7 @@
   <div class="topbar">
     <div class="brand">
       <button id="btnLeaderboard" title="AI 排行榜" style="align-self:flex-start;margin:0;background:linear-gradient(90deg,#3a2d5c,#5a3d7c);color:#fff;border:none;padding:1px 1px;border-radius:6px;font-size:12px;line-height:1.3;cursor:pointer;letter-spacing:.5px;">🏆 AI排行榜<div style="font-size:9px;opacity:.75;letter-spacing:0;">每小時更新</div></button>
+      <button id="btnServerLb" title="伺服榜（連 server 版）" style="align-self:flex-start;margin:0;background:linear-gradient(90deg,#2d5c4a,#3d7c5a);color:#fff;border:none;padding:1px 1px;border-radius:6px;font-size:12px;line-height:1.3;cursor:pointer;letter-spacing:.5px;">🖥️ 伺服榜<div style="font-size:9px;opacity:.75;letter-spacing:0;">server 版</div></button>
       <div class="brand-sub"><span id="shoeInfo"></span></div>
       <div id="topBtns" class="top-btns">
         <button class="btn shuffle vbtn" id="btnShuffle" title="重新洗牌">洗牌</button>
@@ -3530,6 +3531,10 @@ document.getElementById('btnLeaderboard').addEventListener('click',()=>{
   });
   document.getElementById('albClose').onclick=()=>{ panel.hidden=true; };
   panel.hidden=false; render();
+});
+// 🖥️ 伺服榜：開 server 版 leaderboard.html（相對路徑，連同一個 server 嘅 8888/3000 都讀到）
+document.getElementById('btnServerLb').addEventListener('click',()=>{
+  window.open('leaderboard.html', '_blank');
 });
 document.getElementById('btnAi').addEventListener('click',()=>{ document.getElementById('aiModal').classList.add('show'); editingAiId=null; document.getElementById('aiConfirm').textContent='確認 · 新增 AI'; renderAiList(); if(ais.length<8) randomizeNewAi(); });  // 陪玩AI管理+新增模式自動隨機性格/注碼
 // 升級⑧ 限紅自選 modal
