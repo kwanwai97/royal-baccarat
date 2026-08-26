@@ -701,11 +701,13 @@
 .follow-left .pred-record{ justify-content:flex-start; }  /* 橫版：跟注次數紀錄向左 */
 .follow-left .pred-side{ margin-left:2px; }   /* 取消「請投注」撐開，第一行緊湊貼標題 */
 .follow-right{
-  grid-column:3 / 5; grid-row:1 / span 2;   /* 橫版：跨第3-4欄容納5掣一行(179px),右緣貼資金(第5欄左)緊貼 */
-  display:flex; flex-direction:row; flex-wrap:wrap; align-items:stretch; justify-content:flex-start; gap:1px;  /* 橫版5掣一行+5圖案行換行; 靠左消除左空白; 掣左右距1px */
-  align-self:start; padding:2px; border:1px solid #b98a17; border-radius:8px; background:rgba(20,30,20,.55); box-sizing:border-box;       /* 第二容器框(同pred-system); 邊框緊貼2px */
-  width:fit-content; justify-self:start;   /* 橫版：框闊度由內容決定, 唔被grid拉伸(修正跨兩欄90px+1fr撐闊) */
+  grid-column:3 / 4; grid-row:1 / span 2;   /* 橫版：第3欄(跟注區), 框fit-content溢出顯示唔截斷 */
+  display:flex; flex-direction:row; flex-wrap:wrap; align-items:stretch; align-content:flex-start; justify-content:flex-start; gap:1px;  /* 橫版三層各自一行靠左 */
+  align-self:start; min-width:0; padding:2px; border:1px solid #b98a17; border-radius:8px; background:rgba(20,30,20,.55); box-sizing:border-box;       /* 第二容器框(同pred-system); 邊框緊貼2px */
+  width:fit-content !important; justify-self:start !important; min-width:0 !important;   /* 橫版：框闊度由內容決定, 唔被grid跨欄拉伸 */
 }
+/* 橫版：三層各自一行(跟注/圖案/底層), 每行nowrap靠左, 容器fit-content=最闊行(~164) */
+.follow-right .frow{ display:flex; flex-direction:row; flex-wrap:nowrap; align-items:center; justify-content:flex-start; gap:1px; width:fit-content; flex:0 0 auto; }
 /* 橫版5掣一行：跟預測/反預測/跟旺AI/反旺AI/±次數 全部一行(移除舊2上3下grid) */
 .follow-right #btnFollowPredict2{ order:1; }
 .follow-right #btnFollowRev{ order:2; }
@@ -713,7 +715,7 @@
 .follow-right #btnFollowHotRev{ order:4; }
 .follow-right .limit-row{ order:5; align-self:stretch; width:40px !important; flex:0 0 40px !important; min-width:40px !important; }  /* 橫版±次數掣闊度40(回復) */
 /* 橫版：5圖案掣(.follow-mid)放5掣行下方,跟直版尺寸(前4個35x25,陪玩40x25) */
-.follow-right .follow-mid{ flex:0 0 100%; display:flex; flex-direction:row; flex-wrap:nowrap; align-items:center; justify-content:flex-start; gap:1px; order:6; margin-top:0px; }  /* 靠左同頂行對齊 */
+.follow-right .follow-mid{ flex:0 0 auto; display:flex; flex-direction:row; flex-wrap:nowrap; align-items:center; justify-content:flex-start; gap:1px; order:6; margin-top:0px; }  /* 橫版：跟左貼頂行; 唔用flex:0 0 100%(否則撐闊容器) */
 .follow-right .follow-mid .iconbtn{ flex:0 0 auto; width:30px; height:24px; font-size:15px; display:inline-flex; align-items:center; justify-content:center; box-sizing:border-box; }  /* 跟直版前4圖案 30x24 */
 .follow-right .follow-mid #btnAi{ width:40px; height:24px; }  /* 跟直版陪玩 40x24 */
 /* 跟注文字+重置掣：換行到5掣下(唔入一行) */
@@ -724,7 +726,7 @@
 .follow-right > #autoBtns{ order:8; flex:0 0 auto; }  /* 自動/13秒 中 */
 .follow-right > #btnLeaderboard{ order:9; flex:0 0 auto; }  /* AI榜最後 */
 .follow-right #btnMute, .follow-right #btnAuto, .follow-right #btnAutoInt, .follow-right #btnLeaderboard{ width:30px; height:31px; font-size:11px; }  /* 底行4掣統一30px(自動/13秒/AI榜/🔊) */
-.follow-right #btnLeaderboard{ width:70px; }  /* AI榜闊度70 */
+.follow-right #btnLeaderboard{ width:70px; white-space:nowrap; font-size:10px; line-height:1.1; }  /* AI榜闊度70, 橫版字唔轉行(🏆AI排行榜一行) */
 /* 重置掣做6掣之一：直排細掣，同fbtn一致 */
 .follow-right #btnFollowReset{ writing-mode:vertical-rl; text-orientation:upright; min-width:24px; height:30px; padding:0 1px 1px 1px; font-size:10px; line-height:1; justify-content:flex-start; align-items:center; }
 .follow-right .fbtn{
@@ -962,6 +964,7 @@
     </div>
     <!-- 右半：打橫一行 5 張卡 (4掣 + 次數)；跟路單/跟注統計已搬入預測系統 -->
     <div class="follow-right">
+      <div class="frow frow-top">
       <button class="btn fbtn" id="btnFollowPredict2" title="跟預測：長期跟模式，每局自動跟預測建議邊">跟預測</button>
       <button class="btn fbtn" id="btnFollowRev" title="反預測：長期跟模式，每局自動跟預測相反邊">反預測</button>
       <button class="btn fbtn" id="btnFollowHot" title="跟旺AI：長期跟模式，每局自動跟連勝最高AI嘅主注邊">跟旺<span class="ai-h">AI</span></button>
@@ -970,6 +973,7 @@
         <button class="btn fstep" id="btnLimUp" title="加1">＋</button>
         <span class="limit-val" id="followLimitVal">3</span>
         <button class="btn fstep" id="btnLimDown" title="減1">−</button>
+      </div>
       </div>
     </div>
   </div>
@@ -3622,9 +3626,12 @@ function placeTopBtns(){
     // 橫版：底層掣(自動/13秒/喇叭/AI榜)跟直版搬入follow-right底層(5圖案下方)；洗牌留籌碼區
     const frLand=document.querySelector('.follow-right');
     if(frLand){
-      if(autoWrap.parentElement!==frLand) frLand.appendChild(autoWrap);
-      if(lb && lb.parentElement!==frLand) frLand.appendChild(lb);
-      if(mute && mute.parentElement!==frLand) frLand.appendChild(mute);
+      let botLand=document.getElementById('bottomRowLand');
+      if(!botLand){ botLand=document.createElement('div'); botLand.id='bottomRowLand'; botLand.className='frow frow-bot'; }
+      if(autoWrap.parentElement!==botLand) botLand.appendChild(autoWrap);
+      if(lb && lb.parentElement!==botLand) botLand.appendChild(lb);
+      if(mute && mute.parentElement!==botLand) botLand.appendChild(mute);
+      if(botLand.parentElement!==frLand) frLand.appendChild(botLand);
       if(lb) lb.style.order='9';  // inline鎖死, 避免旋轉race fallback全局order:1跳最左
     }
     // 橫版：普通開牌掣搬去大路標題行(header行)正中央(dealModeWrap絕對置中，相對header行)；剩餘數留brand-sub
@@ -3679,10 +3686,13 @@ function placeTopBtns(){
         });
         oldMidL.remove();
       }
-      if(mute && mute.parentElement!==fr) fr.appendChild(mute);   // 喇叭排最左
-      if(auto.parentElement!==fr) fr.appendChild(auto);
-      if(aint.parentElement!==fr) fr.appendChild(aint);
-      if(lb && lb.parentElement!==fr) fr.appendChild(lb);         // AI排行榜排13秒右
+      let bot=document.getElementById('bottomRow');
+      if(!bot){ bot=document.createElement('div'); bot.id='bottomRow'; bot.className='frow frow-bot'; }
+      if(mute && mute.parentElement!==bot) bot.appendChild(mute);   // 喇叭排最左
+      if(auto.parentElement!==bot) bot.appendChild(auto);
+      if(aint.parentElement!==bot) bot.appendChild(aint);
+      if(lb && lb.parentElement!==bot) bot.appendChild(lb);         // AI排行榜排13秒右
+      if(bot.parentElement!==fr) fr.appendChild(bot);
       if(lb) lb.style.order='2';  // inline鎖死, 避免旋轉race fallback全局order:1跳最左
       // 中間行 wrapper（只建立一次）
       let mid=document.getElementById('followMid');
