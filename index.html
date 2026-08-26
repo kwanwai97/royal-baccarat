@@ -656,7 +656,7 @@
     /* 打橫收埋左右 panel 自身 margin/padding，令下半兩邊真·貼住 48% 分界線（根治中間空位） */
     .roadpanel{ margin:0 1px 0 0; }     /* 路單：收右邊 8px 空白，貼住分界 */
     .bets{ padding:2px 2px 2px 0; }     /* 投注區：收左右 10px */
-    .chips-row{ padding:2px 2px 2px 0; gap:0; } /* 橫版：籌碼區頂padding收2px, 左右緊貼零空隙 */
+    .chips-row{ padding:2px 2px 2px 0; gap:0; flex-wrap:nowrap; } /* 橫版：籌碼區頂padding收2px, 左右緊貼零空隙; 四掣一行(洗牌/清除/重複/發牌) */
     /* 打橫：同直板一樣——限4個籌碼顯示，其餘(10K/50K)靠橫向推拉揭示，唔隱藏任何籌碼 */
     .chips-row .chips{ flex-wrap:wrap; }
     .chips-row .chip.c50k{ display:flex; }   /* 唔再隱藏50K，改由推拉揭示 */
@@ -967,8 +967,7 @@
         <button class="iconbtn chip-icon" id="btnLimits" title="限紅自選">🎚</button>
         <button class="iconbtn chip-icon" id="btnAi" title="陪玩AI管理">🤖</button>
       </div>
-      <!-- 底層：洗牌/自動/13秒/喇叭/AI榜（純 CSS order 排列，唔用 JS 搬） -->
-      <button class="btn shuffle vbtn" id="btnShuffle" title="重新洗牌">洗牌</button>
+      <!-- 底層：自動/13秒/喇叭/AI榜（純 CSS order 排列，唔用 JS 搬） -->
       <button class="btn auto vbtn" id="btnAuto" title="自動開牌"><span class="a-label">自動</span><span class="a-state">關</span></button>
       <button class="btn auto-int-btn vnum" id="btnAutoInt"><span class="hnum">13</span><span class="vsec">秒</span></button>
       <button class="iconbtn chip-icon" id="btnMute" title="音效">🔊</button>
@@ -1003,6 +1002,7 @@
     <div class="chip c10k" data-chip="10000">10K</div>
     <div class="chip c50k" data-chip="50000">50K</div>
   </div>
+  <button class="btn shuffle vbtn" id="btnShuffle" title="重新洗牌">洗牌</button>
   <button class="btn clear vbtn" id="btnClear">清除</button>
   <button class="btn repeat vbtn" id="btnRepeat">重複</button>
   <button class="btn deal vbtn" id="btnDeal">發牌</button>
