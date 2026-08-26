@@ -610,7 +610,7 @@
     .follow-left .pred-row1, .follow-left .pred-row2, .follow-left .pred-row3{ width:100%; justify-content:flex-start; }  /* 橫版：預測框內5行全部向左(反轉舊嘅向右) */
     .app{
       display:grid;
-      grid-template-columns:60px minmax(0,1.85fr) 90px minmax(0,.75fr) minmax(0,.75fr) minmax(0,.75fr);   /* 左半(路單)~55%: 預測1.85fr; 右半(籌碼+投注)~45%: 各.75fr */
+      grid-template-columns:60px minmax(0,1.4fr) 90px minmax(0,1fr) minmax(0,1fr) minmax(0,1fr);   /* 第1欄固定60px預留左邊空間(對應直版左上漏空); 第2欄預測系統(1.4fr); 第3欄5掣固定90px; 第4-6欄資金/投注(各1fr) */
       grid-template-rows:auto auto auto auto auto auto;
       align-content:start;                /* 整體貼頂 */
       align-items:start;
