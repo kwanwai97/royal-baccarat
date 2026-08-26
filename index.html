@@ -310,7 +310,7 @@
   .follow-wrap{ gap:0; margin-bottom:0; }  /* align-items 留 stretch 令頂5掣貼頂 */
   .follow-right{ align-content:space-between; gap:1px !important; border:1px solid #b98a17; border-radius:8px; background:rgba(20,30,20,.55); box-sizing:border-box; padding:2px; }  /* 第二容器框：邊框緊貼(2px) */
   .follow-right > .fbtn{ order:0; }                                  /* 頂5掣排第一行 */
-  .follow-mid{ flex:0 0 100%; display:flex; flex-direction:row; flex-wrap:nowrap; align-items:center; justify-content:center; gap:1px; order:1; }  /* 中間一行：100%寬強制換行到第二行，置中排5圖案掣，左右距1px */
+  .follow-mid{ flex:0 0 100%; display:flex; flex-direction:row; flex-wrap:nowrap; align-items:center; justify-content:flex-start; gap:1px; order:1; }  /* 中間一行：100%寬強制換行到第二行，直版5圖案掣緊貼左(你要求) */
   .follow-right > #btnMute, .follow-right > #btnAuto, .follow-right > #btnAutoInt, .follow-right > #btnLeaderboard{ order:2; }  /* 底層掣排最後一行(貼投注區) */
   .follow-mid .iconbtn{ flex:0 0 auto; width:30px; height:26px; font-size:15px; display:inline-flex; align-items:center; justify-content:center; box-sizing:border-box; }  /* 中間前4圖案(戰績/禮物/大佬/限額): 30x26 */
   .follow-mid #btnAi{ width:40px; height:26px; }  /* 第5個陪玩: 40x26 */
