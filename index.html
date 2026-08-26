@@ -309,6 +309,9 @@
 @media (orientation:portrait){
   .follow-wrap{ gap:0; margin-bottom:0; }  /* align-items 留 stretch 令頂5掣貼頂 */
   .follow-right{ align-content:space-between; gap:1px !important; border:1px solid #b98a17; border-radius:8px; background:rgba(20,30,20,.55); box-sizing:border-box; padding:2px; }  /* 第二容器框：邊框緊貼(2px) */
+  .follow-right .frow{ display:flex; flex-direction:row; flex-wrap:wrap; align-items:center; justify-content:flex-start; gap:1px; width:100%; }  /* 直版：行容器flex, 跟注行/圖案行橫排 */
+  .follow-right .frow-top{ order:0; }  /* 跟注行置頂 */
+  .follow-right .frow-bot{ flex-direction:column; align-items:stretch; width:auto; flex:0 0 auto; align-self:flex-end; order:2; }  /* 直版底層(喇叭/自動/13秒/AI榜)豎排右邊置底 */
   .follow-right > .fbtn{ order:0; }                                  /* 頂5掣排第一行 */
   .follow-mid{ flex:0 0 100%; display:flex; flex-direction:row; flex-wrap:nowrap; align-items:center; justify-content:flex-start; gap:1px; order:1; }  /* 中間一行：100%寬強制換行到第二行，直版5圖案掣緊貼左(你要求) */
   .follow-right > #btnMute, .follow-right > #btnAuto, .follow-right > #btnAutoInt, .follow-right > #btnLeaderboard{ order:2; }  /* 底層掣排最後一行(貼投注區) */
@@ -708,6 +711,7 @@
 }
 /* 橫版：三層各自一行(跟注/圖案/底層), 每行nowrap靠左, 容器fit-content=最闊行(~164) */
 .follow-right .frow{ display:flex; flex-direction:row; flex-wrap:nowrap; align-items:center; justify-content:flex-start; gap:1px; width:fit-content; flex:0 0 auto; }
+.follow-right .frow-bot{ order:7; }  /* 橫版底層行排圖案(order:6)之後 */
 /* 橫版5掣一行：跟預測/反預測/跟旺AI/反旺AI/±次數 全部一行(移除舊2上3下grid) */
 .follow-right #btnFollowPredict2{ order:1; }
 .follow-right #btnFollowRev{ order:2; }
