@@ -37,6 +37,27 @@
   /* 左上角客人名區塊：細字純顯示，唔霸位唔撐爆 */
   #guestBar{font-size:11px; font-weight:700; letter-spacing:0; color:#9fd6ff; background:rgba(20,40,70,.45); border:1px solid rgba(120,180,255,.3); border-radius:6px; padding:1px 6px; margin-left:0; cursor:pointer; order:0; white-space:nowrap; max-width:100%; overflow:hidden; text-overflow:ellipsis;}
   #guestBar:hover{background:rgba(30,55,90,.6);}
+  /* 模擬登入/配置面板 */
+  .login-panel{position:absolute; top:6px; left:6px; z-index:60; width:230px; background:#0c1a12; border:1px solid var(--goldd); border-radius:10px; padding:10px 12px; box-shadow:0 6px 24px rgba(0,0,0,.7); font-family:inherit; color:#e8e8e8;}
+  .login-panel[hidden]{display:none;}
+  .lp-head{display:flex; justify-content:space-between; align-items:center; font-weight:800; color:var(--gold2); font-size:13px; margin-bottom:8px;}
+  .lp-x{background:none; border:none; color:#aaa; font-size:15px; cursor:pointer; line-height:1;}
+  .lp-x:hover{color:#fff;}
+  .login-panel label{display:block; font-size:11px; color:#cdbf8e; margin-bottom:6px;}
+  .login-panel input[type=text], .login-panel input[type=password]{width:100%; box-sizing:border-box; margin-top:2px; padding:5px 7px; border-radius:6px; border:1px solid #2a4a36; background:#06120c; color:#fff; font-size:13px;}
+  .lp-msg{min-height:14px; font-size:10px; color:#ff9b9b; margin-bottom:4px;}
+  .lp-msg.ok{color:#8fe0ab;}
+  .lp-btns{display:flex; gap:6px;}
+  .lp-btn{flex:1; padding:6px 0; border:none; border-radius:6px; font-size:12px; font-weight:700; cursor:pointer; color:#fff;}
+  .lp-btn.reg{background:#2a6b46;} .lp-btn.login{background:#3a5a8c;} .lp-btn.logout{background:#7a3a3a; width:100%; margin-top:8px;}
+  .lp-btn:hover{filter:brightness(1.12);}
+  .lp-hint{font-size:9px; color:#7a8a7a; margin-top:8px; line-height:1.3;}
+  .lp-welcome{font-size:13px; margin-bottom:4px;} .lp-welcome b{color:var(--gold2);}
+  .lp-bal{font-size:12px; margin-bottom:8px;} .lp-bal b{color:#7fffb0;}
+  .lp-cfg{display:flex; flex-direction:column; gap:7px; border-top:1px solid #1c3a2a; padding-top:8px;}
+  .lp-row{display:flex; align-items:center; justify-content:space-between; gap:8px; font-size:11px; color:#cdbf8e;}
+  .lp-row select{background:#06120c; color:#fff; border:1px solid #2a4a36; border-radius:5px; padding:2px 4px; font-size:11px;}
+  .lp-row input[type=range]{flex:1; max-width:110px;}
   .topright{display:flex; align-items:center; gap:10px;}
   .balance{font-size:12px; text-align:right;}
   .balance b{color:var(--gold2); font-size:18px; margin-left:1px;}
@@ -763,6 +784,43 @@
 </head>
 <body>
 <div class="app">
+  <!-- 模擬登入/註冊 + 配置面板（點左上角客人名框彈出；純 localStorage 模擬，唔連 server） -->
+  <div id="loginPanel" class="login-panel" hidden>
+    <div class="lp-head">
+      <span>👤 帳號中心</span>
+      <button id="lpClose" class="lp-x">✕</button>
+    </div>
+    <div id="lpLoggedOut">
+      <label>用戶名<input id="lpUser" type="text" maxlength="20" placeholder="3-20字 英數/_"></label>
+      <label>密碼<input id="lpPass" type="password" maxlength="40" placeholder="至少4字"></label>
+      <div class="lp-msg" id="lpMsg"></div>
+      <div class="lp-btns">
+        <button id="lpRegister" class="lp-btn reg">註冊</button>
+        <button id="lpLogin" class="lp-btn login">登入</button>
+      </div>
+      <div class="lp-hint">本機模擬，資料只存你部機瀏覽器，唔連 server</div>
+    </div>
+    <div id="lpLoggedIn" hidden>
+      <div class="lp-welcome">歡迎，<b id="lpName"></b></div>
+      <div class="lp-bal">本地餘額：<b id="lpBalance"></b></div>
+      <div class="lp-cfg">
+        <label class="lp-row">🔊 音量<input id="cfgVol" type="range" min="0" max="100" value="70"></label>
+        <label class="lp-row">🤖 AI 數量
+          <select id="cfgAi">
+            <option value="0">0（無）</option><option value="1">1</option>
+            <option value="3" selected>3</option><option value="5">5</option>
+          </select>
+        </label>
+        <label class="lp-row">🎚 限紅
+          <select id="cfgLimit">
+            <option value="1000">1000</option><option value="5000" selected>5000</option>
+            <option value="20000">20000</option><option value="50000">50000</option>
+          </select>
+        </label>
+      </div>
+      <button id="lpLogout" class="lp-btn logout">登出</button>
+    </div>
+  </div>
   <div class="topbar">
     <div class="brand">
       <div id="guestBar" title="點擊修改客人名稱">👤 <span id="guestName">客人</span></div>
@@ -3659,7 +3717,7 @@ if(window.matchMedia){ try{ window.matchMedia('(orientation:landscape)').addEven
 if(!loadShoe()) resetShoe();   // 有儲存嘅鞋就續返(派過幾多張繼續)，否則開新鞋
 updateShoeInfo();   // 無論續鞋定開新鞋都刷新剩餘張數顯示
 
-// 左上角客人名：localStorage 記住；無就隨機生成「客人 XXXX」，可點擊改名
+// 左上角客人名 + 模擬登入/配置面板（純 localStorage 模擬，唔連 server）
 (function initGuestBar(){
   const K='rb_guest';
   const el=document.getElementById('guestName');
@@ -3667,11 +3725,66 @@ updateShoeInfo();   // 無論續鞋定開新鞋都刷新剩餘張數顯示
   let name=localStorage.getItem(K);
   if(!name){ name='客人'+String(Math.floor(1000+Math.random()*9000)); localStorage.setItem(K,name); }
   el.textContent=name;
+
+  // 模擬帳號資料庫（localStorage）：{ user: {salt,hash,balance} }
+  const AK='rb_accounts';
+  function loadAcc(){ try{return JSON.parse(localStorage.getItem(AK))||{};}catch(e){return {};} }
+  function saveAcc(db){ localStorage.setItem(AK, JSON.stringify(db)); }
+  function hash(pw, salt){ salt=salt||Math.random().toString(36).slice(2,18); let h=0; for(const c of (salt+pw)) h=(h*31+c.charCodeAt(0))>>>0; return {salt, hash:String(h)}; }
+  function verify(pw, salt, hash){ return hash(pw, salt).hash===hash; }
+  function validUser(u){ return /^[A-Za-z0-9_]{3,20}$/.test(u); }
+
+  const panel=document.getElementById('loginPanel');
   const bar=document.getElementById('guestBar');
-  if(bar) bar.addEventListener('click',()=>{
-    const v=prompt('修改客人名稱（3-12字）', el.textContent);
-    if(v&&v.trim().length>=1&&v.trim().length<=12){ name=v.trim(); localStorage.setItem(K,name); el.textContent=name; }
+  const msg=document.getElementById('lpMsg');
+  const loggedOut=document.getElementById('lpLoggedOut');
+  const loggedIn=document.getElementById('lpLoggedIn');
+
+  function showPanel(){ panel.hidden=false; refresh(); }
+  function hidePanel(){ panel.hidden=true; }
+  function refresh(){
+    const u=localStorage.getItem('rb_curuser');
+    if(u){ loggedIn.hidden=false; loggedOut.hidden=true; document.getElementById('lpName').textContent=u;
+      const db=loadAcc(); document.getElementById('lpBalance').textContent=(db[u]&&db[u].balance!=null)?db[u].balance.toLocaleString():'50,000'; }
+    else { loggedIn.hidden=true; loggedOut.hidden=false; }
+  }
+  function setMsg(t, ok){ msg.textContent=t; msg.className='lp-msg'+(ok?' ok':''); }
+
+  if(bar) bar.addEventListener('click', showPanel);
+  const close=document.getElementById('lpClose'); if(close) close.addEventListener('click', hidePanel);
+
+  document.getElementById('lpRegister').addEventListener('click', ()=>{
+    const u=document.getElementById('lpUser').value.trim();
+    const p=document.getElementById('lpPass').value;
+    if(!validUser(u)){ setMsg('用戶名要用 3-20 個英數字/底線'); return; }
+    if(typeof p!=='string'||p.length<4){ setMsg('密碼至少 4 個字'); return; }
+    const db=loadAcc();
+    if(db[u]){ setMsg('用戶名已存在'); return; }
+    db[u]={...hash(p), balance:50000}; saveAcc(db);
+    localStorage.setItem('rb_curuser', u); setMsg('註冊成功！', true); refresh();
   });
+  document.getElementById('lpLogin').addEventListener('click', ()=>{
+    const u=document.getElementById('lpUser').value.trim();
+    const p=document.getElementById('lpPass').value;
+    const db=loadAcc();
+    if(!db[u]||!verify(p, db[u].salt, db[u].hash)){ setMsg('用戶名或密碼錯'); return; }
+    localStorage.setItem('rb_curuser', u); setMsg('登入成功！', true); refresh();
+  });
+  document.getElementById('lpLogout').addEventListener('click', ()=>{
+    localStorage.removeItem('rb_curuser'); el.textContent='客人'+String(Math.floor(1000+Math.random()*9000)); setMsg(''); hidePanel(); refresh();
+  });
+
+  // 配置區：音量 / AI 數量 / 限紅，存 localStorage
+  const cfgK='rb_cfg';
+  function loadCfg(){ try{return JSON.parse(localStorage.getItem(cfgK))||{};}catch(e){return {};} }
+  function saveCfg(c){ localStorage.setItem(cfgK, JSON.stringify(c)); }
+  const cfg=loadCfg();
+  const vol=document.getElementById('cfgVol'), ai=document.getElementById('cfgAi'), lim=document.getElementById('cfgLimit');
+  if(vol){ vol.value=cfg.vol!=null?cfg.vol:70; vol.addEventListener('input',()=>{ const c=loadCfg(); c.vol=+vol.value; saveCfg(c); }); }
+  if(ai){ ai.value=cfg.ai!=null?String(cfg.ai):'3'; ai.addEventListener('change',()=>{ const c=loadCfg(); c.ai=+ai.value; saveCfg(c); }); }
+  if(lim){ lim.value=cfg.limit!=null?String(cfg.limit):'5000'; lim.addEventListener('change',()=>{ const c=loadCfg(); c.limit=+lim.value; saveCfg(c); }); }
+
+  refresh();
 })();
 
 updateBalance(); updateBetDisplay(); checkDaily(); updateQuest(); drawAllRoads();
