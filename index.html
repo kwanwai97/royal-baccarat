@@ -705,10 +705,10 @@
 .follow-left .pred-record{ justify-content:flex-start; }  /* 橫版：跟注次數紀錄向左 */
 .follow-left .pred-side{ margin-left:2px; }   /* 取消「請投注」撐開，第一行緊湊貼標題 */
 .follow-right{
-  grid-column:3 / 5; grid-row:1 / span 2;   /* 橫版：跨第3-4欄(頂部第4欄空, 投注區在row4唔重疊), 靠右緊貼資金(第5欄)左 */
+  grid-column:3 / 4; grid-row:1 / span 2;   /* 橫版：第3欄(跟注區), 框fit-content溢出顯示唔截斷 */
   display:flex; flex-direction:row; flex-wrap:wrap; align-items:stretch; align-content:flex-start; justify-content:flex-start; gap:1px;  /* 橫版三層各自一行靠左 */
   align-self:start; min-width:0; padding:2px; border:1px solid #b98a17; border-radius:8px; background:rgba(20,30,20,.55); box-sizing:border-box;       /* 第二容器框(同pred-system); 邊框緊貼2px */
-  width:fit-content !important; justify-self:end !important; min-width:0 !important;   /* 橫版：框靠右緊貼資金 */
+  width:fit-content !important; justify-self:start !important; min-width:0 !important;   /* 橫版：框闊度由內容決定, 唔被grid跨欄拉伸 */
 }
 /* 橫版：三層各自一行(跟注/圖案/底層), 每行nowrap靠左, 容器fit-content=最闊行(~164) */
 .follow-right .frow{ display:flex; flex-direction:row; flex-wrap:nowrap; align-items:center; justify-content:flex-start; gap:1px; width:fit-content; flex:0 0 auto; }
