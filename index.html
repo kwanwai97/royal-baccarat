@@ -308,11 +308,11 @@
 /* 直版：跟注區 — 頂5掣貼頂不變，底層掣(🔊自動13秒AI榜)貼投注區，中間空隙擺5圖案掣(戰績/禮物/腦袋/限額/陪玩) */
 @media (orientation:portrait){
   .follow-wrap{ gap:0; margin-bottom:0; }  /* align-items 留 stretch 令頂5掣貼頂 */
-  .follow-right{ align-content:space-between; gap:1px !important; border:1px solid #b98a17; border-radius:8px; background:rgba(20,30,20,.55); box-sizing:border-box; padding:3px; }  /* 第二容器框：包住三層掣, 同pred-system風格一致; padding統一3px */
+  .follow-right{ align-content:space-between; gap:1px !important; border:1px solid #b98a17; border-radius:8px; background:rgba(20,30,20,.55); box-sizing:border-box; padding:2px; }  /* 第二容器框：邊框緊貼(2px) */
   .follow-right > .fbtn{ order:0; }                                  /* 頂5掣排第一行 */
   .follow-mid{ flex:0 0 100%; display:flex; flex-direction:row; flex-wrap:nowrap; align-items:center; justify-content:center; gap:1px; order:1; }  /* 中間一行：100%寬強制換行到第二行，置中排5圖案掣，左右距1px */
   .follow-right > #btnMute, .follow-right > #btnAuto, .follow-right > #btnAutoInt, .follow-right > #btnLeaderboard{ order:2; }  /* 底層掣排最後一行(貼投注區) */
-  .follow-mid .iconbtn{ flex:0 0 auto; width:32px; height:26px; font-size:15px; display:inline-flex; align-items:center; justify-content:center; box-sizing:border-box; }  /* 中間前4圖案(戰績/禮物/大佬/限額): 32x26 */
+  .follow-mid .iconbtn{ flex:0 0 auto; width:30px; height:26px; font-size:15px; display:inline-flex; align-items:center; justify-content:center; box-sizing:border-box; }  /* 中間前4圖案(戰績/禮物/大佬/限額): 30x26 */
   .follow-mid #btnAi{ width:40px; height:26px; }  /* 第5個陪玩: 40x26 */
   /* 直版：大路標題 header 行 — 普通開牌掣正中央，剩餘數緊貼其左跟掣走 */
   .roadpanel > div:first-child{ position:relative; }   /* header 行做定位參考 */
@@ -348,7 +348,7 @@
 .pred-record b{ color:#ffd479; font-weight:800; }
 .pred-record .ps-wl{ display:inline-flex; align-items:center; gap:3px; flex-wrap:nowrap; white-space:nowrap; }
 .pred-record .btn.freset{ flex:0 0 auto; margin:0 0 0 2px; padding:1px 6px; font-size:9px; font-weight:700; color:#ffd9a8; background:rgba(255,120,80,0.16); border:1px solid rgba(255,150,110,0.5); border-radius:8px; cursor:pointer; white-space:nowrap; }
-.follow-right{flex:1 1 50%; display:flex; flex-direction:row; flex-wrap:wrap; gap:2px; align-items:flex-start; justify-content:flex-start; padding-right:3px;}
+.follow-right{flex:1 1 50%; display:flex; flex-direction:row; flex-wrap:wrap; gap:2px; align-items:flex-start; justify-content:flex-start; padding-right:2px;}
 .follow-text{display:flex; flex-direction:row; flex-wrap:nowrap; align-items:center; gap:6px; white-space:nowrap; order:-1; margin:2px 0;}   /* 直版：獨立成整行(投注區#bets頂, 閒P正上方), column flex 下 order:-1 排最前; 唔再關聯跟注掣 */
 /* 直版 .follow-text 被 JS 搬入 #bets, 原有 .follow-right scoped rule 失效 → 呢度補返狀態+統計成一行(狀態左統計右) */
 .bets .follow-status, .bets .follow-stats{ display:inline-flex; flex:0 0 auto; flex-wrap:nowrap; white-space:nowrap; align-items:center; font-size:10px; }
@@ -356,7 +356,7 @@
 
 /* 五個掣統一尺寸：4個策略掣 flex:1 1 0 平均闊度；第5個次數掣固定36px；高度統一32px */
 .follow-right .fbtn{
-  flex:0 0 32px; min-width:32px; width:32px;
+  flex:0 0 30px; min-width:30px; width:30px;
   height:34px; padding:6px 4px; font-size:11px; font-weight:800; line-height:1.15;
   text-align:center; white-space:nowrap; letter-spacing:0;
   border-radius:8px; border:1px solid #ffb347; background:linear-gradient(180deg,#ffd479,#e6a417); color:#241a00; opacity:.7; box-sizing:border-box;
@@ -364,7 +364,7 @@
 /* 直版：自動開/13秒搬入 follow-right 最底，統一 .fbtn 尺寸；@media portrait 限定，橫版唔受 */
 @media (orientation:portrait){
   .follow-right .btn.auto, .follow-right .auto-int-btn{
-    flex:0 0 32px; min-width:32px; width:32px;
+    flex:0 0 30px; min-width:30px; width:30px;
     height:34px; padding:4px 1px; font-size:11px; font-weight:800; line-height:1;
     text-align:center; letter-spacing:0;
     border-radius:8px; border:1px solid #ffb347; background:linear-gradient(180deg,#ffd479,#e6a417); color:#241a00; opacity:.7; box-sizing:border-box;
@@ -378,7 +378,7 @@
   .follow-right .auto-int-btn .vsec{ writing-mode:horizontal-tb; font-size:9px; line-height:1; }
   /* 直版：AI排行榜搬到跟注區最底(13秒右)，闊70 */
   .follow-right #btnLeaderboard{
-    flex:0 0 75px; min-width:75px; width:75px;
+    flex:0 0 70px; min-width:70px; width:70px;
     height:34px; padding:6px 4px; font-size:11px; font-weight:800; line-height:1.15;
     text-align:center; white-space:nowrap; letter-spacing:0;
     border-radius:8px; border:1px solid #ffb347; background:linear-gradient(180deg,#ffd479,#e6a417); color:#241a00; opacity:.7; box-sizing:border-box;
@@ -386,7 +386,7 @@
   }
   /* 喇叭搬入底層自動左：統一 .btn.auto 尺寸，作 icon 掣 */
   .follow-right #btnMute{
-    flex:0 0 32px; min-width:32px; width:32px;
+    flex:0 0 30px; min-width:30px; width:30px;
     height:34px; padding:4px 1px; font-size:14px; line-height:1;
     text-align:center;
     border-radius:8px; border:1px solid #ffb347; background:linear-gradient(180deg,#ffd479,#e6a417); color:#241a00; opacity:.7; box-sizing:border-box;
@@ -395,7 +395,7 @@
   .follow-right #btnMute, .follow-right #btnAuto, .follow-right #btnAutoInt, .follow-right #btnLeaderboard{ margin:0; }
 }
 .follow-right .limit-row{
-  flex:0 0 32px; min-width:0;
+  flex:0 0 40px; min-width:0;
   height:34px; padding:4px 2px;
   border-radius:8px; border:1px solid #ffb347; background:linear-gradient(180deg,#ffd479,#e6a417); color:#241a00; opacity:.7; box-sizing:border-box;
 }
@@ -403,7 +403,7 @@
 /* limit-row 專屬設定（只覆蓋需要唔同嘅部分） */
 .follow-right .limit-row {
   flex: 0 0 auto;
-  min-width: 32px;          /* 統一32px(跟注掣一致) */
+  min-width: 40px;          /* ±次數回復40px */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -691,7 +691,7 @@
     .follow-wrap{
       display:contents;
     }
-.follow-left{ grid-column:2 / 3; grid-row:1 / span 2; min-width:0; padding:6px 0 0 1px; position:relative; left:37px; display:flex; flex-direction:column; align-items:stretch; }  /* 橫版：預測系統框再向左移3px(left:37px), 框右緣與跟隨掣留39px空位; 寬度不變/直版不變 */
+.follow-left{ grid-column:2 / 3; grid-row:1 / span 2; min-width:0; padding:6px 0 0 1px; position:relative; display:flex; flex-direction:column; align-items:stretch; }  /* 橫版：預測系統框留第2欄內(移除left:37px舊遺留, 解決同follow-right重疊) */
 /* 橫版：跟注文字搬入預測系統底部，打橫一行(取消疊牌)，緊貼預測系統、縮細 */
 .follow-left .follow-text{ display:flex; flex-direction:row; flex-wrap:nowrap; align-items:center; gap:5px; flex-basis:auto; min-width:0; order:3; margin-top:0; font-size:9px; }
 /* 打橫：預測系統區貼第二行最闊位(唔撐開、唔轉行)，保持三行位置唔變 */
@@ -703,17 +703,17 @@
 .follow-right{
   grid-column:3 / 5; grid-row:1 / span 2;   /* 橫版：跨第3-4欄容納5掣一行(179px),右緣貼資金(第5欄左)緊貼 */
   display:flex; flex-direction:row; flex-wrap:wrap; align-items:stretch; justify-content:flex-start; gap:1px;  /* 橫版5掣一行+5圖案行換行; 靠左消除左空白; 掣左右距1px */
-  align-self:start; padding:3px; border:1px solid #b98a17; border-radius:8px; background:rgba(20,30,20,.55); box-sizing:border-box;       /* 第二容器框(同pred-system); padding統一3px */
+  align-self:start; padding:2px; border:1px solid #b98a17; border-radius:8px; background:rgba(20,30,20,.55); box-sizing:border-box;       /* 第二容器框(同pred-system); 邊框緊貼2px */
 }
 /* 橫版5掣一行：跟預測/反預測/跟旺AI/反旺AI/±次數 全部一行(移除舊2上3下grid) */
 .follow-right #btnFollowPredict2{ order:1; }
 .follow-right #btnFollowRev{ order:2; }
 .follow-right #btnFollowHot{ order:3; }
 .follow-right #btnFollowHotRev{ order:4; }
-.follow-right .limit-row{ order:5; align-self:stretch; width:32px !important; flex:0 0 32px !important; min-width:32px !important; }  /* 橫版±次數掣闊度32(統一) */
+.follow-right .limit-row{ order:5; align-self:stretch; width:40px !important; flex:0 0 40px !important; min-width:40px !important; }  /* 橫版±次數掣闊度40(回復) */
 /* 橫版：5圖案掣(.follow-mid)放5掣行下方,跟直版尺寸(前4個35x25,陪玩40x25) */
 .follow-right .follow-mid{ flex:0 0 100%; display:flex; flex-direction:row; flex-wrap:nowrap; align-items:center; justify-content:flex-start; gap:1px; order:6; margin-top:0px; }  /* 靠左同頂行對齊 */
-.follow-right .follow-mid .iconbtn{ flex:0 0 auto; width:32px; height:24px; font-size:15px; display:inline-flex; align-items:center; justify-content:center; box-sizing:border-box; }  /* 跟直版前4圖案 32x24 */
+.follow-right .follow-mid .iconbtn{ flex:0 0 auto; width:30px; height:24px; font-size:15px; display:inline-flex; align-items:center; justify-content:center; box-sizing:border-box; }  /* 跟直版前4圖案 30x24 */
 .follow-right .follow-mid #btnAi{ width:40px; height:24px; }  /* 跟直版陪玩 40x24 */
 /* 跟注文字+重置掣：換行到5掣下(唔入一行) */
 .follow-right .follow-text{ display:flex; flex-direction:row; align-items:center; gap:4px; flex-wrap:wrap; flex:1 0 100%; order:10; margin-top:0; }  /* 跟注文字貼上(垂直空間0) */
@@ -722,21 +722,21 @@
 .follow-right > #btnMute{ order:7; flex:0 0 auto; }  /* 喇叭第一位 */
 .follow-right > #autoBtns{ order:8; flex:0 0 auto; }  /* 自動/13秒 中 */
 .follow-right > #btnLeaderboard{ order:9; flex:0 0 auto; }  /* AI榜最後 */
-.follow-right #btnMute, .follow-right #btnAuto, .follow-right #btnAutoInt, .follow-right #btnLeaderboard{ width:32px; height:31px; font-size:11px; }  /* 底行4掣統一32px(自動/13秒/AI榜/🔊) */
-.follow-right #btnLeaderboard{ width:75px; }  /* AI榜闊度75 */
+.follow-right #btnMute, .follow-right #btnAuto, .follow-right #btnAutoInt, .follow-right #btnLeaderboard{ width:30px; height:31px; font-size:11px; }  /* 底行4掣統一30px(自動/13秒/AI榜/🔊) */
+.follow-right #btnLeaderboard{ width:70px; }  /* AI榜闊度70 */
 /* 重置掣做6掣之一：直排細掣，同fbtn一致 */
 .follow-right #btnFollowReset{ writing-mode:vertical-rl; text-orientation:upright; min-width:24px; height:30px; padding:0 1px 1px 1px; font-size:10px; line-height:1; justify-content:flex-start; align-items:center; }
 .follow-right .fbtn{
   writing-mode:vertical-rl; text-orientation:upright;
-  min-width:32px; width:32px; height:31px; flex:0 0 auto;  /* 橫版5掣 32x31 統一 */
+  min-width:30px; width:30px; height:31px; flex:0 0 auto;  /* 橫版5掣 30x31 統一 */
   padding: 0 1px 1px 1px;
   font-size:10px;
   line-height: 1;
   justify-content: flex-start;
   align-items: center;
 }
-/* 橫版：自動/13秒 統一32px(同跟注掣) */
-.follow-right .btn.auto, .follow-right .auto-int-btn{ min-width:32px !important; width:32px !important; height:31px !important; flex:0 0 32px !important; }
+/* 橫版：自動/13秒 統一30px(同跟注掣) */
+.follow-right .btn.auto, .follow-right .auto-int-btn{ min-width:30px !important; width:30px !important; height:31px !important; flex:0 0 30px !important; }
     /* 跟注文字(狀態+統計)打橫一行、縮細、緊貼預測系統 */
     .follow-text #followStatus{ text-align:left; white-space:nowrap; flex-basis:auto; font-size:9px; }
     .follow-text .follow-stats{ text-align:left; white-space:nowrap; margin-left:0; font-size:9px; }
@@ -747,7 +747,7 @@
   writing-mode:vertical-rl; text-orientation:upright; 
   flex-direction:row; flex-wrap:nowrap; 
   align-items:center; justify-content:center; gap:2px; 
-  flex:0 0 32px; min-width:32px; width:32px; height:31px; align-self:stretch;  /* 橫版±次數 32x31 統一 */
+  flex:0 0 40px; min-width:40px; width:40px; height:31px; align-self:stretch;  /* 橫版±次數 40x31 回復 */
   padding:0 1px;
   margin:0; box-sizing:border-box;
 }
