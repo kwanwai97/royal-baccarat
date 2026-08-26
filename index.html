@@ -166,8 +166,8 @@
   .center-msg.show{opacity:1;}
 
   /* 下注區 3x3 */
-  .bets{display:flex; flex-direction:column; gap:4px; padding:3px 10px 4px;}
-  .betrow{display:grid; gap:4px; grid-template-columns:repeat(3,1fr);}
+  .bets{display:flex; flex-direction:column; gap:1px; padding:3px 10px 4px;}
+  .betrow{display:grid; gap:1px; grid-template-columns:repeat(3,1fr);}
   .betrow.top{grid-template-columns:repeat(3,1fr);}
   .betrow.bottom{grid-template-columns:repeat(3,1fr);}
   .bet{position:relative; border-radius:8px; padding:5px 3px 4px; text-align:center; cursor:pointer;
@@ -750,7 +750,7 @@
     .bet{ min-height:35px; padding:0; font-size:11px; }   /* 下兩行保持壓縮, 全0空隙 */
     /* 橫版：頂/中/底 統一 90/30/30（與直版對齊緊貼） */
     .betrow.top .bet{ min-height:88px; padding:0; }       /* 頂列(閒莊和) 88px 高 */
-    .betrow.mid .bet, .betrow.bottom .bet{ min-height:33px; padding:0; }  /* 第二/三列各 33px 高 */
+    .betrow.mid .bet, .betrow.bottom .bet{ min-height:35px; padding:0; }  /* 第二/三列各 35px 高 */
     .bet .bn{ font-size:11px; }
     .bet .od{ font-size:8px; }
     .bet .chips-stack{ min-height:12px; margin-top:1px; }
