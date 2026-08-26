@@ -228,7 +228,7 @@
   .bet.luck7{border-color:#ff5d8f; color:#ffb3cd;}
 
   /* 籌碼行：左標籤 / 中籌碼 / 右剩餘牌數 */
-  .chips-row{display:flex; align-items:center; gap:3px; padding:4px 10px 2px; flex-wrap:nowrap; overflow-x:auto;}
+  .chips-row{display:flex; align-items:center; gap:2px; padding:4px 10px 2px; flex-wrap:nowrap; overflow-x:auto;}  /* 籌碼區+洗牌/清除/重複/發牌 四掣跟籌碼2px間距 */
   .chips-row .btn, .chips-row .btn.shuffle{margin:0; flex:0 0 auto; width:35px; height:35px; padding:2px; display:flex; align-items:center; justify-content:center; box-sizing:border-box;}
   .chips-row .btn.auto-int-btn{margin-left:0;}
   .top-btns{display:flex; gap:3px; margin-top:2px; order:3;}
@@ -319,7 +319,7 @@
   .dealmode-wrap #btnDealMode{ position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); }
   .roadpanel > div:first-child #shoeInfo{ position:absolute; top:50%; transform:translateY(-50%); font-size:13px; color:#5fe08a; font-weight:800; white-space:nowrap; }  /* 直版：剩餘數 綠色+放大，JS動態緊貼普通開牌左 */
   .bets{ padding-top:0; padding-bottom:0; }  /* 直版：投注區上下padding清零，同籌碼區距離交畀chips-row頂padding控制 */
-  .chips-row{ padding-top:1px !important; gap:0 !important; align-items:flex-start; }  /* 直版：籌碼區頂padding=1px, gap清零, 頂對齊令投注區↔籌碼區距離1px */
+  .chips-row{ padding-top:1px !important; gap:2px !important; align-items:flex-start; }  /* 直版：籌碼區頂padding=1px, 四掣跟籌碼2px */
   .chips-row .chips{ align-self:flex-start; }
 }
 .follow-left{flex:0 0 50%; display:flex; flex-direction:column; gap:5px; min-width:0; justify-content:flex-start; padding-left:6px;}
@@ -656,7 +656,7 @@
     /* 打橫收埋左右 panel 自身 margin/padding，令下半兩邊真·貼住 48% 分界線（根治中間空位） */
     .roadpanel{ margin:0 1px 0 0; }     /* 路單：收右邊 8px 空白，貼住分界 */
     .bets{ padding:2px 2px 2px 0; }     /* 投注區：收左右 10px */
-    .chips-row{ padding:2px 2px 2px 0; gap:0; } /* 橫版：籌碼區頂padding收2px, 左右緊貼零空隙 */
+    .chips-row{ padding:2px 2px 2px 0; gap:2px; } /* 橫版：籌碼區頂padding收2px, 四掣跟籌碼2px */
     /* 打橫：同直板一樣——限4個籌碼顯示，其餘(10K/50K)靠橫向推拉揭示，唔隱藏任何籌碼 */
     .chips-row .chips{ flex-wrap:wrap; }
     .chips-row .chip.c50k{ display:flex; }   /* 唔再隱藏50K，改由推拉揭示 */
@@ -796,7 +796,6 @@
       <button id="btnServerLb" title="伺服榜（連 server 版）" style="align-self:flex-start;margin:0;background:linear-gradient(90deg,#2d5c4a,#3d7c5a);color:#fff;border:none;padding:1px 1px;border-radius:6px;font-size:12px;line-height:1.3;cursor:pointer;letter-spacing:.5px;">🖥️ 伺服榜<div style="font-size:9px;opacity:.75;letter-spacing:0;">server 版</div></button>
       <div class="brand-sub"><span id="shoeInfo"></span></div>
       <div id="topBtns" class="top-btns">
-        <button class="btn shuffle vbtn" id="btnShuffle" title="重新洗牌">洗牌</button>
         <button class="btn auto vbtn" id="btnAuto" title="自動開牌"><span class="a-label">自動</span><span class="a-state">關</span></button>
         <button class="btn auto-int-btn vnum" id="btnAutoInt"><span class="hnum">13</span><span class="vsec">秒</span></button>
       </div>
@@ -999,6 +998,7 @@
     <div class="chip c10k" data-chip="10000">10K</div>
     <div class="chip c50k" data-chip="50000">50K</div>
   </div>
+  <button class="btn shuffle vbtn" id="btnShuffle" title="重新洗牌">洗牌</button>
   <button class="btn clear vbtn" id="btnClear">清除</button>
   <button class="btn repeat vbtn" id="btnRepeat">重複</button>
   <button class="btn deal vbtn" id="btnDeal">發牌</button>
