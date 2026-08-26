@@ -610,7 +610,7 @@
     .follow-left .pred-row1, .follow-left .pred-row2, .follow-left .pred-row3{ width:100%; justify-content:flex-start; }  /* 橫版：預測框內5行全部向左(反轉舊嘅向右) */
     .app{
       display:grid;
-      grid-template-columns:60px minmax(0,3.5fr) 90px minmax(0,1fr) minmax(0,1fr) minmax(0,1fr);   /* 第1欄固定60px; 第2欄預測/路單(3.5fr→下面約60/40); 第3欄5掣固定90px; 第4-6欄資金/投注(各1fr) */
+      grid-template-columns:60px minmax(0,1.4fr) 90px minmax(0,1fr) minmax(0,1fr) minmax(0,1fr);   /* 第1欄固定60px預留左邊空間(對應直版左上漏空); 第2欄預測系統(1.4fr); 第3欄5掣固定90px; 第4-6欄資金/投注(各1fr) */
       grid-template-rows:auto auto auto auto auto auto;
       align-content:start;                /* 整體貼頂 */
       align-items:start;
@@ -676,7 +676,7 @@
     .follow-wrap{
       display:contents;
     }
-.follow-left{ grid-column:2 / 3; grid-row:1 / span 2; min-width:0; padding:6px 0 0 1px; position:relative; left:0; display:flex; flex-direction:column; align-items:stretch; }  /* 橫版：left:0 令預測框唔飄出欄、唔壓住跟隨掣(根治頂部走位); 直版不變 */
+.follow-left{ grid-column:2 / 3; grid-row:1 / span 2; min-width:0; padding:6px 0 0 1px; position:relative; left:37px; display:flex; flex-direction:column; align-items:stretch; }  /* 橫版：預測系統框再向左移3px(left:37px), 框右緣與跟隨掣留39px空位; 寬度不變/直版不變 */
 /* 橫版：跟注文字搬入預測系統底部，打橫一行(取消疊牌)，緊貼預測系統、縮細 */
 .follow-left .follow-text{ display:flex; flex-direction:row; flex-wrap:nowrap; align-items:center; gap:5px; flex-basis:auto; min-width:0; order:3; margin-top:0; font-size:9px; }
 /* 打橫：預測系統區貼第二行最闊位(唔撐開、唔轉行)，保持三行位置唔變 */
