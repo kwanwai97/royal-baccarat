@@ -33,7 +33,8 @@
   .brand-sub{font-size:11px; font-weight:600; color:#cdbf8e; opacity:.85; display:flex; flex-direction:column; gap:1px; order:2;}
   .brand-title{order:1;}
   #btnLeaderboard{order:1;}
-  .brand-sub #shoeInfo{font-size:14px; font-weight:800; color:#7fffb0; text-shadow:0 0 6px rgba(80,255,160,.5);}
+  /* 剩餘卡牌數：absolute 貼住 3D/普通開牌掣左（跟掣走，掣已置中大路標題行正中） */
+  #shoeInfo{position:absolute; left:50%; top:50%; transform:translate(-100%,-50%); margin-left:-46px; font-size:13px; font-weight:800; color:#5fe08a; white-space:nowrap; text-shadow:0 0 6px rgba(80,255,160,.5); z-index:21;}
   .topright{display:flex; align-items:center; gap:10px;}
   .balance{font-size:12px; text-align:right;}
   .balance b{color:var(--gold2); font-size:18px; margin-left:1px;}
@@ -314,9 +315,8 @@
   .follow-right > #btnMute, .follow-right > #btnAuto, .follow-right > #btnAutoInt, .follow-right > #btnLeaderboard{ order:2; }  /* 底層掣排最後一行(貼投注區) */
   .follow-mid .iconbtn{ flex:0 0 auto; width:35px; height:26px; font-size:15px; display:inline-flex; align-items:center; justify-content:center; box-sizing:border-box; }  /* 中間前4圖案(戰績/禮物/大佬/限額): 35x26 */
   .follow-mid #btnAi{ width:40px; height:26px; }  /* 第5個陪玩: 40x26 */
-  /* 直版：剩餘數 綠色+放大，留喺 brand-sub 正常流（唔再 JS 動態貼普通開牌） */
-  .roadpanel > div:first-child{ position:relative; }   /* 大路標題行做定位參考，開牌掣 absolute 置中 */
-  .roadpanel > div:first-child #shoeInfo{ font-size:13px; color:#5fe08a; font-weight:800; white-space:nowrap; }
+  /* 直版：大路標題行做定位參考，開牌掣 absolute 置中（剩N張已搬去 roadTools 緊貼開牌掣左，唔喺呢度） */
+  .roadpanel > div:first-child{ position:relative; }
   .bets{ padding-top:0; padding-bottom:0; }  /* 直版：投注區上下padding清零，同籌碼區距離交畀chips-row頂padding控制 */
   .chips-row{ padding-top:1px !important; gap:0 !important; align-items:flex-start; }  /* 直版：籌碼區頂padding=1px, gap清零, 頂對齊令投注區↔籌碼區距離1px */
   .chips-row .chips{ align-self:flex-start; }
@@ -672,7 +672,6 @@
     .brand{ grid-column:1 / 2; grid-row:1; align-self:start; margin-left:0; flex-direction:column; align-items:flex-start; gap:2px 8px; font-size:13px; padding-top:6px; }
     .brand #btnLeaderboard{ font-size:11px; padding:1px 4px; }
     .brand-sub{ font-size:10px; }
-    .brand-sub #shoeInfo{ font-size:12px; }
     .brand-sub{ text-align:left; }   /* 橫版：剩餘卡牌N數由最左邊開始 */
     /* 橫版：自動+13秒掣(放籌碼區最左)，同其他四掣一樣高(33px)、闊度收細；全部掣左右緊貼零空隙 */
     .auto-btns{ display:flex; flex-direction:row; gap:0; margin:0; align-items:center; order:0; flex:0 0 auto; }
@@ -792,7 +791,7 @@
   <div class="topbar">
     <div class="brand">
       <button id="btnServerLb" title="伺服榜（連 server 版）" style="align-self:flex-start;margin:0;background:linear-gradient(90deg,#2d5c4a,#3d7c5a);color:#fff;border:none;padding:1px 1px;border-radius:6px;font-size:12px;line-height:1.3;cursor:pointer;letter-spacing:.5px;">🖥️ 伺服榜<div style="font-size:9px;opacity:.75;letter-spacing:0;">server 版</div></button>
-      <div class="brand-sub"><span id="shoeInfo"></span></div>
+      <div class="brand-sub"></div>
     </div>
     <div class="topright">
       <div class="balance"><small>餘額</small><div><b id="balance">1,000,000</b></div></div>
@@ -807,6 +806,7 @@
     <div style="display:flex;align-items:center;justify-content:space-between;padding:4px 8px;">
       <div class="road-section-title" style="border:none;background:none;padding:0;">🔝 大路</div>
       <div id="roadTools" style="display:flex;align-items:center;gap:4px;">
+        <span id="shoeInfo"></span>
         <button class="dealmode-btn" id="btnDealMode">普通開牌 ▾</button>
       </div>
     </div>
