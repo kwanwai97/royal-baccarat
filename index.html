@@ -178,7 +178,7 @@
   .bet .od{font-size:9px; opacity:.8; margin-top:1px;}
   .bet.hot-predict{ border:2px solid #ffd479 !important; box-shadow:0 0 10px rgba(255,212,121,.6), inset 0 0 8px rgba(255,212,121,.25); }
   /* 頂列3格(閒/莊/和)：高度加大，籌碼疊上覆蓋賠率，籌碼間留空間，4+人自動分兩層 */
-  .betrow.top .bet{position:relative; min-height:min(90px, 18vh); padding:7px 3px 7px; display:flex; flex-direction:column; justify-content:flex-start; align-items:center; flex:1 1 auto;}
+  .betrow.top .bet{position:relative; min-height:90px; padding:7px 3px 7px; display:flex; flex-direction:column; justify-content:flex-start; align-items:center;}
   .betrow.top .bet .od{position:relative; z-index:1;}
   .betrow.top .bet .chips-stack{position:absolute; left:0; right:0; bottom:6px; top:24px; z-index:2;
     display:grid; grid-template-columns:repeat(4,1fr); align-content:center; justify-items:center; gap:4px 6px; min-height:60px; margin-top:0; overflow:hidden;}
@@ -749,7 +749,7 @@
     .betrow{ display:contents; }     /* 三行變 grid 子項，整體 3×3 一齊排 */
     .bet{ min-height:35px; padding:0; font-size:11px; }   /* 下兩行保持壓縮, 全0空隙 */
     /* 橫版：頂/中/底 統一 90/30/30（與直版對齊緊貼） */
-    .betrow.top .bet{ min-height:min(88px, 17vh); padding:0; flex:1 1 auto; }       /* 頂列(閒莊和) 88px 高，改用 min() 隨螢幕縮放 */
+    .betrow.top .bet{ min-height:88px; padding:0; }       /* 頂列(閒莊和) 88px 高 */
     .betrow.mid .bet, .betrow.bottom .bet{ min-height:35px; padding:0; }  /* 第二/三列各 35px 高 */
     .bet .bn{ font-size:11px; }
     .bet .od{ font-size:8px; }
