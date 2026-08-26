@@ -687,7 +687,7 @@
     .follow-wrap{
       display:contents;
     }
-.follow-left{ grid-column:2 / 3; grid-row:1 / span 2; min-width:0; padding:6px 0 0 1px; position:relative; left:37px; display:flex; flex-direction:column; align-items:stretch; }  /* 橫版：預測系統框再向左移3px(left:37px), 框右緣與跟隨掣留39px空位; 寬度不變/直版不變 */
+.follow-left{ grid-column:2 / 3; grid-row:1 / span 2; min-width:0; padding:6px 0 0 1px; position:relative; display:flex; flex-direction:column; align-items:stretch; }  /* 橫版：預測系統框留第2欄內(唔向右推, 避免撞跟隨掣); 框右緣與跟隨掣留1px grid gap */
 /* 橫版：跟注文字搬入預測系統底部，打橫一行(取消疊牌)，緊貼預測系統、縮細 */
 .follow-left .follow-text{ display:flex; flex-direction:row; flex-wrap:nowrap; align-items:center; gap:5px; flex-basis:auto; min-width:0; order:3; margin-top:0; font-size:9px; }
 /* 打橫：預測系統區貼第二行最闊位(唔撐開、唔轉行)，保持三行位置唔變 */
