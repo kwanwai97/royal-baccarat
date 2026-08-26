@@ -675,7 +675,8 @@
     /* 頂部3區：brand(左) | 跟注/預測(中) | 餘額+資金(右)，各佔2欄、緊貼慳位 */
     /* 用 display:contents 拆開 topbar，brand 同 topright 各自成 grid item */
     .topbar{ display:contents; }
-    .brand{ grid-column:1 / 2; grid-row:1; align-self:start; margin-left:0; flex-direction:column; align-items:flex-start; gap:2px 8px; font-size:13px; padding-top:6px; }
+    .brand{ grid-column:1 / 2; grid-row:1; align-self:start; margin-left:0; display:flex; flex-direction:row; align-items:center; gap:6px; font-size:13px; padding-top:6px; }  /* 橫版：brand行排列, 伺服榜貼左其他掣貼右 */
+    .brand #btnServerLb{ order:-1; margin-right:auto; }  /* 橫版：伺服榜排最左, 推開其他掣去右 */
     .brand #btnLeaderboard{ font-size:11px; padding:1px 4px; }
     .brand-sub{ font-size:10px; }
     .brand-sub #shoeInfo{ font-size:12px; }
