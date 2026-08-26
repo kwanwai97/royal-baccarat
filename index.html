@@ -166,7 +166,7 @@
   .card.f3d .back{transform:rotateY(180deg);
     background:repeating-linear-gradient(45deg,#7a1f1f 0 6px,#932525 6px 12px); border:2px solid #d4af37;}
   /* 開牌模式切換掣 */
-  .dealmode-btn{position:static; transform:none; z-index:auto;
+  .dealmode-btn{position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); z-index:20;}  /* 直版：3D/普通開牌掣置中路單正中 */
     font-size:10px; font-weight:800; padding:3px 10px; border-radius:10px; cursor:pointer;
     background:rgba(0,0,0,.45); color:var(--gold2); border:1px solid rgba(212,175,55,.5); letter-spacing:1px;}
   .dealmode-btn:active{transform:scale(.94);}
@@ -314,10 +314,8 @@
   .follow-right > #btnMute, .follow-right > #btnAuto, .follow-right > #btnAutoInt, .follow-right > #btnLeaderboard{ order:2; }  /* 底層掣排最後一行(貼投注區) */
   .follow-mid .iconbtn{ flex:0 0 auto; width:35px; height:26px; font-size:15px; display:inline-flex; align-items:center; justify-content:center; box-sizing:border-box; }  /* 中間前4圖案(戰績/禮物/大佬/限額): 35x26 */
   .follow-mid #btnAi{ width:40px; height:26px; }  /* 第5個陪玩: 40x26 */
-  /* 直版：大路標題 header 行 — 普通開牌掣正中央，剩餘數緊貼其左跟掣走 */
-  .roadpanel > div:first-child{ position:relative; }   /* header 行做定位參考 */
-  .dealmode-wrap #btnDealMode{ position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); }
-  .roadpanel > div:first-child #shoeInfo{ position:absolute; top:50%; transform:translateY(-50%); font-size:13px; color:#5fe08a; font-weight:800; white-space:nowrap; }  /* 直版：剩餘數 綠色+放大，JS動態緊貼普通開牌左 */
+  /* 直版：剩餘數 綠色+放大，留喺 brand-sub 正常流（唔再 JS 動態貼普通開牌） */
+  .roadpanel > div:first-child #shoeInfo{ font-size:13px; color:#5fe08a; font-weight:800; white-space:nowrap; }
   .bets{ padding-top:0; padding-bottom:0; }  /* 直版：投注區上下padding清零，同籌碼區距離交畀chips-row頂padding控制 */
   .chips-row{ padding-top:1px !important; gap:0 !important; align-items:flex-start; }  /* 直版：籌碼區頂padding=1px, gap清零, 頂對齊令投注區↔籌碼區距離1px */
   .chips-row .chips{ align-self:flex-start; }
@@ -615,11 +613,8 @@
   /* ===== 打橫 landscape：純 CSS grid 重排，唔郁 DOM、唔改 id/邏輯 ===== */
   @media (orientation:landscape){
   #cloudSlot{display:none;}
-  /* 橫版：直版專用大路標題置中對普通開牌有效(共用絕對置中)；剩餘數留喺brand-sub正常流 */
-  .roadpanel > div:first-child{ position:relative; }   /* 大路標題行做定位參考(橫版都啟用) */
-  .dealmode-wrap{ display:contents; }  /* 橫版wrapper唔做box，btnDealMode靠自身absolute置中 */
-  .dealmode-wrap #btnDealMode{ position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); }  /* 橫版絕對置中(相對大路標題行header,因dealModeWrap係display:contents唔成box) */
-  .roadpanel > div:first-child #shoeInfo{ position:absolute; top:50%; transform:translateY(-50%); font-size:13px; color:#5fe08a; font-weight:800; white-space:nowrap; }  /* 橫版：剩餘數緊貼普通開牌左(JS動態left),普通開牌保持中央 */
+  /* 橫版：3D/普通開牌掣置中路單正中(.road-big 已 position:relative)，剩餘數留 brand-sub 正常流 */
+  .road-big #btnDealMode{ position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); z-index:20; }
     .pred-row1 .freset{ margin-left:5px; }   /* 橫版清除掣距請投注5px（直版0px） */
     /* 橫版：預測系統框內三行撐滿框, 消除框右側留白(框外已貼跟注區) */
     .follow-left .pred-row1, .follow-left .pred-row2, .follow-left .pred-row3{ width:100%; justify-content:flex-start; }  /* 橫版：預測框內5行全部向左(反轉舊嘅向右) */
@@ -810,11 +805,11 @@
     <div style="display:flex;align-items:center;justify-content:space-between;padding:4px 8px;">
       <div class="road-section-title" style="border:none;background:none;padding:0;">🔝 大路</div>
       <div id="roadTools" style="display:flex;align-items:center;gap:4px;">
-        <button class="dealmode-btn" id="btnDealMode">普通開牌 ▾</button>
       </div>
     </div>
     <div class="road-big">
       <canvas id="bigCanvas" width="540" height="110"></canvas>
+      <button class="dealmode-btn" id="btnDealMode">普通開牌 ▾</button>
       <div class="bet-countdown" id="betCountdown"></div>
     </div>
     <div class="center-msg" id="centerMsg"></div>
