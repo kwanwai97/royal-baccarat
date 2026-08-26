@@ -308,7 +308,7 @@
 /* 直版：跟注區 — 頂5掣貼頂不變，底層掣(🔊自動13秒AI榜)貼投注區，中間空隙擺5圖案掣(戰績/禮物/腦袋/限額/陪玩) */
 @media (orientation:portrait){
   .follow-wrap{ gap:0; margin-bottom:0; }  /* align-items 留 stretch 令頂5掣貼頂 */
-  .follow-right{ align-content:space-between; gap:1px !important; }  /* 換行三行：頂行貼頂、中行(5圖案掣)中間、底行貼底(投注區)；水平掣距1px */
+  .follow-right{ align-content:space-between; gap:1px !important; border:1px solid #b98a17; border-radius:8px; background:rgba(20,30,20,.55); box-sizing:border-box; padding:2px; }  /* 第二容器框：包住三層掣(跟注5/圖案5/底層4+±次數), 同pred-system風格一致; 位置唔變 */
   .follow-right > .fbtn{ order:0; }                                  /* 頂5掣排第一行 */
   .follow-mid{ flex:0 0 100%; display:flex; flex-direction:row; flex-wrap:nowrap; align-items:center; justify-content:center; gap:1px; order:1; }  /* 中間一行：100%寬強制換行到第二行，置中排5圖案掣，左右距1px */
   .follow-right > #btnMute, .follow-right > #btnAuto, .follow-right > #btnAutoInt, .follow-right > #btnLeaderboard{ order:2; }  /* 底層掣排最後一行(貼投注區) */
@@ -703,7 +703,7 @@
 .follow-right{
   grid-column:3 / 5; grid-row:1 / span 2;   /* 橫版：跨第3-4欄容納5掣一行(179px),右緣貼資金(第5欄左)緊貼 */
   display:flex; flex-direction:row; flex-wrap:wrap; align-items:stretch; justify-content:flex-end; gap:0;  /* 橫版5掣一行+5圖案行換行; 靠右貼資金; 掣左右距0 */
-  align-self:start; padding:6px 0 0;       /* 頂部6px; 左右padding清0緊貼 */
+  align-self:start; padding:8px 2px 2px; border:1px solid #b98a17; border-radius:8px; background:rgba(20,30,20,.55); box-sizing:border-box;       /* 第二容器框(同pred-system); 頂部8px留位畀框線; 位置唔變 */
 }
 /* 橫版5掣一行：跟預測/反預測/跟旺AI/反旺AI/±次數 全部一行(移除舊2上3下grid) */
 .follow-right #btnFollowPredict2{ order:1; }
