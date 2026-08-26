@@ -610,7 +610,7 @@
     .follow-left .pred-row1, .follow-left .pred-row2, .follow-left .pred-row3{ width:100%; justify-content:flex-start; }  /* 橫版：預測框內5行全部向左(反轉舊嘅向右) */
     .app{
       display:grid;
-      grid-template-columns:60px minmax(0,2fr) 90px minmax(0,1fr) minmax(0,1fr) minmax(0,1fr);   /* 第1欄固定60px預留左邊空間; 第2欄預測系統(2fr加寬); 第3欄5掣固定90px; 第4-6欄資金/路單/投注(各1fr) */
+      grid-template-columns:60px minmax(0,1.4fr) 90px minmax(0,1fr) minmax(0,1fr) minmax(0,1fr);   /* 第1欄固定60px預留左邊空間(對應直版左上漏空); 第2欄預測系統(1.4fr); 第3欄5掣固定90px; 第4-6欄資金/投注(各1fr) */
       grid-template-rows:auto auto auto auto auto auto;
       align-content:start;                /* 整體貼頂 */
       align-items:start;
@@ -750,11 +750,11 @@
     .bet{ min-height:35px; padding:0; font-size:11px; }   /* 下兩行保持壓縮, 全0空隙 */
     /* 橫版：頂/中/底 統一 90/30/30（與直版對齊緊貼） */
     .betrow.top .bet{ min-height:88px; padding:0; }       /* 頂列(閒莊和) 88px 高 */
-    .betrow.mid .bet, .betrow.bottom .bet{ height:35px; min-height:35px; padding:0; overflow:hidden; box-sizing:border-box; }  /* 第二/三列固定35px, 唔隨籌碼伸縮 */
-    .betrow.mid .bet .chips-stack, .betrow.bottom .bet .chips-stack{ height:12px; min-height:12px; max-height:12px; overflow:hidden; margin-top:0; }  /* 籌碼區固定, 唔撐開 */
+    .betrow.mid .bet, .betrow.bottom .bet{ min-height:35px; padding:0; }  /* 第二/三列各 35px 高 */
     .bet .bn{ font-size:11px; }
     .bet .od{ font-size:8px; }
     .bet .chips-stack{ min-height:12px; margin-top:1px; }
+    .betrow.bottom .bet .chips-stack{ min-height:16px; margin-top:1px; }  /* 橫版底列收: 52→48 */
     .chip{ width:26px; height:26px; font-size:8px; }
 </style>
 </head>
