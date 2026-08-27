@@ -58,8 +58,9 @@ sys.stderr = _Tee(sys.stderr, _logf)
 def run(cmd):
     print('$', ' '.join(cmd))
     r = subprocess.run(cmd, cwd=HERE, capture_output=True, text=True)
-    print(r.stdout.strip())
-    if r.stderr.strip():
+    if r.stdout:
+        print(r.stdout.strip())
+    if r.stderr:
         print('[stderr]', r.stderr.strip())
     return r.returncode
 
