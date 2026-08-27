@@ -687,7 +687,7 @@
     .auto-btns #btnAuto{ flex-direction:column; gap:1px; }
     .auto-btns #btnAuto .a-label{ writing-mode:horizontal-tb; font-size:11px; font-weight:800; line-height:1; }
     .auto-btns #btnAuto .a-state{ writing-mode:horizontal-tb; font-size:11px; font-weight:800; line-height:1; }
-    .topright{ grid-column:5 / 7; grid-row:1 / span 2; display:flex; flex-direction:column; align-items:stretch; gap:4px; align-self:start; min-width:0; overflow:visible; padding:6px; border:1px solid #b98a17; border-radius:8px; background:rgba(20,30,20,.55); box-sizing:border-box; margin-left:-30px; }  /* 橫版：資金區跨兩欄容器框; 向左移30px */
+    .topright{ grid-column:5 / 7; grid-row:1 / span 2; display:flex; flex-direction:column; align-items:stretch; gap:4px; align-self:start; min-width:0; overflow:visible; padding:6px; border:1px solid #b98a17; border-radius:8px; background:rgba(20,30,20,.55); box-sizing:border-box; margin-left:-33px; }  /* 橫版：資金區向左移33px(原30+再加3) */
     .topright .balance{ font-size:13px; text-align:left; width:100%; }  /* 文字靠左, 貼資金區最左消除視覺空間 */
     .topright .balance b{ font-size:18px; }
     /* AI陪玩列表（資金）打橫：6個一行、2行顯示(6x2)，全部見到唔切走；頂欄span2行容納 */
@@ -695,7 +695,7 @@
     .follow-wrap{
       display:contents;
     }
-.follow-left{ grid-column:2 / 3; grid-row:1 / span 2; min-width:0; padding:6px 0 0 1px; position:relative; display:flex; flex-direction:column; align-items:stretch; }  /* 橫版：預測系統框留第2欄內(移除left:37px舊遺留, 解決同follow-right重疊) */
+.follow-left{ grid-column:2 / 3; grid-row:1 / span 2; min-width:0; padding:6px 0 0 1px; position:relative; display:flex; flex-direction:column; align-items:stretch; margin-right:5px; }  /* 橫版：預測系統框留第2欄內; 向右退5px避開跟注向左5px */
 /* 橫版：跟注文字搬入預測系統底部，打橫一行(取消疊牌)，緊貼預測系統、縮細 */
 .follow-left .follow-text{ display:flex; flex-direction:row; flex-wrap:nowrap; align-items:center; gap:5px; flex-basis:auto; min-width:0; order:3; margin-top:0; font-size:9px; }
 /* 打橫：預測系統區貼第二行最闊位(唔撐開、唔轉行)，保持三行位置唔變 */
@@ -708,7 +708,7 @@
   grid-column:3 / 4; grid-row:1 / span 2;   /* 橫版：第3欄(跟注區), 框fit-content溢出顯示唔截斷 */
   display:flex; flex-direction:row; flex-wrap:wrap; align-items:stretch; align-content:flex-start; justify-content:flex-start; gap:1px;  /* 橫版三層各自一行靠左 */
   align-self:start; min-width:0; padding:2px; border:1px solid #b98a17; border-radius:8px; background:rgba(20,30,20,.55); box-sizing:border-box;       /* 第二容器框(同pred-system); 邊框緊貼2px */
-  width:fit-content !important; justify-self:start !important; min-width:0 !important;   /* 橫版：框闊度由內容決定, 唔被grid跨欄拉伸 */
+  width:fit-content !important; justify-self:start !important; min-width:0 !important; margin-left:-5px;   /* 橫版：框闊度由內容決定, 唔被grid跨欄拉伸; 向左移5px */
 }
 /* 橫版：三層各自一行(跟注/圖案/底層), 每行nowrap靠左, 容器fit-content=最闊行(~164) */
 .follow-right .frow{ display:flex; flex-direction:row; flex-wrap:nowrap; align-items:center; justify-content:flex-start; gap:1px; width:fit-content; flex:0 0 auto; }
