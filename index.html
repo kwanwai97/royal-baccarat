@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- deploy refresh 2026-08-27T11:25 預測區整塊向右70px -->
+<!-- deploy refresh 2026-08-27T11:40 橫版路單貼實電話底(填滿377px空位) -->
 <html lang="zh-Hant">
 <head>
 <meta charset="UTF-8">
@@ -630,13 +630,13 @@
     .app{
       display:grid;
       grid-template-columns:60px minmax(0,2.5fr) 90px minmax(0,1fr) minmax(0,1fr) minmax(0,1fr);   /* 第1欄固定60px; 第2欄路單主體2.5fr; 第3欄5掣90px; 第4-6欄投注/資金(各1fr); 試51/49 */
-      grid-template-rows:auto auto auto auto auto auto;
-      align-content:start;                /* 整體貼頂 */
-      align-items:start;
+      grid-template-rows:auto auto 34px 1fr 1fr 1fr;   /* 前2行頂部區(auto)，第3行分隔，最尾3行1fr撐滿剩餘高度令路單貼底 */
+      align-content:stretch;                /* 整體撐滿高度, 路單填滿到底 */
+      align-items:stretch;
       grid-auto-rows:min-content;
       column-gap:1px; row-gap:0;          /* 頂部四區左右距1px，行距保持0 */
       max-width:none;                     /* 打橫填滿，唔再 560px 限死 */
-      padding:0 3px;                      /* 兩邊各預留3px空白 */
+      height:100vh; padding:0 3px;        /* 撐滿電話高度, 兩邊各預留3px空白 */
     }
     /* 下半左：路單（大路+珠盤+下三路）跨左3欄、佔 row2-4 全高 */
     .roadpanel{ grid-column:1 / 4; grid-row:3 / span 4; align-self:stretch; }   /* 打橫：路單頂部落一格，同右投注區(row3)頂部水平並排 */
