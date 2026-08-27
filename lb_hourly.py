@@ -17,8 +17,12 @@ import subprocess, os, sys, datetime
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 
-# 無論邊個帳號(SYSTEM/用戶)跑都用 repo 內呢把 SSH 鑰匙 push, 唔使依賴 git 全域設定
+# 無論邊個帳號(SYSTEM/用戶)跑都自帶 git 身份 + SSH 鑰匙, 唔使依賴系統全域設定
 SSH_KEY = os.path.join(HERE, '.ssh_rb_key')
+os.environ.setdefault('GIT_AUTHOR_NAME', 'kwanwai97')
+os.environ.setdefault('GIT_AUTHOR_EMAIL', 'kwanwai97@users.noreply.github.com')
+os.environ.setdefault('GIT_COMMITTER_NAME', 'kwanwai97')
+os.environ.setdefault('GIT_COMMITTER_EMAIL', 'kwanwai97@users.noreply.github.com')
 if os.path.exists(SSH_KEY):
     os.environ['GIT_SSH_COMMAND'] = (
         f'ssh -i "{SSH_KEY}" -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
