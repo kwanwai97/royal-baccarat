@@ -332,7 +332,7 @@
   .roadpanel > div:first-child{ position:relative; }   /* header 行做定位參考 */
   .dealmode-wrap{ display:inline-flex; }
   .dealmode-wrap #btnDealMode{ position:static; transform:none; }
-  .roadpanel > div:first-child #shoeInfo{ font-size:13px; color:#5fe08a; font-weight:800; white-space:nowrap; flex:0 0 auto; margin-left:6px; }  /* 直版：剩餘數緊貼開牌左(flex, JS插開牌前) */
+  .roadpanel > div:first-child #shoeInfo{ font-size:13px; color:#5fe08a; font-weight:800; white-space:nowrap; flex:0 0 auto; margin-left:2px; }  /* 直版：剩餘數緊貼開牌左(flex, JS插開牌前) */
   .bets{ padding-top:0; padding-bottom:0; }  /* 直版：投注區上下padding清零，同籌碼區距離交畀chips-row頂padding控制 */
   .chips-row{ padding-top:1px !important; gap:2px !important; align-items:flex-start; }  /* 直版：籌碼區頂padding=1px, 四掣跟籌碼2px */
   .chips-row .chips{ align-self:flex-start; }
@@ -510,11 +510,11 @@
 .follow-right .fstep{background:none; border:none; color:#241a00; font-size:9px; font-weight:800; padding:0 3px; line-height:1; writing-mode:vertical-rl; text-orientation:upright;}
 .follow-status{flex:0 0 auto; font-size:10px; color:#7fffb0; min-height:10px; white-space:nowrap; text-align:left; margin-top:0;}
 
-/* ===== 大路標題行：五圖案(戰績/禮物/大佬/限額/AI陪玩) 細細哋排開牌右，唔放大 ===== */
-.road-header{ display:flex; align-items:center; gap:4px; flex-wrap:wrap; padding:4px 8px; }
-.road-header .road-section-title{ flex:0 0 auto; }
+/* ===== 大路標題行：五圖案(戰績/禮物/大佬/限額/AI陪玩) 細細哋排開牌右，唔放大；縮細左右空間緊貼 ===== */
+.road-header{ display:flex; align-items:center; gap:2px; flex-wrap:wrap; padding:3px 4px; }
+.road-header .road-section-title{ flex:0 0 auto; margin-right:2px; }
 .road-header #btnDealMode{ flex:0 0 auto; }
-.follow-icons-header{ flex:0 0 auto; display:flex; align-items:center; gap:3px; min-width:0; }
+.follow-icons-header{ flex:0 0 auto; display:flex; align-items:center; gap:2px; min-width:0; }
 .road-header #btnMute{ flex:0 0 auto; }
 #followStatus{ text-align:left; }   /* 直版做一行：狀態在統計左邊，文字靠左；橫版同樣靠左 */
 .btn.fbtn{background:linear-gradient(180deg,#ffd479,#e6a417); color:#241a00; border:1px solid #ffb347; font-size:10px; font-weight:800; padding:1px 2px; border-radius:8px; opacity:.6; writing-mode:vertical-rl; text-orientation:upright; white-space:nowrap; letter-spacing:0; min-width:30px; line-height:1.0; text-align:center;}
@@ -641,7 +641,7 @@
   .roadpanel > div:first-child{ position:relative; }   /* 大路標題行做定位參考(橫版都啟用) */
   .dealmode-wrap{ display:inline-flex; }  /* 橫版wrapper正常box，開牌掣flex排 */
   .dealmode-wrap #btnDealMode{ position:static; transform:none; }
-  .roadpanel > div:first-child #shoeInfo{ font-size:13px; color:#5fe08a; font-weight:800; white-space:nowrap; flex:0 0 auto; margin-left:6px; }  /* 橫版：剩餘數緊貼開牌左(flex, JS插開牌前) */
+  .roadpanel > div:first-child #shoeInfo{ font-size:13px; color:#5fe08a; font-weight:800; white-space:nowrap; flex:0 0 auto; margin-left:2px; }  /* 橫版：剩餘數緊貼開牌左(flex, JS插開牌前) */
     .pred-row1 .freset{ margin-left:5px; }   /* 橫版清除掣距請投注5px（直版0px） */
     /* 橫版：預測系統框內三行撐滿框, 消除框右側留白(框外已貼跟注區) */
     .follow-left .pred-row1, .follow-left .pred-row2, .follow-left .pred-row3{ width:100%; justify-content:flex-start; }  /* 橫版：預測框內5行全部向左(反轉舊嘅向右) */
