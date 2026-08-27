@@ -730,7 +730,7 @@
 .follow-right{
   grid-column:3 / 4; grid-row:1 / span 2;   /* 橫版：第3欄(跟注區), 框fit-content溢出顯示唔截斷 */
   display:flex; flex-direction:row; flex-wrap:wrap; align-items:stretch; align-content:flex-start; justify-content:flex-start; gap:0;  /* 橫版三層各自一行靠左; 行距0緊貼 */
-  align-self:start; min-width:0; padding:0; margin-top:20px;      /* 跟注控制(取消黃框); 橫版; 頂部留20px空間(同中間一致) */
+  align-self:start; min-width:0; padding:0; margin-top:3px;       /* 跟注控制(取消黃框); 橫版; 頂部留3px空間 */
   width:fit-content !important; justify-self:start !important; min-width:0 !important; margin-left:-6px;   /* 橫版：消除同左預測框8px空隙並向左5px(共向左~13px), 貼住左邊水平對齊 */
 }
 /* 橫版：三層各自一行(跟注/圖案/底層), 每行nowrap靠左, 容器fit-content=最闊行(~164) */
