@@ -513,7 +513,7 @@
 /* ===== 大路標題行：五圖案細細哋排開牌右；nowrap強制一行唔跳行；再收細左右空間 ===== */
 .road-header{ display:flex; align-items:center; gap:1px; flex-wrap:nowrap; padding:2px 3px; white-space:nowrap; }
 .road-header .road-section-title{ flex:0 0 auto; margin-right:2px; }
-.road-header #btnDealMode{ flex:0 0 auto; height:26px; padding:1px 5px; font-size:11px; margin-left:auto; margin-right:10px; }  /* 直版：成組貼右後再向右入10px */
+.road-header #btnDealMode{ flex:0 0 auto; height:26px; padding:1px 5px; font-size:11px; margin-left:auto; margin-right:15px; }  /* 直版：成組貼右後向右入15px */
 .follow-icons-header{ flex:0 0 auto; display:flex; align-items:center; gap:1px; min-width:0; }
 .follow-icons-header .iconbtn{ min-width:0; padding:2px 3px; height:26px; display:inline-flex; align-items:center; justify-content:center; box-sizing:border-box; }  /* 5圖案高度統一26px */
 .road-header #btnMute{ flex:0 0 auto; }
@@ -643,7 +643,7 @@
   .dealmode-wrap{ display:inline-flex; }  /* 橫版wrapper正常box，開牌掣flex排 */
   .dealmode-wrap #btnDealMode{ position:static; transform:none; }
   .roadpanel > div:first-child #shoeInfo{ font-size:13px; color:#5fe08a; font-weight:800; white-space:nowrap; flex:0 0 auto; margin-left:2px; }  /* 橫版：剩餘數緊貼開牌左(flex, JS插開牌前) */
-  .road-header #btnDealMode{ margin-right:40px; }  /* 橫版：向右入40px(直版係10px) */
+  .road-header #btnDealMode{ margin-right:60px; }  /* 橫版：向右入60px(直版係15px) */
     .pred-row1 .freset{ margin-left:5px; }   /* 橫版清除掣距請投注5px（直版0px） */
     /* 橫版：預測系統框內三行撐滿框, 消除框右側留白(框外已貼跟注區) */
     .follow-left .pred-row1, .follow-left .pred-row2, .follow-left .pred-row3{ width:100%; justify-content:flex-start; }  /* 橫版：預測框內5行全部向左(反轉舊嘅向右) */
