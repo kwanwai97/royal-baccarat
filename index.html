@@ -667,6 +667,8 @@
     .chips-row .vbtn{ writing-mode:horizontal-tb; text-orientation:initial; flex-direction:row; }
     /* 橫版：籌碼區下方四掣(清除/重複/發牌/洗牌)高度收窄4px(35→30) */
     .chips-row .btn, .chips-row .btn.shuffle{ height:30px !important; }
+    /* 橫版：洗牌/清除/重複/發牌 字體豎排 + 闊度收1px(35→34) */
+    .chips-row .shuffle, .chips-row .clear, .chips-row .repeat, .chips-row .deal{ writing-mode:vertical-rl; text-orientation:upright; width:34px !important; flex:0 0 34px; }
     /* 打橫下三路：derived-row 改回 flex:1 均分(同直版)，三張自動撐滿高度、貼住珠盤路底對齊；canvas 跟 height:100% */
     .road-derived{ display:flex; flex-direction:column; }
     .derived-row{ flex:1 1 0; min-height:0; }
