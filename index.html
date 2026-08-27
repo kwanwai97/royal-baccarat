@@ -735,7 +735,7 @@
 }
 /* 橫版：三層各自一行(跟注/圖案/底層), 每行nowrap靠左, 容器fit-content=最闊行(~164) */
 .follow-right .frow{ display:flex; flex-direction:row; flex-wrap:nowrap; align-items:center; justify-content:flex-start; gap:0; width:fit-content; flex:0 0 auto; margin-top:0; }
-.follow-right .frow-bot{ order:7; margin-top:-1px; }  /* 橫版底層行排圖案(order:6)之後; 向上貼1px絕對零距 */
+.follow-right .frow-bot{ order:7; margin-top:20px; }  /* 橫版底層行排圖案(order:6)之後; 同頂行拉開20px空間 */
 /* 橫版5掣一行：跟預測/反預測/跟旺AI/反旺AI/±次數 全部一行(移除舊2上3下grid) */
 .follow-right #btnFollowPredict2{ order:1; }
 .follow-right #btnFollowRev{ order:2; }
