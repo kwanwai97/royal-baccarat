@@ -69,6 +69,16 @@
   .alb-tab.active{background:var(--goldd); color:#06120c; font-weight:800;}
   .alb-list{display:flex; flex-direction:column; gap:4px;}
   .alb-row{display:flex; align-items:center; gap:6px; padding:5px 7px; background:#06120c; border-radius:6px; font-size:11px;}
+  /* 組合榜（測試版）：直版可滑，每行一組合 */
+  .alb-combo{background:#06120c; border:1px solid #1f3a2a; border-radius:8px; padding:7px 9px; font-size:11px; line-height:1.5;}
+  .alb-combo .cb-top{display:flex; justify-content:space-between; align-items:baseline; gap:6px;}
+  .alb-combo .cb-name{font-weight:800; color:var(--gold2); font-size:12px;}
+  .alb-combo .cb-cnt{color:#9fb8a4; font-size:10px;}
+  .alb-combo .cb-grid{display:grid; grid-template-columns:1fr 1fr 1fr; gap:2px 10px; margin-top:4px; color:#d6e6da;}
+  .alb-combo .cb-grid b{color:#fff;}
+  .alb-combo .cb-bust{color:#ff8a6a; font-weight:800;}
+  .alb-combo.bust .cb-name{color:#ff8a6a;}
+  .alb-combo .cb-peak{color:#ffd86b;}
   .alb-rank{width:18px; text-align:center; font-weight:800; color:var(--gold2);}
   .alb-name{flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
   .alb-stat{font-size:10px; color:#9fd6ff; white-space:nowrap;}
@@ -789,20 +799,20 @@
 </head>
 <body>
 <div class="app">
-  <!-- 手機本地 AI 排行榜面板（純 localStorage，讀 ais 陣列，唔連 server） -->
+  <!-- 手機本地 AI 組合排行榜面板（按 性格×注碼×年齡 累積，唔清，純 localStorage） -->
   <div id="aiLbPanel" class="ai-lb-panel" hidden>
     <div class="alb-head">
-      <span>🏆 手機 AI 排行榜</span>
+      <span>🏆 AI 組合排行榜</span>
       <button id="albClose" class="alb-x">✕</button>
     </div>
     <div class="alb-tabs">
-      <button class="alb-tab" data-sort="balance">餘額</button>
-      <button class="alb-tab" data-sort="winRate">勝率</button>
-      <button class="alb-tab" data-sort="winStreak">連勝</button>
-      <button class="alb-tab" data-sort="name">名</button>
+      <button class="alb-tab" data-sort="totalProfit">總盈利</button>
+      <button class="alb-tab" data-sort="peak">最高資金</button>
+      <button class="alb-tab" data-sort="bust">破產</button>
+      <button class="alb-tab" data-sort="games">局數</button>
     </div>
     <div id="albList" class="alb-list"></div>
-    <div class="alb-hint">資料存你部機 localStorage，開局/重開機都記得</div>
+    <div class="alb-hint">每個組合（性格×注碼×年齡）累積表現 · 唔清除 · 破產會計次 · 資料存你部機</div>
   </div>
   <div class="topbar">
     <div class="brand">
@@ -2330,6 +2340,34 @@ function nextAiNum(){ aiSeq++; return aiSeq; }   // 取下一個唯一號
 function syncAiSeq(){ let mx=0; ais.forEach(a=>{ const m=/^AI(\d+)$/.exec(a.name||''); if(m){ const n=+m[1]; if(n>mx) mx=n; } }); if(mx>aiSeq) aiSeq=mx; }
 let aiReplaceOnShuffle=0;   // 累計「結算時離枱嘅 AI 數」，洗牌時先補返（維持枱上人數）
 function saveAiList(){ try{ localStorage.setItem('bac_ai', JSON.stringify(ais)); }catch(e){} }
+// ===== 組合排行榜（測試版）：按 persona×plan×age 累積，唔清 =====
+function loadCombos(){ try{ const s=localStorage.getItem('bac_ai_combos'); if(s) return JSON.parse(s)||{}; }catch(e){} return {}; }
+function saveCombos(o){ try{ localStorage.setItem('bac_ai_combos', JSON.stringify(o)); }catch(e){} }
+function recordCombos(){
+  // 喺 aiSettle 之後 call：將每個 AI 嘅表現疊加到組合檔
+  const combos=loadCombos();
+  for(const ai of ais){
+    if(!ai || !ai.persona || !ai.plan) continue;
+    const age = ai.age || 'any';
+    const key = ai.persona+'|'+ai.plan+'|'+age;
+    const pTxt = (AI_PERSONAS[ai.persona]&&AI_PERSONAS[ai.persona].name)||ai.persona;
+    const plTxt = (AI_PLANS[ai.plan]&&AI_PLANS[ai.plan].name)||ai.plan;
+    let c = combos[key] || { persona:ai.persona, plan:ai.plan, age, name:pTxt+'·'+plTxt, count:0, games:0, wins:0, losses:0, totalWager:0, totalProfit:0, peak:0, bestWin:0, bust:0 };
+    c.count += 1;
+    c.games += (ai.games||0);
+    c.wins += (ai.wins||0);
+    c.losses += (ai.losses||0);
+    c.totalWager += (ai.totalWager||0);
+    // 總盈利：用 資金-本金 累積（每次出現嘅淨贏輸相加）
+    const net = (ai.balance||0) - (ai.baseBalance||ai.balance||0);
+    c.totalProfit += net;
+    if((ai.peak||0) > (c.peak||0)) c.peak = ai.peak;
+    if(net > (c.bestWin||0)) c.bestWin = net;
+    if(ai.bankrupt) c.bust += 1;
+    combos[key]=c;
+  }
+  saveCombos(combos);
+}
 function loadAiList(){ 
   try{ 
     const s=localStorage.getItem('bac_ai'); 
@@ -2728,7 +2766,7 @@ function aiSettle(result, playerPair, bankerPair, big, pTotal, bTotal, pCards, b
     if(win) wonIds.push(ai.id); else if(ai.lastWin===false) lostIds.push(ai.id);
     ai.currentBet=null;
   }
-  updateBetDisplay(); updateAiBalances(); saveAiList();
+  updateBetDisplay(); updateAiBalances(); saveAiList(); recordCombos();
   // 升級⑦ 情緒動畫：贏錢飄金 / 輸錢變灰（短暫1.5s）
   wonIds.forEach(id=>{ const el=document.querySelector('.aib[data-ai="'+id+'"]'); if(el){ el.classList.add('em-flash-win'); setTimeout(()=>el.classList.remove('em-flash-win'),1500); } });
   lostIds.forEach(id=>{ const el=document.querySelector('.aib[data-ai="'+id+'"]'); if(el){ el.classList.add('em-flash-lose'); setTimeout(()=>el.classList.remove('em-flash-lose'),1500); } });
@@ -3517,33 +3555,45 @@ document.getElementById('btnLlm').addEventListener('click',()=>{
   else { showToast('🧠 AI腦關閉（用返預製句）'); }
 });
 document.getElementById('btnLeaderboard').addEventListener('click',()=>{
-  // 手機本地 AI 排行榜：讀 ais（localStorage 已有），按指標排序，唔連 server
+  // AI 組合排行榜：讀 localStorage 嘅 bac_ai_combos，按指標排序（累積，唔清）
   const panel=document.getElementById('aiLbPanel');
   const list=document.getElementById('albList');
-  let sortKey='balance', sortDir=-1;   // 預設餘額由高至低
-  function winRate(ai){ const w=ai.wins||0, l=ai.losses||0; return (w+l>0)? (w/(w+l)) : null; }
+  let sortKey='totalProfit', sortDir=-1;   // 預設總盈利由高至低
+  function fmt(n){ return (n||0).toLocaleString(); }
   function render(){
-    const arr=[...ais].map(ai=>({name:ai.name||'?', balance:ai.balance||0, wr:winRate(ai), ws:ai.winStreak||0}));
+    const combos=loadCombos();
+    const arr=Object.keys(combos).map(k=>({...combos[k], key:k}));
     arr.sort((a,b)=>{
       let av,bv;
-      if(sortKey==='name'){ av=a.name; bv=b.name; return sortDir*av.localeCompare(bv); }
-      if(sortKey==='winRate'){ av=a.wr==null?-1:a.wr; bv=b.wr==null?-1:b.wr; }
-      else if(sortKey==='winStreak'){ av=a.ws; bv=b.ws; }
-      else { av=a.balance; bv=b.balance; }
+      if(sortKey==='games'){ av=a.games||0; bv=b.games||0; }
+      else if(sortKey==='bust'){ av=a.bust||0; bv=b.bust||0; }
+      else if(sortKey==='peak'){ av=a.peak||0; bv=b.peak||0; }
+      else { av=a.totalProfit||0; bv=b.totalProfit||0; }
       return sortDir*(av-bv);
     });
-    if(!arr.length){ list.innerHTML='<div class="alb-row" style="color:#7a8a7a;">尚未有 AI 陪玩</div>'; return; }
-    list.innerHTML=arr.map((ai,i)=>{
-      const wr = ai.wr==null? '—' : Math.round(ai.wr*100)+'%';
-      return '<div class="alb-row"><span class="alb-rank">'+(i+1)+'</span><span class="alb-name">'+ai.name+'</span>'+
-        '<span class="alb-stat">💰<span class="v">'+ai.balance.toLocaleString()+'</span></span>'+
-        '<span class="alb-stat">🎯<span class="v">'+wr+'</span></span>'+
-        '<span class="alb-stat">🔥<span class="v">'+ai.ws+'</span></span></div>';
+    if(!arr.length){ list.innerHTML='<div class="alb-row" style="color:#7a8a7a;">尚無組合紀錄（玩幾鋪就有）</div>'; return; }
+    list.innerHTML=arr.map((c,i)=>{
+      const bustCls = (c.bust||0)>0 ? ' bust' : '';
+      const bustTxt = (c.bust||0)>0 ? '<span class="cb-bust">💀破產×'+c.bust+'</span>' : '<span>破產 0</span>';
+      const winRate = ((c.wins||0)+(c.losses||0)>0) ? Math.round((c.wins||0)/((c.wins||0)+(c.losses||0))*100)+'%' : '—';
+      return '<div class="alb-combo'+bustCls+'">'+
+        '<div class="cb-top"><span class="cb-name">'+(i+1)+'. '+c.name+'</span><span class="cb-cnt">出現 '+c.count+' 次</span></div>'+
+        '<div class="cb-grid">'+
+          '<div>局數 <b>'+fmt(c.games)+'</b></div>'+
+          '<div>贏/輸 <b>'+fmt(c.wins)+'/'+fmt(c.losses)+'</b></div>'+
+          '<div>勝率 <b>'+winRate+'</b></div>'+
+          '<div>總投注 <b>'+fmt(c.totalWager)+'</b></div>'+
+          '<div>總盈利 <b>'+fmt(c.totalProfit)+'</b></div>'+
+          '<div class="cb-peak">最高資金 <b>'+fmt(c.peak)+'</b></div>'+
+          '<div>最多贏一次 <b>'+fmt(c.bestWin)+'</b></div>'+
+          bustTxt+
+          '<div>年齡 <b>'+(c.age||'—')+'</b></div>'+
+        '</div></div>';
     }).join('');
     document.querySelectorAll('.alb-tab').forEach(t=>t.classList.toggle('active', t.dataset.sort===sortKey));
   }
   document.querySelectorAll('.alb-tab').forEach(tab=>{
-    tab.onclick=()=>{ const k=tab.dataset.sort; if(k===sortKey) sortDir*=-1; else { sortKey=k; sortDir=(k==='name')?1:-1; } render(); };
+    tab.onclick=()=>{ const k=tab.dataset.sort; if(k===sortKey) sortDir*=-1; else { sortKey=k; sortDir=-1; } render(); };
   });
   document.getElementById('albClose').onclick=()=>{ panel.hidden=true; };
   panel.hidden=false; render();
