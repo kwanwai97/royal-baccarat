@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- deploy refresh 2026-08-27T12:35 紫色AI榜掣返兩行; 頂部伺服榜維持一行 -->
+<!-- deploy refresh 2026-08-27T12:55 籌碼區永遠緊貼資金底(加margin-top:0保險) -->
 <html lang="zh-Hant">
 <head>
 <meta charset="UTF-8">
@@ -651,7 +651,7 @@
     /* 右欄：投注→籌碼→洗牌 各自一格，貼頂對齊 */
     .h-left{ display:contents; }
     .bets{ grid-column:4 / 7; grid-row:4; align-self:start; }     /* 右欄投注區：籌碼區之下 */
-    .chips-row{ grid-column:4 / 7; grid-row:3; align-self:start; } /* 右欄頂：籌碼區搬去投注區上方 */
+    .chips-row{ grid-column:4 / 7; grid-row:3; align-self:start; margin-top:0 !important; } /* 右欄頂：籌碼區搬去投注區上方; 永遠緊貼資金區底(保險) */
     /* 橫版：左上三掣(#topBtns)已按 orientation 搬入籌碼區，跟籌碼區水平並排 */
     .chips-row #topBtns{ order:0; margin-top:0; display:flex; gap:3px; align-items:center; }
     .controls{ grid-column:4 / 7; grid-row:5; align-self:start; padding:3px 6px 0; gap:4px; }  /* 右欄底：洗牌/發牌區 */
