@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- deploy refresh 2026-08-27T09:50 force rebuild v2 -->
+<!-- deploy refresh 2026-08-27T10:30 垂直拆字修復 -->
 <html lang="zh-Hant">
 <head>
 <meta charset="UTF-8">
@@ -668,8 +668,9 @@
     .chips-row .vbtn{ writing-mode:horizontal-tb; text-orientation:initial; flex-direction:row; }
     /* 橫版：籌碼區下方四掣(清除/重複/發牌/洗牌)高度收窄4px(35→30) */
     .chips-row .btn, .chips-row .btn.shuffle{ height:30px !important; }
-    /* 橫版：洗牌/清除/重複/發牌 字體豎排 + 闊度收1px(35→34) */
-    .chips-row .shuffle, .chips-row .clear, .chips-row .repeat, .chips-row .deal{ writing-mode:vertical-rl; text-orientation:upright; width:34px !important; flex:0 0 34px; }
+    /* 橫版：洗牌/清除/重複/發牌 字體豎排(拆字span垂直) + 闊度收1px(35→34) */
+    .chips-row .btn.shuffle, .chips-row .btn.clear, .chips-row .btn.repeat, .chips-row .btn.deal{ writing-mode:horizontal-tb !important; width:34px !important; flex:0 0 34px !important; display:flex !important; flex-direction:column !important; align-items:center !important; justify-content:center !important; line-height:1.05; }
+    .chips-row .btn.shuffle .vchar, .chips-row .btn.clear .vchar, .chips-row .btn.repeat .vchar, .chips-row .btn.deal .vchar{ display:block; writing-mode:horizontal-tb; font-size:12px; }
     /* 打橫下三路：derived-row 改回 flex:1 均分(同直版)，三張自動撐滿高度、貼住珠盤路底對齊；canvas 跟 height:100% */
     .road-derived{ display:flex; flex-direction:column; }
     .derived-row{ flex:1 1 0; min-height:0; }
@@ -1013,10 +1014,10 @@
     <div class="chip c10k" data-chip="10000">10K</div>
     <div class="chip c50k" data-chip="50000">50K</div>
   </div>
-  <button class="btn shuffle vbtn" id="btnShuffle" title="重新洗牌">洗牌</button>
-  <button class="btn clear vbtn" id="btnClear">清除</button>
-  <button class="btn repeat vbtn" id="btnRepeat">重複</button>
-  <button class="btn deal vbtn" id="btnDeal">發牌</button>
+  <button class="btn shuffle vbtn" id="btnShuffle" title="重新洗牌"><span class="vchar">洗</span><span class="vchar">牌</span></button>
+  <button class="btn clear vbtn" id="btnClear"><span class="vchar">清</span><span class="vchar">除</span></button>
+  <button class="btn repeat vbtn" id="btnRepeat"><span class="vchar">重</span><span class="vchar">複</span></button>
+  <button class="btn deal vbtn" id="btnDeal"><span class="vchar">發</span><span class="vchar">牌</span></button>
   </div>
 
   </div>
