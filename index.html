@@ -3362,7 +3362,7 @@ document.getElementById('btnClaimQuest').addEventListener('click',claimQuest);
 document.getElementById('btnStats').addEventListener('click',showStats);
 document.getElementById('btnCloseStats').addEventListener('click',()=>document.getElementById('statsModal').classList.remove('show'));
 const btnDM=document.getElementById('btnDealMode');
-function refreshDealModeBtn(){ btnDM.textContent = dealMode==='squeeze' ? '搣牌 ▾' : '3D開牌 ▾'; }
+function refreshDealModeBtn(){ btnDM.textContent = dealMode==='squeeze' ? '搣牌 ▾' : '開牌 ▾'; }
 btnDM.addEventListener('click',()=>{
   dealMode = dealMode==='squeeze' ? '3d' : 'squeeze';
   localStorage.setItem('bac_dealmode', dealMode);
