@@ -2352,7 +2352,7 @@ function recordCombos(){
     const key = ai.persona+'|'+ai.plan+'|'+age;
     const pTxt = (AI_PERSONAS[ai.persona]&&AI_PERSONAS[ai.persona].name)||ai.persona;
     const plTxt = (AI_PLANS[ai.plan]&&AI_PLANS[ai.plan].name)||ai.plan;
-    let c = combos[key] || { persona:ai.persona, plan:ai.plan, age, name:pTxt+'·'+plTxt, count:0, games:0, wins:0, losses:0, totalWager:0, totalProfit:0, peak:0, bestWin:0, bust:0 };
+    let c = combos[key] || { persona:ai.persona, plan:ai.plan, age, name:pTxt+'·'+plTxt, count:0, games:0, wins:0, losses:0, totalWager:0, totalProfit:0, peak:0, bestWin:0, bust:0, maxWin:0, maxLose:0 };
     c.count += 1;
     c.games += (ai.games||0);
     c.wins += (ai.wins||0);
@@ -2363,6 +2363,8 @@ function recordCombos(){
     c.totalProfit += net;
     if((ai.peak||0) > (c.peak||0)) c.peak = ai.peak;
     if(net > (c.bestWin||0)) c.bestWin = net;
+    if((ai._maxWinStreak||0) > (c.maxWin||0)) c.maxWin = ai._maxWinStreak;   // 最長連贏(累積取最大)
+    if((ai.maxLoseStreak||0) > (c.maxLose||0)) c.maxLose = ai.maxLoseStreak; // 最長連輸(累積取最大)
     if(ai.bankrupt) c.bust += 1;
     combos[key]=c;
   }
@@ -3586,6 +3588,8 @@ document.getElementById('btnLeaderboard').addEventListener('click',()=>{
           '<div>總盈利 <b>'+fmt(c.totalProfit)+'</b></div>'+
           '<div class="cb-peak">最高資金 <b>'+fmt(c.peak)+'</b></div>'+
           '<div>最多贏一次 <b>'+fmt(c.bestWin)+'</b></div>'+
+          '<div>最長連贏 <b>'+fmt(c.maxWin)+'</b></div>'+
+          '<div>最長連輸 <b>'+fmt(c.maxLose)+'</b></div>'+
           bustTxt+
           '<div>年齡 <b>'+(c.age||'—')+'</b></div>'+
         '</div></div>';
