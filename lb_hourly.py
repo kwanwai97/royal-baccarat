@@ -28,6 +28,22 @@ if os.path.exists(SSH_KEY):
         f'ssh -i "{SSH_KEY}" -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
     )
 
+# 將所有輸出同時寫入 lb_daemon.log (方便查 SYSTEM 任務錯誤)
+_logpath = os.path.join(HERE, 'lb_daemon.log')
+_logf = open(_logpath, 'a', encoding='utf-8')
+class _Tee:
+    def __init__(self, *streams): self.streams = streams
+    def write(self, s):
+        for t in self.streams: 
+            try: t.write(s)
+            except: pass
+    def flush(self): 
+        for t in self.streams:
+            try: t.flush()
+            except: pass
+sys.stdout = _Tee(sys.stdout, _logf)
+sys.stderr = _Tee(sys.stderr, _logf)
+
 def run(cmd):
     print('$', ' '.join(cmd))
     r = subprocess.run(cmd, cwd=HERE, capture_output=True, text=True)
