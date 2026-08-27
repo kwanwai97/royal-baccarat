@@ -188,7 +188,7 @@ def main():
     db['updated'] = db.get('updated', 0) + 1   # 每鐘 +1, 網頁「已跑 X 鐘」跟住更新(舊code冇寫呢欄所以定格139)
     with open(JSON_PATH, 'w', encoding='utf-8') as f:
         json.dump(db, f, ensure_ascii=False, indent=1)
-    print(f'✅ 模擬完成 {len(roster)} 個 AI，每個 {SHOE_GAMES} 局 @ {now}')
+    print(f'[OK] 模擬完成 {len(roster)} 個 AI，每個 {SHOE_GAMES} 局 @ {now}')
     return 0
 
 if __name__ == '__main__':

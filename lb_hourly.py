@@ -15,6 +15,13 @@ lb_hourly.py — 每小時排行榜自動更新 + 推送（恢復當年 auto: �
 """
 import subprocess, os, sys, datetime
 
+# 強制 stdout/stderr UTF-8 (SYSTEM 帳號 console 用 cp950, emoji/中文會崩潰)
+try:
+    sys.stdout.reconfigure(encoding='utf-8')
+    sys.stderr.reconfigure(encoding='utf-8')
+except Exception:
+    pass
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 
 # 無論邊個帳號(SYSTEM/用戶)跑都自帶 git 身份 + SSH 鑰匙, 唔使依賴系統全域設定
@@ -56,7 +63,7 @@ def main():
     # 1. 模擬
     rc = run([sys.executable, os.path.join(HERE, 'lb_sim.py')])
     if rc != 0:
-        print('❌ lb_sim 失敗，唔 push', file=sys.stderr); return 1
+        print('[X] lb_sim 失敗，唔 push', file=sys.stderr); return 1
     # 2. git commit + push
     run(['git', 'add', 'leaderboard.json'])
     now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M')
@@ -66,9 +73,9 @@ def main():
     with open(os.path.join(HERE, 'last_sim.log'), 'w', encoding='utf-8') as f:
         f.write(now + '\n')
     if rc != 0:
-        print('⚠️ push 失敗（可能 credentials / 網絡），但 leaderboard.json 已更新，下次 push 補回', file=sys.stderr)
+        print('[!] push 失敗（可能 credentials / 網絡），但 leaderboard.json 已更新，下次 push 補回', file=sys.stderr)
         return rc
-    print(f'✅ 每小時更新完成並 push @ {now}')
+    print(f'[OK] 每小時更新完成並 push @ {now}')
     return 0
 
 if __name__ == '__main__':
