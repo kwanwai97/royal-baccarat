@@ -34,7 +34,7 @@
   .brand-title{order:1;}
   #btnLeaderboard{order:1;}
   .brand-sub #shoeInfo{font-size:14px; font-weight:800; color:#7fffb0; text-shadow:0 0 6px rgba(80,255,160,.5);}
-  .topright{display:flex; align-items:center; gap:10px; border:1px solid #b98a17; border-radius:8px; background:rgba(20,30,20,.55); box-sizing:border-box; padding:2px 6px;}  /* 資金區容器框(同follow-right風格); 直版 */
+  .topright{display:flex; align-items:center; gap:10px;}  /* 資金區(取消黃框) */
   .balance{font-size:12px; text-align:right;}
   .balance b{color:var(--gold2); font-size:18px; margin-left:1px;}
   .iconbtn{background:#1a1200; border:1px solid var(--goldd); color:var(--gold2); border-radius:8px; padding:6px 9px; font-size:13px; cursor:pointer;}
@@ -308,7 +308,7 @@
 /* 直版：跟注區 — 頂5掣貼頂不變，底層掣(🔊自動13秒AI榜)貼投注區，中間空隙擺5圖案掣(戰績/禮物/腦袋/限額/陪玩) */
 @media (orientation:portrait){
   .follow-wrap{ gap:0; margin-bottom:0; }  /* align-items 留 stretch 令頂5掣貼頂 */
-  .follow-right{ align-content:space-between; gap:1px !important; border:1px solid #b98a17; border-radius:8px; background:rgba(20,30,20,.55); box-sizing:border-box; padding:2px; }  /* 第二容器框：邊框緊貼(2px) */
+  .follow-right{ align-content:space-between; gap:1px !important; }  /* 跟注控制(取消黃框) */
   .follow-right .frow{ display:flex; flex-direction:row; flex-wrap:wrap; align-items:center; justify-content:flex-start; gap:1px; width:100%; }  /* 直版：行容器flex, 跟注行/圖案行橫排 */
   .follow-right .frow-top{ order:0; }  /* 跟注行置頂 */
   .follow-right .frow-bot{ flex-direction:row; align-items:center; width:100%; flex:0 0 auto; order:2; flex-wrap:wrap; }  /* 直版底層(喇叭/自動/13秒/AI榜)打橫一排, 排圖案之後 */
@@ -687,7 +687,7 @@
     .auto-btns #btnAuto{ flex-direction:column; gap:1px; }
     .auto-btns #btnAuto .a-label{ writing-mode:horizontal-tb; font-size:11px; font-weight:800; line-height:1; }
     .auto-btns #btnAuto .a-state{ writing-mode:horizontal-tb; font-size:11px; font-weight:800; line-height:1; }
-    .topright{ grid-column:5 / 7; grid-row:1 / span 2; display:flex; flex-direction:column; align-items:stretch; gap:4px; align-self:start; min-width:0; overflow:visible; padding:6px; border:1px solid #b98a17; border-radius:8px; background:rgba(20,30,20,.55); box-sizing:border-box; margin-left:-35px; }  /* 橫版：資金區向左移35px(原33+再加2) */
+    .topright{ grid-column:5 / 7; grid-row:1 / span 2; display:flex; flex-direction:column; align-items:stretch; gap:4px; align-self:start; min-width:0; overflow:visible; padding:6px; margin-left:-35px; }  /* 橫版：資金區(取消黃框); 向左移35px */
     .topright .balance{ font-size:13px; text-align:left; width:100%; }  /* 文字靠左, 貼資金區最左消除視覺空間 */
     .topright .balance b{ font-size:18px; }
     /* AI陪玩列表（資金）打橫：6個一行、2行顯示(6x2)，全部見到唔切走；頂欄span2行容納 */
@@ -707,7 +707,7 @@
 .follow-right{
   grid-column:3 / 4; grid-row:1 / span 2;   /* 橫版：第3欄(跟注區), 框fit-content溢出顯示唔截斷 */
   display:flex; flex-direction:row; flex-wrap:wrap; align-items:stretch; align-content:flex-start; justify-content:flex-start; gap:1px;  /* 橫版三層各自一行靠左 */
-  align-self:start; min-width:0; padding:2px; border:1px solid #b98a17; border-radius:8px; background:rgba(20,30,20,.55); box-sizing:border-box;       /* 第二容器框(同pred-system); 邊框緊貼2px */
+  align-self:start; min-width:0; padding:0;       /* 跟注控制(取消黃框); 橫版 */
   width:fit-content !important; justify-self:start !important; min-width:0 !important; margin-left:-5px;   /* 橫版：框闊度由內容決定, 唔被grid跨欄拉伸; 向左移5px */
 }
 /* 橫版：三層各自一行(跟注/圖案/底層), 每行nowrap靠左, 容器fit-content=最闊行(~164) */
