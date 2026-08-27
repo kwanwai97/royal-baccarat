@@ -513,7 +513,7 @@
 /* ===== 大路標題行：五圖案(戰績/禮物/大佬/限額/AI陪玩) 細細哋排開牌右，唔放大；縮細左右空間緊貼 ===== */
 .road-header{ display:flex; align-items:center; gap:2px; flex-wrap:wrap; padding:3px 4px; }
 .road-header .road-section-title{ flex:0 0 auto; margin-right:2px; }
-.road-header #btnDealMode{ flex:0 0 auto; }
+.road-header #btnDealMode{ flex:0 0 auto; height:28px; padding:2px 6px; font-size:12px; }
 .follow-icons-header{ flex:0 0 auto; display:flex; align-items:center; gap:2px; min-width:0; }
 .road-header #btnMute{ flex:0 0 auto; }
 #followStatus{ text-align:left; }   /* 直版做一行：狀態在統計左邊，文字靠左；橫版同樣靠左 */
@@ -3715,8 +3715,16 @@ function placeTopBtns(){
     }
     if(shoeInfo){
       const headerL=document.querySelector('.roadpanel > div');  // 大路標題 header 行
-      if(headerL && shoeInfo.parentElement!==headerL) headerL.appendChild(shoeInfo);
-      shoeInfo.style.position=''; shoeInfo.style.left=''; shoeInfo.style.top='';  // 改 flex order 緊貼開牌左(唔 absolute)
+      const fih=document.getElementById('followIconsHeader');
+      if(headerL && fih){
+        if(shoeInfo.parentElement!==headerL) headerL.insertBefore(shoeInfo, fih);  // 插五圖案前=開牌後? 改插大路後
+        // 最終順序: 大路 → 剩餘 → 開牌 → 五圖案 → 用 fih 之前係開牌位置; 但要確保剩餘喺開牌前
+        if(shoeInfo.parentElement===headerL){
+          const dm=document.getElementById('dealModeWrap');
+          if(dm && dm.parentElement===headerL) headerL.insertBefore(shoeInfo, dm);  // 大路→剩餘→開牌→五圖案
+        }
+      }
+      shoeInfo.style.position=''; shoeInfo.style.left=''; shoeInfo.style.top='';
     }
     // 橫版：5圖案掣(戰績/禮物/腦袋/限額/陪玩)已喺 HTML 嘅 #followIconsHeader(大路標題行開牌右)，唔搬去 followMidLand
     const frL=document.querySelector('.follow-right');
@@ -3769,7 +3777,7 @@ function placeTopBtns(){
         if(!dwrap){ dwrap=document.createElement('div'); dwrap.id='dealModeWrap'; dwrap.className='dealmode-wrap'; }
         if(dealModeBtn.parentElement!==dwrap) dwrap.appendChild(dealModeBtn);
         if(dwrap.parentElement!==header) header.insertBefore(dwrap, document.getElementById('followIconsHeader'));  // 插喺五圖案之前(開牌→五圖案)
-        if(shoeInfo && shoeInfo.parentElement!==header) header.appendChild(shoeInfo);   // 剩N張入 header(flex order 緊貼開牌左)
+        if(shoeInfo && shoeInfo.parentElement!==header) header.insertBefore(shoeInfo, dwrap);   // 剩N張插開牌前(順序:大路→剩餘→開牌→五圖案)
         shoeInfo.style.position=''; shoeInfo.style.left=''; shoeInfo.style.top='';
       }
     }
