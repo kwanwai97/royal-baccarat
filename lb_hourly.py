@@ -30,6 +30,10 @@ os.environ.setdefault('GIT_AUTHOR_NAME', 'kwanwai97')
 os.environ.setdefault('GIT_AUTHOR_EMAIL', 'kwanwai97@users.noreply.github.com')
 os.environ.setdefault('GIT_COMMITTER_NAME', 'kwanwai97')
 os.environ.setdefault('GIT_COMMITTER_EMAIL', 'kwanwai97@users.noreply.github.com')
+# SYSTEM 帳號唔係 repo 擁有人, git 安全機制會拒絕 -> 用環境變數加 safe.directory (唔使改全域config)
+os.environ['GIT_CONFIG_COUNT'] = '1'
+os.environ['GIT_CONFIG_KEY_0'] = 'safe.directory'
+os.environ['GIT_CONFIG_VALUE_0'] = HERE
 if os.path.exists(SSH_KEY):
     os.environ['GIT_SSH_COMMAND'] = (
         f'ssh -i "{SSH_KEY}" -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
