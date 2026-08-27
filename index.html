@@ -32,10 +32,11 @@
   .brand{font-weight:800; letter-spacing:1px; color:var(--gold2);
     font-size:15px; text-shadow:0 0 8px rgba(212,175,55,.6); display:flex; flex-direction:column; align-items:flex-start; gap:2px; margin-left:-6px;}
   .brand-sub{font-size:11px; font-weight:600; color:#cdbf8e; opacity:.85; display:flex; flex-direction:column; gap:1px; order:2;}
+  .brand #btnServerLb .srv-sub{ display:block; text-align:left; }  /* 直版：伺服榜server版副文斷兩行 */
   .brand-title{order:1;}
   #btnLeaderboard{order:1;}
   .brand-sub #shoeInfo{font-size:14px; font-weight:800; color:#7fffb0; text-shadow:0 0 6px rgba(80,255,160,.5);}
-  .topright{display:flex; align-items:center; gap:10px; margin-left:1px;}  /* 資金區(取消黃框); 直版向右1px */
+  .topright{display:flex; align-items:center; gap:10px; margin-left:-9px;}  /* 資金區(取消黃框); 直版向左10px */
   .balance{font-size:12px; text-align:right;}
   .balance b{color:var(--gold2); font-size:18px; margin-left:1px;}
   .iconbtn{background:#1a1200; border:1px solid var(--goldd); color:var(--gold2); border-radius:8px; padding:6px 9px; font-size:13px; cursor:pointer;}
@@ -702,6 +703,7 @@
     .brand{ grid-column:1 / 2; grid-row:1; align-self:start; margin-left:0; display:flex; flex-direction:row; align-items:center; gap:6px; font-size:13px; padding-top:6px; }  /* 橫版：brand行排列, 伺服榜貼左其他掣貼右 */
     .brand #btnServerLb{ order:-1; margin-right:auto; }  /* 橫版：伺服榜排最左, 推開其他掣去右 */
     .brand #btnLeaderboard{ font-size:11px; padding:1px 4px; }
+  .brand #btnServerLb .srv-sub{ display:inline; }  /* 橫版：伺服榜副文保持一行 */
     .brand-sub{ font-size:10px; }
     .brand-sub #shoeInfo{ font-size:12px; }
     .brand-sub{ text-align:left; }   /* 橫版：剩餘卡牌N數由最左邊開始 */
@@ -827,7 +829,7 @@
   <div class="topbar">
     <div class="brand">
       <button id="btnLeaderboard" title="AI 排行榜" style="align-self:flex-start;margin:0;background:linear-gradient(90deg,#3a2d5c,#5a3d7c);color:#fff;border:none;padding:2px 6px;border-radius:6px;font-size:11px;line-height:1.2;cursor:pointer;letter-spacing:0;">🏆 AI排行榜<div style="font-size:9px;opacity:.75;letter-spacing:0;">即時</div></button>
-      <button id="btnServerLb" title="伺服榜（連 server 版）" style="align-self:flex-start;margin:0;background:linear-gradient(90deg,#2d5c4a,#3d7c5a);color:#fff;border:none;padding:2px 6px;border-radius:6px;font-size:11px;line-height:1.2;cursor:pointer;letter-spacing:0;white-space:nowrap;">🖥️ 伺服榜<span style="font-size:9px;opacity:.75;letter-spacing:0;"> server 版</span></button>
+      <button id="btnServerLb" title="伺服榜（連 server 版）" style="align-self:flex-start;margin:0;background:linear-gradient(90deg,#2d5c4a,#3d7c5a);color:#fff;border:none;padding:2px 6px;border-radius:6px;font-size:11px;line-height:1.2;cursor:pointer;letter-spacing:0;white-space:nowrap;">🖥️ 伺服榜<span class="srv-sub" style="font-size:9px;opacity:.75;letter-spacing:0;"> server 版</span></button>
       <div class="brand-sub"><span id="shoeInfo"></span></div>
       <div id="topBtns" class="top-btns">
         <button class="btn auto vbtn" id="btnAuto" title="自動開牌"><span class="a-label">自動</span><span class="a-state">關</span></button>
