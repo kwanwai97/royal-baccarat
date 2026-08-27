@@ -10,3 +10,4 @@ _rb_check.js
 # test scratch files
 _t.js
 _test_runtime.js
+.ssh_rb_key
