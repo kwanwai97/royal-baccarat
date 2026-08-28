@@ -340,7 +340,7 @@
 }
 .follow-left{flex:0 0 50%; display:flex; flex-direction:column; gap:5px; min-width:0; justify-content:flex-start; padding-left:6px;}
 /* 預測系統固定資訊區：上面一行(標題+請投注) + 下面一行(勝率/次數/勝負)，固定空間唔收起 */
-.pred-system{ min-height:46px; display:flex; flex-direction:column; gap:2px; padding:0; border:none; border-radius:0; background:transparent; box-sizing:border-box; justify-content:center; }
+.pred-system{ min-height:46px; display:flex; flex-direction:column; gap:2px; padding:0; border:1px solid #b98a17; border-radius:8px; background:rgba(20,30,20,.55); box-sizing:border-box; justify-content:center; }  /* 復原黃框; padding 0 貼實內容(跟直版) */
 .pred-row1{ display:flex; align-items:center; gap:5px; font-size:12px; font-weight:800; color:#ffd479; flex-wrap:nowrap; white-space:nowrap; }
 .pred-ico{ font-size:13px; }
 .pred-title{ color:#ffd479; }
@@ -725,7 +725,7 @@
 /* 橫版：跟注文字搬入預測系統底部，打橫一行(取消疊牌)，緊貼預測系統、縮細 */
 .follow-left .follow-text{ display:flex; flex-direction:row; flex-wrap:nowrap; align-items:center; gap:5px; flex-basis:auto; min-width:0; order:3; margin-top:0; font-size:9px; }
 /* 打橫：預測系統區貼第二行最闊位(唔撐開、唔轉行)，保持三行位置唔變 */
-.follow-left .pred-system{ width:fit-content !important; max-width:none; justify-content:flex-start; gap:0; padding:0; min-height:0; }  /* 取消黃框後, 內容自然寬度 */
+.follow-left .pred-system{ width:fit-content !important; max-width:none; justify-content:flex-start; gap:0; padding:0; min-height:0; }  /* 橫版套直版: 黃框跟內容闊度fit-content包實, 唔鎖grid欄 */
 .follow-left .pred-road{ justify-content:flex-start; }  /* 橫版：狀態欄向左 */
 .follow-left #followStatus{ text-align:left; }  /* 橫版：狀態文字向左 */
 .follow-left .pred-record{ justify-content:flex-start; }  /* 橫版：跟注次數紀錄向左 */
@@ -734,7 +734,7 @@
   grid-column:3 / 4; grid-row:1 / span 2;   /* 橫版：第3欄(跟注區), 框fit-content溢出顯示唔截斷 */
   display:flex; flex-direction:row; flex-wrap:wrap; align-items:stretch; align-content:flex-start; justify-content:flex-start; gap:0;  /* 橫版三層各自一行靠左; 行距0緊貼 */
   align-self:start; min-width:0; padding:0; margin-top:5px;       /* 跟注控制(取消黃框); 橫版; 頂部留5px空間 */
-  width:fit-content !important; justify-self:start !important; min-width:0 !important; margin-left:-34px;   /* 橫版：跟反控制區保持貼住原黃框位置(待定) */
+  width:fit-content !important; justify-self:start !important; min-width:0 !important; margin-left:-93px;   /* 橫版：跟反控制區再貼近黃框右邊(284→gap0) */
 }
 /* 橫版：三層各自一行(跟注/圖案/底層), 每行nowrap靠左, 容器fit-content=最闊行(~164) */
 .follow-right .frow{ display:flex; flex-direction:row; flex-wrap:nowrap; align-items:center; justify-content:flex-start; gap:0; width:fit-content; flex:0 0 auto; margin-top:0; }
