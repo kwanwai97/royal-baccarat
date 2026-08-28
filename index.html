@@ -36,7 +36,7 @@
   .brand-title{order:1;}
   #btnLeaderboard{order:1;}
   .brand-sub #shoeInfo{font-size:14px; font-weight:800; color:#7fffb0; text-shadow:0 0 6px rgba(80,255,160,.5);}
-  .topright{display:flex; align-items:center; gap:10px; margin-left:-15px;}  /* 資金區向左擴6px, 直版每格更鬆 */
+  .topright{display:flex; align-items:center; gap:10px; margin-left:-9px;}  /* 資金區(取消黃框); 直版向左10px */
   .balance{font-size:12px; text-align:right;}
   .balance b{color:var(--gold2); font-size:18px; margin-left:1px;}
   .iconbtn{background:#1a1200; border:1px solid var(--goldd); color:var(--gold2); border-radius:8px; padding:6px 9px; font-size:13px; cursor:pointer;}
@@ -603,18 +603,16 @@
 
   .daily-tip{text-align:center; font-size:11px; color:var(--gold2); padding:0 10px 4px; min-height:14px;}
   /* AI 陪玩 · 3+1 顯示：上面2個AI + 下邊1個AI + 你最底 */
-  /* 固定列寬 minmax(0,1fr) 防止名長/旺標記撐大格 → 直版唔會跳位 */
-  .ai-balances{display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:2px 2px; align-items:center; justify-items:stretch; max-width:100%; min-height:38px;}  /* 減gap令直版每格更鬆; 固定min-height */
-  /* 所有格預留 2px 透明 border，旺格只變色唔加寬 → 唔跳；min-width:0+截斷令名長唔撐位 */
-  .ai-balances .aib{display:flex; flex-direction:column; line-height:1.1; padding:1px 5px; min-width:0; overflow:hidden; border-left:2px solid transparent; height:34px; justify-content:center;}  /* 固定格高, 任何內容差異都唔撼位 */
-  .ai-balances .aib small{font-size:10px; opacity:.8; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%;}
-  .ai-balances .aib b{font-size:13px; color:var(--gold2); font-weight:800; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:100%;}
+  .ai-balances{display:grid; grid-template-columns:repeat(4,1fr); gap:2px 3px; align-items:center; justify-items:start; max-width:100%;}
+  .ai-balances .aib{display:flex; flex-direction:column; line-height:1.1; padding:1px 5px; border-left:1px solid rgba(255,255,255,.15);}
+  .ai-balances .aib small{font-size:10px; opacity:.8; white-space:nowrap;}
+  .ai-balances .aib b{font-size:13px; color:var(--gold2); font-weight:800;}
   .ai-balances .aib.hot{ border-left:2px solid #ffb347; background:rgba(255,179,71,.18); border-radius:3px;}
   /* 升級⑦ AI情緒動畫 */
   .ai-balances .aib.em-hot small{ color:#ffd479; }
   .ai-balances .aib.em-cold{ opacity:.7; }
   .ai-balances .aib.em-cold small{ color:#9fb3c8; }
-  @keyframes emWinFlash{ 0%{ background:rgba(255,215,121,.0);} 30%{ background:rgba(255,215,121,.55);} 100%{ background:rgba(255,215,121,0);} }
+  @keyframes emWinFlash{ 0%{ background:rgba(255,215,121,.0);} 30%{ background:rgba(255,215,121,.55); transform:scale(1.06);} 100%{ background:rgba(255,215,121,0); transform:scale(1);} }
   @keyframes emLoseFlash{ 0%{ background:rgba(120,140,160,0);} 30%{ background:rgba(120,140,160,.45); filter:grayscale(.7);} 100%{ background:rgba(120,140,160,0); filter:grayscale(0);} }
   .ai-balances .aib.em-flash-win{ animation:emWinFlash 1.5s ease; }
   .ai-balances .aib.em-flash-lose{ animation:emLoseFlash 1.5s ease; }
