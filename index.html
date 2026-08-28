@@ -3494,7 +3494,7 @@ function renderAiList(){
   // 如果唔係編輯模式，自動填下一個預設名
   if(!editingAiId) setNextDefaultName();
 }
-const DEFAULT_NAMES=['永恆','賭神','運來','大勝','金龍','旺角','福星','阿龍','小美','阿強','阿明','阿花','阿杰','志強','家豪','國華','振邦','耀祖','世昌','富貴','榮盛','鴻運','添丁','進寶','滿堂','順興','財神','泰來','安康','慶豐'];
+const DEFAULT_NAMES=['賭神爺','永恆','運財童','賭神','金滿堂','運來','發財貓','大勝','旺得福','金龍','大贏家','旺角','財神到','福星','鴻運來','阿龍','一口富','小美','天胡王','阿強','通殺王','阿明','莊閒霸','阿花','連贏叔','阿杰','幸運星','志強','金元寶','家豪'];
 function setNextDefaultName(){
   const used=new Set(ais.map(a=>a.name));
   for(const n of DEFAULT_NAMES){ if(!used.has(n)){ document.getElementById('aiNameInput').value=n; return; } }
