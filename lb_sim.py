@@ -103,12 +103,16 @@ def ai_bet_side(ai):
     return 'smart' if r < 0.50 else 'random'
 
 def simulate_one_boot(ai):
-    """模擬一個 AI 跑一靴 60 局，更新 ai 嘅統計，返新增嘅 balanceHistory 段"""
+    """模擬一個 AI 跑一靴 SHOE_GAMES 局，跟足 index.html settle() 嘅賠率同規則。
+    修正舊版 side bet bug：有落 side bet 先扣本金、命中先加 payout，唔會無故偏升。
+    莊抽水 5%（×1.95），和 ×9（退主注），對子 ×12，大 ×1.54，細 ×2.5，
+    幸運6（莊6點：2張×13/3張×21），幸運7（閒7莊6：4張×41/5張×61/6張×101）。
+    """
     base = ai.get('baseBet', 2000)
     plan = ai.get('plan', 'flat')
     plan_fn = PLANS.get(plan, PLANS['flat'])
-    st_win = 0   # 連贏計數（paroli 用）
-    st_loss = 0  # 連輸計數（martin 用）
+    st_win = 0
+    st_loss = 0
     wins = ai.get('wins', 0)
     losses = ai.get('losses', 0)
     games = ai.get('games', 0)
@@ -122,35 +126,47 @@ def simulate_one_boot(ai):
     for _ in range(SHOE_GAMES):
         p, b, winner, pPair, bPair, big, nCards = dealer_play()
         side_mode = ai_bet_side(ai)
-        # 主注：50% 押莊 / 50% 押閒（模擬分散），和/對子/大小少量
         if side_mode == 'smart':
-            main = 'banker' if random.random() < 0.51 else 'player'  # 莊略優(抽水後仍長期平)
+            main = 'banker' if random.random() < 0.51 else 'player'
         else:
             main = random.choice(['banker', 'player', 'player', 'banker'])
         bet = int(plan_fn(base, st_loss))
-        bet = max(100, min(bet, int(balance * 0.1) or 100))  # 唔好一次過押清光
+        bet = max(100, bet)
         if balance <= bet:
-            bet = max(100, int(balance * 0.1))
-        totalWager += bet
+            bet = max(100, balance)   # 唔夠就 all-in（可破產）
+        # ---- 主注 ----
+        staked = bet
         payout = 0
         won = False
         if main == 'player' and winner == 'player':
-            payout = bet * 2; won = True
+            payout += bet * 2; won = True
         elif main == 'banker' and winner == 'banker':
-            payout = bet * 1.95; won = True
+            payout += int(round(bet * 1.95)); won = True
         elif winner == 'tie':
-            payout = bet * 9; won = True
-        else:
-            payout = 0  # 輸
-        # 對子/大小 小注（10% 本金）
+            if main == 'player': payout += bet   # 和局退閒主注本金
+            elif main == 'banker': payout += bet  # 和局退莊主注本金
+        # ---- 對子 side bet（固定落 10% 主注，有落先扣、命中先加）----
         side_bet = max(50, int(bet * 0.1))
+        staked += side_bet
         if pPair: payout += side_bet * 12
         if bPair: payout += side_bet * 12
-        if big and winner != 'tie': payout += side_bet * 1.54
-        if (not big) and winner != 'tie': payout += side_bet * 2.5
-        net = payout - bet - (side_bet * (2 if (pPair or bPair or True) else 1))
+        # ---- 大細 side bet：只落一邊（big 或 small 隨機），唔兩邊都落（跟真實玩法）----
+        if random.random() < 0.5:
+            if big: payout += side_bet * 1.54   # 落 big 中
+        else:
+            if not big: payout += side_bet * 2.5  # 落 small 中
+        # ---- 幸運6 / 幸運7 ----
+        bTotal = hand_total(b); pTotal = hand_total(p)
+        if winner == 'banker' and bTotal == 6:
+            mult = 13 if len(b) == 2 else 21
+            payout += side_bet * mult
+        if winner == 'player' and pTotal == 7 and bTotal == 6:
+            mult = 41 if nCards == 4 else 61 if nCards == 5 else 101
+            payout += side_bet * mult
+        net = payout - staked
         balance += net
         totalProfit += net
+        totalWager += staked
         games += 1
         if won:
             wins += 1; st_win += 1; st_loss = 0
@@ -160,8 +176,9 @@ def simulate_one_boot(ai):
             losses += 1; st_loss += 1; st_win = 0
             curStreak = curStreak - 1 if curStreak < 0 else -1
             maxLoss = min(maxLoss, curStreak)
+        if balance <= 0:
+            balance = 0; break  # 破產，呢靴完
         history.append(int(balance))
-    # 截短 history（保留尾巴 60 點畀曲線）
     if len(history) > 120:
         history = history[-120:]
     ai.update({
@@ -169,6 +186,7 @@ def simulate_one_boot(ai):
         'totalWager': int(totalWager), 'totalProfit': int(totalProfit),
         'streak': curStreak, 'maxWinStreak': maxWin, 'maxLossStreak': maxLoss,
         'balanceHistory': history, 'step': 0, 'currentBet': None,
+        'bankrupt': balance <= 0,
     })
     return ai
 
