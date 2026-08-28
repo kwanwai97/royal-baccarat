@@ -3381,8 +3381,7 @@ let autoSpeedIdx=2;   // 預設 13秒
 function startAuto(){
   autoGen++; autoOn=true;                        // 令之前任何在途循環失效，避免疊加多個 loop
   const g=autoGen; autoTimer={};
-  showToast('▶ 自動開牌 2 秒後開始');
-  setTimeout(function(){ if(g===autoGen) autoTick(g); }, 2000);  // 撳咗等2秒第一鋪就開始
+  autoTick(g);
 }
 function stopAuto(){
   autoGen++; autoOn=false;                       // 失效所有在途循環
