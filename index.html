@@ -36,7 +36,7 @@
   .brand-title{order:1;}
   #btnLeaderboard{order:1;}
   .brand-sub #shoeInfo{font-size:14px; font-weight:800; color:#7fffb0; text-shadow:0 0 6px rgba(80,255,160,.5);}
-  .topright{display:flex; align-items:center; gap:10px; margin-left:-9px;}  /* 資金區(取消黃框); 直版向左10px */
+  .topright{display:flex; align-items:center; gap:10px; margin-left:-15px;}  /* 資金區向左擴6px, 直版每格更鬆 */
   .balance{font-size:12px; text-align:right;}
   .balance b{color:var(--gold2); font-size:18px; margin-left:1px;}
   .iconbtn{background:#1a1200; border:1px solid var(--goldd); color:var(--gold2); border-radius:8px; padding:6px 9px; font-size:13px; cursor:pointer;}
@@ -604,7 +604,7 @@
   .daily-tip{text-align:center; font-size:11px; color:var(--gold2); padding:0 10px 4px; min-height:14px;}
   /* AI 陪玩 · 3+1 顯示：上面2個AI + 下邊1個AI + 你最底 */
   /* 固定列寬 minmax(0,1fr) 防止名長/旺標記撐大格 → 直版唔會跳位 */
-  .ai-balances{display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:2px 3px; align-items:center; justify-items:stretch; max-width:100%; min-height:38px;}  /* 整塊固定最小高, 唔會因旺標記/行數上下移 */
+  .ai-balances{display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:2px 2px; align-items:center; justify-items:stretch; max-width:100%; min-height:38px;}  /* 減gap令直版每格更鬆; 固定min-height */
   /* 所有格預留 2px 透明 border，旺格只變色唔加寬 → 唔跳；min-width:0+截斷令名長唔撐位 */
   .ai-balances .aib{display:flex; flex-direction:column; line-height:1.1; padding:1px 5px; min-width:0; overflow:hidden; border-left:2px solid transparent; height:34px; justify-content:center;}  /* 固定格高, 任何內容差異都唔撼位 */
   .ai-balances .aib small{font-size:10px; opacity:.8; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%;}
