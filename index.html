@@ -1538,18 +1538,8 @@ function placeBet(k){
 function clearBets(force){ if(dealing && !betting && !force)return; if(!settled){ const refund=Object.values(bets).reduce((a,b)=>a+b,0); balance+=refund; } bets={player:0,banker:0,tie:0,ppair:0,bpair:0,big:0,small:0,luck6:0,luck7:0}; updateBalance(); updateAiBalances(); updateBetDisplay(); }
 /* 等上一手輸贏對話 + 語音全部播完（走馬燈收起 + 語音隊列清空），最長 20s safety */
 function waitAudioIdle(){
-  return new Promise(async res=>{
-    const marq=document.getElementById('dialogueMarquee');
-    // 先等語音串行播完（唔會 drop 句，播晒先落下一階段）
-    await waitTtsIdle(20000);
-    // 再等走馬燈收起（最長等多 10s，避免上一手文字同下一手發言重疊）
-    let waited=0;
-    const iv=setInterval(()=>{
-      waited+=100;
-      const marqGone=!marq||!marq.classList.contains('show');
-      if(marqGone || waited>10000){ clearInterval(iv); setTimeout(res, 800); }  // 收起後再停 0.8s 緩衝先下一輪
-    },100);
-  });
+  // 走馬燈功能已刪除，唔再等佢收起（否則會死等10秒）；只等語音串行播完就落下一輪
+  return waitTtsIdle(20000);
 }
 /* 落注期：綠字倒數 N 秒，期間人類可落注；AI 已經先落好供參考 */
 let betting=false;
