@@ -609,7 +609,7 @@
   .ai-balances .aib b{font-size:13px; color:var(--gold2); font-weight:800;}
   /* 旺AI高亮：只包金額b，唔包成個格/名 → 高亮闊度一致，旺跳去邊都唔會跳 */
   .ai-balances .aib.hot small{ color:#ffd479; }
-  .ai-balances .aib.hot b{ background:rgba(255,179,71,.28); border-radius:3px; padding:0 4px; color:#ffe9b0 !important; }
+  .ai-balances .aib.hot b{ background:rgba(255,179,71,.28); border-radius:3px; padding:0 1px; color:#ffe9b0 !important; }  /* 高亮只包數字, padding減到1px令塊短啲 */
   /* 旺AI閃爍只作用在金額b，唔撼整格 */
   @keyframes emWinFlash{ 0%{ background:rgba(255,215,121,.0);} 30%{ background:rgba(255,215,121,.55);} 100%{ background:rgba(255,215,121,0);} }
   @keyframes emLoseFlash{ 0%{ background:rgba(120,140,160,0);} 30%{ background:rgba(120,140,160,.45);} 100%{ background:rgba(120,140,160,0);} }
