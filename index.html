@@ -1510,6 +1510,8 @@ function updateBetDisplay(){
     const bet=document.querySelector('.bet[data-bet="'+k+'"]');
     if(bet) bet.classList.toggle('sel', h>0);
   }
+  // 保險：跟旺AI開緊時，每次重建注碼顯示後重標旺AI注碼數字變螢光綠（唔會被rebuild清走）
+  if((followHotOn||followHotReverseOn) && typeof getHotAI==='function'){ const hot=getHotAI(); if(hot&&hot.currentBet) markHotFollow(hot.currentBet.pick, hot); }
 }
 function updateStreak(){
   const b=document.getElementById('streakBadge');
