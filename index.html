@@ -373,7 +373,6 @@
 .pred-record .btn.freset{ flex:0 0 auto; margin:0 0 0 2px; padding:1px 6px; font-size:9px; font-weight:700; color:#ffd9a8; background:rgba(255,120,80,0.16); border:1px solid rgba(255,150,110,0.5); border-radius:8px; cursor:pointer; white-space:nowrap; }
 .follow-right{flex:1 1 50%; display:flex; flex-direction:row; flex-wrap:wrap; gap:1px; align-items:flex-start; justify-content:flex-start; padding-right:2px;}
 .follow-right .frow-top, .follow-right .frow-bot{ gap:1px; }  /* 上下行掣左右距離統一1px(全局, 直橫都生效) */
-.follow-right .frow-bot{ transform:translateY(-5px); }  /* 下面喇叭行(喇叭/自動/13秒/±次數)整體向上升高5px */
 .follow-right #bottomRowLand > *, .follow-right #bottomRow > *{ margin-left:1px; }
 .follow-right #bottomRowLand > :first-child, .follow-right #bottomRow > :first-child{ margin-left:0; }  /* 首個唔加左距 */
 .follow-text{display:flex; flex-direction:row; flex-wrap:nowrap; align-items:center; gap:6px; white-space:nowrap; order:-1; margin:2px 0;}   /* 直版：獨立成整行(投注區#bets頂, 閒P正上方), column flex 下 order:-1 排最前; 唔再關聯跟注掣 */
@@ -761,7 +760,7 @@
 }
 /* 橫版：三層各自一行(跟注/圖案/底層), 每行nowrap靠左, 容器fit-content=最闊行(~164) */
 .follow-right .frow{ display:flex; flex-direction:row; flex-wrap:nowrap; align-items:center; justify-content:flex-start; gap:0; width:fit-content; flex:0 0 auto; margin-top:0; }
-.follow-right .frow-bot{ order:7; margin-top:18px; }  /* 橫版底層行排圖案(order:6)之後; 同頂行拉開18px空間 */
+.follow-right .frow-bot{ order:7; margin-top:6px; }  /* 橫版底層行(喇叭/自動/13秒/±次數)貼住上面4掣, 同預測框底水平對齊 */
 /* 橫版5掣一行：跟預測/反預測/跟旺AI/反旺AI/±次數 全部一行(移除舊2上3下grid) */
 .follow-right #btnFollowPredict2{ order:1; }
 .follow-right #btnFollowRev{ order:2; }
