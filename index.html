@@ -373,6 +373,7 @@
 .pred-record .btn.freset{ flex:0 0 auto; margin:0 0 0 2px; padding:1px 6px; font-size:9px; font-weight:700; color:#ffd9a8; background:rgba(255,120,80,0.16); border:1px solid rgba(255,150,110,0.5); border-radius:8px; cursor:pointer; white-space:nowrap; }
 .follow-right{flex:1 1 50%; display:flex; flex-direction:row; flex-wrap:wrap; gap:1px; align-items:flex-start; justify-content:flex-start; padding-right:2px;}
 .follow-right .frow-top, .follow-right .frow-bot{ gap:1px; }  /* 上下行掣左右距離統一1px(全局, 直橫都生效) */
+.follow-right .frow-top{ margin-top:-5px; }  /* 上面4個跟注掣整體向上升高5px */
 .follow-right #bottomRowLand > *, .follow-right #bottomRow > *{ margin-left:1px; }
 .follow-right #bottomRowLand > :first-child, .follow-right #bottomRow > :first-child{ margin-left:0; }  /* 首個唔加左距 */
 .follow-text{display:flex; flex-direction:row; flex-wrap:nowrap; align-items:center; gap:6px; white-space:nowrap; order:-1; margin:2px 0;}   /* 直版：獨立成整行(投注區#bets頂, 閒P正上方), column flex 下 order:-1 排最前; 唔再關聯跟注掣 */
@@ -509,6 +510,8 @@
 .follow-right .freset:hover{ background:rgba(255,120,80,0.3); }
 
 /* 原有其他樣式保留 */
+/* 喇叭開咗著黃色(放最後確保優先) */
+#btnMute.on{ background:linear-gradient(180deg,#ffd479,#e6a417) !important; color:#241a00 !important; border:1px solid #ffb347 !important; box-shadow:0 0 8px rgba(255,196,80,.6) !important; }
 .follow-right .fbtn.on{
   background:linear-gradient(180deg,#5fffa0,#1faf5a); color:#06240f; border:1px solid #3fdf7a; opacity:1; box-shadow:0 2px 0 #0a7a3a;
 }
@@ -534,7 +537,7 @@
 .btn.fbtn.rev{background:linear-gradient(180deg,#ffd0a0,#d9804a); color:#2a1400; border:1px solid #ef9b6f; opacity:.7;}
 .btn.fbtn.rev.on{background:linear-gradient(180deg,#ff9a6f,#d94f1f); color:#2a0900; border:1px solid #ef7a4a; opacity:1;}
 .btn.auto{background:#2a2113; color:#e0b34a; border:1px solid #7a5a1a; flex:0 0 auto; padding:7px 7px; font-size:11px;}
-.btn.auto.on{background:#2faf5a; color:#04110a; border-color:#2faf5a; box-shadow:0 0 10px rgba(47,175,90,.5);}
+.btn.auto.on{background:#ffd479; color:#241a00; border-color:#ffb347; box-shadow:0 0 10px rgba(255,196,80,.5);}  /* 自動開咗著黃色 */
 .btn.auto-int-btn{background:#2a2113; color:#e0b34a; border:1px solid #7a5a1a; flex:0 0 auto; padding:7px 7px; font-size:11px; margin-left:6px;}
 
 .toast{position:fixed; left:50%; top:42%; transform:translate(-50%,-50%); background:#000c; color:#ffd45e;
@@ -3625,7 +3628,7 @@ document.getElementById('aiStop').addEventListener('click',()=>{
   if(ais.length && confirm('確定移除全部 '+ais.length+' 個 AI 陪玩？')){ ais=[]; updateAiBalances(); renderAiList(); saveAiList(); showToast('🤖 已移除全部 AI'); }
 });
 document.getElementById('aiExit').addEventListener('click',()=>{ document.getElementById('aiModal').classList.remove('show'); });
-document.getElementById('btnMute').addEventListener('click',()=>{ mute=!mute; document.getElementById('btnMute').textContent=mute?'🔇':'🔊'; if(!mute) sndChip(); });
+document.getElementById('btnMute').addEventListener('click',()=>{ mute=!mute; const m=document.getElementById('btnMute'); m.textContent=mute?'🔇':'🔊'; if(mute){ m.classList.add('on'); m.style.background='linear-gradient(180deg,#ffd479,#e6a417)'; m.style.color='#241a00'; m.style.border='1px solid #ffb347'; } else { m.classList.remove('on'); m.style.background=''; m.style.color=''; m.style.border=''; } if(!mute) sndChip(); });
 document.getElementById('btnLlm').addEventListener('click',()=>{
   LLM_CHAT = !LLM_CHAT;
   localStorage.setItem('bac_llmchat', LLM_CHAT?'1':'0');
