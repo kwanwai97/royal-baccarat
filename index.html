@@ -34,8 +34,9 @@
   .brand-sub{font-size:11px; font-weight:600; color:#cdbf8e; opacity:.85; display:flex; flex-direction:column; gap:1px; order:2;}
   .brand #btnServerLb .srv-sub{ display:block; text-align:left; }  /* 直版：伺服榜server版副文斷兩行 */
   .brand-title{order:1;}
-  .brand #btnLeaderboard{order:1;}
+  #btnLeaderboard{order:1;}
   .lb-stack{ margin-left:-5px; }  /* 直版：AI榜/server貼左(由6px→1px) */
+  #btnLeaderboard{ text-indent:-3px; }  /* AI榜文字向左3px */
   .brand-sub #shoeInfo{font-size:14px; font-weight:800; color:#7fffb0; text-shadow:0 0 6px rgba(80,255,160,.5);}
   .topright{display:flex; align-items:center; gap:10px; margin-left:-9px; transform:translateX(3px);}  /* 資金區(取消黃框); 直版向左10px, translateX(+3px)向右3px */
   .balance{font-size:12px; text-align:right;}
@@ -713,7 +714,6 @@
     .brand #btnServerLb{ order:-1; margin-right:auto; }  /* 橫版：伺服榜排最左, 推開其他掣去右 */
     .brand #btnLeaderboard{ font-size:11px; padding:1px 4px; }
     .lb-stack{ margin-left:-2px; }  /* 橫版：AI榜/server貼左(由1px→-1px校正) */
-    .lb-stack button{ padding-left:12px !important; padding-right:12px !important; }  /* 橫版：server+AI榜闊度75px(63→75), 直版不變 */
   .brand #btnServerLb .srv-sub{ display:block; text-align:left; }  /* 橫版：伺服榜副文斷兩行(跟直版) */
     .brand-sub{ font-size:10px; }
     .brand-sub #shoeInfo{ font-size:12px; }
