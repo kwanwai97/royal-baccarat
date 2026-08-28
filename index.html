@@ -603,9 +603,9 @@
 
   .daily-tip{text-align:center; font-size:11px; color:var(--gold2); padding:0 10px 4px; min-height:14px;}
   /* AI 陪玩 · 3+1 顯示：上面2個AI + 下邊1個AI + 你最底 */
-  .ai-balances{display:grid; grid-template-columns:repeat(4,1fr); gap:2px 3px; align-items:center; justify-items:start; max-width:100%;}
-  .ai-balances .aib{display:flex; flex-direction:column; line-height:1.1; padding:1px 5px; border-left:1px solid rgba(255,255,255,.15);}
-  .ai-balances .aib small{font-size:10px; opacity:.8; white-space:nowrap;}
+  .ai-balances{display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:2px 3px; align-items:center; justify-items:stretch; max-width:100%;}  /* minmax(0)強制4列等寬, 3字名唔撐大格→唔跳 */
+  .ai-balances .aib{display:flex; flex-direction:column; line-height:1.1; padding:1px 5px; min-width:0; overflow:hidden; border-left:1px solid rgba(255,255,255,.15);}
+  .ai-balances .aib small{font-size:10px; opacity:.8; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%;}
   .ai-balances .aib b{font-size:13px; color:var(--gold2); font-weight:800;}
   /* 旺AI高亮：純螢光色數字(唔包底色塊) → 完全無塊長短問題，旺跳去邊都唔會跳 */
   .ai-balances .aib.hot small{ color:#ffd479; }
