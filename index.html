@@ -206,6 +206,9 @@
   .bet .bn{font-size:12px; font-weight:800; letter-spacing:.5px;}
   .bet .od{font-size:9px; opacity:.8; margin-top:1px;}
   .bet.hot-predict{ border:2px solid #ffd479 !important; box-shadow:0 0 10px rgba(255,212,121,.6), inset 0 0 8px rgba(255,212,121,.25); }
+  /* 旺AI跟注標記：螢光綠框(跟資金區旺AI色調一致)，唔包底色塊，清晰顯示「呢格係跟旺AI落注」 */
+  .bet.hot-follow{ border:2px solid #ccff00 !important; box-shadow:0 0 12px rgba(204,255,0,.7), inset 0 0 8px rgba(204,255,0,.25); }
+  .bet.hot-follow .bn{ color:#ccff00; text-shadow:0 0 6px rgba(204,255,0,.9); }
   /* 頂列3格(閒/莊/和)：高度加大，籌碼疊上覆蓋賠率，籌碼間留空間，4+人自動分兩層 */
   .betrow.top .bet{position:relative; min-height:90px; padding:7px 3px 7px; display:flex; flex-direction:column; justify-content:flex-start; align-items:center;}
   .betrow.top .bet .od{position:relative; z-index:1;}
@@ -1539,7 +1542,9 @@ function placeBet(k){
   if(balance<currentChip){ showToast('⚠ 餘額不足（剩 '+fmt(balance)+'）'); return; }
   balance -= currentChip; bets[k]+=currentChip; updateBalance(); updateAiBalances(); updateBetDisplay(); sndChip(); flyChip(k);
 }
-function clearBets(force){ if(dealing && !betting && !force)return; if(!settled){ const refund=Object.values(bets).reduce((a,b)=>a+b,0); balance+=refund; } bets={player:0,banker:0,tie:0,ppair:0,bpair:0,big:0,small:0,luck6:0,luck7:0}; updateBalance(); updateAiBalances(); updateBetDisplay(); }
+function clearBets(force){ if(dealing && !betting && !force)return; if(!settled){ const refund=Object.values(bets).reduce((a,b)=>a+b,0); balance+=refund; } bets={player:0,banker:0,tie:0,ppair:0,bpair:0,big:0,small:0,luck6:0,luck7:0}; updateBalance(); updateAiBalances(); updateBetDisplay(); document.querySelectorAll('.bet.hot-follow').forEach(e=>e.classList.remove('hot-follow')); }
+// 旺AI跟注標記：落注格加螢光綠框(跟資金區旺AI色一致)，移除預測黃框避免疊架
+function markHotFollow(pick){ document.querySelectorAll('.bet.hot-follow').forEach(e=>e.classList.remove('hot-follow')); document.querySelectorAll('.bet.hot-predict').forEach(e=>e.classList.remove('hot-predict')); const m={player:'.bet[data-bet="player"]',banker:'.bet[data-bet="banker"]',tie:'.bet[data-bet="tie"]'}; const el=document.querySelector(m[pick]); if(el) el.classList.add('hot-follow'); }
 /* 等上一手輸贏對話 + 語音全部播完（走馬燈收起 + 語音隊列清空），最長 20s safety */
 function waitAudioIdle(){
   // 走馬燈功能已刪除，唔再等佢收起（否則會死等10秒）；只等語音串行播完就落下一輪
@@ -1627,6 +1632,7 @@ function followHotAI(){
   balance-=amt;
   lastFollowSide = b.pick;   // 記錄本局跟注邊，開牌後計跟注勝負
   updateBalance(); updateBetDisplay(); sndChip();
+  markHotFollow(b.pick);
   showToast('🔥 跟旺AI「'+hot.name+'」('+b.pick+' '+fmt(amt)+')');
 }
 
@@ -3296,6 +3302,7 @@ function autoFollowHot(reverse){
   if(pick==='player') bets.player=amt; else if(pick==='banker') bets.banker=amt; else if(pick==='tie') bets.tie=amt;
   balance-=amt; updateBalance(); updateBetDisplay(); sndChip();
   lastFollowSide = pick;   // 記錄本局跟注邊，開牌後計跟注勝負
+  markHotFollow(pick);
   document.getElementById('followStatus').textContent=followStatusText();
   showToast((reverse?'🔥 反旺AI':'🔥 跟旺AI')+'「'+hot.name+'」('+pick+' '+fmt(amt)+')');
 }
