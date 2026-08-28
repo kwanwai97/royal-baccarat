@@ -918,7 +918,7 @@
       <h3>🤖 新增 AI 陪玩</h3>
       <!-- 頂部常駐區塊：名字＋新增AI＋退出＋拆除全部AI（擺第一位） -->
       <div class="ai-opt" style="display:flex;gap:8px;align-items:flex-end;">
-        <div style="flex:1;"><div class="ai-opt-label">名字</div><input id="aiNameInput" maxlength="6" value="阿龍" style="width:100%;padding:6px;border-radius:6px;border:1px solid #555;background:#0d1f15;color:#f5f0d8;" /></div>
+        <div style="flex:1;"><div class="ai-opt-label">名字</div><input id="aiNameInput" maxlength="3" value="阿龍" style="width:100%;padding:6px;border-radius:6px;border:1px solid #555;background:#0d1f15;color:#f5f0d8;" /></div>
         <button class="modal-close" id="aiConfirm" style="background:#2faf5a;margin:0;height:36px;align-self:flex-end;">確認 · 新增 AI</button>
       </div>
       <div class="ai-modal-btns" style="display:flex;gap:8px;justify-content:space-between;">
@@ -3547,7 +3547,10 @@ function removeBrokeAis(){
 let editingAiId=null;
 document.getElementById('aiConfirm').addEventListener('click',()=>{
   if(ais.length>=11 && !editingAiId){ showToast('最多 11 個 AI 陪玩'); return; }
-  const name=document.getElementById('aiNameInput').value.trim()||('AI'+nextAiNum());
+  const nameRaw=document.getElementById('aiNameInput').value.trim();
+  if(nameRaw.length===0){ showToast('❌ 名稱唔可以空白'); return; }
+  if([...nameRaw].length>3){ showToast('❌ 名稱最多 3 個字（依家 '+[...nameRaw].length+' 字）'); return; }
+  const name=nameRaw||('AI'+nextAiNum());
   const persona=aiSel.persona, plan=aiSel.plan;
   const bank=50000; // 新增/编辑一律固定5万，不显示本金选单
   if(editingAiId){
