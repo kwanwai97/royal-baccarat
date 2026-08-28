@@ -1757,6 +1757,34 @@ function genFunnyLine(ai, ctx) {
   if (lastHumanWon && ls >= 3) funnyPool.push('你贏緊我輸到趴街，我懷疑你係荷官親戚🤬');
   if (!lastHumanWon && ws >= 3) funnyPool.push('我旺到飛起你伏到落衝，跟唔跟自己想😎');
   if (ctx && ctx.last === 'tie') funnyPool.push('又和！莊閒兩家講好咗扮曬嘢，我啲注飛咗去邊😒');
+  // ===== 新增：抵死 / 對句子 / 搞笑（港式市井）=====
+  // 連贏 extra
+  if (ws >= 3) funnyPool.push('連贏'+ws+'鋪，我已經唔記得輸係咩味，你話跟唔跟😏');
+  if (ws >= 4) funnyPool.push('旺到連廁所位都讓畀我，啲錢自己走過嚟💰');
+  if (ws >= 2) funnyPool.push('贏錢靠眼光，輸錢靠硬頸，我兩樣都齊😎');
+  // 連輸 extra
+  if (ls >= 3) funnyPool.push('連輸'+ls+'鋪，我當畀緊學費，師傅幾時先教真嘢🤡');
+  if (ls >= 4) funnyPool.push('輸到想搵地洞鑽，點知地洞都俾人包廂咗😭');
+  if (ls >= 2) funnyPool.push('莊有莊路，閒有閒數，我嘅路就係冇路🤷');
+  // 長龍 extra
+  if (ctx && ctx.streakLen >= 4) {
+    funnyPool.push(ctx.streakType==='banker'?'莊家旺我就跟莊，你旺我就跟你個頭😝':'閒家旺我就跟閒，莊家旺我就跟莊，總之唔跟自己個腦');
+  }
+  // 抵死（唔理牌路都會出）
+  funnyPool.push('你啲注細過我零用錢，我都唔好意思贏你😏');
+  funnyPool.push('荷官睇我眼神都唔同咗，大概係崇拜🤩');
+  funnyPool.push('賭錢嘅最高境界就係唔賭，但老子賭緊😌');
+  funnyPool.push('錢搵錢易過人搵錢，所以我坐定定等錢搵我💰');
+  funnyPool.push('贏錢唔走係貪，輸錢唔走係憨，我兩樣都齊🤪');
+  funnyPool.push('呢張枱就係我嘅提款機，奈何今日維修中🔧');
+  funnyPool.push('你話跟莊定跟閒？我話跟運氣，運氣跟我都唔得😼');
+  // 對句子（對仗押韻）
+  funnyPool.push('贏一鋪笑哈哈，輸一鋪食花生🥜');
+  funnyPool.push('跟紅頂白係智慧，反手清袋係本事💪');
+  funnyPool.push('閒家威我就跟閒，莊家威我就跟莊，跟到甩皮先算數🔥');
+  funnyPool.push('一局定生死，半注見真章，手唔抖就當冇嚟過😐');
+  funnyPool.push('旺起上嚟擋都擋唔住，衰起上嚟推都推唔走🎢');
+  funnyPool.push('注碼細過塵，膽子大過天，我就係咁嘅人😝');
   if (funnyPool.length === 0) return null;
   return funnyPool[Math.floor(Math.random()*funnyPool.length)];
 }
