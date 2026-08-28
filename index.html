@@ -371,7 +371,10 @@
 .pred-record b{ color:#ffd479; font-weight:800; }
 .pred-record .ps-wl{ display:inline-flex; align-items:center; gap:3px; flex-wrap:nowrap; white-space:nowrap; }
 .pred-record .btn.freset{ flex:0 0 auto; margin:0 0 0 2px; padding:1px 6px; font-size:9px; font-weight:700; color:#ffd9a8; background:rgba(255,120,80,0.16); border:1px solid rgba(255,150,110,0.5); border-radius:8px; cursor:pointer; white-space:nowrap; }
-.follow-right{flex:1 1 50%; display:flex; flex-direction:row; flex-wrap:wrap; gap:2px; align-items:flex-start; justify-content:flex-start; padding-right:2px;}
+.follow-right{flex:1 1 50%; display:flex; flex-direction:row; flex-wrap:wrap; gap:1px; align-items:flex-start; justify-content:flex-start; padding-right:2px;}
+.follow-right .frow-top, .follow-right .frow-bot{ gap:1px; }  /* 上下行掣左右距離統一1px(全局, 直橫都生效) */
+.follow-right #bottomRowLand > *, .follow-right #bottomRow > *{ margin-left:1px; }
+.follow-right #bottomRowLand > :first-child, .follow-right #bottomRow > :first-child{ margin-left:0; }  /* 首個唔加左距 */
 .follow-text{display:flex; flex-direction:row; flex-wrap:nowrap; align-items:center; gap:6px; white-space:nowrap; order:-1; margin:2px 0;}   /* 直版：獨立成整行(投注區#bets頂, 閒P正上方), column flex 下 order:-1 排最前; 唔再關聯跟注掣 */
 /* 直版 .follow-text 被 JS 搬入 #bets, 原有 .follow-right scoped rule 失效 → 呢度補返狀態+統計成一行(狀態左統計右) */
 .bets .follow-status, .bets .follow-stats{ display:inline-flex; flex:0 0 auto; flex-wrap:nowrap; white-space:nowrap; align-items:center; font-size:10px; }
@@ -419,7 +422,7 @@
 }
 .follow-right .limit-row{
   flex:0 0 35px; min-width:0;
-  height:35px; padding:4px 2px;
+  height:35px; padding:4px 1px;
   border-radius:8px; border:1px solid #ffb347; background:linear-gradient(180deg,#ffd479,#e6a417); color:#241a00; opacity:.7; box-sizing:border-box;
 }
 
