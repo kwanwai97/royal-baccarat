@@ -66,6 +66,8 @@
   .alb-head{display:flex; justify-content:space-between; align-items:center; font-weight:800; color:var(--gold2); font-size:13px; margin-bottom:8px;}
   .alb-x{background:none; border:none; color:#aaa; font-size:15px; cursor:pointer; line-height:1;} .alb-x:hover{color:#fff;}
   .alb-tabs{display:flex; gap:4px; margin-bottom:8px;}
+  .alb-act{ display:inline-flex; gap:4px; align-items:center; }
+  .alb-btn{ font-size:10px; line-height:1; padding:3px 6px; border-radius:6px; border:1px solid #6a5aa0; background:linear-gradient(90deg,#3a2d5c,#5a3d7c); color:#fff; cursor:pointer; }
   .alb-tab{flex:1; padding:4px 0; border:1px solid #2a4a36; background:#06120c; color:#cdbf8e; border-radius:6px; font-size:10px; cursor:pointer;}
   .alb-tab.active{background:var(--goldd); color:#06120c; font-weight:800;}
   .alb-list{display:flex; flex-direction:column; gap:4px;}
@@ -815,8 +817,13 @@
   <div id="aiLbPanel" class="ai-lb-panel" hidden>
     <div class="alb-head">
       <span>🏆 AI 組合排行榜</span>
-      <button id="albClose" class="alb-x">✕</button>
+      <span class="alb-act">
+        <button id="albBackup" class="alb-btn">備份</button>
+        <button id="albRestore" class="alb-btn">還原</button>
+        <button id="albClose" class="alb-x">✕</button>
+      </span>
     </div>
+    <input type="file" id="albFile" accept="application/json" hidden>
     <div class="alb-tabs">
       <button class="alb-tab" data-sort="totalProfit">總盈利</button>
       <button class="alb-tab" data-sort="peak">最高資金</button>
@@ -3613,6 +3620,31 @@ document.getElementById('btnLeaderboard').addEventListener('click',()=>{
   });
   document.getElementById('albClose').onclick=()=>{ panel.hidden=true; };
   panel.hidden=false; render();
+});
+// ===== 🏆 備份/還原：匯出 json 留手機，唔靠瀏覽器 localStorage（解決 WhatsApp 內置瀏覽器清記憶）=====
+document.getElementById('albBackup').addEventListener('click',()=>{
+  try{
+    const data={ v:1, ais:ais, combos:loadCombos(), savedAt:new Date().toISOString() };
+    const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+    const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+    a.download='royal_baccarat_backup_'+new Date().toISOString().slice(0,10)+'.json';
+    document.body.appendChild(a); a.click(); a.remove();
+    showToast('✅ 已備份（下載咗個 json 檔落你手機）');
+  }catch(e){ showToast('❌ 備份失敗'); }
+});
+const _albFileInput=document.getElementById('albFile');
+document.getElementById('albRestore').addEventListener('click',()=>{ _albFileInput.click(); });
+_albFileInput.addEventListener('change',e=>{
+  const f=e.target.files&&e.target.files[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload=()=>{ try{
+    const d=JSON.parse(r.result);
+    if(d.combos){ saveCombos(d.combos); }
+    if(Array.isArray(d.ais)){ ais=d.ais; saveAiList(); syncAiSeq(); if(typeof renderAiList==='function') renderAiList(); }
+    showToast('✅ 已還原備份');
+    if(!document.getElementById('aiLbPanel').hidden) document.getElementById('btnLeaderboard').click();
+  }catch(err){ showToast('❌ 還原失敗：檔案唔啱'); } };
+  r.readAsText(f); e.target.value='';
 });
 // 🖥️ 伺服榜：開 server 版 leaderboard.html（相對路徑，連同一個 server 嘅 8888/3000 都讀到）
 document.getElementById('btnServerLb').addEventListener('click',()=>{
