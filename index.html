@@ -333,6 +333,7 @@
   .follow-right > .fbtn{ order:0; }                                  /* 頂5掣排第一行 */
   .follow-mid{ flex:0 0 100%; display:flex; flex-direction:row; flex-wrap:nowrap; align-items:center; justify-content:flex-start; gap:1px; order:1; }  /* 中間一行：100%寬強制換行到第二行，直版5圖案掣緊貼左(你要求) */
   .follow-right > #btnMute, .follow-right > #btnAuto, .follow-right > #btnAutoInt, .follow-right > #btnLeaderboard{ order:2; }  /* 底層掣排最後一行(貼投注區) */
+  .follow-right > .limit-row{ order:3; }  /* 直版：±次數排13秒右邊(最尾) */
   .follow-mid .iconbtn{ flex:0 0 auto; width:30px; height:26px; font-size:15px; display:inline-flex; align-items:center; justify-content:center; box-sizing:border-box; }  /* 中間前4圖案(戰績/禮物/大佬/限額): 30x26 */
   .follow-mid #btnAi{ width:40px; height:26px; }  /* 第5個陪玩: 40x26 */
   /* 直版：大路標題 header 行 — 普通開牌掣正中央，剩餘數緊貼其左跟掣走 */
@@ -760,7 +761,7 @@
 .follow-right #btnFollowRev{ order:2; }
 .follow-right #btnFollowHot{ order:3; }
 .follow-right #btnFollowHotRev{ order:4; }
-.follow-right .limit-row{ order:7; align-self:stretch; width:35px !important; flex:0 0 35px !important; min-width:35px !important; }  /* 橫版±次數掣35, 排下面(同喇叭一排) */
+.follow-right .limit-row{ order:9; align-self:stretch; width:35px !important; flex:0 0 35px !important; min-width:35px !important; }  /* 橫版±次數掣35, 排13秒右邊 */
 /* 橫版：5圖案掣(.follow-mid)放5掣行下方,跟直版尺寸(前4個35x25,陪玩40x25) */
 .follow-right .follow-mid{ flex:0 0 auto; display:flex; flex-direction:row; flex-wrap:nowrap; align-items:center; justify-content:flex-start; gap:1px; order:6; margin-top:0px; }  /* 橫版：跟左貼頂行; 唔用flex:0 0 100%(否則撐闊容器) */
 .follow-right .follow-mid .iconbtn{ flex:0 0 auto; width:30px; height:24px; font-size:15px; display:inline-flex; align-items:center; justify-content:center; box-sizing:border-box; }  /* 跟直版前4圖案 30x24 */
@@ -3802,8 +3803,11 @@ function placeTopBtns(){
       // 強制從直版容器(bottomRow)拎出mute, 避免race卡喺直版容器(y=358跳動)
       const botPort=document.getElementById('bottomRow');
       if(botPort && mute && mute.parentElement===botPort) botPort.removeChild(mute);
-      if(autoWrap.parentElement!==botLand) botLand.appendChild(autoWrap);
-      if(mute && mute.parentElement!==botLand) botLand.appendChild(mute);
+      if(mute && mute.parentElement!==botLand) botLand.appendChild(mute);   // 喇叭排最左(order:7)
+      if(auto.parentElement!==botLand) botLand.appendChild(auto);           // 自動(order:8)
+      if(aint.parentElement!==botLand) botLand.appendChild(aint);          // 13秒(order:8)
+      const limRowL=document.querySelector('.limit-row');
+      if(limRowL && limRowL.parentElement!==botLand) botLand.appendChild(limRowL);  // ±次數排13秒右邊(order:9)
       if(botLand.parentElement!==frLand) frLand.appendChild(botLand);
     }
     // 橫版：普通開牌掣搬去大路標題行(header行)開牌位置(跟五圖案同行, flex排唔置中)；剩餘數留brand-sub
@@ -3862,6 +3866,8 @@ function placeTopBtns(){
       if(mute && mute.parentElement!==bot) bot.appendChild(mute);   // 喇叭排最左
       if(auto.parentElement!==bot) bot.appendChild(auto);
       if(aint.parentElement!==bot) bot.appendChild(aint);
+      const limRow=document.querySelector('.limit-row');
+      if(limRow && limRow.parentElement!==bot) bot.appendChild(limRow);  // ±次數排13秒右邊(入bottomRow最尾)
       if(bot.parentElement!==fr) fr.appendChild(bot);
       // 中間行 wrapper（只建立一次）
       let mid=document.getElementById('followMid');
