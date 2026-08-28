@@ -604,9 +604,9 @@
   .daily-tip{text-align:center; font-size:11px; color:var(--gold2); padding:0 10px 4px; min-height:14px;}
   /* AI 陪玩 · 3+1 顯示：上面2個AI + 下邊1個AI + 你最底 */
   /* 固定列寬 minmax(0,1fr) 防止名長/旺標記撐大格 → 直版唔會跳位 */
-  .ai-balances{display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:2px 3px; align-items:center; justify-items:stretch; max-width:100%;}
+  .ai-balances{display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:2px 3px; align-items:center; justify-items:stretch; max-width:100%; min-height:38px;}  /* 整塊固定最小高, 唔會因旺標記/行數上下移 */
   /* 所有格預留 2px 透明 border，旺格只變色唔加寬 → 唔跳；min-width:0+截斷令名長唔撐位 */
-  .ai-balances .aib{display:flex; flex-direction:column; line-height:1.1; padding:1px 5px; min-width:0; overflow:hidden; border-left:2px solid transparent;}
+  .ai-balances .aib{display:flex; flex-direction:column; line-height:1.1; padding:1px 5px; min-width:0; overflow:hidden; border-left:2px solid transparent; height:34px; justify-content:center;}  /* 固定格高, 任何內容差異都唔撼位 */
   .ai-balances .aib small{font-size:10px; opacity:.8; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%;}
   .ai-balances .aib b{font-size:13px; color:var(--gold2); font-weight:800; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:100%;}
   .ai-balances .aib.hot{ border-left:2px solid #ffb347; background:rgba(255,179,71,.18); border-radius:3px;}
