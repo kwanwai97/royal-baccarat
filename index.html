@@ -371,7 +371,7 @@
 .pred-record b{ color:#ffd479; font-weight:800; }
 .pred-record .ps-wl{ display:inline-flex; align-items:center; gap:3px; flex-wrap:nowrap; white-space:nowrap; }
 .pred-record .btn.freset{ flex:0 0 auto; margin:0 0 0 2px; padding:1px 6px; font-size:9px; font-weight:700; color:#ffd9a8; background:rgba(255,120,80,0.16); border:1px solid rgba(255,150,110,0.5); border-radius:8px; cursor:pointer; white-space:nowrap; }
-.follow-right{flex:1 1 50%; display:flex; flex-direction:row; flex-wrap:wrap; gap:1px; align-items:flex-start; justify-content:flex-start; padding-right:2px;}
+.follow-right{flex:1 1 50%; display:flex; flex-direction:row; flex-wrap:wrap; gap:1px; align-items:flex-start; justify-content:flex-start; padding-right:2px; position:relative; z-index:2;}  /* z-index:2 確保喇叭行永遠喺預測區透明層之上(橫版防擋click) */
 .follow-right .frow-top, .follow-right .frow-bot{ gap:1px; }  /* 上下行掣左右距離統一1px(全局, 直橫都生效) */
 .follow-right #bottomRowLand > *, .follow-right #bottomRow > *{ margin-left:1px; }
 .follow-right #bottomRowLand > :first-child, .follow-right #bottomRow > :first-child{ margin-left:0; }  /* 首個唔加左距 */
@@ -743,7 +743,7 @@
     .follow-wrap{
       display:contents;
     }
-.follow-left{ grid-column:auto; grid-row:1 / span 2; min-width:0; padding:6px 0 0 1px; position:relative; display:flex; flex-direction:column; align-items:flex-start; margin-right:0; margin-left:22px; }  /* 橫版：預測系統唔鎖grid欄寬, 黃框fit-content跟內容收細+跟margin移; 向左18px(40→22) */
+.follow-left{ grid-column:auto; grid-row:1 / span 2; min-width:0; padding:6px 0 0 1px; position:relative; display:flex; flex-direction:column; align-items:flex-start; margin-right:0; margin-left:22px; width:fit-content; z-index:1; }  /* 橫版：預測系統唔鎖grid欄寬, 黃框fit-content跟內容收細+跟margin移; 向左18px(40→22); width:fit-content防透明層蓋住喇叭行 */
 /* 橫版：跟注文字搬入預測系統底部，打橫一行(取消疊牌)，緊貼預測系統、縮細 */
 .follow-left .follow-text{ display:flex; flex-direction:row; flex-wrap:nowrap; align-items:center; gap:5px; flex-basis:auto; min-width:0; order:3; margin-top:0; font-size:9px; }
 /* 打橫：預測系統區貼第二行最闊位(唔撐開、唔轉行)，保持三行位置唔變 */
