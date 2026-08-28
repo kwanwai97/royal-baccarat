@@ -744,15 +744,14 @@
 .follow-left .pred-record{ justify-content:flex-start; }  /* 橫版：跟注次數紀錄向左 */
 .follow-left .pred-side{ margin-left:2px; }   /* 取消「請投注」撐開，第一行緊湊貼標題 */
 .follow-right{
-  grid-column:3 / 4; grid-row:2 / span 2;   /* 橫版：第3欄跟注區, 落去row2避開頂部header(row1)唔重疊 */
-  display:flex; flex-direction:column; align-items:flex-start; align-content:flex-start; justify-content:flex-start; gap:0;  /* 橫版三層由上到下: 跟注/圖案/底層 */
+  grid-column:3 / 4; grid-row:1 / span 2;   /* 橫版：第3欄(跟注區), 框fit-content溢出顯示唔截斷 (還原v90位置, 唔郁位) */
+  display:flex; flex-direction:row; flex-wrap:wrap; align-items:stretch; align-content:flex-start; justify-content:flex-start; gap:0;  /* 橫版三層各自一行靠左; 行距0緊貼 */
   align-self:start; min-width:0; padding:0; margin-top:5px;       /* 跟注控制(取消黃框); 橫版; 頂部留5px空間 */
   width:fit-content !important; justify-self:start !important; min-width:0 !important; margin-left:-64px;   /* 橫版：跟反控制區向左30px(-34→-64) */
 }
 /* 橫版：三層各自一行(跟注/圖案/底層), 每行nowrap靠左, 容器fit-content=最闊行(~164) */
 .follow-right .frow{ display:flex; flex-direction:row; flex-wrap:nowrap; align-items:center; justify-content:flex-start; gap:0; width:fit-content; flex:0 0 auto; margin-top:0; }
 .follow-right .frow-bot{ order:7; margin-top:18px; }  /* 橫版底層行排圖案(order:6)之後; 同頂行拉開18px空間 */
-.follow-right #bottomRowLand{ order:9; margin-top:6px; }  /* 橫版: 喇叭/自動/13秒/AI榜底層行永遠最底, 唔飄去頂部header */
 /* 橫版5掣一行：跟預測/反預測/跟旺AI/反旺AI/±次數 全部一行(移除舊2上3下grid) */
 .follow-right #btnFollowPredict2{ order:1; }
 .follow-right #btnFollowRev{ order:2; }
