@@ -846,8 +846,11 @@
   </div>
   <div class="topbar">
     <div class="brand">
-      <button id="btnLeaderboard" title="AI 排行榜" style="align-self:flex-start;margin:0;background:linear-gradient(90deg,#3a2d5c,#5a3d7c);color:#fff;border:none;padding:2px 6px;border-radius:6px;font-size:11px;line-height:1.2;cursor:pointer;letter-spacing:0;">🏆 AI排行榜<div style="font-size:9px;opacity:.75;letter-spacing:0;">即時</div></button>
-      <button id="btnServerLb" title="伺服榜（連 server 版）" style="align-self:flex-start;margin:0;background:linear-gradient(90deg,#2d5c4a,#3d7c5a);color:#fff;border:none;padding:2px 6px;border-radius:6px;font-size:11px;line-height:1.2;cursor:pointer;letter-spacing:0;white-space:nowrap;">🖥️ 伺服榜<span class="srv-sub" style="font-size:9px;opacity:.75;letter-spacing:0;"> server 版</span></button>
+      <!-- 排行榜區：server(上層) + AI榜(下層) 上下兩層, 固定喺brand第一區唔使JS搬, 唔會跳 -->
+      <div class="lb-stack" style="display:flex; flex-direction:column; gap:3px; align-items:flex-start;">
+        <button id="btnServerLb" title="伺服榜（連 server 版）" style="align-self:flex-start;margin:0;background:linear-gradient(90deg,#2d5c4a,#3d7c5a);color:#fff;border:none;padding:2px 6px;border-radius:6px;font-size:11px;line-height:1.2;cursor:pointer;letter-spacing:0;white-space:nowrap;">🖥️ 伺服榜<span class="srv-sub" style="font-size:9px;opacity:.75;letter-spacing:0;"> server 版</span></button>
+        <button id="btnLeaderboard" title="AI 排行榜" style="align-self:flex-start;margin:0;background:linear-gradient(90deg,#3a2d5c,#5a3d7c);color:#fff;border:none;padding:2px 6px;border-radius:6px;font-size:11px;line-height:1.2;cursor:pointer;letter-spacing:0;">🏆 AI排行榜<div style="font-size:9px;opacity:.75;letter-spacing:0;">即時</div></button>
+      </div>
       <div class="brand-sub"><span id="shoeInfo"></span></div>
       <div id="topBtns" class="top-btns">
         <button class="btn auto vbtn" id="btnAuto" title="自動開牌"><span class="a-label">自動</span><span class="a-state">關</span></button>
@@ -3779,7 +3782,7 @@ function placeTopBtns(){
   const shoeInfo=document.getElementById('shoeInfo');
   let autoWrap=document.getElementById('autoBtns');
   if(!autoWrap){ autoWrap=document.createElement('div'); autoWrap.id='autoBtns'; autoWrap.className='auto-btns'; }
-  const land=window.matchMedia('(orientation:landscape)').matches;
+  const land=window.matchMedia('(orientation:landscape)').matches;   // matchMedia(等layout穩定先fire, race比即時尺寸少)
   if(land){
     if(auto.parentElement!==autoWrap) autoWrap.appendChild(auto); // 自動入 wrapper
     if(aint.parentElement!==autoWrap) autoWrap.appendChild(aint); // 13秒入 wrapper
@@ -3792,11 +3795,12 @@ function placeTopBtns(){
     if(frLand){
       let botLand=document.getElementById('bottomRowLand');
       if(!botLand){ botLand=document.createElement('div'); botLand.id='bottomRowLand'; botLand.className='frow frow-bot'; }
+      // 強制從直版容器(bottomRow)拎出mute, 避免race卡喺直版容器(y=358跳動)
+      const botPort=document.getElementById('bottomRow');
+      if(botPort && mute && mute.parentElement===botPort) botPort.removeChild(mute);
       if(autoWrap.parentElement!==botLand) botLand.appendChild(autoWrap);
-      if(lb && lb.parentElement!==botLand) botLand.appendChild(lb);
       if(mute && mute.parentElement!==botLand) botLand.appendChild(mute);
       if(botLand.parentElement!==frLand) frLand.appendChild(botLand);
-      if(lb) lb.style.order='9';  // inline鎖死, 避免旋轉race fallback全局order:1跳最左
     }
     // 橫版：普通開牌掣搬去大路標題行(header行)開牌位置(跟五圖案同行, flex排唔置中)；剩餘數留brand-sub
     if(dealModeBtn){
@@ -3848,12 +3852,13 @@ function placeTopBtns(){
       }
       let bot=document.getElementById('bottomRow');
       if(!bot){ bot=document.createElement('div'); bot.id='bottomRow'; bot.className='frow frow-bot'; }
+      // 強制從橫版容器(bottomRowLand)拎出mute, 避免race卡喺橫版容器(y=54跳動)
+      const botLandOld=document.getElementById('bottomRowLand');
+      if(botLandOld && mute && mute.parentElement===botLandOld) botLandOld.removeChild(mute);
       if(mute && mute.parentElement!==bot) bot.appendChild(mute);   // 喇叭排最左
       if(auto.parentElement!==bot) bot.appendChild(auto);
       if(aint.parentElement!==bot) bot.appendChild(aint);
-      if(lb && lb.parentElement!==bot) bot.appendChild(lb);         // AI排行榜排13秒右
       if(bot.parentElement!==fr) fr.appendChild(bot);
-      if(lb) lb.style.order='2';  // inline鎖死, 避免旋轉race fallback全局order:1跳最左
       // 中間行 wrapper（只建立一次）
       let mid=document.getElementById('followMid');
       if(!mid){ mid=document.createElement('div'); mid.id='followMid'; mid.className='follow-mid'; fr.appendChild(mid); }
@@ -3880,12 +3885,12 @@ function placeTopBtns(){
   }
 }
 placeTopBtns();
-// 開頁後等layout settle再跑一次(修layout中途態race: 一開橫版喇叭/自動飄去頂部header+撳冇反應)
+// 開頁後等layout settle再跑一次(修layout中途態race: 旋轉/開頁喇叭跳54/358)
 requestAnimationFrame(()=>{ requestAnimationFrame(placeTopBtns); });
-setTimeout(placeTopBtns, 200);
-// 防抖：旋轉/resize連發時等layout settle(150ms)再跑一次, 避免中間態race令5圖案收埋
+setTimeout(placeTopBtns, 400);
+// 防抖：旋轉/resize連發時等layout settle(300ms)再跑一次, 避免中間態race令5圖案收埋/喇叭跳位
 let _ptbT=null;
-function placeTopBtnsDebounced(){ if(_ptbT) clearTimeout(_ptbT); _ptbT=setTimeout(placeTopBtns,150); }
+function placeTopBtnsDebounced(){ if(_ptbT) clearTimeout(_ptbT); _ptbT=setTimeout(placeTopBtns,300); }
 window.addEventListener('resize', placeTopBtnsDebounced);
 if(window.matchMedia){ try{ window.matchMedia('(orientation:landscape)').addEventListener('change', placeTopBtnsDebounced); }catch(e){} }
 if(!loadShoe()) resetShoe();   // 有儲存嘅鞋就續返(派過幾多張繼續)，否則開新鞋
