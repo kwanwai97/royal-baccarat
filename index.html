@@ -607,15 +607,19 @@
   .ai-balances .aib{display:flex; flex-direction:column; line-height:1.1; padding:1px 5px; border-left:1px solid rgba(255,255,255,.15);}
   .ai-balances .aib small{font-size:10px; opacity:.8; white-space:nowrap;}
   .ai-balances .aib b{font-size:13px; color:var(--gold2); font-weight:800;}
-  .ai-balances .aib.hot{ border-left:2px solid #ffb347; background:rgba(255,179,71,.18); border-radius:3px;}
+  /* 旺AI高亮：只包金額b，唔包成個格/名 → 高亮闊度一致，旺跳去邊都唔會跳 */
+  .ai-balances .aib.hot small{ color:#ffd479; }
+  .ai-balances .aib.hot b{ background:rgba(255,179,71,.28); border-radius:3px; padding:0 4px; color:#ffe9b0 !important; }
+  /* 旺AI閃爍只作用在金額b，唔撼整格 */
+  @keyframes emWinFlash{ 0%{ background:rgba(255,215,121,.0);} 30%{ background:rgba(255,215,121,.55);} 100%{ background:rgba(255,215,121,0);} }
+  @keyframes emLoseFlash{ 0%{ background:rgba(120,140,160,0);} 30%{ background:rgba(120,140,160,.45);} 100%{ background:rgba(120,140,160,0);} }
+  .ai-balances .aib.em-flash-win b{ animation:emWinFlash 1.5s ease; }
+  .ai-balances .aib.em-flash-lose b{ animation:emLoseFlash 1.5s ease; }
   /* 升級⑦ AI情緒動畫 */
   .ai-balances .aib.em-hot small{ color:#ffd479; }
   .ai-balances .aib.em-cold{ opacity:.7; }
   .ai-balances .aib.em-cold small{ color:#9fb3c8; }
-  @keyframes emWinFlash{ 0%{ background:rgba(255,215,121,.0);} 30%{ background:rgba(255,215,121,.55); transform:scale(1.06);} 100%{ background:rgba(255,215,121,0); transform:scale(1);} }
-  @keyframes emLoseFlash{ 0%{ background:rgba(120,140,160,0);} 30%{ background:rgba(120,140,160,.45); filter:grayscale(.7);} 100%{ background:rgba(120,140,160,0); filter:grayscale(0);} }
-  .ai-balances .aib.em-flash-win{ animation:emWinFlash 1.5s ease; }
-  .ai-balances .aib.em-flash-lose{ animation:emLoseFlash 1.5s ease; }
+
   /* AI 管理列表 modal */
   .ai-list{margin:10px 0; display:flex; flex-direction:column; gap:5px;}
   .ai-empty{font-size:12px; opacity:.6; text-align:center; padding:6px;}
