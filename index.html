@@ -2406,7 +2406,7 @@ function saveStats(){
 
 /* ===================== AI 陪玩 v2 · 多因子+情感+人生百態 ===================== */
 let ais=[];   // 多AI陣列，最多8個
-const AI_ICONS=['🤖','👽','🦊','🐲','🦉','🎭','🐙','🐯'];
+const AI_ICONS=['🤖','👽','🦊','🐲','🦉','🎭','🐙','🐯','🐼','🦁','🐧'];
 // 單調遞增序號：每次新增 +1，永不重用 → 避免 AI 走咗再新增撞號（AI4 走咗變 length 3，再新增又出 AI4）
 let aiSeq=0;
 function nextAiNum(){ aiSeq++; return aiSeq; }   // 取下一個唯一號
@@ -3617,7 +3617,7 @@ document.getElementById('aiConfirm').addEventListener('click',()=>{
     showToast('💾 已更新「'+name+'」'); return;
   }
   const ageSel=document.querySelector('#aiAge .ai-chip.sel'); const agKey=ageSel?ageSel.dataset.v:(AGE_GROUPS[Math.floor(Math.random()*AGE_GROUPS.length)].key); const ag=AGE_GROUPS.find(function(a){return a.key===agKey;})||AGE_GROUPS[0];
-  const ai={ id:'ai'+(Date.now())+'-'+ais.length, name, icon:AI_ICONS[ais.length%6], age:ag.key, balance:bank, baseBalance:bank, persona, plan, baseBet:Math.max(1000, Math.floor(bank/20/1000)*1000), step:0, history:[], currentBet:null, emotion:50, winStreak:0, loseStreak:0, maxLoseStreak:0, weights:AI_PERSONAS[persona].weights, recentChats:[], games:0, wins:0, losses:0, ties:0, favBet:{player:0,banker:0,tie:0}, bankrupt:false, totalWager:0, totalProfit:0, peak:bank, curve:[bank] };
+  const ai={ id:'ai'+(Date.now())+'-'+ais.length, name, icon:AI_ICONS[ais.length%AI_ICONS.length], age:ag.key, balance:bank, baseBalance:bank, persona, plan, baseBet:Math.max(1000, Math.floor(bank/20/1000)*1000), step:0, history:[], currentBet:null, emotion:50, winStreak:0, loseStreak:0, maxLoseStreak:0, weights:AI_PERSONAS[persona].weights, recentChats:[], games:0, wins:0, losses:0, ties:0, favBet:{player:0,banker:0,tie:0}, bankrupt:false, totalWager:0, totalProfit:0, peak:bank, curve:[bank] };
   ais.push(ai);
   document.getElementById('aiModal').classList.remove('show'); updateAiBalances(); renderAiList(); saveAiList();
   showToast(ai.icon+' '+name+' 入枱！本金 '+fmt(ai.balance)+'（共'+ais.length+'個AI）');
