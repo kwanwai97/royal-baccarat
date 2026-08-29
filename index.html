@@ -150,6 +150,9 @@
     left: auto;
     top: auto;
   }
+  /* 問題2修：第3隻牌 .cf 翻牌被禁(.f3d .cf{transform:none}) 令 show-num 唔會觸發 → 數字永唔顯。
+     直接令第3隻牌 show 後角落數字顯示(同上面兩隻翻牌後一樣樣) */
+  .cards .card:nth-child(3).show .corner{opacity:1; transition:opacity .25s ease;}
 
   /* 3D翻牌模式：第3張直接顯示牌面，唔翻轉（避免變形） */
   .cards .card:nth-child(3).f3d .cf {
