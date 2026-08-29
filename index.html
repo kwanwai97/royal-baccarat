@@ -286,8 +286,7 @@
   .chip-icon{width:30px; height:30px; flex:0 0 auto; border-radius:8px; border:1px solid rgba(212,175,55,.4); background:linear-gradient(180deg,#1a2f24,#0d1a12); display:flex; align-items:center; justify-content:center; font-size:13px; color:#f5f0d8; cursor:pointer;}
   /* 大路標題行：只 AI陪玩(🤖)加闊15px+黃底；其餘唔郁 */
   #btnAi{ width:45px; background:linear-gradient(180deg,#ffd479,#e6a417); color:#241a00; border-color:#ffb347; }
-  /* 剩N張單獨向左15px（唔影響大路標語/圖案掣；覆蓋 .road-header 嘅 margin-left:auto） */
-  #shoeInfo{ margin-left:-15px !important; }
+  /* (舊)剩N張向左15px 已移除；向右推改喺直版/橫版 media 以 margin-right 處理 */
   .chip-icon:hover{background:linear-gradient(180deg,#26402f,#142318);}
   .chip.c100{background:radial-gradient(#bbb,#888); border-color:#fff;}
   .chip.c500{background:radial-gradient(#ff7676,#c0392b);}
@@ -350,6 +349,8 @@
   .dealmode-wrap{ display:inline-flex; }
   .dealmode-wrap #btnDealMode{ position:static; transform:none; }
   .roadpanel > div:first-child #shoeInfo{ font-size:13px; color:#5fe08a; font-weight:800; white-space:nowrap; flex:0 0 auto; margin-left:auto; }  /* 直版：剩餘數做組首,auto推成組(剩餘+開牌+5圖案)去右邊 */
+  /* 直版：大路標題唔郁；剩張+開牌+5圖案成組向右15px（剩張 margin-left:0 壓過 auto；移除 auto 本身已右移約15px，故用0湊正）*/
+  .road-header #shoeInfo{ margin-left:0 !important; }
   .bets{ padding-top:0; padding-bottom:0; }  /* 直版：投注區上下padding清零，同籌碼區距離交畀chips-row頂padding控制 */
   .chips-row{ padding-top:1px !important; gap:2px !important; align-items:flex-start; }  /* 直版：籌碼區頂padding=1px, 四掣跟籌碼2px */
   .chips-row .chips{ align-self:flex-start; }
@@ -671,6 +672,8 @@
   .dealmode-wrap #btnDealMode{ position:static; transform:none; }
   .roadpanel > div:first-child #shoeInfo{ font-size:13px; color:#5fe08a; font-weight:800; white-space:nowrap; flex:0 0 auto; margin-left:auto; }  /* 橫版：剩餘數做組首,auto推成組(剩餘+開牌+5圖案)去右邊 */
   .road-header #btnDealMode{ margin-right:0; }  /* 橫版：剩餘卡牌+開牌緊貼右邊5圖案(直版係15px) */
+  /* 橫版：大路標題唔郁；剩張+開牌+5圖案成組向右65px（剩張 margin-left:50px 壓過 auto；移除 auto 本身已右移約15px，故用50湊正） */
+  .road-header #shoeInfo{ margin-left:50px !important; }
     .pred-row1 .freset{ margin-left:5px; }   /* 橫版清除掣距請投注5px（直版0px） */
     /* 橫版：預測系統框內三行撐滿框, 消除框右側留白(框外已貼跟注區) */
     .follow-left .pred-row1, .follow-left .pred-row2, .follow-left .pred-row3{ width:100%; justify-content:flex-start; }  /* 橫版：預測框內5行全部向左(反轉舊嘅向右) */

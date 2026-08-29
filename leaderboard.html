@@ -11,7 +11,16 @@
   .controls{margin-bottom:10px;}
   .controls button{background:#5a3d7c;color:#fff;border:none;padding:6px 12px;border-radius:6px;font-size:13px;cursor:pointer;margin-right:6px;}
   .controls select{background:#2a2138;color:#eee;border:1px solid #5a3d7c;border-radius:6px;padding:6px;font-size:13px;}
-  table{width:100%;border-collapse:collapse;font-size:12px;}
+  table{width:100%;table-layout:fixed;border-collapse:collapse;font-size:12px;}
+  /* 手機直版：隱藏最右兩欄(資金曲線+勝率區間)，縮字體令成表唔使掹 */
+  @media (max-width:560px){
+    table{font-size:10.5px;}
+    th,td{padding:5px 2px;}
+    th:nth-child(12), td:nth-child(12),
+    th:nth-child(13), td:nth-child(13){display:none;}
+    th:nth-child(3), td:nth-child(3),
+    th:nth-child(4), td:nth-child(4){max-width:46px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  }
   th,td{padding:6px 4px;text-align:center;border-bottom:1px solid #2a2138;}
   th{position:sticky;top:0;background:#1d1530;font-weight:600;}
   td.name{text-align:left;font-weight:600;}

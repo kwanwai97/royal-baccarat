@@ -1,0 +1,931 @@
+$ C:\Users\wai\AppData\Local\Programs\Python\Python311\python.exe C:\Users\wai\royal-baccarat\lb_sim.py
+[OK] 模擬完成 56 個 AI，每個 60 局 @ 2026-08-27 16:48
+$ git add leaderboard.json
+$ git commit -m auto: 每小時排行榜更新(含離線快照) @ 2026-08-27 16:48
+Exception in thread Thread-5 (_readerthread):
+Traceback (most recent call last):
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 1045, in _bootstrap_inner
+    self.run()
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 982, in run
+    self._target(*self._args, **self._kwargs)
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\subprocess.py", line 1599, in _readerthread
+    buffer.append(fh.read())
+                  ^^^^^^^^^
+UnicodeDecodeError: 'cp950' codec can't decode byte 0x8f in position 23: illegal multibyte sequence
+$ git push origin main
+[stderr] Warning: Permanently added 'github.com' (ED25519) to the list of known hosts.
+To github.com:kwanwai97/royal-baccarat.git
+   ce51ada..3d1cbe9  main -> main
+[OK] 每小時更新完成並 push @ 2026-08-27 16:48
+$ C:\Users\wai\AppData\Local\Programs\Python\Python311\python.exe C:\Users\wai\royal-baccarat\lb_sim.py
+[OK] 模擬完成 56 個 AI，每個 60 局 @ 2026-08-27 17:40
+$ git add leaderboard.json
+$ git commit -m auto: 每小時排行榜更新(含離線快照) @ 2026-08-27 17:40
+Exception in thread Thread-5 (_readerthread):
+Traceback (most recent call last):
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 1045, in _bootstrap_inner
+    self.run()
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 982, in run
+    self._target(*self._args, **self._kwargs)
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\subprocess.py", line 1599, in _readerthread
+    buffer.append(fh.read())
+                  ^^^^^^^^^
+UnicodeDecodeError: 'cp950' codec can't decode byte 0x8f in position 23: illegal multibyte sequence
+$ git push origin main
+[stderr] Warning: Permanently added 'github.com' (ED25519) to the list of known hosts.
+To github.com:kwanwai97/royal-baccarat.git
+   7aed2b2..0324fde  main -> main
+[OK] 每小時更新完成並 push @ 2026-08-27 17:40
+$ C:\Users\wai\AppData\Local\Programs\Python\Python311\python.exe C:\Users\wai\royal-baccarat\lb_sim.py
+[OK] 模擬完成 56 個 AI，每個 60 局 @ 2026-08-27 18:40
+$ git add leaderboard.json
+$ git commit -m auto: 每小時排行榜更新(含離線快照) @ 2026-08-27 18:40
+Exception in thread Thread-5 (_readerthread):
+Traceback (most recent call last):
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 1045, in _bootstrap_inner
+    self.run()
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 982, in run
+    self._target(*self._args, **self._kwargs)
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\subprocess.py", line 1599, in _readerthread
+    buffer.append(fh.read())
+                  ^^^^^^^^^
+UnicodeDecodeError: 'cp950' codec can't decode byte 0x8f in position 23: illegal multibyte sequence
+$ git push origin main
+[stderr] Warning: Permanently added 'github.com' (ED25519) to the list of known hosts.
+To github.com:kwanwai97/royal-baccarat.git
+   05a70aa..f72808f  main -> main
+[OK] 每小時更新完成並 push @ 2026-08-27 18:40
+$ C:\Users\wai\AppData\Local\Programs\Python\Python311\python.exe C:\Users\wai\royal-baccarat\lb_sim.py
+[OK] 模擬完成 56 個 AI，每個 60 局 @ 2026-08-27 19:40
+$ git add leaderboard.json
+$ git commit -m auto: 每小時排行榜更新(含離線快照) @ 2026-08-27 19:40
+Exception in thread Thread-5 (_readerthread):
+Traceback (most recent call last):
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 1045, in _bootstrap_inner
+    self.run()
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 982, in run
+    self._target(*self._args, **self._kwargs)
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\subprocess.py", line 1599, in _readerthread
+    buffer.append(fh.read())
+                  ^^^^^^^^^
+UnicodeDecodeError: 'cp950' codec can't decode byte 0x8f in position 23: illegal multibyte sequence
+$ git push origin main
+[stderr] Warning: Permanently added 'github.com' (ED25519) to the list of known hosts.
+To github.com:kwanwai97/royal-baccarat.git
+   84a706c..957994a  main -> main
+[OK] 每小時更新完成並 push @ 2026-08-27 19:40
+$ C:\Users\wai\AppData\Local\Programs\Python\Python311\python.exe C:\Users\wai\royal-baccarat\lb_sim.py
+[OK] 模擬完成 56 個 AI，每個 60 局 @ 2026-08-27 20:40
+$ git add leaderboard.json
+$ git commit -m auto: 每小時排行榜更新(含離線快照) @ 2026-08-27 20:40
+Exception in thread Thread-5 (_readerthread):
+Traceback (most recent call last):
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 1045, in _bootstrap_inner
+    self.run()
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 982, in run
+    self._target(*self._args, **self._kwargs)
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\subprocess.py", line 1599, in _readerthread
+    buffer.append(fh.read())
+                  ^^^^^^^^^
+UnicodeDecodeError: 'cp950' codec can't decode byte 0x8f in position 23: illegal multibyte sequence
+$ git push origin main
+[stderr] Warning: Permanently added 'github.com' (ED25519) to the list of known hosts.
+To github.com:kwanwai97/royal-baccarat.git
+   9940215..22757b3  main -> main
+[OK] 每小時更新完成並 push @ 2026-08-27 20:40
+$ C:\Users\wai\AppData\Local\Programs\Python\Python311\python.exe C:\Users\wai\royal-baccarat\lb_sim.py
+[OK] 模擬完成 56 個 AI，每個 60 局 @ 2026-08-27 21:40
+$ git add leaderboard.json
+$ git commit -m auto: 每小時排行榜更新(含離線快照) @ 2026-08-27 21:40
+Exception in thread Thread-5 (_readerthread):
+Traceback (most recent call last):
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 1045, in _bootstrap_inner
+    self.run()
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 982, in run
+    self._target(*self._args, **self._kwargs)
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\subprocess.py", line 1599, in _readerthread
+    buffer.append(fh.read())
+                  ^^^^^^^^^
+UnicodeDecodeError: 'cp950' codec can't decode byte 0x8f in position 23: illegal multibyte sequence
+$ git push origin main
+[stderr] Warning: Permanently added 'github.com' (ED25519) to the list of known hosts.
+To github.com:kwanwai97/royal-baccarat.git
+   c44bf5b..7fb637e  main -> main
+[OK] 每小時更新完成並 push @ 2026-08-27 21:40
+$ C:\Users\wai\AppData\Local\Programs\Python\Python311\python.exe C:\Users\wai\royal-baccarat\lb_sim.py
+[OK] 模擬完成 56 個 AI，每個 60 局 @ 2026-08-27 22:40
+$ git add leaderboard.json
+$ git commit -m auto: 每小時排行榜更新(含離線快照) @ 2026-08-27 22:40
+Exception in thread Thread-5 (_readerthread):
+Traceback (most recent call last):
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 1045, in _bootstrap_inner
+    self.run()
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 982, in run
+    self._target(*self._args, **self._kwargs)
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\subprocess.py", line 1599, in _readerthread
+    buffer.append(fh.read())
+                  ^^^^^^^^^
+UnicodeDecodeError: 'cp950' codec can't decode byte 0x8f in position 23: illegal multibyte sequence
+$ git push origin main
+[stderr] Warning: Permanently added 'github.com' (ED25519) to the list of known hosts.
+To github.com:kwanwai97/royal-baccarat.git
+   a9b1468..4e8faf2  main -> main
+[OK] 每小時更新完成並 push @ 2026-08-27 22:40
+$ C:\Users\wai\AppData\Local\Programs\Python\Python311\python.exe C:\Users\wai\royal-baccarat\lb_sim.py
+[OK] 模擬完成 56 個 AI，每個 60 局 @ 2026-08-27 23:40
+$ git add leaderboard.json
+$ git commit -m auto: 每小時排行榜更新(含離線快照) @ 2026-08-27 23:40
+Exception in thread Thread-5 (_readerthread):
+Traceback (most recent call last):
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 1045, in _bootstrap_inner
+    self.run()
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 982, in run
+    self._target(*self._args, **self._kwargs)
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\subprocess.py", line 1599, in _readerthread
+    buffer.append(fh.read())
+                  ^^^^^^^^^
+UnicodeDecodeError: 'cp950' codec can't decode byte 0x8f in position 23: illegal multibyte sequence
+$ git push origin main
+[stderr] Warning: Permanently added 'github.com' (ED25519) to the list of known hosts.
+To github.com:kwanwai97/royal-baccarat.git
+   4e8faf2..a650859  main -> main
+[OK] 每小時更新完成並 push @ 2026-08-27 23:40
+$ C:\Users\wai\AppData\Local\Programs\Python\Python311\python.exe C:\Users\wai\royal-baccarat\lb_sim.py
+[OK] 模擬完成 56 個 AI，每個 60 局 @ 2026-08-28 00:40
+$ git add leaderboard.json
+$ git commit -m auto: 每小時排行榜更新(含離線快照) @ 2026-08-28 00:40
+Exception in thread Thread-5 (_readerthread):
+Traceback (most recent call last):
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 1045, in _bootstrap_inner
+    self.run()
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 982, in run
+    self._target(*self._args, **self._kwargs)
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\subprocess.py", line 1599, in _readerthread
+    buffer.append(fh.read())
+                  ^^^^^^^^^
+UnicodeDecodeError: 'cp950' codec can't decode byte 0x8f in position 23: illegal multibyte sequence
+$ git push origin main
+[stderr] Warning: Permanently added 'github.com' (ED25519) to the list of known hosts.
+To github.com:kwanwai97/royal-baccarat.git
+   a650859..fae3dd6  main -> main
+[OK] 每小時更新完成並 push @ 2026-08-28 00:40
+$ C:\Users\wai\AppData\Local\Programs\Python\Python311\python.exe C:\Users\wai\royal-baccarat\lb_sim.py
+[OK] 模擬完成 56 個 AI，每個 60 局 @ 2026-08-28 01:40
+$ git add leaderboard.json
+$ git commit -m auto: 每小時排行榜更新(含離線快照) @ 2026-08-28 01:40
+Exception in thread Thread-5 (_readerthread):
+Traceback (most recent call last):
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 1045, in _bootstrap_inner
+    self.run()
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 982, in run
+    self._target(*self._args, **self._kwargs)
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\subprocess.py", line 1599, in _readerthread
+    buffer.append(fh.read())
+                  ^^^^^^^^^
+UnicodeDecodeError: 'cp950' codec can't decode byte 0x8f in position 23: illegal multibyte sequence
+$ git push origin main
+[stderr] Warning: Permanently added 'github.com' (ED25519) to the list of known hosts.
+To github.com:kwanwai97/royal-baccarat.git
+   fae3dd6..4e84b75  main -> main
+[OK] 每小時更新完成並 push @ 2026-08-28 01:40
+$ C:\Users\wai\AppData\Local\Programs\Python\Python311\python.exe C:\Users\wai\royal-baccarat\lb_sim.py
+[OK] 模擬完成 56 個 AI，每個 60 局 @ 2026-08-28 02:40
+$ git add leaderboard.json
+$ git commit -m auto: 每小時排行榜更新(含離線快照) @ 2026-08-28 02:40
+Exception in thread Thread-5 (_readerthread):
+Traceback (most recent call last):
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 1045, in _bootstrap_inner
+    self.run()
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 982, in run
+    self._target(*self._args, **self._kwargs)
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\subprocess.py", line 1599, in _readerthread
+    buffer.append(fh.read())
+                  ^^^^^^^^^
+UnicodeDecodeError: 'cp950' codec can't decode byte 0x8f in position 23: illegal multibyte sequence
+$ git push origin main
+[stderr] Warning: Permanently added 'github.com' (ED25519) to the list of known hosts.
+To github.com:kwanwai97/royal-baccarat.git
+   4e84b75..0bb1826  main -> main
+[OK] 每小時更新完成並 push @ 2026-08-28 02:40
+$ C:\Users\wai\AppData\Local\Programs\Python\Python311\python.exe C:\Users\wai\royal-baccarat\lb_sim.py
+[OK] 模擬完成 56 個 AI，每個 60 局 @ 2026-08-28 03:40
+$ git add leaderboard.json
+$ git commit -m auto: 每小時排行榜更新(含離線快照) @ 2026-08-28 03:40
+Exception in thread Thread-5 (_readerthread):
+Traceback (most recent call last):
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 1045, in _bootstrap_inner
+    self.run()
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 982, in run
+    self._target(*self._args, **self._kwargs)
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\subprocess.py", line 1599, in _readerthread
+    buffer.append(fh.read())
+                  ^^^^^^^^^
+UnicodeDecodeError: 'cp950' codec can't decode byte 0x8f in position 23: illegal multibyte sequence
+$ git push origin main
+[stderr] Warning: Permanently added 'github.com' (ED25519) to the list of known hosts.
+To github.com:kwanwai97/royal-baccarat.git
+   0bb1826..6945377  main -> main
+[OK] 每小時更新完成並 push @ 2026-08-28 03:40
+$ C:\Users\wai\AppData\Local\Programs\Python\Python311\python.exe C:\Users\wai\royal-baccarat\lb_sim.py
+[OK] 模擬完成 56 個 AI，每個 60 局 @ 2026-08-28 04:40
+$ git add leaderboard.json
+$ git commit -m auto: 每小時排行榜更新(含離線快照) @ 2026-08-28 04:40
+Exception in thread Thread-5 (_readerthread):
+Traceback (most recent call last):
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 1045, in _bootstrap_inner
+    self.run()
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 982, in run
+    self._target(*self._args, **self._kwargs)
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\subprocess.py", line 1599, in _readerthread
+    buffer.append(fh.read())
+                  ^^^^^^^^^
+UnicodeDecodeError: 'cp950' codec can't decode byte 0x8f in position 23: illegal multibyte sequence
+$ git push origin main
+[stderr] Warning: Permanently added 'github.com' (ED25519) to the list of known hosts.
+To github.com:kwanwai97/royal-baccarat.git
+   ea93f3f..829271f  main -> main
+[OK] 每小時更新完成並 push @ 2026-08-28 04:40
+$ C:\Users\wai\AppData\Local\Programs\Python\Python311\python.exe C:\Users\wai\royal-baccarat\lb_sim.py
+[OK] 模擬完成 56 個 AI，每個 60 局 @ 2026-08-28 05:40
+$ git add leaderboard.json
+$ git commit -m auto: 每小時排行榜更新(含離線快照) @ 2026-08-28 05:40
+Exception in thread Thread-5 (_readerthread):
+Traceback (most recent call last):
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 1045, in _bootstrap_inner
+    self.run()
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 982, in run
+    self._target(*self._args, **self._kwargs)
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\subprocess.py", line 1599, in _readerthread
+    buffer.append(fh.read())
+                  ^^^^^^^^^
+UnicodeDecodeError: 'cp950' codec can't decode byte 0x8f in position 23: illegal multibyte sequence
+$ git push origin main
+[stderr] Warning: Permanently added 'github.com' (ED25519) to the list of known hosts.
+To github.com:kwanwai97/royal-baccarat.git
+   f88bcfd..79d6734  main -> main
+[OK] 每小時更新完成並 push @ 2026-08-28 05:40
+$ C:\Users\wai\AppData\Local\Programs\Python\Python311\python.exe C:\Users\wai\royal-baccarat\lb_sim.py
+[OK] 模擬完成 56 個 AI，每個 60 局 @ 2026-08-28 06:40
+$ git add leaderboard.json
+$ git commit -m auto: 每小時排行榜更新(含離線快照) @ 2026-08-28 06:40
+Exception in thread Thread-5 (_readerthread):
+Traceback (most recent call last):
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 1045, in _bootstrap_inner
+    self.run()
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 982, in run
+    self._target(*self._args, **self._kwargs)
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\subprocess.py", line 1599, in _readerthread
+    buffer.append(fh.read())
+                  ^^^^^^^^^
+UnicodeDecodeError: 'cp950' codec can't decode byte 0x8f in position 23: illegal multibyte sequence
+$ git push origin main
+[stderr] Warning: Permanently added 'github.com' (ED25519) to the list of known hosts.
+To github.com:kwanwai97/royal-baccarat.git
+   3c49aed..b568f1a  main -> main
+[OK] 每小時更新完成並 push @ 2026-08-28 06:40
+$ C:\Users\wai\AppData\Local\Programs\Python\Python311\python.exe C:\Users\wai\royal-baccarat\lb_sim.py
+[OK] 模擬完成 56 個 AI，每個 60 局 @ 2026-08-28 07:40
+$ git add leaderboard.json
+$ git commit -m auto: 每小時排行榜更新(含離線快照) @ 2026-08-28 07:40
+Exception in thread Thread-5 (_readerthread):
+Traceback (most recent call last):
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 1045, in _bootstrap_inner
+    self.run()
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 982, in run
+    self._target(*self._args, **self._kwargs)
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\subprocess.py", line 1599, in _readerthread
+    buffer.append(fh.read())
+                  ^^^^^^^^^
+UnicodeDecodeError: 'cp950' codec can't decode byte 0x8f in position 23: illegal multibyte sequence
+$ git push origin main
+[stderr] Warning: Permanently added 'github.com' (ED25519) to the list of known hosts.
+To github.com:kwanwai97/royal-baccarat.git
+   b568f1a..f2be902  main -> main
+[OK] 每小時更新完成並 push @ 2026-08-28 07:40
+$ C:\Users\wai\AppData\Local\Programs\Python\Python311\python.exe C:\Users\wai\royal-baccarat\lb_sim.py
+[OK] 模擬完成 56 個 AI，每個 60 局 @ 2026-08-28 08:40
+$ git add leaderboard.json
+$ git commit -m auto: 每小時排行榜更新(含離線快照) @ 2026-08-28 08:40
+Exception in thread Thread-5 (_readerthread):
+Traceback (most recent call last):
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 1045, in _bootstrap_inner
+    self.run()
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 982, in run
+    self._target(*self._args, **self._kwargs)
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\subprocess.py", line 1599, in _readerthread
+    buffer.append(fh.read())
+                  ^^^^^^^^^
+UnicodeDecodeError: 'cp950' codec can't decode byte 0x8f in position 23: illegal multibyte sequence
+$ git push origin main
+[stderr] Warning: Permanently added 'github.com' (ED25519) to the list of known hosts.
+To github.com:kwanwai97/royal-baccarat.git
+   df4b3fc..9ceab1d  main -> main
+[OK] 每小時更新完成並 push @ 2026-08-28 08:40
+$ C:\Users\wai\AppData\Local\Programs\Python\Python311\python.exe C:\Users\wai\royal-baccarat\lb_sim.py
+[OK] 模擬完成 56 個 AI，每個 60 局 @ 2026-08-28 09:40
+$ git add leaderboard.json
+$ git commit -m auto: 每小時排行榜更新(含離線快照) @ 2026-08-28 09:40
+Exception in thread Thread-5 (_readerthread):
+Traceback (most recent call last):
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 1045, in _bootstrap_inner
+    self.run()
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 982, in run
+    self._target(*self._args, **self._kwargs)
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\subprocess.py", line 1599, in _readerthread
+    buffer.append(fh.read())
+                  ^^^^^^^^^
+UnicodeDecodeError: 'cp950' codec can't decode byte 0x8f in position 23: illegal multibyte sequence
+$ git push origin main
+[stderr] Warning: Permanently added 'github.com' (ED25519) to the list of known hosts.
+To github.com:kwanwai97/royal-baccarat.git
+   b0c8680..78caa1c  main -> main
+[OK] 每小時更新完成並 push @ 2026-08-28 09:40
+$ C:\Users\wai\AppData\Local\Programs\Python\Python311\python.exe C:\Users\wai\royal-baccarat\lb_sim.py
+[OK] 模擬完成 56 個 AI，每個 60 局 @ 2026-08-28 10:40
+$ git add leaderboard.json
+$ git commit -m auto: 每小時排行榜更新(含離線快照) @ 2026-08-28 10:40
+Exception in thread Thread-5 (_readerthread):
+Traceback (most recent call last):
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 1045, in _bootstrap_inner
+    self.run()
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 982, in run
+    self._target(*self._args, **self._kwargs)
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\subprocess.py", line 1599, in _readerthread
+    buffer.append(fh.read())
+                  ^^^^^^^^^
+UnicodeDecodeError: 'cp950' codec can't decode byte 0x8f in position 23: illegal multibyte sequence
+$ git push origin main
+[stderr] Warning: Permanently added 'github.com' (ED25519) to the list of known hosts.
+To github.com:kwanwai97/royal-baccarat.git
+   4815df6..1ef0c69  main -> main
+[OK] 每小時更新完成並 push @ 2026-08-28 10:40
+$ C:\Users\wai\AppData\Local\Programs\Python\Python311\python.exe C:\Users\wai\royal-baccarat\lb_sim.py
+[OK] 模擬完成 56 個 AI，每個 60 局 @ 2026-08-28 11:40
+$ git add leaderboard.json
+$ git commit -m auto: 每小時排行榜更新(含離線快照) @ 2026-08-28 11:40
+Exception in thread Thread-5 (_readerthread):
+Traceback (most recent call last):
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 1045, in _bootstrap_inner
+    self.run()
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 982, in run
+    self._target(*self._args, **self._kwargs)
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\subprocess.py", line 1599, in _readerthread
+    buffer.append(fh.read())
+                  ^^^^^^^^^
+UnicodeDecodeError: 'cp950' codec can't decode byte 0x8f in position 23: illegal multibyte sequence
+$ git push origin main
+[stderr] Warning: Permanently added 'github.com' (ED25519) to the list of known hosts.
+To github.com:kwanwai97/royal-baccarat.git
+   d7d99c9..44458f3  main -> main
+[OK] 每小時更新完成並 push @ 2026-08-28 11:40
+$ C:\Users\wai\AppData\Local\Programs\Python\Python311\python.exe C:\Users\wai\royal-baccarat\lb_sim.py
+[OK] 模擬完成 56 個 AI，每個 60 局 @ 2026-08-28 12:40
+$ git add leaderboard.json
+$ git commit -m auto: 每小時排行榜更新(含離線快照) @ 2026-08-28 12:40
+Exception in thread Thread-5 (_readerthread):
+Traceback (most recent call last):
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 1045, in _bootstrap_inner
+    self.run()
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 982, in run
+    self._target(*self._args, **self._kwargs)
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\subprocess.py", line 1599, in _readerthread
+    buffer.append(fh.read())
+                  ^^^^^^^^^
+UnicodeDecodeError: 'cp950' codec can't decode byte 0x8f in position 23: illegal multibyte sequence
+$ git push origin main
+[stderr] Warning: Permanently added 'github.com' (ED25519) to the list of known hosts.
+To github.com:kwanwai97/royal-baccarat.git
+   da0d1a0..6b6886d  main -> main
+[OK] 每小時更新完成並 push @ 2026-08-28 12:40
+$ C:\Users\wai\AppData\Local\Programs\Python\Python311\python.exe C:\Users\wai\royal-baccarat\lb_sim.py
+[OK] 模擬完成 56 個 AI，每個 60 局 @ 2026-08-28 13:40
+$ git add leaderboard.json
+$ git commit -m auto: 每小時排行榜更新(含離線快照) @ 2026-08-28 13:40
+Exception in thread Thread-5 (_readerthread):
+Traceback (most recent call last):
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 1045, in _bootstrap_inner
+    self.run()
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 982, in run
+    self._target(*self._args, **self._kwargs)
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\subprocess.py", line 1599, in _readerthread
+    buffer.append(fh.read())
+                  ^^^^^^^^^
+UnicodeDecodeError: 'cp950' codec can't decode byte 0x8f in position 23: illegal multibyte sequence
+$ git push origin main
+[stderr] Warning: Permanently added 'github.com' (ED25519) to the list of known hosts.
+To github.com:kwanwai97/royal-baccarat.git
+   c4dac90..28aeb47  main -> main
+[OK] 每小時更新完成並 push @ 2026-08-28 13:40
+$ C:\Users\wai\AppData\Local\Programs\Python\Python311\python.exe C:\Users\wai\royal-baccarat\lb_sim.py
+[OK] 模擬完成 56 個 AI，每個 60 局 @ 2026-08-28 14:40
+$ git add leaderboard.json
+$ git commit -m auto: 每小時排行榜更新(含離線快照) @ 2026-08-28 14:40
+Exception in thread Thread-5 (_readerthread):
+Traceback (most recent call last):
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 1045, in _bootstrap_inner
+    self.run()
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 982, in run
+    self._target(*self._args, **self._kwargs)
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\subprocess.py", line 1599, in _readerthread
+    buffer.append(fh.read())
+                  ^^^^^^^^^
+UnicodeDecodeError: 'cp950' codec can't decode byte 0x8f in position 23: illegal multibyte sequence
+$ git push origin main
+[stderr] Warning: Permanently added 'github.com' (ED25519) to the list of known hosts.
+To github.com:kwanwai97/royal-baccarat.git
+   e994329..0daa77f  main -> main
+[OK] 每小時更新完成並 push @ 2026-08-28 14:40
+$ C:\Users\wai\AppData\Local\Programs\Python\Python311\python.exe C:\Users\wai\royal-baccarat\lb_sim.py
+[OK] 模擬完成 56 個 AI，每個 60 局 @ 2026-08-28 15:40
+$ git add leaderboard.json
+$ git commit -m auto: 每小時排行榜更新(含離線快照) @ 2026-08-28 15:40
+Exception in thread Thread-5 (_readerthread):
+Traceback (most recent call last):
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 1045, in _bootstrap_inner
+    self.run()
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 982, in run
+    self._target(*self._args, **self._kwargs)
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\subprocess.py", line 1599, in _readerthread
+    buffer.append(fh.read())
+                  ^^^^^^^^^
+UnicodeDecodeError: 'cp950' codec can't decode byte 0x8f in position 23: illegal multibyte sequence
+$ git push origin main
+[stderr] Warning: Permanently added 'github.com' (ED25519) to the list of known hosts.
+To github.com:kwanwai97/royal-baccarat.git
+   ecaad2e..ec20846  main -> main
+[OK] 每小時更新完成並 push @ 2026-08-28 15:40
+$ C:\Users\wai\AppData\Local\Programs\Python\Python311\python.exe C:\Users\wai\royal-baccarat\lb_sim.py
+[OK] 模擬完成 56 個 AI，每個 60 局 @ 2026-08-28 16:40
+$ git add leaderboard.json
+$ git commit -m auto: 每小時排行榜更新(含離線快照) @ 2026-08-28 16:40
+Exception in thread Thread-5 (_readerthread):
+Traceback (most recent call last):
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 1045, in _bootstrap_inner
+    self.run()
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 982, in run
+    self._target(*self._args, **self._kwargs)
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\subprocess.py", line 1599, in _readerthread
+    buffer.append(fh.read())
+                  ^^^^^^^^^
+UnicodeDecodeError: 'cp950' codec can't decode byte 0x8f in position 23: illegal multibyte sequence
+$ git push origin main
+[stderr] Warning: Permanently added 'github.com' (ED25519) to the list of known hosts.
+To github.com:kwanwai97/royal-baccarat.git
+   916c9a3..ae37ed4  main -> main
+[OK] 每小時更新完成並 push @ 2026-08-28 16:40
+$ C:\Users\wai\AppData\Local\Programs\Python\Python311\python.exe C:\Users\wai\royal-baccarat\lb_sim.py
+[OK] 模擬完成 56 個 AI，每個 60 局 @ 2026-08-28 17:40
+$ git add leaderboard.json
+$ git commit -m auto: 每小時排行榜更新(含離線快照) @ 2026-08-28 17:40
+Exception in thread Thread-5 (_readerthread):
+Traceback (most recent call last):
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 1045, in _bootstrap_inner
+    self.run()
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 982, in run
+    self._target(*self._args, **self._kwargs)
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\subprocess.py", line 1599, in _readerthread
+    buffer.append(fh.read())
+                  ^^^^^^^^^
+UnicodeDecodeError: 'cp950' codec can't decode byte 0x8f in position 23: illegal multibyte sequence
+$ git push origin main
+[stderr] Warning: Permanently added 'github.com' (ED25519) to the list of known hosts.
+To github.com:kwanwai97/royal-baccarat.git
+   ae37ed4..ee76468  main -> main
+[OK] 每小時更新完成並 push @ 2026-08-28 17:40
+$ C:\Users\wai\AppData\Local\Programs\Python\Python311\python.exe C:\Users\wai\royal-baccarat\lb_sim.py
+[OK] 模擬完成 56 個 AI，每個 60 局 @ 2026-08-28 18:40
+$ git add leaderboard.json
+$ git commit -m auto: 每小時排行榜更新(含離線快照) @ 2026-08-28 18:40
+Exception in thread Thread-5 (_readerthread):
+Traceback (most recent call last):
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 1045, in _bootstrap_inner
+    self.run()
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 982, in run
+    self._target(*self._args, **self._kwargs)
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\subprocess.py", line 1599, in _readerthread
+    buffer.append(fh.read())
+                  ^^^^^^^^^
+UnicodeDecodeError: 'cp950' codec can't decode byte 0x8f in position 23: illegal multibyte sequence
+$ git push origin main
+[stderr] Warning: Permanently added 'github.com' (ED25519) to the list of known hosts.
+To github.com:kwanwai97/royal-baccarat.git
+   ee76468..3b29809  main -> main
+[OK] 每小時更新完成並 push @ 2026-08-28 18:40
+$ C:\Users\wai\AppData\Local\Programs\Python\Python311\python.exe C:\Users\wai\royal-baccarat\lb_sim.py
+[OK] 模擬完成 56 個 AI，每個 60 局 @ 2026-08-28 19:40
+$ git add leaderboard.json
+$ git commit -m auto: 每小時排行榜更新(含離線快照) @ 2026-08-28 19:40
+Exception in thread Thread-5 (_readerthread):
+Traceback (most recent call last):
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 1045, in _bootstrap_inner
+    self.run()
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 982, in run
+    self._target(*self._args, **self._kwargs)
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\subprocess.py", line 1599, in _readerthread
+    buffer.append(fh.read())
+                  ^^^^^^^^^
+UnicodeDecodeError: 'cp950' codec can't decode byte 0x8f in position 23: illegal multibyte sequence
+$ git push origin main
+[stderr] Warning: Permanently added 'github.com' (ED25519) to the list of known hosts.
+To github.com:kwanwai97/royal-baccarat.git
+   32b7028..c16138f  main -> main
+[OK] 每小時更新完成並 push @ 2026-08-28 19:40
+$ C:\Users\wai\AppData\Local\Programs\Python\Python311\python.exe C:\Users\wai\royal-baccarat\lb_sim.py
+[OK] 模擬完成 56 個 AI，每個 60 局 @ 2026-08-28 20:40
+$ git add leaderboard.json
+$ git commit -m auto: 每小時排行榜更新(含離線快照) @ 2026-08-28 20:40
+Exception in thread Thread-5 (_readerthread):
+Traceback (most recent call last):
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 1045, in _bootstrap_inner
+    self.run()
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 982, in run
+    self._target(*self._args, **self._kwargs)
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\subprocess.py", line 1599, in _readerthread
+    buffer.append(fh.read())
+                  ^^^^^^^^^
+UnicodeDecodeError: 'cp950' codec can't decode byte 0x8f in position 23: illegal multibyte sequence
+$ git push origin main
+[stderr] Warning: Permanently added 'github.com' (ED25519) to the list of known hosts.
+To github.com:kwanwai97/royal-baccarat.git
+   6feffdf..142541d  main -> main
+[OK] 每小時更新完成並 push @ 2026-08-28 20:40
+$ C:\Users\wai\AppData\Local\Programs\Python\Python311\python.exe C:\Users\wai\royal-baccarat\lb_sim.py
+[OK] 模擬完成 56 個 AI，每個 60 局 @ 2026-08-28 21:40
+$ git add leaderboard.json
+$ git commit -m auto: 每小時排行榜更新(含離線快照) @ 2026-08-28 21:40
+Exception in thread Thread-5 (_readerthread):
+Traceback (most recent call last):
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 1045, in _bootstrap_inner
+    self.run()
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 982, in run
+    self._target(*self._args, **self._kwargs)
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\subprocess.py", line 1599, in _readerthread
+    buffer.append(fh.read())
+                  ^^^^^^^^^
+UnicodeDecodeError: 'cp950' codec can't decode byte 0x8f in position 23: illegal multibyte sequence
+$ git push origin main
+[stderr] Warning: Permanently added 'github.com' (ED25519) to the list of known hosts.
+To github.com:kwanwai97/royal-baccarat.git
+   379e550..e172865  main -> main
+[OK] 每小時更新完成並 push @ 2026-08-28 21:40
+$ C:\Users\wai\AppData\Local\Programs\Python\Python311\python.exe C:\Users\wai\royal-baccarat\lb_sim.py
+[OK] 模擬完成 56 個 AI，每個 60 局 @ 2026-08-28 22:40
+$ git add leaderboard.json
+$ git commit -m auto: 每小時排行榜更新(含離線快照) @ 2026-08-28 22:40
+Exception in thread Thread-5 (_readerthread):
+Traceback (most recent call last):
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 1045, in _bootstrap_inner
+    self.run()
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 982, in run
+    self._target(*self._args, **self._kwargs)
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\subprocess.py", line 1599, in _readerthread
+    buffer.append(fh.read())
+                  ^^^^^^^^^
+UnicodeDecodeError: 'cp950' codec can't decode byte 0x8f in position 23: illegal multibyte sequence
+$ git push origin main
+[stderr] Warning: Permanently added 'github.com' (ED25519) to the list of known hosts.
+To github.com:kwanwai97/royal-baccarat.git
+   08222b3..8ab05b8  main -> main
+[OK] 每小時更新完成並 push @ 2026-08-28 22:40
+$ C:\Users\wai\AppData\Local\Programs\Python\Python311\python.exe C:\Users\wai\royal-baccarat\lb_sim.py
+[OK] 模擬完成 56 個 AI，每個 60 局 @ 2026-08-28 23:40
+$ git add leaderboard.json
+$ git commit -m auto: 每小時排行榜更新(含離線快照) @ 2026-08-28 23:40
+Exception in thread Thread-5 (_readerthread):
+Traceback (most recent call last):
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 1045, in _bootstrap_inner
+    self.run()
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 982, in run
+    self._target(*self._args, **self._kwargs)
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\subprocess.py", line 1599, in _readerthread
+    buffer.append(fh.read())
+                  ^^^^^^^^^
+UnicodeDecodeError: 'cp950' codec can't decode byte 0x8f in position 23: illegal multibyte sequence
+$ git push origin main
+[stderr] Warning: Permanently added 'github.com' (ED25519) to the list of known hosts.
+To github.com:kwanwai97/royal-baccarat.git
+   dac425b..609a96f  main -> main
+[OK] 每小時更新完成並 push @ 2026-08-28 23:40
+$ C:\Users\wai\AppData\Local\Programs\Python\Python311\python.exe C:\Users\wai\royal-baccarat\lb_sim.py
+[OK] 模擬完成 56 個 AI，每個 60 局 @ 2026-08-29 00:40
+$ git add leaderboard.json
+$ git commit -m auto: 每小時排行榜更新(含離線快照) @ 2026-08-29 00:40
+Exception in thread Thread-5 (_readerthread):
+Traceback (most recent call last):
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 1045, in _bootstrap_inner
+    self.run()
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 982, in run
+    self._target(*self._args, **self._kwargs)
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\subprocess.py", line 1599, in _readerthread
+    buffer.append(fh.read())
+                  ^^^^^^^^^
+UnicodeDecodeError: 'cp950' codec can't decode byte 0x8f in position 23: illegal multibyte sequence
+$ git push origin main
+[stderr] Warning: Permanently added 'github.com' (ED25519) to the list of known hosts.
+To github.com:kwanwai97/royal-baccarat.git
+   609a96f..506dc3c  main -> main
+[OK] 每小時更新完成並 push @ 2026-08-29 00:40
+$ C:\Users\wai\AppData\Local\Programs\Python\Python311\python.exe C:\Users\wai\royal-baccarat\lb_sim.py
+[OK] 模擬完成 56 個 AI，每個 60 局 @ 2026-08-29 01:40
+$ git add leaderboard.json
+$ git commit -m auto: 每小時排行榜更新(含離線快照) @ 2026-08-29 01:40
+Exception in thread Thread-5 (_readerthread):
+Traceback (most recent call last):
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 1045, in _bootstrap_inner
+    self.run()
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 982, in run
+    self._target(*self._args, **self._kwargs)
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\subprocess.py", line 1599, in _readerthread
+    buffer.append(fh.read())
+                  ^^^^^^^^^
+UnicodeDecodeError: 'cp950' codec can't decode byte 0x8f in position 23: illegal multibyte sequence
+$ git push origin main
+[stderr] Warning: Permanently added 'github.com' (ED25519) to the list of known hosts.
+To github.com:kwanwai97/royal-baccarat.git
+   506dc3c..8dc7656  main -> main
+[OK] 每小時更新完成並 push @ 2026-08-29 01:40
+$ C:\Users\wai\AppData\Local\Programs\Python\Python311\python.exe C:\Users\wai\royal-baccarat\lb_sim.py
+[OK] 模擬完成 56 個 AI，每個 60 局 @ 2026-08-29 02:40
+$ git add leaderboard.json
+$ git commit -m auto: 每小時排行榜更新(含離線快照) @ 2026-08-29 02:40
+Exception in thread Thread-5 (_readerthread):
+Traceback (most recent call last):
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 1045, in _bootstrap_inner
+    self.run()
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 982, in run
+    self._target(*self._args, **self._kwargs)
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\subprocess.py", line 1599, in _readerthread
+    buffer.append(fh.read())
+                  ^^^^^^^^^
+UnicodeDecodeError: 'cp950' codec can't decode byte 0x8f in position 23: illegal multibyte sequence
+$ git push origin main
+[stderr] Warning: Permanently added 'github.com' (ED25519) to the list of known hosts.
+To github.com:kwanwai97/royal-baccarat.git
+   8dc7656..00428b4  main -> main
+[OK] 每小時更新完成並 push @ 2026-08-29 02:40
+$ C:\Users\wai\AppData\Local\Programs\Python\Python311\python.exe C:\Users\wai\royal-baccarat\lb_sim.py
+[OK] 模擬完成 56 個 AI，每個 60 局 @ 2026-08-29 03:40
+$ git add leaderboard.json
+$ git commit -m auto: 每小時排行榜更新(含離線快照) @ 2026-08-29 03:40
+Exception in thread Thread-5 (_readerthread):
+Traceback (most recent call last):
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 1045, in _bootstrap_inner
+    self.run()
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 982, in run
+    self._target(*self._args, **self._kwargs)
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\subprocess.py", line 1599, in _readerthread
+    buffer.append(fh.read())
+                  ^^^^^^^^^
+UnicodeDecodeError: 'cp950' codec can't decode byte 0x8f in position 23: illegal multibyte sequence
+$ git push origin main
+[stderr] Warning: Permanently added 'github.com' (ED25519) to the list of known hosts.
+To github.com:kwanwai97/royal-baccarat.git
+   00428b4..32611e6  main -> main
+[OK] 每小時更新完成並 push @ 2026-08-29 03:40
+$ C:\Users\wai\AppData\Local\Programs\Python\Python311\python.exe C:\Users\wai\royal-baccarat\lb_sim.py
+[OK] 模擬完成 56 個 AI，每個 60 局 @ 2026-08-29 04:40
+$ git add leaderboard.json
+$ git commit -m auto: 每小時排行榜更新(含離線快照) @ 2026-08-29 04:40
+Exception in thread Thread-5 (_readerthread):
+Traceback (most recent call last):
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 1045, in _bootstrap_inner
+    self.run()
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 982, in run
+    self._target(*self._args, **self._kwargs)
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\subprocess.py", line 1599, in _readerthread
+    buffer.append(fh.read())
+                  ^^^^^^^^^
+UnicodeDecodeError: 'cp950' codec can't decode byte 0x8f in position 23: illegal multibyte sequence
+$ git push origin main
+[stderr] Warning: Permanently added 'github.com' (ED25519) to the list of known hosts.
+To github.com:kwanwai97/royal-baccarat.git
+   32611e6..180939f  main -> main
+[OK] 每小時更新完成並 push @ 2026-08-29 04:40
+$ C:\Users\wai\AppData\Local\Programs\Python\Python311\python.exe C:\Users\wai\royal-baccarat\lb_sim.py
+[OK] 模擬完成 56 個 AI，每個 60 局 @ 2026-08-29 05:40
+$ git add leaderboard.json
+$ git commit -m auto: 每小時排行榜更新(含離線快照) @ 2026-08-29 05:40
+Exception in thread Thread-5 (_readerthread):
+Traceback (most recent call last):
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 1045, in _bootstrap_inner
+    self.run()
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 982, in run
+    self._target(*self._args, **self._kwargs)
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\subprocess.py", line 1599, in _readerthread
+    buffer.append(fh.read())
+                  ^^^^^^^^^
+UnicodeDecodeError: 'cp950' codec can't decode byte 0x8f in position 23: illegal multibyte sequence
+$ git push origin main
+[stderr] Warning: Permanently added 'github.com' (ED25519) to the list of known hosts.
+To github.com:kwanwai97/royal-baccarat.git
+   180939f..841773d  main -> main
+[OK] 每小時更新完成並 push @ 2026-08-29 05:40
+$ C:\Users\wai\AppData\Local\Programs\Python\Python311\python.exe C:\Users\wai\royal-baccarat\lb_sim.py
+[OK] 模擬完成 56 個 AI，每個 60 局 @ 2026-08-29 06:40
+$ git add leaderboard.json
+$ git commit -m auto: 每小時排行榜更新(含離線快照) @ 2026-08-29 06:40
+Exception in thread Thread-5 (_readerthread):
+Traceback (most recent call last):
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 1045, in _bootstrap_inner
+    self.run()
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 982, in run
+    self._target(*self._args, **self._kwargs)
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\subprocess.py", line 1599, in _readerthread
+    buffer.append(fh.read())
+                  ^^^^^^^^^
+UnicodeDecodeError: 'cp950' codec can't decode byte 0x8f in position 23: illegal multibyte sequence
+$ git push origin main
+[stderr] Warning: Permanently added 'github.com' (ED25519) to the list of known hosts.
+To github.com:kwanwai97/royal-baccarat.git
+   841773d..a331fdd  main -> main
+[OK] 每小時更新完成並 push @ 2026-08-29 06:40
+$ C:\Users\wai\AppData\Local\Programs\Python\Python311\python.exe C:\Users\wai\royal-baccarat\lb_sim.py
+[OK] 模擬完成 56 個 AI，每個 60 局 @ 2026-08-29 07:40
+$ git add leaderboard.json
+$ git commit -m auto: 每小時排行榜更新(含離線快照) @ 2026-08-29 07:40
+Exception in thread Thread-5 (_readerthread):
+Traceback (most recent call last):
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 1045, in _bootstrap_inner
+    self.run()
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 982, in run
+    self._target(*self._args, **self._kwargs)
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\subprocess.py", line 1599, in _readerthread
+    buffer.append(fh.read())
+                  ^^^^^^^^^
+UnicodeDecodeError: 'cp950' codec can't decode byte 0x8f in position 23: illegal multibyte sequence
+$ git push origin main
+[stderr] Warning: Permanently added 'github.com' (ED25519) to the list of known hosts.
+To github.com:kwanwai97/royal-baccarat.git
+   f2474e9..22ef6be  main -> main
+[OK] 每小時更新完成並 push @ 2026-08-29 07:40
+$ C:\Users\wai\AppData\Local\Programs\Python\Python311\python.exe C:\Users\wai\royal-baccarat\lb_sim.py
+[OK] 模擬完成 68 個 AI，每個 60 局 @ 2026-08-29 08:40
+$ git add leaderboard.json
+$ git commit -m auto: 每小時排行榜更新(含離線快照) @ 2026-08-29 08:40
+Exception in thread Thread-5 (_readerthread):
+Traceback (most recent call last):
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 1045, in _bootstrap_inner
+    self.run()
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 982, in run
+    self._target(*self._args, **self._kwargs)
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\subprocess.py", line 1599, in _readerthread
+    buffer.append(fh.read())
+                  ^^^^^^^^^
+UnicodeDecodeError: 'cp950' codec can't decode byte 0x8f in position 23: illegal multibyte sequence
+$ git push origin main
+[stderr] Warning: Permanently added 'github.com' (ED25519) to the list of known hosts.
+To github.com:kwanwai97/royal-baccarat.git
+   ceb9ef6..27fd879  main -> main
+[OK] 每小時更新完成並 push @ 2026-08-29 08:40
+$ C:\Users\wai\AppData\Local\Programs\Python\Python311\python.exe C:\Users\wai\royal-baccarat\lb_sim.py
+[OK] 模擬完成 68 個 AI，每個 60 局 @ 2026-08-29 09:40
+$ git add leaderboard.json
+$ git commit -m auto: 每小時排行榜更新(含離線快照) @ 2026-08-29 09:40
+Exception in thread Thread-5 (_readerthread):
+Traceback (most recent call last):
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 1045, in _bootstrap_inner
+    self.run()
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 982, in run
+    self._target(*self._args, **self._kwargs)
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\subprocess.py", line 1599, in _readerthread
+    buffer.append(fh.read())
+                  ^^^^^^^^^
+UnicodeDecodeError: 'cp950' codec can't decode byte 0x8f in position 23: illegal multibyte sequence
+$ git push origin main
+[stderr] Warning: Permanently added 'github.com' (ED25519) to the list of known hosts.
+To github.com:kwanwai97/royal-baccarat.git
+   4fb57b3..ee95280  main -> main
+[OK] 每小時更新完成並 push @ 2026-08-29 09:40
+$ C:\Users\wai\AppData\Local\Programs\Python\Python311\python.exe C:\Users\wai\royal-baccarat\lb_sim.py
+[OK] 模擬完成 68 個 AI，每個 60 局 @ 2026-08-29 10:40
+$ git add leaderboard.json
+$ git commit -m auto: 每小時排行榜更新(含離線快照) @ 2026-08-29 10:40
+Exception in thread Thread-5 (_readerthread):
+Traceback (most recent call last):
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 1045, in _bootstrap_inner
+    self.run()
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 982, in run
+    self._target(*self._args, **self._kwargs)
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\subprocess.py", line 1599, in _readerthread
+    buffer.append(fh.read())
+                  ^^^^^^^^^
+UnicodeDecodeError: 'cp950' codec can't decode byte 0x8f in position 23: illegal multibyte sequence
+$ git push origin main
+[stderr] Warning: Permanently added 'github.com' (ED25519) to the list of known hosts.
+To github.com:kwanwai97/royal-baccarat.git
+   e253922..1fbdcd2  main -> main
+[OK] 每小時更新完成並 push @ 2026-08-29 10:40
+$ C:\Users\wai\AppData\Local\Programs\Python\Python311\python.exe C:\Users\wai\royal-baccarat\lb_sim.py
+[OK] 模擬完成 68 個 AI，每個 60 局 @ 2026-08-29 11:40
+$ git add leaderboard.json
+$ git commit -m auto: 每小時排行榜更新(含離線快照) @ 2026-08-29 11:40
+Exception in thread Thread-5 (_readerthread):
+Traceback (most recent call last):
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 1045, in _bootstrap_inner
+    self.run()
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 982, in run
+    self._target(*self._args, **self._kwargs)
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\subprocess.py", line 1599, in _readerthread
+    buffer.append(fh.read())
+                  ^^^^^^^^^
+UnicodeDecodeError: 'cp950' codec can't decode byte 0x8f in position 23: illegal multibyte sequence
+$ git push origin main
+[stderr] Warning: Permanently added 'github.com' (ED25519) to the list of known hosts.
+To github.com:kwanwai97/royal-baccarat.git
+   3d529db..032dfd7  main -> main
+[OK] 每小時更新完成並 push @ 2026-08-29 11:40
+$ C:\Users\wai\AppData\Local\Programs\Python\Python311\python.exe C:\Users\wai\royal-baccarat\lb_sim.py
+[OK] 模擬完成 68 個 AI，每個 60 局 @ 2026-08-29 12:40
+$ git add leaderboard.json
+$ git commit -m auto: 每小時排行榜更新(含離線快照) @ 2026-08-29 12:40
+Exception in thread Thread-5 (_readerthread):
+Traceback (most recent call last):
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 1045, in _bootstrap_inner
+    self.run()
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 982, in run
+    self._target(*self._args, **self._kwargs)
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\subprocess.py", line 1599, in _readerthread
+    buffer.append(fh.read())
+                  ^^^^^^^^^
+UnicodeDecodeError: 'cp950' codec can't decode byte 0x8f in position 23: illegal multibyte sequence
+$ git push origin main
+[stderr] Warning: Permanently added 'github.com' (ED25519) to the list of known hosts.
+To github.com:kwanwai97/royal-baccarat.git
+   41c835e..9f8fa23  main -> main
+[OK] 每小時更新完成並 push @ 2026-08-29 12:40
+$ C:\Users\wai\AppData\Local\Programs\Python\Python311\python.exe C:\Users\wai\royal-baccarat\lb_sim.py
+[OK] 模擬完成 68 個 AI，每個 60 局 @ 2026-08-29 13:40
+$ git add leaderboard.json
+$ git commit -m auto: 每小時排行榜更新(含離線快照) @ 2026-08-29 13:40
+Exception in thread Thread-5 (_readerthread):
+Traceback (most recent call last):
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 1045, in _bootstrap_inner
+    self.run()
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 982, in run
+    self._target(*self._args, **self._kwargs)
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\subprocess.py", line 1599, in _readerthread
+    buffer.append(fh.read())
+                  ^^^^^^^^^
+UnicodeDecodeError: 'cp950' codec can't decode byte 0x8f in position 23: illegal multibyte sequence
+$ git push origin main
+[stderr] Warning: Permanently added 'github.com' (ED25519) to the list of known hosts.
+To github.com:kwanwai97/royal-baccarat.git
+   b5dcbfe..267b94b  main -> main
+[OK] 每小時更新完成並 push @ 2026-08-29 13:40
+$ C:\Users\wai\AppData\Local\Programs\Python\Python311\python.exe C:\Users\wai\royal-baccarat\lb_sim.py
+[OK] 模擬完成 68 個 AI，每個 60 局 @ 2026-08-29 18:40
+$ git add leaderboard.json
+$ git commit -m auto: 每小時排行榜更新(含離線快照) @ 2026-08-29 18:40
+Exception in thread Thread-5 (_readerthread):
+Traceback (most recent call last):
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 1045, in _bootstrap_inner
+    self.run()
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 982, in run
+    self._target(*self._args, **self._kwargs)
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\subprocess.py", line 1599, in _readerthread
+    buffer.append(fh.read())
+                  ^^^^^^^^^
+UnicodeDecodeError: 'cp950' codec can't decode byte 0x8f in position 23: illegal multibyte sequence
+$ git push origin main
+[stderr] Warning: Permanently added 'github.com' (ED25519) to the list of known hosts.
+To github.com:kwanwai97/royal-baccarat.git
+   267b94b..01c0675  main -> main
+[OK] 每小時更新完成並 push @ 2026-08-29 18:40
+$ C:\Users\wai\AppData\Local\Programs\Python\Python311\python.exe C:\Users\wai\royal-baccarat\lb_sim.py
+[OK] 模擬完成 68 個 AI，每個 60 局 @ 2026-08-29 19:40
+$ git add leaderboard.json
+$ git commit -m auto: 每小時排行榜更新(含離線快照) @ 2026-08-29 19:40
+Exception in thread Thread-5 (_readerthread):
+Traceback (most recent call last):
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 1045, in _bootstrap_inner
+    self.run()
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 982, in run
+    self._target(*self._args, **self._kwargs)
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\subprocess.py", line 1599, in _readerthread
+    buffer.append(fh.read())
+                  ^^^^^^^^^
+UnicodeDecodeError: 'cp950' codec can't decode byte 0x8f in position 23: illegal multibyte sequence
+$ git push origin main
+[stderr] Warning: Permanently added 'github.com' (ED25519) to the list of known hosts.
+To github.com:kwanwai97/royal-baccarat.git
+   2f755e2..894f0cc  main -> main
+[OK] 每小時更新完成並 push @ 2026-08-29 19:40
+$ C:\Users\wai\AppData\Local\Programs\Python\Python311\python.exe C:\Users\wai\royal-baccarat\lb_sim.py
+[OK] 模擬完成 68 個 AI，每個 60 局 @ 2026-08-29 20:40
+$ git add leaderboard.json
+$ git commit -m auto: 每小時排行榜更新(含離線快照) @ 2026-08-29 20:40
+Exception in thread Thread-5 (_readerthread):
+Traceback (most recent call last):
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 1045, in _bootstrap_inner
+    self.run()
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\threading.py", line 982, in run
+    self._target(*self._args, **self._kwargs)
+  File "C:\Users\wai\AppData\Local\Programs\Python\Python311\Lib\subprocess.py", line 1599, in _readerthread
+    buffer.append(fh.read())
+                  ^^^^^^^^^
+UnicodeDecodeError: 'cp950' codec can't decode byte 0x8f in position 23: illegal multibyte sequence
+$ git push origin main
+[stderr] Warning: Permanently added 'github.com' (ED25519) to the list of known hosts.
+To github.com:kwanwai97/royal-baccarat.git
+   98210ad..05b8ae3  main -> main
+[OK] 每小時更新完成並 push @ 2026-08-29 20:40
