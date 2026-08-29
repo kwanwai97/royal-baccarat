@@ -102,7 +102,7 @@
   .info-strip .k{opacity:.55; font-size:8px;}
   .info-strip .v{font-weight:800; color:#fff;}
   .info-strip .v.p{color:#a9d2ff;} .info-strip .v.b{color:#ffb3b3;} .info-strip .v.t{color:#8fe0ab;} .info-strip .v.c{color:#ffd45e;}
-  .dealzone{position:absolute; inset:0; z-index:10; display:grid; grid-template-columns:1fr 1fr; align-items:start; justify-items:center; gap:6px; padding:34px 8px 8px; border-radius:8px;
+  .dealzone{position:absolute; inset:0; left:-15px; z-index:10; display:grid; grid-template-columns:1fr 1fr; align-items:start; justify-items:center; gap:6px; padding:34px 8px 8px; border-radius:8px;
     background:transparent; border:none; box-shadow:none;
     opacity:0; pointer-events:none; transition:opacity .25s ease;}
   .dealzone.show{opacity:1; pointer-events:auto; z-index:20;}
@@ -687,7 +687,7 @@
     /* 下半左：路單（大路+珠盤+下三路）跨左3欄、佔 row2-4 全高 */
     .roadpanel{ grid-column:1 / 4; grid-row:3 / span 4; align-self:start; }   /* 打橫：路單頂部落一格，同右投注區(row3)頂部水平並排；容器收實貼內容高度(唔被grid拉伸留空位) */
     /* 打橫：發牌區張卡貼頂(緊貼藍色結果文字下方)，唔再跌去路單區底(直版感一致) */
-    .dealzone{ align-items:start; padding-top:34px; }  /* 橫版：卡牌貼大路標題底(路單頂部開始) */
+    .dealzone{ align-items:start; padding-top:34px; left:-15px; }  /* 橫版：卡牌貼大路標題底(路單頂部開始) + 全體向左15px */
     /* 打橫壓縮路單高度，騰出下面欄位空間（唔改內部/JS） */
     #bigCanvas{ height:80px; }
     #beadCanvas{ height:72px; }
