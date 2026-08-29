@@ -132,25 +132,23 @@
   .cards .card:nth-child(3) {
     grid-column: 1 / -1;
     justify-self: center;
-    margin-top: 6px;
+    margin-top: 2px;
     transform-origin: center;
     transform: rotate(90deg) !important;  /* !important 防 .card.show 嘅 rotate(0) 覆蓋 */
   }
 
-  /* 第3張牌嘅角落數字：反向轉返直，保持可讀 */
+  /* 第3張牌嘅角落數字：唔反向，跟牌身一齊打橫 (用家指定) */
   .cards .card:nth-child(3) .corner.tl {
     top: 4px;
     left: 5px;
     right: auto;
     bottom: auto;
-    transform: rotate(-90deg);
   }
   .cards .card:nth-child(3) .corner.br {
     bottom: 4px;
     right: 5px;
     left: auto;
     top: auto;
-    transform: rotate(90deg);
   }
 
   /* 3D翻牌模式：第3張直接顯示牌面，唔翻轉（避免變形） */
