@@ -102,7 +102,7 @@
   .info-strip .k{opacity:.55; font-size:8px;}
   .info-strip .v{font-weight:800; color:#fff;}
   .info-strip .v.p{color:#a9d2ff;} .info-strip .v.b{color:#ffb3b3;} .info-strip .v.t{color:#8fe0ab;} .info-strip .v.c{color:#ffd45e;}
-  .dealzone{position:absolute; inset:0; z-index:10; display:grid; grid-template-columns:1fr 1fr; align-items:start; justify-items:center; gap:6px; padding:34px 8px 8px; border-radius:8px;
+  .dealzone{position:absolute; inset:0; left:-15px; z-index:10; display:grid; grid-template-columns:1fr 1fr; align-items:start; justify-items:center; gap:6px; padding:34px 8px 8px; border-radius:8px;
     background:transparent; border:none; box-shadow:none;
     opacity:0; pointer-events:none; transition:opacity .25s ease;}
   .dealzone.show{opacity:1; pointer-events:auto; z-index:20;}
@@ -687,7 +687,7 @@
     /* 下半左：路單（大路+珠盤+下三路）跨左3欄、佔 row2-4 全高 */
     .roadpanel{ grid-column:1 / 4; grid-row:3 / span 4; align-self:start; }   /* 打橫：路單頂部落一格，同右投注區(row3)頂部水平並排；容器收實貼內容高度(唔被grid拉伸留空位) */
     /* 打橫：發牌區張卡貼頂(緊貼藍色結果文字下方)，唔再跌去路單區底(直版感一致) */
-    .dealzone{ align-items:start; padding-top:34px; }  /* 橫版：卡牌貼大路標題底(路單頂部開始) */
+    .dealzone{ align-items:start; padding-top:34px; left:-15px; }  /* 橫版：卡牌貼大路標題底 + 全體向左15px */
     /* 打橫壓縮路單高度，騰出下面欄位空間（唔改內部/JS） */
     #bigCanvas{ height:80px; }
     #beadCanvas{ height:72px; }
@@ -870,7 +870,7 @@
         <button id="btnLeaderboard" title="AI 排行榜" style="align-self:flex-start;margin:0;width:69px;background:linear-gradient(90deg,#3a2d5c,#5a3d7c);color:#fff;border:none;padding:1px 6px;border-radius:6px;font-size:11px;line-height:1.2;cursor:pointer;letter-spacing:0;white-space:nowrap;">🏆 AI排行榜<div style="font-size:9px;opacity:.75;letter-spacing:0;">即時</div></button>
         <button id="btnPlayerName" title="撳呢度改你嘅名" style="align-self:flex-start;margin:0;width:69px;background:rgba(255,255,255,.08);color:#ffd479;border:1px solid rgba(255,212,121,.4);padding:4px 6px;border-radius:6px;font-size:11px;line-height:1.2;cursor:pointer;letter-spacing:0;white-space:nowrap;max-width:140px;overflow:hidden;text-overflow:ellipsis;">👤 <span id="playerNameTxt">玩家</span></button>
       </div>
-      <div class="brand-sub"><span id="shoeInfo"></span></div>
+      <div class="brand-sub"><span id="shoeInfo" style="margin-left:-15px;"></span></div>
       <div id="topBtns" class="top-btns">
         <button class="btn auto vbtn" id="btnAuto" title="自動開牌"><span class="a-label">自動</span><span class="a-state">關</span></button>
         <button class="btn auto-int-btn vnum" id="btnAutoInt"><span class="hnum">13</span><span class="vsec">秒</span></button>
@@ -886,7 +886,7 @@
   <div class="odds-row"></div>
 
   <div class="roadpanel">
-    <div class="road-header" style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;padding:4px 8px;">
+    <div class="road-header" style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;padding:4px 8px;margin-left:10px;">
       <div class="road-section-title" style="border:none;background:none;padding:0;flex:0 0 auto;">🔝 大路</div>
       <button class="dealmode-btn" id="btnDealMode" style="flex:0 0 auto;">普通開牌 ▾</button>
       <div id="followIconsHeader" class="follow-icons-header" style="flex:0 0 auto;display:flex;align-items:center;gap:3px;min-width:0;">
