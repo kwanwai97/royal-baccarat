@@ -87,6 +87,8 @@
   .alb-combo .cb-bust{color:#ff8a6a; font-weight:800;}
   .alb-combo.bust .cb-name{color:#ff8a6a;}
   .alb-combo .cb-peak{color:#ffd86b;}
+  .alb-combo.me{background:#1a1405; border:1.5px solid #ffd479; box-shadow:0 0 8px rgba(255,212,121,.3);}  /* 你本人行：金邊突顯 */
+  .alb-combo.me .cb-name{color:#ffd479;}
   .alb-rank{width:18px; text-align:center; font-weight:800; color:var(--gold2);}
   .alb-name{flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
   .alb-stat{font-size:10px; color:#9fd6ff; white-space:nowrap;}
@@ -3634,6 +3636,11 @@ document.getElementById('btnLeaderboard').addEventListener('click',()=>{
   function render(){
     const combos=loadCombos();
     const arr=Object.keys(combos).map(k=>({...combos[k], key:k}));
+    // 加入你本人（手機本地 stats）一齊排
+    const meGames=(stats.wins||0)+(stats.losses||0)+(stats.humanTie||0);
+    arr.push({ isMe:true, name:playerTag(), totalProfit:stats.totalProfit||0, games:meGames,
+      wins:stats.wins||0, losses:stats.losses||0, totalWager:stats.totalWager||0, peak:stats.peak||balance,
+      maxWin:stats.maxStreak||0, maxLose:stats.maxLoseStreak||0, bestWin:stats.winAmt||0, bust:0, age:'你' });
     arr.sort((a,b)=>{
       let av,bv;
       if(sortKey==='games'){ av=a.games||0; bv=b.games||0; }
@@ -3644,6 +3651,24 @@ document.getElementById('btnLeaderboard').addEventListener('click',()=>{
     });
     if(!arr.length){ list.innerHTML='<div class="alb-row" style="color:#7a8a7a;">尚無組合紀錄（玩幾鋪就有）</div>'; return; }
     list.innerHTML=arr.map((c,i)=>{
+      if(c.isMe){
+        const winRate = ((c.wins||0)+(c.losses||0)>0) ? Math.round((c.wins||0)/((c.wins||0)+(c.losses||0))*100)+'%' : '—';
+        return '<div class="alb-combo me">'+
+          '<div class="cb-top"><span class="cb-name">👤 '+(i+1)+'. '+c.name+'（你）</span><span class="cb-cnt">你嘅總結</span></div>'+
+          '<div class="cb-grid">'+
+            '<div>局數 <b>'+fmt(c.games)+'</b></div>'+
+            '<div>贏/輸 <b>'+fmt(c.wins)+'/'+fmt(c.losses)+'</b></div>'+
+            '<div>勝率 <b>'+winRate+'</b></div>'+
+            '<div>總投注 <b>'+fmt(c.totalWager)+'</b></div>'+
+            '<div>總盈利 <b>'+fmt(c.totalProfit)+'</b></div>'+
+            '<div class="cb-peak">最高資金 <b>'+fmt(c.peak)+'</b></div>'+
+            '<div>最多贏一次 <b>'+fmt(c.bestWin)+'</b></div>'+
+            '<div>最長連贏 <b>'+fmt(c.maxWin)+'</b></div>'+
+            '<div>最長連輸 <b>'+fmt(c.maxLose)+'</b></div>'+
+            (c.bust>0?'<span class="cb-bust">💀破產×'+c.bust+'</span>':'<span>破產 0</span>')+
+            '<div>年齡 <b>—</b></div>'+
+          '</div></div>';
+      }
       const bustCls = (c.bust||0)>0 ? ' bust' : '';
       const bustTxt = (c.bust||0)>0 ? '<span class="cb-bust">💀破產×'+c.bust+'</span>' : '<span>破產 0</span>';
       const winRate = ((c.wins||0)+(c.losses||0)>0) ? Math.round((c.wins||0)/((c.wins||0)+(c.losses||0))*100)+'%' : '—';
