@@ -122,7 +122,8 @@
     box-shadow:0 2px 6px rgba(0,0,0,.5); font-weight:800; display:flex; align-items:center; justify-content:center;
     font-size:22px; transform:translateY(-4px) rotate(-4deg); opacity:0; transition:all .3s cubic-bezier(.2,.8,.3,1.2);
     border:1px solid #ccc; }
-  .card.show{opacity:1; transform:translateY(0) rotate(0);}
+  .card.third{ transform:rotate(90deg); }  /* 賭場風格：第3隻補牌一出橫向(轉90度)疊頭兩隻中間 */
+  .card.third.stand{ transform:rotate(0deg); }  /* 撳咗順時針轉返豎直 */
   /* 第3隻補牌打橫擺喺兩張牌下方正中（賭場慣例），預留第2行格子令首兩張唔會向上跳 */
   .cards .card:nth-child(3){grid-column:1 / -1; justify-self:center; margin-top:6px; transform-origin:center;}
   .cards .card:nth-child(3).show{transform:translateY(0);}
@@ -2066,10 +2067,16 @@ async function revealThird(containerId){
 }
 function renderCards(container, cards, delay){
   container.innerHTML='';
-  cards.forEach((c,i)=>{ setTimeout(()=>{ const el=cardEl(c); container.appendChild(el); requestAnimationFrame(()=>el.classList.add('show')); sndDeal(); }, delay*i); });
+  cards.forEach((c,i)=>{ setTimeout(()=>{ const el=cardEl(c); container.appendChild(el); requestAnimationFrame(()=>el.classList.add('show')); if(i===2) markThird(el); sndDeal(); }, delay*i); });
 }
 function appendCard(containerId, c){
-  return new Promise(res=>{ setTimeout(()=>{ const el=cardEl(c); document.getElementById(containerId).appendChild(el); requestAnimationFrame(()=>el.classList.add('show')); sndDeal(); res(); },0); });
+  return new Promise(res=>{ setTimeout(()=>{ const el=cardEl(c); const box=document.getElementById(containerId); box.appendChild(el); requestAnimationFrame(()=>el.classList.add('show')); if(box.children.length===3) markThird(el); sndDeal(); res(); },0); });
+}
+function markThird(el){
+  // 賭場風格：第3隻補牌一出橫向(rotate90), 撳咗順時針轉返豎直(stand)
+  el.classList.add('third');
+  el.style.cursor='pointer';
+  el.addEventListener('click',()=>{ el.classList.toggle('stand'); });
 }
 function updateScore(who,val){ const el=document.getElementById(who+'Score'); el.textContent=val; el.classList.add('show'); }
 function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
