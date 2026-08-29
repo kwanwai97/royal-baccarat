@@ -18,6 +18,8 @@ import json, random, os, subprocess, sys, datetime
 HERE = os.path.dirname(os.path.abspath(__file__))
 JSON_PATH = os.path.join(HERE, "leaderboard.json")
 SHOE_GAMES = 60  # 一靴 60 局
+MIN_BET = 1000    # 枱底限紅（最低注）
+MAX_BET = 20000   # 枱頂限紅（最高注）：每鋪主注 + side bet 總額唔可超過咁多，永遠生效（提高到5萬都唔會爆）
 
 # ---- 標準百家樂點數 ----
 def pip(c):
@@ -131,9 +133,10 @@ def simulate_one_boot(ai):
         else:
             main = random.choice(['banker', 'player', 'player', 'banker'])
         bet = int(plan_fn(base, st_loss))
-        bet = max(100, bet)
+        bet = max(MIN_BET, bet)                       # 唔低過枱底限紅
+        bet = min(MAX_BET, bet)                       # 唔高過枱頂限紅(永遠生效)
         if balance <= bet:
-            bet = max(100, balance)   # 唔夠就 all-in（可破產）
+            bet = max(MIN_BET, min(bet, balance))     # 唔夠就 all-in（可破產），但受限紅
         # ---- 主注 ----
         staked = bet
         payout = 0
@@ -147,6 +150,8 @@ def simulate_one_boot(ai):
             elif main == 'banker': payout += bet  # 和局退莊主注本金
         # ---- 對子 side bet（固定落 10% 主注，有落先扣、命中先加）----
         side_bet = max(50, int(bet * 0.1))
+        side_bet = min(side_bet, MAX_BET - bet)       # side bet 唔可以令總注超過枱頂限紅
+        side_bet = max(50, side_bet)
         staked += side_bet
         if pPair: payout += side_bet * 12
         if bPair: payout += side_bet * 12
