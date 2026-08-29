@@ -2840,8 +2840,6 @@ function updateAiBalances(){   // 頂欄橫向捲動：你(人類)永遠第一�
   box.innerHTML=html;
   
 }
-function updateAiBalance(){ updateAiBalances(); }
-function showAiBalanceBox(){ updateAiBalances(); }
 function showStats(){
   // 統一 7 項：本金 / 資金 / 勝率 / 總投注額 / 最高金額 / 最長連贏 / 最長連輸（跟 AI 詳細卡一致）
   const humanG=(stats.wins||0)+(stats.losses||0)+(stats.humanTie||0);   // 有落注且已分勝/負/和嘅局（共 = 勝+負+和）
@@ -3518,7 +3516,6 @@ function spawnRandomAi(){
   return ai;
 }
 // 自動離枱 + 補替：AI 餘額低過最細注(連最低注都唔能夠落)就自動走，隨機補一個新 AI 入替
-function autoReplaceBrokeAis(){}  // 舊名保留兼容（唔再用）
 // 結算後：餘額不足最低注就自動離枱（補替改到洗牌時才做）
 function removeBrokeAis(){
   if(!ais.length) return 0;
