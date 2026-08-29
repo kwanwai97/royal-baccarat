@@ -6418,12 +6418,12 @@ function render(db, sortBy){
   });
   rows.sort((x,y)=>{
     if(sortBy==='profit') return y.totalProfit - x.totalProfit;
-    if(sortBy==='bankrupt') return x.bankrupt - y.bankrupt || y.totalProfit - x.totalProfit;
+    if(sortBy==='bankrupt') return (x.bankruptCount||0) - (y.bankruptCount||0) || y.totalProfit - x.totalProfit;
     if(sortBy==='winrate') return y.wr - x.wr;
     if(sortBy==='wager') return y.totalWager - x.totalWager;
     return 0;
   });
-  let html = '<table><thead><tr><th>#</th><th>名稱</th><th>性格</th><th>年齡</th><th>注碼</th><th>總投注</th><th>總盈利</th><th>破產</th><th>局數</th><th>勝率</th><th>連勝/連敗</th><th>資金曲線</th><th>勝率區間</th></tr></thead><tbody>';
+  let html = '<table><thead><tr><th>#</th><th>名稱</th><th>性格</th><th>年齡</th><th>注碼</th><th>總投注</th><th>總盈利</th><th>破產(次)</th><th>局數</th><th>勝率</th><th>連勝/連敗</th><th>資金曲線</th><th>勝率區間</th></tr></thead><tbody>';
   rows.forEach((a,i)=>{
     const pc = a.totalProfit>=0?'pos':'neg';
     const bc = a.bankrupt===0?'bank0':'bankN';
@@ -6451,7 +6451,7 @@ function render(db, sortBy){
       <td><span class="tag">${PLAN_NAME[a.plan]||a.plan}</span></td>
       <td>${a.totalWager.toLocaleString('en-US')}</td>
       <td class="${pc}">${fmt(a.totalProfit)}<br><span class="delta ${dCls}">${dTxt}</span></td>
-      <td class="${bc}">${a.bankrupt}</td>
+      <td class="${bc}">${a.bankruptCount||0}</td>
       <td>${a.games}</td>
       <td>${a.wr.toFixed(1)}%</td>
       <td><span class="streak"><span class="w">${a.maxWinStreak||0}連勝</span><br><span class="l">${Math.abs(a.maxLossStreak||0)}連敗</span></span></td>

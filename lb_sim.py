@@ -119,6 +119,7 @@ def simulate_one_boot(ai):
     losses = ai.get('losses', 0)
     games = ai.get('games', 0)
     balance = ai.get('balance', 50000)
+    bankruptCount = ai.get('bankruptCount', 0)
     totalWager = ai.get('totalWager', 0)
     totalProfit = ai.get('totalProfit', 0)
     curStreak = ai.get('streak', 0)
@@ -182,7 +183,10 @@ def simulate_one_boot(ai):
             curStreak = curStreak - 1 if curStreak < 0 else -1
             maxLoss = min(maxLoss, curStreak)
         if balance <= 0:
-            balance = 0; break  # 破產，呢靴完
+            balance = 0
+            bankruptCount += 1          # 破產次數 +1
+            balance = 50000             # 重置本金, 下一個鐘頭繼續跑(同一策略永唔變)
+            break  # 呢靴完
         history.append(int(balance))
     if len(history) > 120:
         history = history[-120:]
@@ -191,7 +195,7 @@ def simulate_one_boot(ai):
         'totalWager': int(totalWager), 'totalProfit': int(totalProfit),
         'streak': curStreak, 'maxWinStreak': maxWin, 'maxLossStreak': maxLoss,
         'balanceHistory': history, 'step': 0, 'currentBet': None,
-        'bankrupt': balance <= 0,
+        'bankrupt': balance <= 0, 'bankruptCount': bankruptCount,
     })
     return ai
 
