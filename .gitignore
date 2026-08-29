@@ -1,13 +1,7 @@
+# 測試/量度/截圖 殘留物 — 唔入 git
+_*.js
+_*.png
+_*.txt
+*.log
+__pycache__/
 node_modules/
-test_*.js
-index.html.bak
-index.html.bak.*
-index.html.bak-*
-baccarat_luxury.html.bak
-新增 文字文件.txt
-_rb_check.js
-
-# test scratch files
-_t.js
-_test_runtime.js
-.ssh_rb_key

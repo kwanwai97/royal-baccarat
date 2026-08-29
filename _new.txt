@@ -1,5 +1,0 @@
-根因+修法+驗證（puppeteer 睇 ▲/↑ 出齊）全喺 `references/server-lb-rank-asset-delta-fix-2026-08-29.md`，唔好再從頭查。
-
-🔁 **玩家名稱功能（localStorage `bac_player_name` + `playerTag()` 同步）**：用家要「改自己個名」＋喺多處顯示（左上角掣 `playerNameTxt`、右上角餘額上方 `balanceName`、陪玩資金區第一格 `.aib.human small`、投注格標籤 `updateBetDisplay` 入面 `.pc .tag`）。做法＝addEventListener 彈 input 框改 → 寫 `localStorage["bac_player_name"]` → `renderName()` 同步所有顯示點；加全域 `function playerTag(){ try{const n=localStorage.getItem("bac_player_name"); return n&&n.trim()?n.trim():"你";}catch(e){return "你";} }`，UI 四處 call `playerTag()`（冇名回退「你」）。關鍵：改名後**所有顯示點即時同步**，唔好各自 hardcode「你」。完整實作見 `references/player-name-localStorage-sync-2026-08-29.md`。
-
-🔁 **leaderboard.html 手機窄屏爆框（overflow-x）**：直版 412px 下成個 `<table>` 寬 567px > 視口 → 要左右掹、最右「勝率區間」被切走。修法＝①`table{table-layout:fixed;width:100%}` 強制等於視口；②`@media (max-width:560px){ th:nth-child(12),td:nth-child(12),th:nth-child(13),td:nth-child(13){display:none} }` 手機隱藏「資金曲線」「勝率區間」兩輔助欄；③`font-size` 縮到 10.5px、`padding` 減。驗證用 puppeteer 量 `document.documentElement.scrollWidth <= innerWidth`（overflowX:false）。完整 recipe 見 `references/leaderboard-html-narrow-overflow-2026-08-29.md`。
