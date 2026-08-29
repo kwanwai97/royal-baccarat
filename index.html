@@ -860,6 +860,7 @@
       <div class="lb-stack" style="display:flex; flex-direction:column; gap:3px; align-items:flex-start;">
         <button id="btnServerLb" title="伺服榜（連 server 版）" style="align-self:flex-start;margin:0;background:linear-gradient(90deg,#2d5c4a,#3d7c5a);color:#fff;border:none;padding:2px 6px;border-radius:6px;font-size:11px;line-height:1.2;cursor:pointer;letter-spacing:0;white-space:nowrap;">🖥️ 伺服榜<span class="srv-sub" style="font-size:9px;opacity:.75;letter-spacing:0;"> server 版</span></button>
         <button id="btnLeaderboard" title="AI 排行榜" style="align-self:flex-start;margin:0;background:linear-gradient(90deg,#3a2d5c,#5a3d7c);color:#fff;border:none;padding:2px 6px;border-radius:6px;font-size:11px;line-height:1.2;cursor:pointer;letter-spacing:0;white-space:nowrap;">🏆 AI排行榜<div style="font-size:9px;opacity:.75;letter-spacing:0;">即時</div></button>
+        <button id="btnPlayerName" title="撳呢度改你嘅名" style="align-self:flex-start;margin:0;background:rgba(255,255,255,.08);color:#ffd479;border:1px solid rgba(255,212,121,.4);padding:2px 6px;border-radius:6px;font-size:11px;line-height:1.2;cursor:pointer;letter-spacing:0;white-space:nowrap;max-width:140px;overflow:hidden;text-overflow:ellipsis;">👤 <span id="playerNameTxt">玩家</span></button>
       </div>
       <div class="brand-sub"><span id="shoeInfo"></span></div>
       <div id="topBtns" class="top-btns">
@@ -3567,6 +3568,50 @@ document.getElementById('btnLlm').addEventListener('click',()=>{
   if(LLM_CHAT){ showToast('🧠 AI腦開啟（本地 Ollama 即時聊天；手機要同 PC 同一 WiFi）'); }
   else { showToast('🧠 AI腦關閉（用返預製句）'); }
 });
+// 玩家名稱：localStorage 儲存，撳名彈輸入框改
+(function(){
+  const KEY='bac_player_name';
+  const txt=document.getElementById('playerNameTxt');
+  const btn=document.getElementById('btnPlayerName');
+  function loadName(){ return localStorage.getItem(KEY) || '玩家'; }
+  function renderName(){ txt.textContent = loadName(); }
+  renderName();
+  btn.addEventListener('click',()=>{
+    const cur=loadName();
+    const box=document.createElement('div');
+    box.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;z-index:9999;';
+    const card=document.createElement('div');
+    card.style.cssText='background:#1d1530;border:1px solid #ffd479;border-radius:12px;padding:16px;width:80%;max-width:280px;color:#fff;font-family:inherit;';
+    card.innerHTML='<div style="font-size:14px;font-weight:800;margin-bottom:10px;color:#ffd479;">改你嘅名稱</div>';
+    const inp=document.createElement('input');
+    inp.value=cur==='玩家'?'':cur;
+    inp.placeholder='填你嘅名（例如：阿強）';
+    inp.maxLength=12;
+    inp.style.cssText='width:100%;box-sizing:border-box;padding:8px;border-radius:8px;border:1px solid #555;background:#0f0a1c;color:#fff;font-size:14px;';
+    card.appendChild(inp);
+    const row=document.createElement('div');
+    row.style.cssText='display:flex;gap:8px;margin-top:12px;';
+    const ok=document.createElement('button');
+    ok.textContent='確定';
+    ok.style.cssText='flex:1;padding:8px;border:none;border-radius:8px;background:#3a7c5a;color:#fff;font-size:14px;font-weight:700;cursor:pointer;';
+    const cancel=document.createElement('button');
+    cancel.textContent='取消';
+    cancel.style.cssText='flex:1;padding:8px;border:none;border-radius:8px;background:#444;color:#fff;font-size:14px;cursor:pointer;';
+    row.appendChild(ok); row.appendChild(cancel);
+    card.appendChild(row);
+    box.appendChild(card);
+    document.body.appendChild(box);
+    setTimeout(()=>inp.focus(),50);
+    function close(){ if(box.parentNode) box.parentNode.removeChild(box); }
+    ok.addEventListener('click',()=>{
+      const v=inp.value.trim();
+      if(v){ localStorage.setItem(KEY,v); renderName(); showToast('✅ 名稱已改為「'+v+'」'); }
+      close();
+    });
+    cancel.addEventListener('click',close);
+    box.addEventListener('click',e=>{ if(e.target===box) close(); });
+  });
+})();
 document.getElementById('btnLeaderboard').addEventListener('click',()=>{
   // AI 組合排行榜：讀 localStorage 嘅 bac_ai_combos，按指標排序（累積，唔清）
   const panel=document.getElementById('aiLbPanel');
