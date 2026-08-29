@@ -1,1 +1,0 @@
-根因+修法+驗證（puppeteer 睇 ▲/↑ 出齊）全喺 `references/server-lb-rank-asset-delta-fix-2026-08-29.md`，唔好再從頭查。
