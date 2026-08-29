@@ -208,6 +208,11 @@ def main():
     if not roster:
         print('roster 空', file=sys.stderr); return 1
     now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M')
+    # 存上一鐘排名/盈利，供 leaderboard.html 顯示升跌（prevRank/prevProfit）
+    sorted_old = sorted(roster, key=lambda x: x.get('totalProfit', 0), reverse=True)
+    for idx, ai in enumerate(sorted_old):
+        ai['prevRank'] = idx + 1
+        ai['prevProfit'] = ai.get('totalProfit', 0)
     for ai in roster:
         simulate_one_boot(ai)
     db['roster'] = roster
