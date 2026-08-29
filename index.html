@@ -150,9 +150,6 @@
     left: auto;
     top: auto;
   }
-  /* 問題2修：第3隻牌 .cf 翻牌被禁(.f3d .cf{transform:none}) 令 show-num 唔會觸發 → 數字永唔顯。
-     直接令第3隻牌 show 後角落數字顯示(同上面兩隻翻牌後一樣樣) */
-  .cards .card:nth-child(3).show .corner{opacity:1; transition:opacity .25s ease;}
 
   /* 3D翻牌模式：第3張直接顯示牌面，唔翻轉（避免變形） */
   .cards .card:nth-child(3).f3d .cf {
@@ -2035,8 +2032,17 @@ function cardEl(card){
   d.className='card f3d '+(sq?'sq '+dir+' ':'')+(red?'red':'black');
   d.innerHTML='<div class="cf"><div class="face">'+inner+'</div><div class="back"></div></div>';
   if(!sq){ 
-    setTimeout(()=>d.classList.add('flip'), 800);
-    // 3D模式：翻牌transition完成後顯示數字
+    setTimeout(()=>{
+      d.classList.add('flip');
+      // 第3隻牌 .cf 翻牌被 CSS 禁(.f3d .cf{transform:none}) → transitionend 唔會 fire，改用手動計時器
+      const parent = d.parentElement;
+      const isThird = parent && parent.classList.contains('cards') && d === parent.children[parent.children.length-1];
+      if(isThird){
+        // 等「開牌完成」(同上面兩隻 flip 後時機 ~300ms) 先顯數字：先隱藏後顯示
+        setTimeout(()=>d.classList.add('show-num'), 300);
+      }
+    }, 800);
+    // 3D模式：非第3隻牌靠翻牌transition完成後顯示數字（第3隻牌無翻牌動畫，由上面計時器補）
     const cf=d.querySelector('.cf');
     cf.addEventListener('transitionend',function handler(e){
       if(e.propertyName==='transform'){ cf.removeEventListener('transitionend',handler); d.classList.add('show-num'); }
