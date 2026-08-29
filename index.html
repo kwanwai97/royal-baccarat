@@ -1516,7 +1516,7 @@ function updateBetDisplay(){
     const stack=document.querySelector('.chips-stack[data-stack="'+k+'"]');
     if(!stack) continue;
     let html='';
-    const h=bets[k]; if(h>0) html+='<div class="pc"><span class="tag">你</span><span class="v h">'+fmtK(h)+'</span></div>';
+    const h=bets[k]; if(h>0) html+='<div class="pc"><span class="tag">'+playerTag()+'</span><span class="v h">'+fmtK(h)+'</span></div>';
     for(let i=0;i<ais.length;i++){
       const a=ais[i].currentBet;
       if(a){
@@ -2831,7 +2831,7 @@ function updateAiBalances(){   // 頂欄橫向捲動：你(人類)永遠第一�
   let hotId=null, best=-1;
   ais.forEach(ai=>{ if(ai && ai.currentBet && ai.balance>0 && (ai.winStreak||0)>best){ best=ai.winStreak||0; hotId=ai.id; } });
   // 你 永遠第一格；格式同AI完全一樣(icon+名+餘額) 確保4格對稱
-  let html='<div class="aib human"><small>👤 你</small><b>'+fmt(balance)+'</b></div>';
+  let html='<div class="aib human"><small>👤 '+playerTag()+'</small><b>'+fmt(balance)+'</b></div>';
   ais.forEach(ai=>{
     const isHot = ai.id===hotId;
     const em=ai.emotion||50;
@@ -3569,6 +3569,11 @@ document.getElementById('btnLlm').addEventListener('click',()=>{
   if(LLM_CHAT){ showToast('🧠 AI腦開啟（本地 Ollama 即時聊天；手機要同 PC 同一 WiFi）'); }
   else { showToast('🧠 AI腦關閉（用返預製句）'); }
 });
+// 玩家顯示名（陪玩資金區/投注格用）：冇改名就顯「你」，改咗就顯名
+function playerTag(){
+  try{ const n=localStorage.getItem('bac_player_name'); return n && n.trim() ? n.trim() : '你'; }
+  catch(e){ return '你'; }
+}
 // 玩家名稱：localStorage 儲存，撳名彈輸入框改
 (function(){
   const KEY='bac_player_name';
