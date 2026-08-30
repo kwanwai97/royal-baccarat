@@ -138,6 +138,13 @@
   .cards .card:nth-child(3) .corner.tl{top:4px; left:5px; right:auto; bottom:auto;}
   .cards .card:nth-child(3) .corner.br{bottom:4px; right:5px; left:auto; top:auto;}
   .cards .card:nth-child(3).show-num .corner{opacity:1;}
+  /* 第3隻補牌橫置：用 .horizontal class（唔靠純 nth-child rotate，方便 JS 控制） */
+  .cards .card:nth-child(3).horizontal{transform:rotate(90deg); width:72px; height:52px; margin:3px auto 0;}
+  .cards .card:nth-child(3).horizontal.show{transform:rotate(90deg);}
+  /* 橫置牌：牌面(.cf>.face)反向 rotate 令點數/牌面企直可讀；角落數字反向 rotate 企直（6 唔會變 9） */
+  .card.horizontal .cf .face{transform:rotate(-90deg);}
+  .card.horizontal .corner.tl{transform:rotate(-90deg); left:5px; top:4px;}
+  .card.horizontal .corner.br{transform:rotate(90deg); right:5px; bottom:4px;}
   .card .corner{position:absolute; font-size:13px; line-height:1; font-weight:800; opacity:0; transition:opacity .25s ease;}
   .card .mid{display:none;}
   .card.show-num .corner{opacity:1;}
@@ -2042,7 +2049,8 @@ function sqManualOpen(el, sec){
     const dx=(dz.left+dz.width/2)-(cr.left+cr.width/2);
     const dy=(dz.top+dz.height/2)-(cr.top+cr.height/2);
     el.style.zIndex='9'; el.style.transition='transform .35s cubic-bezier(.3,.8,.3,1)';
-    el.style.transform='translate('+dx+'px,'+dy+'px) scale(2.2)';
+    const p3=el.parentElement; const isThird2 = p3 && p3.classList.contains('cards') && el===p3.children[p3.children.length-1];
+    el.style.transform='translate('+dx+'px,'+dy+'px) scale(2.2)'+(isThird2?' rotate(90deg)':'');
     let left=sec, finished=false, drag=null, prog=0, dir='u';
     sqTimerShow(left);
     const iv=setInterval(()=>{ left--; sqTimerShow(left); if(left<=0) finish(true); },1000);
@@ -2088,7 +2096,10 @@ function renderCards(container, cards, delay){
   cards.forEach((c,i)=>{ setTimeout(()=>{ const el=cardEl(c); container.appendChild(el); requestAnimationFrame(()=>el.classList.add('show')); sndDeal(); }, delay*i); });
 }
 function appendCard(containerId, c){
-  return new Promise(res=>{ setTimeout(()=>{ const el=cardEl(c); document.getElementById(containerId).appendChild(el); requestAnimationFrame(()=>el.classList.add('show')); sndDeal(); res(); },0); });
+  return new Promise(res=>{ setTimeout(()=>{ const el=cardEl(c); const pp=document.getElementById(containerId); pp.appendChild(el);
+    // 第3隻牌(補牌)橫置：等佢入咗 .cards 容器、確認係第3隻先加 .horizontal，避免首2隻被誤判
+    if(pp.classList.contains('cards') && pp.children.length>=3 && el===pp.children[pp.children.length-1]) el.classList.add('horizontal');
+    requestAnimationFrame(()=>el.classList.add('show')); sndDeal(); res(); },0); });
 }
 function updateScore(who,val){ const el=document.getElementById(who+'Score'); el.textContent=val; el.classList.add('show'); }
 function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
