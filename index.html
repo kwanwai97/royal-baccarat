@@ -225,7 +225,9 @@
     0%{clip-path:inset(0 0 0 0);} 28%{clip-path:inset(0 32% 0 0);} 42%{clip-path:inset(0 24% 0 0);}
     66%{clip-path:inset(0 68% 0 0);} 78%{clip-path:inset(0 58% 0 0);} 100%{clip-path:inset(0 101% 0 0);} }
   /* 手動搣牌：倒數（底部）+ 放大中的牌 */
-  .sq-timer{position:absolute; bottom:2px; left:50%; transform:translateX(-50%); z-index:7;
+  .sq-timer{position:absolute; bottom:2px; left:50%; transform:translateX(-50%); z-index:7;}
+  /* 捽牌等待點擊期間：令待命牌接收 click（張牌本身 pointer-events:none，且路單 canvas 會擋住） */
+  .card.sq-wait{ pointer-events:auto !important; position:relative; z-index:30; cursor:pointer; }
     color:#2faf5a; font-weight:800; font-size:17px; text-shadow:0 0 6px rgba(0,0,0,.8); pointer-events:none;}
   .card.f3d.sq{cursor:pointer;}
   .card.f3d .face,.card.f3d .back{position:absolute; inset:0; backface-visibility:hidden; -webkit-backface-visibility:hidden; border-radius:4px; border:1px solid #ccc;
@@ -2071,9 +2073,9 @@ function sqWaitClick(cards, sec){
     let left=sec, done=false;
     sqTimerShow(left);
     const h=e=>{ if(done)return; done=true; cleanup(); res(e.currentTarget); };
-    cards.forEach(c=>c.addEventListener('click',h));
+    cards.forEach(c=>{ c.classList.add('sq-wait'); c.addEventListener('click',h); });
     const iv=setInterval(()=>{ left--; sqTimerShow(left); if(left<=0 && !done){ done=true; cleanup(); res(null); } },1000);
-    function cleanup(){ clearInterval(iv); sqTimerShow(0); cards.forEach(c=>c.removeEventListener('click',h)); }
+    function cleanup(){ clearInterval(iv); sqTimerShow(0); cards.forEach(c=>{ c.classList.remove('sq-wait'); c.removeEventListener('click',h); }); }
   });
 }
 /* 自動開一張（用原有隨機方向掀開動畫） */
