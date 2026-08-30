@@ -129,9 +129,7 @@
     border:1px solid #ccc; }
   .card.show{opacity:1; transform:translateY(0) rotate(0);}
   /* 第3隻補牌打橫擺喺兩張牌下方正中（賭場慣例），預留第2行格子令首兩張唔會向上跳 */
-  .cards .card:nth-child(3){grid-column:1 / -1; justify-self:center; margin-top:6px; transform-origin:center; transform:rotate(90deg) !important;}
-  /* 第3隻牌打橫：禁 .cf 翻牌動畫避免牌面變形(否則 rotate(90) 疊翻牌會歪) */
-  .cards .card:nth-child(3).f3d .cf{transform:none !important;}
+  .cards .card:nth-child(3){grid-column:1 / -1; justify-self:center; margin-top:6px; transform-origin:center;}
   .cards .card:nth-child(3).show{transform:translateY(0);}
   /* 第3隻牌打橫：取消中間大點數；角落數字隨牌身90°旋轉變垂直（同1、2隻一樣只顯數字rank） */
   .cards .card:nth-child(3) .mid{display:none;}
@@ -2000,13 +1998,7 @@ function cardEl(card){
     const back=d.querySelector('.back');
     const sqShowNum=()=>{ d.classList.add('show-num'); };
     back.addEventListener('animationend', sqShowNum, {once:true});          // 自動全開 ● animationend
-    // 第3隻牌打橫：.cf 翻牌被 CSS 禁(transform:none !important) → transitionend 唔 fire → 數字唔顯
-    // 用手動計時器補 show-num(等翻牌時機 ~800ms 先顯, 同首輪牌一致; 張牌此時已 append 入 DOM 故 isThird 準確)
-    setTimeout(()=>{
-      const pp=d.parentElement;
-      const isThird = pp && pp.classList.contains('cards') && d===pp.children[pp.children.length-1];
-      if(isThird) d.classList.add('show-num');
-    }, 800);
+    // ⚠ 取消舊有過早顯示：人手拖動中途 / 手指離開牌彈返合埋(clip 回 0) / 牌一出現(opacity) 都唔准顯示數字
   }
   return d;
 }
@@ -2050,8 +2042,7 @@ function sqManualOpen(el, sec){
     const dx=(dz.left+dz.width/2)-(cr.left+cr.width/2);
     const dy=(dz.top+dz.height/2)-(cr.top+cr.height/2);
     el.style.zIndex='9'; el.style.transition='transform .35s cubic-bezier(.3,.8,.3,1)';
-    const p3=el.parentElement; const isThird2 = p3 && p3.classList.contains('cards') && el===p3.children[p3.children.length-1];
-    el.style.transform='translate('+dx+'px,'+dy+'px) scale(2.2)'+(isThird2?' rotate(90deg)':'');
+    el.style.transform='translate('+dx+'px,'+dy+'px) scale(2.2)';
     let left=sec, finished=false, drag=null, prog=0, dir='u';
     sqTimerShow(left);
     const iv=setInterval(()=>{ left--; sqTimerShow(left); if(left<=0) finish(true); },1000);
