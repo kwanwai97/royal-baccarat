@@ -2093,7 +2093,10 @@ function sqManualOpen(el, sec){
     const dx=(dz.left+dz.width/2)-(cr.left+cr.width/2);
     const dy=(dz.top+dz.height/2)-(cr.top+cr.height/2);
     el.style.zIndex='9'; el.style.transition='transform .35s cubic-bezier(.3,.8,.3,1)';
-    el.style.transform='translate('+dx+'px,'+dy+'px) scale(2.2)';
+    // 第3隻補牌(打橫 rotate90)升起放大時要保留打橫：inline transform 會覆蓋 CSS !important，故手動補 rotate(90deg)
+    const p = el.parentElement;
+    const isThird = p && p.classList.contains('cards') && el === p.children[p.children.length-1];
+    el.style.transform='translate('+dx+'px,'+dy+'px) scale(2.2)'+(isThird?' rotate(90deg)':'');
     let left=sec, finished=false, drag=null, prog=0, dir='u';
     sqTimerShow(left);
     const iv=setInterval(()=>{ left--; sqTimerShow(left); if(left<=0) finish(true); },1000);
