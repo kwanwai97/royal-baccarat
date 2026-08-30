@@ -128,63 +128,16 @@
     font-size:22px; transform:translateY(-4px) rotate(-4deg); opacity:0; transition:all .3s cubic-bezier(.2,.8,.3,1.2);
     border:1px solid #ccc; }
   .card.show{opacity:1; transform:translateY(0) rotate(0);}
-  /* 第3張牌：打橫放，旋轉90度 (用家指定) — 牌本嚟52x72, rotate(90)後視覺72x52打橫 */
-  .cards .card:nth-child(3) {
-    grid-column: 1 / -1;
-    justify-self: center;
-    margin-top: 2px;
-    transform-origin: center;
-    transform: rotate(90deg) !important;  /* !important 防 .card.show 嘅 rotate(0) 覆蓋 */
-  }
-
-  /* 第3張牌嘅角落數字：唔反向，跟牌身一齊打橫 (用家指定) */
-  .cards .card:nth-child(3) .corner.tl {
-    top: 4px;
-    left: 5px;
-    right: auto;
-    bottom: auto;
-  }
-  .cards .card:nth-child(3) .corner.br {
-    bottom: 4px;
-    right: 5px;
-    left: auto;
-    top: auto;
-  }
-
-  /* 3D翻牌模式：第3張直接顯示牌面，唔翻轉（避免變形） */
-  .cards .card:nth-child(3).f3d .cf {
-    transform: none !important;
-    transition: none !important;
-  }
-  .cards .card:nth-child(3).f3d .back {
-    display: none;
-  }
-  .cards .card:nth-child(3).f3d .face {
-    backface-visibility: visible;
-  }
-  .cards .card:nth-child(3).f3d .cf .face {
-    transform: none;
-  }
-
-  /* 搣牌模式：第3張保持打橫，揭開方向自動適應 */
-  .cards .card:nth-child(3).f3d.sq .cf {
-    transform: none !important;
-    transition: none !important;
-  }
-  .cards .card:nth-child(3).f3d.sq .back {
-    display: block;
-    clip-path: inset(0 0 0 0);
-  }
-  .cards .card:nth-child(3).f3d.sq.flip .back {
-    animation-duration: 2.4s;
-    animation-timing-function: cubic-bezier(.45,.05,.35,1);
-    animation-fill-mode: forwards;
-  }
-  .cards .card:nth-child(3).f3d.sq.d0.flip .back { animation-name: sqUp; }
-  .cards .card:nth-child(3).f3d.sq.d1.flip .back { animation-name: sqDown; }
-  .cards .card:nth-child(3).f3d.sq.d2.flip .back { animation-name: sqLeft; }
-  .cards .card:nth-child(3).f3d.sq.d3.flip .back { animation-name: sqRight; }
-
+  /* 第3隻補牌打橫擺喺兩張牌下方正中（賭場慣例），預留第2行格子令首兩張唔會向上跳 */
+  .cards .card:nth-child(3){grid-column:1 / -1; justify-self:center; margin-top:6px; transform-origin:center;}
+  .cards .card:nth-child(3).show{transform:translateY(0);}
+  /* 第3隻牌打橫：取消中間大點數；角落數字隨牌身90°旋轉變垂直（同1、2隻一樣只顯數字rank） */
+  .cards .card:nth-child(3) .mid{display:none;}
+  /* 第3隻牌打橫：牌身 rotate(90deg) 令整張橫置；角落數字反向 rotate(-90deg) 抵消牌身旋轉 → 數字保持企直可讀（6 唔會變 9）。
+     牌身 +90° 後 TL 角去到可視右上、BR 角去到可視左下，兩隻數字都反向轉 -90° 企返直。 */
+  .cards .card:nth-child(3) .corner.tl{top:4px; left:5px; right:auto; bottom:auto;}
+  .cards .card:nth-child(3) .corner.br{bottom:4px; right:5px; left:auto; top:auto;}
+  .cards .card:nth-child(3).show-num .corner{opacity:1;}
   .card .corner{position:absolute; font-size:13px; line-height:1; font-weight:800; opacity:0; transition:opacity .25s ease;}
   .card .mid{display:none;}
   .card.show-num .corner{opacity:1;}
