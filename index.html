@@ -113,7 +113,7 @@
   .hand.banker .hand-row{justify-content:center;}
   .hand-row.reverse{flex-direction:row-reverse;}
   .hand .label{display:block; font-weight:700; font-size:10px; letter-spacing:.5px; color:var(--gold2); opacity:.85; white-space:nowrap;}
-  /* 結果點數：黃色數字，每側卡牌右邊 */
+ /* 結果點數：黃色數字，每側卡牌右邊 */
   #playerScore,#bankerScore{font-size:23px; font-weight:900; color:var(--gold2); text-shadow:0 0 10px #000,0 2px 5px #000; z-index:21; pointer-events:none; transition:color .3s, opacity .35s ease; line-height:1; align-self:center; margin-left:0; margin-right:0; transform:translateY(-30px); opacity:0;}
   #playerScore.show,#bankerScore.show{opacity:1;}
   #bankerScore{margin-left:0; margin-right:0;}
@@ -131,13 +131,37 @@
   /* 第3隻補牌打橫擺喺兩張牌下方正中（賭場慣例），預留第2行格子令首兩張唔會向上跳 */
   .cards .card:nth-child(3){grid-column:1 / -1; justify-self:center; margin-top:6px; transform-origin:center;}
   .cards .card:nth-child(3).show{transform:translateY(0);}
-  /* 第3隻牌打橫：取消中間大點數；角落數字隨牌身90°旋轉變垂直（同1、2隻一樣只顯數字rank） */
+  /* 第3隻牌打橫：取消中間大點數 */
   .cards .card:nth-child(3) .mid{display:none;}
-  /* 第3隻牌打橫：牌身 rotate(90deg) 令整張橫置；角落數字反向 rotate(-90deg) 抵消牌身旋轉 → 數字保持企直可讀（6 唔會變 9）。
-     牌身 +90° 後 TL 角去到可視右上、BR 角去到可視左下，兩隻數字都反向轉 -90° 企返直。 */
-  .cards .card:nth-child(3) .corner.tl{top:4px; left:5px; right:auto; bottom:auto;}
-  .cards .card:nth-child(3) .corner.br{bottom:4px; right:5px; left:auto; top:auto;}
+
+  /* **************** 新增大改動 **************** */
+  /* 第三張牌嘅 .face 同 .back 本身唔旋轉，改為旋轉內部嘅 .pips 同 .courtbox */
+  .cards .card:nth-child(3) .face,
+  .cards .card:nth-child(3) .back {
+    transform: none;   /* 取消之前嘅旋轉 */
+  }
+  /* 將 .pips 旋轉 90 度，同時修正位置，令佢喺牌面中間 */
+  .cards .card:nth-child(3) .pips {
+    transform: rotate(90deg);
+    inset: 8px 6px;    /* 調整邊距，令點數置中 */
+  }
+  /* 將 .courtbox 都旋轉 90 度，並調整邊距 */
+  .cards .card:nth-child(3) .courtbox {
+    transform: rotate(90deg);
+    inset: 8px 9px;
+  }
+  /* 第三張牌嘅角落數字：本身已由 .corner.tl / .br 設定咗反旋，呢度唔使改 */
+  .cards .card:nth-child(3) .corner.tl{top:4px; left:5px; right:auto; bottom:auto; transform:rotate(-90deg);}
+  .cards .card:nth-child(3) .corner.br{bottom:4px; right:5px; left:auto; top:auto; transform:rotate(90deg);}
   .cards .card:nth-child(3).show-num .corner{opacity:1;}
+
+  /* 寬高互換，令牌顯示為橫向（之前已設） */
+  .cards .card:nth-child(3) {
+    width: 72px;
+    height: 52px;
+    margin-top: 6px;
+  }
+
   .card .corner{position:absolute; font-size:13px; line-height:1; font-weight:800; opacity:0; transition:opacity .25s ease;}
   .card .mid{display:none;}
   .card.show-num .corner{opacity:1;}
