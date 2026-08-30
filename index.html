@@ -740,13 +740,14 @@
     .brand-sub{ font-size:10px; }
     .brand-sub #shoeInfo{ font-size:12px; }
     .brand-sub{ text-align:left; }   /* 橫版：剩餘卡牌N數由最左邊開始 */
+    .brand{ transform:translateX(150px); }  /* 橫版：成個頂部(名稱+伺服榜+AI榜)向右150px */
     /* 橫版：自動+13秒掣(放籌碼區最左)，同其他四掣一樣高(33px)、闊度收細；全部掣左右緊貼零空隙 */
     .auto-btns{ display:flex; flex-direction:row; gap:0; margin:0; align-items:center; order:0; flex:0 0 auto; }
     .auto-btns .btn{ writing-mode:horizontal-tb; display:inline-flex; align-items:center; justify-content:center; width:35px; height:33px; padding:0; min-width:35px; max-width:35px; font-size:12px; margin:0; line-height:1; box-sizing:border-box; }
     .auto-btns #btnAuto{ flex-direction:column; gap:1px; }
     .auto-btns #btnAuto .a-label{ writing-mode:horizontal-tb; font-size:11px; font-weight:800; line-height:1; }
     .auto-btns #btnAuto .a-state{ writing-mode:horizontal-tb; font-size:11px; font-weight:800; line-height:1; }
-    .topright{ grid-column:auto; grid-row:auto; position:absolute; left:50%; transform:translateX(-50%); top:0; z-index:31; display:flex; flex-direction:column; align-items:center; gap:3px; min-width:0; overflow:visible; padding:4px 10px; margin-left:0; margin-top:0; }  /* 橫版：資金區置中系統正中間(跟直版) */
+    .topright{ grid-column:auto; grid-row:auto; position:absolute; left:50%; transform:translateX(calc(-50% + 150px)); top:0; z-index:31; display:flex; flex-direction:column; align-items:center; gap:3px; min-width:0; overflow:visible; padding:4px 10px; margin-left:0; margin-top:0; }  /* 橫版：資金區置中系統正中間(跟直版)再向右150px */
     .topright .balance{ font-size:15px; text-align:center; width:fit-content; align-self:flex-end; }  /* 橫版: 名+餘額+金額垂直置中靠右, 名/餘額對齊金額正中 */
     .topright .balance b{ font-size:21px; }
     .topright #balanceName{ max-width:none; text-align:center; }  /* 橫版名稱置中對齊金額正中 */
