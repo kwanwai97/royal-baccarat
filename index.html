@@ -2062,9 +2062,14 @@ function sqWaitClick(cards, sec){
     let left=sec, done=false;
     sqTimerShow(left);
     const h=e=>{ if(done)return; done=true; cleanup(); res(e.currentTarget); };
-    cards.forEach(c=>c.addEventListener('click',h));
+    // 等待期間：張牌本身 pointer-events:none 且路單 canvas 會蓋住牌中心 → inline 強設令接收得到 click
+    cards.forEach(c=>{ c.style.position='relative'; c.style.zIndex='9999'; c.style.pointerEvents='auto'; c.addEventListener('click',h); });
+    document.querySelectorAll('.roadpanel canvas').forEach(cv=>{ cv.dataset.sqPe=(cv.dataset.sqPe||cv.style.pointerEvents); cv.style.pointerEvents='none'; });
     const iv=setInterval(()=>{ left--; sqTimerShow(left); if(left<=0 && !done){ done=true; cleanup(); res(null); } },1000);
-    function cleanup(){ clearInterval(iv); sqTimerShow(0); cards.forEach(c=>c.removeEventListener('click',h)); }
+    function cleanup(){ clearInterval(iv); sqTimerShow(0);
+      cards.forEach(c=>{ c.style.position=''; c.style.zIndex=''; c.style.pointerEvents=''; c.removeEventListener('click',h); });
+      document.querySelectorAll('.roadpanel canvas').forEach(cv=>{ cv.style.pointerEvents=cv.dataset.sqPe||''; delete cv.dataset.sqPe; });
+    }
   });
 }
 /* 自動開一張（用原有隨機方向掀開動畫） */
