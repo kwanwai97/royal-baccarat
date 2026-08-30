@@ -1752,6 +1752,17 @@ async function genAiLineLLM(ai, ctx, prev){
   }
   return null;  // 全部失敗 → caller fallback 預製句
 }
+// AI 對話去重機制：60局內不重複（冷靜期）
+// usedPhrasesGlobal: 今靴用過嘅 AI 句子（跨 AI 全局共享）
+// phraseCounter: 計數器，每 60 局重置一次
+let usedPhrasesGlobal = [];   // 儲存今靴用過嘅句子
+let phraseCounter = 0;        // 計局數
+function phraseUsed(msg){ return usedPhrasesGlobal.indexOf(msg) >= 0; }
+function phraseAdd(msg){
+  usedPhrasesGlobal.push(msg);
+  if(usedPhrasesGlobal.length > 200) usedPhrasesGlobal.shift();  // 防止太大
+}
+function phraseReset(){ usedPhrasesGlobal = []; phraseCounter = 0; }
 
 function genFunnyLine(ai, ctx) {
   const p = AI_PERSONAS[ai.persona];
@@ -1930,9 +1941,25 @@ async function tableChatPhase(sec) {
         if (Date.now() - t0 > CHAT_BUDGET_MS) break;   // 預算用完就收聲，唔硬出4句
         const ai = speakers[i];
         let msg = null;
-        if(LLM_CHAT){ msg = await genAiLineLLM(ai, ctx, prev); }   // 🧠 LLM 即時生成（call 唔到會 null）
-        if(!msg){ msg = genChatLine(ai, ai._prePick, ctx, prev, usedThisRound); }  // fallback 預製句
+        if(LLM_CHAT){
+          let llmAttempts = 0;
+          do {
+            msg = await genAiLineLLM(ai, ctx, prev);
+            llmAttempts++;
+            if (!msg) break;  // LLM 失敗 → 跳出嘗試 fallback
+          } while (llmAttempts < 3 && phraseUsed(msg));
+          if (!msg || phraseUsed(msg)) msg = null;  // 用完就清，讓 fallback 預製句接手
+        }
+        if(!msg){
+          let fbAttempts = 0;
+          do {
+            msg = genChatLine(ai, ai._prePick, ctx, prev, usedThisRound);
+            fbAttempts++;
+          } while (fbAttempts < 3 && phraseUsed(msg));
+        }
         if (!msg) { prev = ai; continue; }
+        if (phraseUsed(msg)) phraseAdd(msg);  // 已經存在就補充（避免永遠重試）
+        phraseAdd(msg);
         addChatBubble(ai, msg);
         if (!mute) {
             await speak(ai.name + '：' + msg);   // 原版 speak，唔收 ms，保語音安全
@@ -2095,6 +2122,8 @@ function showMsg(txt,color){ const m=document.getElementById('centerMsg'); m.tex
 async function deal(auto){
   if(dealing) return;                 // 已經開緊牌就唔再開（防止重複發牌）
   dealing=true;                       // 即時上鎖：doShuffle / 緩衝期間任何並發呼叫都擋到
+  phraseCounter++;                    // 每局開始計一次
+  if(phraseCounter >= 60){ phraseReset(); }  // 60局重置，冷靜期結束
   try{
   let total=0; for(const x in bets) total+=bets[x];
   // 只有在「無下注、非自動、無 AI」且「預測系統沒有建議」時才阻擋
@@ -3196,6 +3225,7 @@ function resetFollowStats(){
   showToast('🧹 跟注統計已重置');
 }
 async function doShuffle(){
+  phraseReset();  // 洗牌 = 新靴，重置 AI 對話去重池 + 計數器
   const ov=document.getElementById('shuffleOverlay');
   if(ov){ ov.querySelector('.title').textContent='🔀 洗牌中…'; ov.classList.add('show'); }
   resetShoe(); resetRoads(); drawAllRoads();
