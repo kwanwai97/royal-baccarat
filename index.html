@@ -128,7 +128,17 @@
     font-size:22px; transform:translateY(-4px) rotate(-4deg); opacity:0; transition:all .3s cubic-bezier(.2,.8,.3,1.2);
     border:1px solid #ccc; }
   .card.show{opacity:1; transform:translateY(0) rotate(0);}
-  /* 第3隻補牌打橫擺喺兩張牌下方正中（賭場慣例），預留第2行格子令首兩張唔會向上跳 */
+  /* 第3隻補牌：搣牌模式下默認橫放（牌身+內容 rotate 90deg），content 反轉補償 → 數字可讀 */
+  .card.f3d.sq[data-card3] .face,
+  .card.f3d.sq[data-card3] .back{ transform:rotate(90deg); transition:transform .3s ease; }
+  .card.f3d.sq[data-card3] .corner.tl{ transform:rotate(-90deg); }
+  .card.f3d.sq[data-card3] .corner.br{ transform:rotate(90deg); }
+  /* 點擊豎起：rotate 回 0，數字自然直立 */
+  .card.f3d.sq[data-card3].upright .face,
+  .card.f3d.sq[data-card3].upright .back{ transform:rotate(0); }
+  .card.f3d.sq[data-card3].upright .corner.tl{ transform:rotate(0); }
+  .card.f3d.sq[data-card3].upright .corner.br{ transform:rotate(180deg); }
+  /* 第3隻牌打橫擺喺兩張牌下方正中（賭場慣例），預留第2行格子令首兩張唔會向上跳 */
   .cards .card:nth-child(3){grid-column:1 / -1; justify-self:center; margin-top:6px; transform-origin:center;}
   .cards .card:nth-child(3).show{transform:translateY(0);}
   /* 第3隻牌打橫：取消中間大點數；角落數字隨牌身90°旋轉變垂直（同1、2隻一樣只顯數字rank） */
@@ -2101,9 +2111,17 @@ async function revealThird(containerId){
   if(dealMode!=='squeeze') return;
   const kids=document.getElementById(containerId).children;
   const el=kids[kids.length-1]; if(!el) return;
+  // 標記為第3隻牌（用 data-card3 屬性）
+  el.setAttribute('data-card3','1');
   const pick=await sqWaitClick([el],5);
-  if(pick){ await sqManualOpen(pick,10); }
-  else { sqAutoOpen(el); await sleep(4000); }
+  if(pick){
+    // 點擊後：牌豎起 (upright class, 方便睇數字)；搽完牌後回正放 (橫向)
+    el.classList.add('upright');
+    el.classList.add('flip');
+    await sqManualOpen(pick,10);
+    // 搽牌完畢：回正放（橫向）
+    el.classList.remove('upright');
+  } else { sqAutoOpen(el); await sleep(4000); }
   if(el){ el.classList.add('show-num'); }
 }
 function renderCards(container, cards, delay){
@@ -2111,7 +2129,12 @@ function renderCards(container, cards, delay){
   cards.forEach((c,i)=>{ setTimeout(()=>{ const el=cardEl(c); container.appendChild(el); requestAnimationFrame(()=>el.classList.add('show')); sndDeal(); }, delay*i); });
 }
 function appendCard(containerId, c){
-  return new Promise(res=>{ setTimeout(()=>{ const el=cardEl(c); document.getElementById(containerId).appendChild(el); requestAnimationFrame(()=>el.classList.add('show')); sndDeal(); res(); },0); });
+  return new Promise(res=>{ setTimeout(()=>{ const el=cardEl(c);
+    // 標記第3隻補牌（在 .cards 容器中為 nth-child(3)）
+    const kids=document.getElementById(containerId).children;
+    if(kids.length>=3){ el.setAttribute('data-card3','1'); }
+    document.getElementById(containerId).appendChild(el);
+    requestAnimationFrame(()=>el.classList.add('show')); sndDeal(); res(); },0); });
 }
 function updateScore(who,val){ const el=document.getElementById(who+'Score'); el.textContent=val; el.classList.add('show'); }
 function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
