@@ -2109,34 +2109,38 @@ function sqManualOpen(el, sec){
     el.addEventListener('touchstart',onDown,{passive:false}); window.addEventListener('touchmove',onMove,{passive:false}); window.addEventListener('touchend',onUp);
   });
 }
-/* 第3隻補牌：squeeze模式點擊→豎起→搥牌→回平；3D模式翻牌完成後打橫 */
+/* ===== 第3隻補牌揭牌 ===== */
+/* 第3隻補牌揭牌 — 根據模式分離處理 */
 async function revealThird(containerId){
   const kids=document.getElementById(containerId).children;
   const el=kids[kids.length-1]; if(!el) return;
-  if(dealMode==='squeeze'){
-    // 搣牌模式：5秒揀→點咗手動10秒；冇點就自動開
-    const pick=await sqWaitClick([el],5);
-    if(pick){
-      // 點擊後豎起 (移除 .sq 的橫放)；搥完後恢復橫放
-      el.classList.remove('sq');
-      await sqManualOpen(pick,10);
-      el.classList.add('sq');
-    } else {
-      // 冇點：自動開 — 豎起→掀開→回平
-      el.classList.remove('sq');
-      sqAutoOpen(el);
-      await sleep(4000);
-      el.classList.add('sq');
-    }
+  if(dealMode==='squeeze'){ await revealThirdSqueeze(el); }
+  else { await revealThird3D(el); }
+}
+/* === 3D模式：自動開牌 (無互動，只翻牌動畫) === */
+async function revealThird3D(el){
+  // 流程: 牌開始打橫 (.flat) → 400ms 後豎起 → cardEl 800ms 後翻牌 → flip 完成 → show-num + 回橫 (.flat)
+  // .flat 延遲移除讓牌先顯示再豎起
+  setTimeout(()=>{ el.classList.remove('flat'); }, 400);
+  // show-num 由 cardEl 的 transitionend listener 負責 (翻牌完成後)
+}
+/* === Squeeze模式：手動/自動搣牌 === */
+async function revealThirdSqueeze(el){
+  // 搣牌模式：5秒揀牌 → 點咗手動10秒；冇點就自動開
+  const pick=await sqWaitClick([el],5);
+  if(pick){
+    // 點擊後豎起 (移除 .sq 的橫放)；搥完後恢復橫放
+    el.classList.remove('sq');
+    await sqManualOpen(pick,10);
+    el.classList.add('sq');
   } else {
-    // 3D 模式：第三隻牌流程
-    // 1. 牌開始打橫 (.flat) → 2. 移除 .flat 轉豎起 → 3. flip 翻牌 → 4. 加 .flat 回橫放
-    // 稍微延遲移除 .flat 讓牌先顯示再豎起
-    setTimeout(()=>{ el.classList.remove('flat'); }, 400);
+    // 冇點：自動開 — 豎起→掀開→回平
+    el.classList.remove('sq');
+    sqAutoOpen(el);
+    await sleep(4000);
+    el.classList.add('sq');
   }
-  // 3D模式：show-num 由 cardEl 的 transitionend listener 負責
-  // squeeze模式：此處確認顯示數字
-  if(el && dealMode==='squeeze'){ el.classList.add('show-num'); }
+  if(el){ el.classList.add('show-num'); }
 }
 function renderCards(container, cards, delay){
   container.innerHTML='';
