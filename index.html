@@ -130,8 +130,10 @@
   .card.show{opacity:1; transform:translateY(0) rotate(0);}
   /* 第3隻補牌打橫擺喺兩張牌下方正中；margin-top 3px（從6px減少） */
   .cards .card:nth-child(3){grid-column:1 / -1; justify-self:center; margin-top:3px;}
-  /* squeeze模式：打橫 90°，牌身+內容一起旋轉 */
+  /* squeeze模式：打橅 90°，牌身+內容一起旋轉 */
   .card:nth-child(3).sq{transform:translateY(0) rotate(90deg);}
+  /* squeeze模式點擊後豎起(暫時取消橅放) */
+  .card:nth-child(3).sq.upright{transform:translateY(0) rotate(0);}
   /* 3D模式翻牌完成：打橫 90°，放在兩隻直牌下方 (1秒慢速旋轉) */
   .card:nth-child(3).flat{transform:translateY(0) rotate(90deg); transition:transform 1s ease-in-out;}
   /* 第3隻牌打橫：取消中間大點數；角落數字隨牌身90°旋轉變垂直（同1、2隻一樣只顯數字rank） */
@@ -2060,7 +2062,7 @@ function sqWaitClick(cards, sec){
   });
 }
 /* 自動開一張（用原有隨機方向掀開動畫） */
-function sqAutoOpen(el){ if(el && !el.dataset.open){ el.dataset.open='1'; el.classList.add('flip','show-num'); } }
+function sqAutoOpen(el){ if(el && !el.dataset.open){ el.dataset.open='1'; el.classList.add('flip'); if(!el.hasAttribute('data-card3')){ el.classList.add('show-num'); } } }
 /* 手動搣牌：升起放大，10秒內拖動揭開（拖邊個方向就向嗰邊掀），超時自動開 */
 function sqManualOpen(el, sec){
   return new Promise(res=>{
@@ -2137,16 +2139,17 @@ async function revealThirdSqueeze(el){
   // 搣牌模式：5秒揀牌 → 點咗手動10秒；冇點就自動開
   const pick=await sqWaitClick([el],5);
   if(pick){
-    // 點擊後豎起 (移除 .sq 的橫放)；搥完後恢復橫放
-    el.classList.remove('sq');
+    // 點擊後豎起 (添加 .upright 覆蓋 .sq 的橋放)；搥完後移除 .upright 回橋
+    // .sq 保持不變以確保 squeeze reveal animation 正確
+    el.classList.add('upright');
     await sqManualOpen(pick,10);
-    el.classList.add('sq');
+    el.classList.remove('upright');
   } else {
     // 冇點：自動開 — 豎起→掀開→回平
-    el.classList.remove('sq');
+    el.classList.add('upright');
     sqAutoOpen(el);
     await sleep(4000);
-    el.classList.add('sq');
+    el.classList.remove('upright');
   }
   if(el){ el.classList.add('show-num'); }
 }
