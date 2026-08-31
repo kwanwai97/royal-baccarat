@@ -129,12 +129,12 @@
     border:1px solid #ccc; }
   .card.show{opacity:1; transform:translateY(0) rotate(0);}
   /* 第3隻補牌：搣牌模式下默認橫放（牌身+內容 rotate 90deg），content 反轉補償 → 數字可讀 */
-  /* .face/.back 自身 rotate 90deg 令整張橫放；裡面所有子元素一齊轉動 */
+  /* .face/.back 自身 rotate 90deg 令整張牌身橫放；裡面所有子元素一齊轉動 */
   .card.f3d.sq[data-card3] .face,
-  .card.f3d.sq[data-card3] .back{ transform:rotate(90deg); transition:transform .3s ease; }
-  /* corner.br 本身有 rotate(180deg)，在橫放時總旋轉 = 180+90 = 270°，需補償 -90deg → 變回直立 */
+  .card.f3d.sq[data-card3] .back{ transform:rotate(90deg); transition:transform .3s ease; transform-origin:center; }
+  /* corner 數字在橫放時需要反向補償：tl原無旋轉 → 補 -90° 與父 rotate 抵銷；br原rotate(180°) → 補 -90° 使總共0°直立 */
   .card.f3d.sq[data-card3] .corner.tl{ transform:rotate(-90deg); }
-  .card.f3d.sq[data-card3] .corner.br{ transform:rotate(90deg); }
+  .card.f3d.sq[data-card3] .corner.br{ transform:rotate(-90deg); }
   /* pip 位置跟著 face 轉動，本身不需要額外旋轉 */
   /* 點擊豎起：rotate 回 0，數字自然直立 */
   .card.f3d.sq[data-card3].upright .face,
