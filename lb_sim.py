@@ -149,26 +149,43 @@ def simulate_one_boot(ai):
         elif winner == 'tie':
             if main == 'player': payout += bet   # 和局退閒主注本金
             elif main == 'banker': payout += bet  # 和局退莊主注本金
-        # ---- 對子 side bet（固定落 10% 主注，有落先扣、命中先加）----
-        side_bet = max(50, int(bet * 0.1))
-        side_bet = min(side_bet, MAX_BET - bet)       # side bet 唔可以令總注超過枱頂限紅
-        side_bet = max(50, side_bet)
-        staked += side_bet
-        if pPair: payout += side_bet * 12
-        if bPair: payout += side_bet * 12
-        # ---- 大細 side bet：只落一邊（big 或 small 隨機），唔兩邊都落（跟真實玩法）----
-        if random.random() < 0.5:
-            if big: payout += side_bet * 1.54   # 落 big 中
-        else:
-            if not big: payout += side_bet * 2.5  # 落 small 中
-        # ---- 幸運6 / 幸運7 ----
+        # ---- Side bets: placed probabilistically (realistic casino rates) ----
+        # Pair bet: 15% of hands, player pair only (real baccarat)
+        pair_bet = 0
+        if random.random() < 0.10:  # 10% of hands get pair bet
+            pair_bet = max(50, int(bet * 0.05))  # 5% of main bet
+            pair_bet = min(pair_bet, MAX_BET - bet)
+            pair_bet = max(50, pair_bet)
+            staked += pair_bet
+            if pPair: payout += pair_bet * 11  # 真實賠率 1:11 (本金+10)
+        # Big/Small: 20% of hands, random big or small
+        bs_bet = 0
+        if random.random() < 0.15:
+            bs_bet = max(50, int(bet * 0.05))
+            bs_bet = min(bs_bet, MAX_BET - bet - pair_bet)
+            bs_bet = max(50, bs_bet)
+            staked += bs_bet
+            if random.random() < 0.5:
+                if big: payout += bs_bet * 1.54   # 落 big 中 (真是 1:0.54)
+            else:
+                if not big: payout += bs_bet * 2.5  # 落 small 中 (真是 1:1.5)
+        # Lucky 6: only on banker win with 6, ~10% chance to bet (very rare)
         bTotal = hand_total(b); pTotal = hand_total(p)
-        if winner == 'banker' and bTotal == 6:
+        if winner == 'banker' and bTotal == 6 and random.random() < 0.10:
+            l6_bet = max(50, int(bet * 0.02))
+            l6_bet = min(l6_bet, MAX_BET - bet - pair_bet - bs_bet)
+            l6_bet = max(50, l6_bet)
+            staked += l6_bet
             mult = 13 if len(b) == 2 else 21
-            payout += side_bet * mult
-        if winner == 'player' and pTotal == 7 and bTotal == 6:
+            payout += l6_bet * mult
+        # Lucky 7: only on player win with 7 vs banker 6, ~10% chance to bet
+        if winner == 'player' and pTotal == 7 and bTotal == 6 and random.random() < 0.10:
+            l7_bet = max(50, int(bet * 0.02))
+            l7_bet = min(l7_bet, MAX_BET - bet - pair_bet - bs_bet)
+            l7_bet = max(50, l7_bet)
+            staked += l7_bet
             mult = 41 if nCards == 4 else 61 if nCards == 5 else 101
-            payout += side_bet * mult
+            payout += l7_bet * mult
         net = payout - staked
         balance += net
         totalProfit += net
