@@ -128,13 +128,17 @@
     font-size:22px; transform:translateY(-4px) rotate(-4deg); opacity:0; transition:all .3s cubic-bezier(.2,.8,.3,1.2);
     border:1px solid #ccc; }
   .card.show{opacity:1; transform:translateY(0) rotate(0);}
-  /* 第3隻補牌打橫擺喺兩張牌下方正中（賭場慣例），預留第2行格子令首兩張唔會向上跳 */
-  .cards .card:nth-child(3){grid-column:1 / -1; justify-self:center; margin-top:6px; transform-origin:center;}
-  .cards .card:nth-child(3).show{transform:translateY(0);}
+  /* 第3隻補牌打橫擺喺兩張牌下方正中；margin-top 3px（從6px減少） */
+  .cards .card:nth-child(3){grid-column:1 / -1; justify-self:center; margin-top:3px;}
+  /* squeeze模式：打橫 90°，牌身+內容一起旋轉 */
+  .card:nth-child(3).sq{transform:translateY(0) rotate(90deg);}
+  /* 3D模式翻牌完成：打橫 90°，放在兩隻直牌下方 */
+  .card:nth-child(3).flat{transform:translateY(0) rotate(90deg);}
   /* 第3隻牌打橫：取消中間大點數；角落數字隨牌身90°旋轉變垂直（同1、2隻一樣只顯數字rank） */
   .cards .card:nth-child(3) .mid{display:none;}
   /* 第3隻牌打橫：牌身 rotate(90deg) 令整張橫置；角落數字反向 rotate(-90deg) 抵消牌身旋轉 → 數字保持企直可讀（6 唔會變 9）。
-     牌身 +90° 後 TL 角去到可視右上、BR 角去到可視左下，兩隻數字都反向轉 -90° 企返直。 */
+     牌身 +90° 後 TL 角去到可視右上、BR 角去到可視左下，兩隻數字都反向轉 -90° 企返直。
+     --- 3D模式: 翻牌完成後添加 .flat 類別 --- */
   .cards .card:nth-child(3) .corner.tl{top:4px; left:5px; right:auto; bottom:auto;}
   .cards .card:nth-child(3) .corner.br{bottom:4px; right:5px; left:auto; top:auto;}
   .cards .card:nth-child(3).show-num .corner{opacity:1;}
@@ -2096,14 +2100,32 @@ function sqManualOpen(el, sec){
     el.addEventListener('touchstart',onDown,{passive:false}); window.addEventListener('touchmove',onMove,{passive:false}); window.addEventListener('touchend',onUp);
   });
 }
-/* 第3隻補牌：5秒揀→點咗手動10秒；冇點就自動開 */
+/* 第3隻補牌：squeeze模式點擊→豎起→搥牌→回平；3D模式翻牌完成後打橫 */
 async function revealThird(containerId){
-  if(dealMode!=='squeeze') return;
   const kids=document.getElementById(containerId).children;
   const el=kids[kids.length-1]; if(!el) return;
-  const pick=await sqWaitClick([el],5);
-  if(pick){ await sqManualOpen(pick,10); }
-  else { sqAutoOpen(el); await sleep(4000); }
+  if(dealMode==='squeeze'){
+    // 搣牌模式：5秒揀→點咗手動10秒；冇點就自動開
+    const pick=await sqWaitClick([el],5);
+    if(pick){
+      // 點擊後豎起 (移除 .sq 的橫放)；搥完後恢復橫放
+      el.classList.remove('sq');
+      await sqManualOpen(pick,10);
+      el.classList.add('sq');
+    } else {
+      // 冇點：自動開 — 豎起→掀開→回平
+      el.classList.remove('sq');
+      sqAutoOpen(el);
+      await sleep(4000);
+      el.classList.add('sq');
+    }
+  } else {
+    // 3D 模式：等待翻牌完成後打橫
+    // cardEl 內的 transitionend listener 會添加 show-num
+    // 翻牌完成後添加 .flat 打橫
+    await sleep(1500);
+    el.classList.add('flat');
+  }
   if(el){ el.classList.add('show-num'); }
 }
 function renderCards(container, cards, delay){
