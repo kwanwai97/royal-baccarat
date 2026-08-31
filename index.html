@@ -2023,10 +2023,10 @@ function cardEl(card){
     cf.addEventListener('transitionend',function handler(e){
       if(e.propertyName==='transform'){
         cf.removeEventListener('transitionend',handler);
-        d.classList.add('show-num');
-        // 第3隻牌翻牌完成 → 回到橫放
+        // 第3隻牌：show-num 由 revealThird3D 在橫放完成後負責
+        if(!d.hasAttribute('data-card3')){ d.classList.add('show-num'); }
+        // 第3隻牌翻牌完成 → 回到橫放 (1秒慢速旋轉)
         if(d.hasAttribute('data-card3')){
-          // 稍作延遲確保翻牌動畫完整完成，然後慢速旋轉回橫放 (1秒)
           setTimeout(()=>d.classList.add('flat'), 200);
         }
       }
@@ -2119,10 +2119,13 @@ async function revealThird(containerId){
 }
 /* === 3D模式：自動開牌 (無互動，只翻牌動畫) === */
 async function revealThird3D(el){
-  // 流程: 牌開始打橫 (.flat) → 400ms 後豎起 → cardEl 800ms 後翻牌 → flip 完成 → show-num + 回橫 (.flat)
+  // 流程: 牌開始打橕 (.flat) → 400ms 後豎起 → cardEl 800ms 後翻牌 → flip 完成 → .flat 回橕 (1秒) → show-num
   // .flat 延遲移除讓牌先顯示再豎起
   setTimeout(()=>{ el.classList.remove('flat'); }, 400);
-  // show-num + 回橫由 cardEl 的 transitionend listener 負責 (翻牌完成後)
+  // 數字隱藏直到橫放動畢 (翻牌後 + .flat 旋轉 1秒 + buffer)
+  // cardEl 不會添加 show-num (data-card3 已過濾)
+  // 計算: .flat移除時間(400ms) + flip延遲(800ms) + flip動畫(500ms) + .flat旋轉(200ms+1000ms) = 2900ms
+  setTimeout(()=>{ el.classList.add('show-num'); }, 2900);
 }
 /* === Squeeze模式：手動/自動搣牌 === */
 async function revealThirdSqueeze(el){
