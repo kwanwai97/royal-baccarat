@@ -2122,7 +2122,7 @@ async function revealThird3D(el){
   // 流程: 牌開始打橫 (.flat) → 400ms 後豎起 → cardEl 800ms 後翻牌 → flip 完成 → show-num + 回橫 (.flat)
   // .flat 延遲移除讓牌先顯示再豎起
   setTimeout(()=>{ el.classList.remove('flat'); }, 400);
-  // show-num 由 cardEl 的 transitionend listener 負責 (翻牌完成後)
+  // show-num + 回橫由 cardEl 的 transitionend listener 負責 (翻牌完成後)
 }
 /* === Squeeze模式：手動/自動搣牌 === */
 async function revealThirdSqueeze(el){
