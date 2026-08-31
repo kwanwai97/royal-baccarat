@@ -131,7 +131,7 @@
   /* 第3隻補牌打橫擺喺兩張牌下方正中；margin-top 2px（緊貼上面兩隻牌） */
   .cards .card:nth-child(3){grid-column:1 / -1; justify-self:center; margin-top:2px;}
   /* squeeze模式：打橅 90°，牌身+內容一起旋轉 */
-  .card:nth-child(3).sq{transform:translateY(0) rotate(90deg); margin-top:2px;}
+  .card:nth-child(3).sq{transform:translateY(2px) rotate(90deg);}
   /* squeeze模式點擊後豎起(暫時取消橅放) */
   .card:nth-child(3).sq.upright{transform:translateY(0) rotate(0);}
   /* 3D模式翻牌完成：打橫 90°，放在兩隻直牌下方 (1秒慢速旋轉) */
