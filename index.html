@@ -132,8 +132,8 @@
   .cards .card:nth-child(3){grid-column:1 / -1; justify-self:center; margin-top:3px;}
   /* squeeze模式：打橫 90°，牌身+內容一起旋轉 */
   .card:nth-child(3).sq{transform:translateY(0) rotate(90deg);}
-  /* 3D模式翻牌完成：打橫 90°，放在兩隻直牌下方 */
-  .card:nth-child(3).flat{transform:translateY(0) rotate(90deg);}
+  /* 3D模式翻牌完成：打橫 90°，放在兩隻直牌下方 (1秒慢速旋轉) */
+  .card:nth-child(3).flat{transform:translateY(0) rotate(90deg); transition:transform 1s ease-in-out;}
   /* 第3隻牌打橫：取消中間大點數；角落數字隨牌身90°旋轉變垂直（同1、2隻一樣只顯數字rank） */
   .cards .card:nth-child(3) .mid{display:none;}
   /* 第3隻牌打橫：牌身 rotate(90deg) 令整張橫置；角落數字反向 rotate(-90deg) 抵消牌身旋轉 → 數字保持企直可讀（6 唔會變 9）。
@@ -2026,8 +2026,8 @@ function cardEl(card){
         d.classList.add('show-num');
         // 第3隻牌翻牌完成 → 回到橫放
         if(d.hasAttribute('data-card3')){
-          // 少緒延遲確保翻牌動畫完整完成再旋轉
-          setTimeout(()=>d.classList.add('flat'), 50);
+          // 稍作延遲確保翻牌動畫完整完成，然後慢速旋轉回橫放 (1秒)
+          setTimeout(()=>d.classList.add('flat'), 200);
         }
       }
     });
