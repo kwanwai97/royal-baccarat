@@ -122,20 +122,20 @@
   #bankerScore.squeeze-pin{ position:fixed; z-index:40; font-size:20px; margin:0; right:4px; left:auto; }
   /* 兩隻牌一行；第3隻補牌自動摺落下一行(下方中心打橫)，固定高度避免發牌區跳動 */
   /* 固定高度 Grid 預留第2行：首兩張永遠貼頂固定，第3張填落第2行 → 唔會向上跳 */
-  .cards{display:grid; grid-template-columns:repeat(2,52px); grid-auto-rows:72px; gap:4px; width:108px; height:152px; align-content:start; justify-content:center;}
+  .cards{display:grid; grid-template-columns:repeat(2,52px); grid-auto-rows:72px; gap:4px; width:108px; height:152px; align-content:start; justify-content:center; margin-top:2px;}
   .card{ width:52px; height:72px; border-radius:4px; background:#fff; color:#000; position:relative;
     box-shadow:0 2px 6px rgba(0,0,0,.5); font-weight:800; display:flex; align-items:center; justify-content:center;
     font-size:22px; transform:translateY(-4px) rotate(-4deg); opacity:0; transition:all .3s cubic-bezier(.2,.8,.3,1.2);
     border:1px solid #ccc; }
   .card.show{opacity:1; transform:translateY(0) rotate(0);}
   /* 第3隻補牌打橫擺喺兩張牌下方正中；margin-top 2px（緊貼上面兩隻牌） */
-  .cards .card:nth-child(3){grid-column:1 / -1; justify-self:center; margin-top:2px;}
+  .cards .card:nth-child(3){grid-column:1 / -1; justify-self:center; margin-top:4px;}
   /* squeeze模式：打橅 90°，牌身+內容一起旋轉 */
-  .card:nth-child(3).sq{transform:translateY(2px) rotate(90deg);}
+  .card:nth-child(3).sq{transform:translateY(0) rotate(90deg);}
   /* squeeze模式點擊後豎起(暫時取消橅放) */
   .card:nth-child(3).sq.upright{transform:translateY(0) rotate(0);}
   /* 3D模式翻牌完成：打橫 90°，放在兩隻直牌下方 (1秒慢速旋轉) */
-  .card:nth-child(3).flat{transform:translateY(2px) rotate(90deg); transition:transform 1s ease-in-out;}
+  .card:nth-child(3).flat{transform:translateY(0) rotate(90deg); transition:transform 1s ease-in-out;}
   /* 第3隻牌打橫：取消中間大點數；角落數字隨牌身90°旋轉變垂直（同1、2隻一樣只顯數字rank） */
   .cards .card:nth-child(3) .mid{display:none;}
   /* 第3隻牌打橫：牌身 rotate(90deg) 令整張橫置；角落數字反向 rotate(-90deg) 抵消牌身旋轉 → 數字保持企直可讀（6 唔會變 9）。
