@@ -6435,7 +6435,7 @@ function render(db, sortBy){
   let html = '<table><thead><tr><th>#</th><th>名稱</th><th>性格</th><th>年齡</th><th>注碼</th><th>總投注</th><th>總盈利</th><th>破產(次)</th><th>局數</th><th>勝率</th><th>連勝/連敗</th><th>資金曲線</th><th>勝率區間</th></tr></thead><tbody>';
   rows.forEach((a,i)=>{
     const pc = a.totalProfit>=0?'pos':'neg';
-    const bc = a.bankrupt===0?'bank0':'bankN';
+    const bc = (a.bankruptCount||0)>0?'bankN':'bank0';  /* 修正: 破產顏色判斷 — 用 bankruptCount 而非 bankrupt===0 (false!==0) */
     // 升跌：上鐘總盈利 vs 今鐘
     let dTxt='', dCls='';
     if(a.prevProfit!==undefined && a.prevProfit!==null){
@@ -6489,6 +6489,10 @@ async function refresh(){
 document.getElementById('refreshBtn').addEventListener('click', refresh);
 document.getElementById('sortSel').addEventListener('change', refresh);
 refresh();
+// 自動刷新: 每60秒嘗試重新抓取 leaderboard.json (當 server 版模擬更新時)
+setInterval(refresh, 60000);
+// 聚焦時也即時刷新
+window.addEventListener('focus', () => { if(!document.getElementById('board').classList.contains('loading')) refresh(); });
 </script>
 </body>
 </html>
