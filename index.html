@@ -2018,9 +2018,18 @@ function cardEl(card){
   if(!sq){ 
     setTimeout(()=>d.classList.add('flip'), 800);
     // 3D模式：翻牌transition完成後顯示數字
+    // 第3隻牌翻牌完成後回到橫放 (.flat)
     const cf=d.querySelector('.cf');
     cf.addEventListener('transitionend',function handler(e){
-      if(e.propertyName==='transform'){ cf.removeEventListener('transitionend',handler); d.classList.add('show-num'); }
+      if(e.propertyName==='transform'){
+        cf.removeEventListener('transitionend',handler);
+        d.classList.add('show-num');
+        // 第3隻牌翻牌完成 → 回到橫放
+        if(d.hasAttribute('data-card3')){
+          // 少緒延遲確保翻牌動畫完整完成再旋轉
+          setTimeout(()=>d.classList.add('flat'), 50);
+        }
+      }
     });
   } else {
     // 搣牌模式：數字只喺張牌真·完全掀開嗰陣先顯示
@@ -2120,20 +2129,30 @@ async function revealThird(containerId){
       el.classList.add('sq');
     }
   } else {
-    // 3D 模式：等待翻牌完成後打橫
-    // cardEl 內的 transitionend listener 會添加 show-num
-    // 翻牌完成後添加 .flat 打橫
-    await sleep(1500);
-    el.classList.add('flat');
+    // 3D 模式：第三隻牌流程
+    // 1. 牌開始打橫 (.flat) → 2. 移除 .flat 轉豎起 → 3. flip 翻牌 → 4. 加 .flat 回橫放
+    // 稍微延遲移除 .flat 讓牌先顯示再豎起
+    setTimeout(()=>{ el.classList.remove('flat'); }, 400);
   }
-  if(el){ el.classList.add('show-num'); }
+  // 3D模式：show-num 由 cardEl 的 transitionend listener 負責
+  // squeeze模式：此處確認顯示數字
+  if(el && dealMode==='squeeze'){ el.classList.add('show-num'); }
 }
 function renderCards(container, cards, delay){
   container.innerHTML='';
   cards.forEach((c,i)=>{ setTimeout(()=>{ const el=cardEl(c); container.appendChild(el); requestAnimationFrame(()=>el.classList.add('show')); sndDeal(); }, delay*i); });
 }
 function appendCard(containerId, c){
-  return new Promise(res=>{ setTimeout(()=>{ const el=cardEl(c); document.getElementById(containerId).appendChild(el); requestAnimationFrame(()=>el.classList.add('show')); sndDeal(); res(); },0); });
+  return new Promise(res=>{ setTimeout(()=>{ const el=cardEl(c);
+    // 標記第三隻牌 (data-card3) — 第3張以後的牌
+    const kids=document.getElementById(containerId).children;
+    if(kids.length>=2){ 
+      el.setAttribute('data-card3','1');
+      // 3D模式：第三隻牌先打橫放 (等 revealThird 將 .flat 移除旋轉豎起)
+      if(dealMode!=='squeeze'){ el.classList.add('flat'); }
+    }
+    document.getElementById(containerId).appendChild(el);
+    requestAnimationFrame(()=>el.classList.add('show')); sndDeal(); res(); },0); });
 }
 function updateScore(who,val){ const el=document.getElementById(who+'Score'); el.textContent=val; el.classList.add('show'); }
 function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
