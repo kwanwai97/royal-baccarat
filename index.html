@@ -128,26 +128,17 @@
     font-size:22px; transform:translateY(-4px) rotate(-4deg); opacity:0; transition:all .3s cubic-bezier(.2,.8,.3,1.2);
     border:1px solid #ccc; }
   .card.show{opacity:1; transform:translateY(0) rotate(0);}
-  /* 第3隻補牌：橫放（rotate 90deg）在兩隻直牌下方，content 全部90度旋轉，上距 3px */
-  /* 適用搣牌模式 + 自動開牌(3D)模式 */
-  .card.f3d[data-card3] .face,
-  .card.f3d[data-card3] .back{ transform:rotate(90deg); transition:transform .3s ease; transform-origin:center; }
-  /* corner 數字在橫放時旋轉 90° (跟隨牌身橫放方向) */
-  .card.f3d[data-card3] .corner.tl{ transform:rotate(90deg); }
-  .card.f3d[data-card3] .corner.br{ transform:rotate(90deg); }
-  /* pip 位置跟著 face 轉動，本身不需要額外旋轉 */
-  /* 點擊豎起：rotate 回 0，數字自然直立 */
-  .card.f3d[data-card3].upright .face,
-  .card.f3d[data-card3].upright .back{ transform:rotate(0); }
-  .card.f3d[data-card3].upright .corner.tl{ transform:rotate(0); }
-  .card.f3d[data-card3].upright .corner.br{ transform:rotate(180deg); }
-  /* 第3隻牌打橫擺喺兩張牌下方正中（賭場慣例），預留第2行格子令首兩張唔會向上跳 */
-  .cards .card:nth-child(3){grid-column:1 / -1; justify-self:center; margin-top:3px; transform-origin:center;}
-  .cards .card:nth-child(3).show{transform:translateY(0);}
+  /* 第3隻補牌打橫擺喺兩張牌下方正中；margin-top 3px（從6px減少） */
+  .cards .card:nth-child(3){grid-column:1 / -1; justify-self:center; margin-top:3px;}
+  /* squeeze模式：打橫 90°，牌身+內容一起旋轉 */
+  .card:nth-child(3).sq{transform:translateY(0) rotate(90deg);}
+  /* 3D模式翻牌完成：打橫 90°，放在兩隻直牌下方 (1秒慢速旋轉) */
+  .card:nth-child(3).flat{transform:translateY(0) rotate(90deg); transition:transform 1s ease-in-out;}
   /* 第3隻牌打橫：取消中間大點數；角落數字隨牌身90°旋轉變垂直（同1、2隻一樣只顯數字rank） */
   .cards .card:nth-child(3) .mid{display:none;}
   /* 第3隻牌打橫：牌身 rotate(90deg) 令整張橫置；角落數字反向 rotate(-90deg) 抵消牌身旋轉 → 數字保持企直可讀（6 唔會變 9）。
-     牌身 +90° 後 TL 角去到可視右上、BR 角去到可視左下，兩隻數字都反向轉 -90° 企返直。 */
+     牌身 +90° 後 TL 角去到可視右上、BR 角去到可視左下，兩隻數字都反向轉 -90° 企返直。
+     --- 3D模式: 翻牌完成後添加 .flat 類別 --- */
   .cards .card:nth-child(3) .corner.tl{top:4px; left:5px; right:auto; bottom:auto;}
   .cards .card:nth-child(3) .corner.br{bottom:4px; right:5px; left:auto; top:auto;}
   .cards .card:nth-child(3).show-num .corner{opacity:1;}
@@ -2024,21 +2015,19 @@ function cardEl(card){
   const dir = 'd'+Math.floor(Math.random()*4);   // 隨機搣牌方向：d0下上 d1上下 d2左右 d3右左
   d.className='card f3d '+(sq?'sq '+dir+' ':'')+(red?'red':'black');
   d.innerHTML='<div class="cf"><div class="face">'+inner+'</div><div class="back"></div></div>';
-  if(!sq){
-    // 3D模式：標記第3隻牌為 upright（直立），翻牌完成後才橫放
-    setTimeout(()=>{
-      if(d.getAttribute('data-card3')==='1') d.classList.add('upright');
-    }, 750);
+  if(!sq){ 
     setTimeout(()=>d.classList.add('flip'), 800);
     // 3D模式：翻牌transition完成後顯示數字
+    // 第3隻牌翻牌完成後回到橫放 (.flat)
     const cf=d.querySelector('.cf');
     cf.addEventListener('transitionend',function handler(e){
       if(e.propertyName==='transform'){
         cf.removeEventListener('transitionend',handler);
         d.classList.add('show-num');
-        // 翻牌完畢：第三隻牌豎起顯示數字，1.5秒後回正放（橫向）
-        if(d.getAttribute('data-card3')==='1'){
-          setTimeout(()=>{ d.classList.remove('upright'); }, 1500);
+        // 第3隻牌翻牌完成 → 回到橫放
+        if(d.hasAttribute('data-card3')){
+          // 稍作延遲確保翻牌動畫完整完成，然後慢速旋轉回橫放 (1秒)
+          setTimeout(()=>d.classList.add('flat'), 200);
         }
       }
     });
@@ -2120,30 +2109,37 @@ function sqManualOpen(el, sec){
     el.addEventListener('touchstart',onDown,{passive:false}); window.addEventListener('touchmove',onMove,{passive:false}); window.addEventListener('touchend',onUp);
   });
 }
-/* 第3隻補牌：5秒揀→點咂手動10秒；冇點就自動開（搣牌模式）；3D模式就直接翻牌 */
+/* ===== 第3隻補牌揭牌 ===== */
+/* 第3隻補牌揭牌 — 根據模式分離處理 */
 async function revealThird(containerId){
   const kids=document.getElementById(containerId).children;
   const el=kids[kids.length-1]; if(!el) return;
-  // 標記為第3隻牌（用 data-card3 屬性）
-  el.setAttribute('data-card3','1');
-  if(dealMode==='squeeze'){
-    const pick=await sqWaitClick([el],5);
-    if(pick){
-      // 點擊後：牌豎起 (upright class, 方便睇數字)；搽完牌後回正放 (橫向)
-      el.classList.add('upright');
-      el.classList.add('flip');
-      await sqManualOpen(pick,10);
-      // 搽牌完畢：回正放（橫向）
-      el.classList.remove('upright');
-    } else {
-      // 冇點：自動開 — 同樣豎起睇數字，掀開後回正放
-      el.classList.add('upright');
-      sqAutoOpen(el);
-      await sleep(4000);
-      el.classList.remove('upright');
-    }
+  if(dealMode==='squeeze'){ await revealThirdSqueeze(el); }
+  else { await revealThird3D(el); }
+}
+/* === 3D模式：自動開牌 (無互動，只翻牌動畫) === */
+async function revealThird3D(el){
+  // 流程: 牌開始打橫 (.flat) → 400ms 後豎起 → cardEl 800ms 後翻牌 → flip 完成 → show-num + 回橫 (.flat)
+  // .flat 延遲移除讓牌先顯示再豎起
+  setTimeout(()=>{ el.classList.remove('flat'); }, 400);
+  // show-num 由 cardEl 的 transitionend listener 負責 (翻牌完成後)
+}
+/* === Squeeze模式：手動/自動搣牌 === */
+async function revealThirdSqueeze(el){
+  // 搣牌模式：5秒揀牌 → 點咗手動10秒；冇點就自動開
+  const pick=await sqWaitClick([el],5);
+  if(pick){
+    // 點擊後豎起 (移除 .sq 的橫放)；搥完後恢復橫放
+    el.classList.remove('sq');
+    await sqManualOpen(pick,10);
+    el.classList.add('sq');
+  } else {
+    // 冇點：自動開 — 豎起→掀開→回平
+    el.classList.remove('sq');
+    sqAutoOpen(el);
+    await sleep(4000);
+    el.classList.add('sq');
   }
-  // 3D模式：cardEl 已經自動翻牌，等 transitionend 後顯示數字
   if(el){ el.classList.add('show-num'); }
 }
 function renderCards(container, cards, delay){
@@ -2152,10 +2148,13 @@ function renderCards(container, cards, delay){
 }
 function appendCard(containerId, c){
   return new Promise(res=>{ setTimeout(()=>{ const el=cardEl(c);
-    // 標記第3隻補牌（在 .cards 容器中為 nth-child(3)）
+    // 標記第三隻牌 (data-card3) — 第3張以後的牌
     const kids=document.getElementById(containerId).children;
-    // kids.length 為 2 時，追加的將是第3隻牌
-    if(kids.length>=2){ el.setAttribute('data-card3','1'); }
+    if(kids.length>=2){ 
+      el.setAttribute('data-card3','1');
+      // 3D模式：第三隻牌先打橫放 (等 revealThird 將 .flat 移除旋轉豎起)
+      if(dealMode!=='squeeze'){ el.classList.add('flat'); }
+    }
     document.getElementById(containerId).appendChild(el);
     requestAnimationFrame(()=>el.classList.add('show')); sndDeal(); res(); },0); });
 }
