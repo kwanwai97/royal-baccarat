@@ -34,15 +34,12 @@
   .brand-sub{font-size:11px; font-weight:600; color:#cdbf8e; opacity:.85; display:flex; flex-direction:column; gap:1px; order:2;}
   .brand #btnServerLb .srv-sub{ display:block; text-align:left; }  /* 直版：伺服榜server版副文斷兩行 */
   .brand-title{order:1;}
-  #btnServerLb{order:0;}
   #btnLeaderboard{order:1;}
-  #btnPlayerName{order:2;}
   .lb-stack{ margin-left:-5px; }  /* 直版：AI榜/server貼左(由6px→1px) */
   #btnLeaderboard{ text-indent:-3px; }  /* AI榜文字向左3px */
   .brand-sub #shoeInfo{font-size:14px; font-weight:800; color:#7fffb0; text-shadow:0 0 6px rgba(80,255,160,.5);}
   .topright{display:flex; align-items:center; gap:10px; margin-left:-9px; transform:translateX(3px);}  /* 資金區(取消黃框); 直版向左10px, translateX(+3px)向右3px */
   .balance{font-size:12px; text-align:right;}
-  .balance .bname{ font-size:12px; color:#ffd479; font-weight:700; margin-bottom:1px; max-width:140px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
   .balance b{color:var(--gold2); font-size:18px; margin-left:1px;}
   .iconbtn{background:#1a1200; border:1px solid var(--goldd); color:var(--gold2); border-radius:8px; padding:6px 9px; font-size:13px; cursor:pointer;}
   .iconbtn:active{transform:scale(.92);}
@@ -87,8 +84,6 @@
   .alb-combo .cb-bust{color:#ff8a6a; font-weight:800;}
   .alb-combo.bust .cb-name{color:#ff8a6a;}
   .alb-combo .cb-peak{color:#ffd86b;}
-  .alb-combo.me{background:#1a1405; border:1.5px solid #ffd479; box-shadow:0 0 8px rgba(255,212,121,.3);}  /* 你本人行：金邊突顯 */
-  .alb-combo.me .cb-name{color:#ffd479;}
   .alb-rank{width:18px; text-align:center; font-weight:800; color:var(--gold2);}
   .alb-name{flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
   .alb-stat{font-size:10px; color:#9fd6ff; white-space:nowrap;}
@@ -102,7 +97,7 @@
   .info-strip .k{opacity:.55; font-size:8px;}
   .info-strip .v{font-weight:800; color:#fff;}
   .info-strip .v.p{color:#a9d2ff;} .info-strip .v.b{color:#ffb3b3;} .info-strip .v.t{color:#8fe0ab;} .info-strip .v.c{color:#ffd45e;}
-  .dealzone{position:absolute; inset:0; z-index:10; display:grid; grid-template-columns:1fr 1fr; align-items:start; justify-items:center; gap:6px; padding:34px 8px 8px; border-radius:8px;
+  .dealzone{position:absolute; inset:0; z-index:10; display:grid; grid-template-columns:1fr 1fr; align-items:end; justify-items:center; gap:6px; padding:2px 8px 8px; border-radius:8px;
     background:transparent; border:none; box-shadow:none;
     opacity:0; pointer-events:none; transition:opacity .25s ease;}
   .dealzone.show{opacity:1; pointer-events:auto; z-index:20;}
@@ -128,17 +123,13 @@
     font-size:22px; transform:translateY(-4px) rotate(-4deg); opacity:0; transition:all .3s cubic-bezier(.2,.8,.3,1.2);
     border:1px solid #ccc; }
   .card.show{opacity:1; transform:translateY(0) rotate(0);}
-  /* 第3隻補牌打橫擺喺兩張牌下方正中；margin-top 3px（從6px減少） */
+  /* 第3隻補牌打橫擺喺兩張牌下方正中（賭場慣例），預留第2行格子令首兩張唔會向上跳 */
   .cards .card:nth-child(3){grid-column:1 / -1; justify-self:center; margin-top:3px;}
-  /* squeeze模式：打橫 90°，牌身+內容一起旋轉 */
-  .card:nth-child(3).sq{transform:translateY(0) rotate(90deg);}
-  /* 3D模式翻牌完成：打橫 90°，放在兩隻直牌下方 (1秒慢速旋轉) */
-  .card:nth-child(3).flat{transform:translateY(0) rotate(90deg); transition:transform 1s ease-in-out;}
+  
   /* 第3隻牌打橫：取消中間大點數；角落數字隨牌身90°旋轉變垂直（同1、2隻一樣只顯數字rank） */
   .cards .card:nth-child(3) .mid{display:none;}
   /* 第3隻牌打橫：牌身 rotate(90deg) 令整張橫置；角落數字反向 rotate(-90deg) 抵消牌身旋轉 → 數字保持企直可讀（6 唔會變 9）。
-     牌身 +90° 後 TL 角去到可視右上、BR 角去到可視左下，兩隻數字都反向轉 -90° 企返直。
-     --- 3D模式: 翻牌完成後添加 .flat 類別 --- */
+     牌身 +90° 後 TL 角去到可視右上、BR 角去到可視左下，兩隻數字都反向轉 -90° 企返直。 */
   .cards .card:nth-child(3) .corner.tl{top:4px; left:5px; right:auto; bottom:auto;}
   .cards .card:nth-child(3) .corner.br{bottom:4px; right:5px; left:auto; top:auto;}
   .cards .card:nth-child(3).show-num .corner{opacity:1;}
@@ -288,9 +279,6 @@
   .road-tip.cold{color:#9fd3ff; border-color:#5aa9e6;}
   .chip.active{transform:scale(1.12); border-color:#fff;}
   .chip-icon{width:30px; height:30px; flex:0 0 auto; border-radius:8px; border:1px solid rgba(212,175,55,.4); background:linear-gradient(180deg,#1a2f24,#0d1a12); display:flex; align-items:center; justify-content:center; font-size:13px; color:#f5f0d8; cursor:pointer;}
-  /* 大路標題行：只 AI陪玩(🤖)加闊15px+黃底；其餘唔郁 */
-  #btnAi{ width:45px; background:linear-gradient(180deg,#ffd479,#e6a417); color:#241a00; border-color:#ffb347; }
-  /* (舊)剩N張向左15px 已移除；向右推改喺直版/橫版 media 以 margin-right 處理 */
   .chip-icon:hover{background:linear-gradient(180deg,#26402f,#142318);}
   .chip.c100{background:radial-gradient(#bbb,#888); border-color:#fff;}
   .chip.c500{background:radial-gradient(#ff7676,#c0392b);}
@@ -353,14 +341,11 @@
   .dealmode-wrap{ display:inline-flex; }
   .dealmode-wrap #btnDealMode{ position:static; transform:none; }
   .roadpanel > div:first-child #shoeInfo{ font-size:13px; color:#5fe08a; font-weight:800; white-space:nowrap; flex:0 0 auto; margin-left:auto; }  /* 直版：剩餘數做組首,auto推成組(剩餘+開牌+5圖案)去右邊 */
-  /* 直版：大路標題唔郁；剩張+開牌+5圖案成組向右15px（剩張 margin-left:0 壓過 auto；移除 auto 本身已右移約15px，故用0湊正）*/
-  .road-header #shoeInfo{ margin-left:0 !important; }
   .bets{ padding-top:0; padding-bottom:0; }  /* 直版：投注區上下padding清零，同籌碼區距離交畀chips-row頂padding控制 */
   .chips-row{ padding-top:1px !important; gap:2px !important; align-items:flex-start; }  /* 直版：籌碼區頂padding=1px, 四掣跟籌碼2px */
   .chips-row .chips{ align-self:flex-start; }
 }
 .follow-left{flex:0 0 50%; display:flex; flex-direction:column; gap:5px; min-width:0; justify-content:flex-start; padding-left:6px;}
-  @media (orientation:portrait){ .follow-left{ padding-left:10px; } .pred-system{ margin-right:2px; } }
 /* 預測系統固定資訊區：上面一行(標題+請投注) + 下面一行(勝率/次數/勝負)，固定空間唔收起 */
 .pred-system{ min-height:46px; display:flex; flex-direction:column; gap:2px; padding:0; border:1px solid #b98a17; border-radius:8px; background:rgba(20,30,20,.55); box-sizing:border-box; justify-content:center; }  /* 復原黃框; padding 0 貼實內容(跟直版); 邊框恢復1px(用家撤銷加闊) */
 .pred-row1{ display:flex; align-items:center; gap:5px; font-size:12px; font-weight:800; color:#ffd479; flex-wrap:nowrap; white-space:nowrap; }
@@ -676,8 +661,6 @@
   .dealmode-wrap #btnDealMode{ position:static; transform:none; }
   .roadpanel > div:first-child #shoeInfo{ font-size:13px; color:#5fe08a; font-weight:800; white-space:nowrap; flex:0 0 auto; margin-left:auto; }  /* 橫版：剩餘數做組首,auto推成組(剩餘+開牌+5圖案)去右邊 */
   .road-header #btnDealMode{ margin-right:0; }  /* 橫版：剩餘卡牌+開牌緊貼右邊5圖案(直版係15px) */
-  /* 橫版：大路標題唔郁；剩張+開牌+5圖案成組向右65px（剩張 margin-left:50px 壓過 auto；移除 auto 本身已右移約15px，故用50湊正） */
-  .road-header #shoeInfo{ margin-left:50px !important; }
     .pred-row1 .freset{ margin-left:5px; }   /* 橫版清除掣距請投注5px（直版0px） */
     /* 橫版：預測系統框內三行撐滿框, 消除框右側留白(框外已貼跟注區) */
     .follow-left .pred-row1, .follow-left .pred-row2, .follow-left .pred-row3{ width:100%; justify-content:flex-start; }  /* 橫版：預測框內5行全部向左(反轉舊嘅向右) */
@@ -695,7 +678,7 @@
     /* 下半左：路單（大路+珠盤+下三路）跨左3欄、佔 row2-4 全高 */
     .roadpanel{ grid-column:1 / 4; grid-row:3 / span 4; align-self:start; }   /* 打橫：路單頂部落一格，同右投注區(row3)頂部水平並排；容器收實貼內容高度(唔被grid拉伸留空位) */
     /* 打橫：發牌區張卡貼頂(緊貼藍色結果文字下方)，唔再跌去路單區底(直版感一致) */
-    .dealzone{ align-items:start; padding-top:34px; }  /* 橫版：卡牌貼大路標題底(路單頂部開始) */
+    .dealzone{ align-items:start; padding-top:54px; }
     /* 打橫壓縮路單高度，騰出下面欄位空間（唔改內部/JS） */
     #bigCanvas{ height:80px; }
     #beadCanvas{ height:72px; }
@@ -874,9 +857,8 @@
     <div class="brand">
       <!-- 排行榜區：server(上層) + AI榜(下層) 上下兩層, 固定喺brand第一區唔使JS搬, 唔會跳 -->
       <div class="lb-stack" style="display:flex; flex-direction:column; gap:3px; align-items:flex-start;">
-        <button id="btnServerLb" title="伺服榜（連 server 版）" style="align-self:flex-start;margin:0;width:69px;background:linear-gradient(90deg,#2d5c4a,#3d7c5a);color:#fff;border:none;padding:1px 6px;border-radius:6px;font-size:11px;line-height:1.2;cursor:pointer;letter-spacing:0;white-space:nowrap;">🖥️ 伺服榜<span class="srv-sub" style="font-size:9px;opacity:.75;letter-spacing:0;"> server 版</span></button>
-        <button id="btnLeaderboard" title="AI 排行榜" style="align-self:flex-start;margin:0;width:69px;background:linear-gradient(90deg,#3a2d5c,#5a3d7c);color:#fff;border:none;padding:1px 6px;border-radius:6px;font-size:11px;line-height:1.2;cursor:pointer;letter-spacing:0;white-space:nowrap;">🏆 AI排行榜<div style="font-size:9px;opacity:.75;letter-spacing:0;">即時</div></button>
-        <button id="btnPlayerName" title="撳呢度改你嘅名" style="align-self:flex-start;margin:0;width:69px;background:rgba(255,255,255,.08);color:#ffd479;border:1px solid rgba(255,212,121,.4);padding:4px 6px;border-radius:6px;font-size:11px;line-height:1.2;cursor:pointer;letter-spacing:0;white-space:nowrap;max-width:140px;overflow:hidden;text-overflow:ellipsis;">👤 <span id="playerNameTxt">玩家</span></button>
+        <button id="btnServerLb" title="伺服榜（連 server 版）" style="align-self:flex-start;margin:0;background:linear-gradient(90deg,#2d5c4a,#3d7c5a);color:#fff;border:none;padding:2px 6px;border-radius:6px;font-size:11px;line-height:1.2;cursor:pointer;letter-spacing:0;white-space:nowrap;">🖥️ 伺服榜<span class="srv-sub" style="font-size:9px;opacity:.75;letter-spacing:0;"> server 版</span></button>
+        <button id="btnLeaderboard" title="AI 排行榜" style="align-self:flex-start;margin:0;background:linear-gradient(90deg,#3a2d5c,#5a3d7c);color:#fff;border:none;padding:2px 6px;border-radius:6px;font-size:11px;line-height:1.2;cursor:pointer;letter-spacing:0;white-space:nowrap;">🏆 AI排行榜<div style="font-size:9px;opacity:.75;letter-spacing:0;">即時</div></button>
       </div>
       <div class="brand-sub"><span id="shoeInfo"></span></div>
       <div id="topBtns" class="top-btns">
@@ -885,7 +867,7 @@
       </div>
     </div>
     <div class="topright">
-      <div class="balance"><div class="bname" id="balanceName">👤 玩家</div><small>餘額</small><div><b id="balance">1,000,000</b></div></div>
+      <div class="balance"><small>餘額</small><div><b id="balance">1,000,000</b></div></div>
       <div class="ai-balances" id="aiBalanceBox" style="display:none;"></div>
       
     </div>
@@ -1531,7 +1513,7 @@ function updateBetDisplay(){
     const stack=document.querySelector('.chips-stack[data-stack="'+k+'"]');
     if(!stack) continue;
     let html='';
-    const h=bets[k]; if(h>0) html+='<div class="pc"><span class="tag">'+playerTag()+'</span><span class="v h">'+fmtK(h)+'</span></div>';
+    const h=bets[k]; if(h>0) html+='<div class="pc"><span class="tag">你</span><span class="v h">'+fmtK(h)+'</span></div>';
     for(let i=0;i<ais.length;i++){
       const a=ais[i].currentBet;
       if(a){
@@ -1662,6 +1644,25 @@ function repeatBets(){ if((dealing && !betting)||!lastBets)return; let total=0; 
   balance-=total; bets=Object.assign({},lastBets); updateBalance(); updateAiBalances(); updateBetDisplay(); sndChip();
 }
 // 升級⑨ 跟旺AI：搵連勝最高嘅AI，你跟佢主注邊+同樣注額（落注期用）
+function followHotAI(){
+  if(dealing && !betting){ showToast('⚠ 開牌中唔可以跟'); return; }
+  let hot=null, best=-1;
+  ais.forEach(ai=>{ if(ai && ai.currentBet && ai.balance>0 && (ai.winStreak||0)>best){ best=ai.winStreak||0; hot=ai; } });
+  if(!hot){ showToast('⚠ 暫時無旺AI可跟（等佢哋落注）'); return; }
+  const b=hot.currentBet;
+  const amt=Math.min(b.bet, balance);
+  if(amt<=0){ showToast('⚠ 餘額不足跟注'); return; }
+  clearBets(true);
+  if(b.pick==='player') bets.player=amt;
+  else if(b.pick==='banker') bets.banker=amt;
+  else if(b.pick==='tie') bets.tie=amt;
+  balance-=amt;
+  lastFollowSide = b.pick;   // 記錄本局跟注邊，開牌後計跟注勝負
+  updateBalance(); updateBetDisplay(); sndChip();
+  markHotFollow(b.pick, hot);
+  showToast('🔥 跟旺AI「'+hot.name+'」('+b.pick+' '+fmt(amt)+')');
+}
+
 /* ===================== ① 開局前枱邊閒聊 (pre-round table talk) ===================== */
 function roadState(){
   const h=history;
@@ -1756,17 +1757,6 @@ async function genAiLineLLM(ai, ctx, prev){
   }
   return null;  // 全部失敗 → caller fallback 預製句
 }
-// AI 對話去重機制：60局內不重複（冷靜期）
-// usedPhrasesGlobal: 今靴用過嘅 AI 句子（跨 AI 全局共享）
-// phraseCounter: 計數器，每 60 局重置一次
-let usedPhrasesGlobal = [];   // 儲存今靴用過嘅句子
-let phraseCounter = 0;        // 計局數
-function phraseUsed(msg){ return usedPhrasesGlobal.indexOf(msg) >= 0; }
-function phraseAdd(msg){
-  usedPhrasesGlobal.push(msg);
-  if(usedPhrasesGlobal.length > 200) usedPhrasesGlobal.shift();  // 防止太大
-}
-function phraseReset(){ usedPhrasesGlobal = []; phraseCounter = 0; }
 
 function genFunnyLine(ai, ctx) {
   const p = AI_PERSONAS[ai.persona];
@@ -1945,25 +1935,9 @@ async function tableChatPhase(sec) {
         if (Date.now() - t0 > CHAT_BUDGET_MS) break;   // 預算用完就收聲，唔硬出4句
         const ai = speakers[i];
         let msg = null;
-        if(LLM_CHAT){
-          let llmAttempts = 0;
-          do {
-            msg = await genAiLineLLM(ai, ctx, prev);
-            llmAttempts++;
-            if (!msg) break;  // LLM 失敗 → 跳出嘗試 fallback
-          } while (llmAttempts < 3 && phraseUsed(msg));
-          if (!msg || phraseUsed(msg)) msg = null;  // 用完就清，讓 fallback 預製句接手
-        }
-        if(!msg){
-          let fbAttempts = 0;
-          do {
-            msg = genChatLine(ai, ai._prePick, ctx, prev, usedThisRound);
-            fbAttempts++;
-          } while (fbAttempts < 3 && phraseUsed(msg));
-        }
+        if(LLM_CHAT){ msg = await genAiLineLLM(ai, ctx, prev); }   // 🧠 LLM 即時生成（call 唔到會 null）
+        if(!msg){ msg = genChatLine(ai, ai._prePick, ctx, prev, usedThisRound); }  // fallback 預製句
         if (!msg) { prev = ai; continue; }
-        if (phraseUsed(msg)) phraseAdd(msg);  // 已經存在就補充（避免永遠重試）
-        phraseAdd(msg);
         addChatBubble(ai, msg);
         if (!mute) {
             await speak(ai.name + '：' + msg);   // 原版 speak，唔收 ms，保語音安全
@@ -2018,16 +1992,16 @@ function cardEl(card){
   if(!sq){ 
     setTimeout(()=>d.classList.add('flip'), 800);
     // 3D模式：翻牌transition完成後顯示數字
-    // 第3隻牌翻牌完成後回到橫放 (.flat)
     const cf=d.querySelector('.cf');
     cf.addEventListener('transitionend',function handler(e){
       if(e.propertyName==='transform'){
         cf.removeEventListener('transitionend',handler);
-        d.classList.add('show-num');
-        // 第3隻牌翻牌完成 → 回到橫放
+        // 第3隻牌：數字由 revealThird 在橫放完成後負責
+        if(!d.hasAttribute('data-card3')){ d.classList.add('show-num'); }
+        // 第3隻牌翻牌完成 → 回到橫放 (.flat) + 數字
         if(d.hasAttribute('data-card3')){
-          // 稍作延遲確保翻牌動畫完整完成，然後慢速旋轉回橫放 (1秒)
-          setTimeout(()=>d.classList.add('flat'), 200);
+          setTimeout(()=>{ d.classList.add('flat'); }, 200);
+          setTimeout(()=>{ d.classList.add('show-num'); }, 1400);
         }
       }
     });
@@ -2061,7 +2035,7 @@ function sqWaitClick(cards, sec){
   });
 }
 /* 自動開一張（用原有隨機方向掀開動畫） */
-function sqAutoOpen(el){ if(el && !el.dataset.open){ el.dataset.open='1'; el.classList.add('flip','show-num'); } }
+function sqAutoOpen(el){ if(el && !el.dataset.open){ el.dataset.open='1'; el.classList.add('flip'); } }
 /* 手動搣牌：升起放大，10秒內拖動揭開（拖邊個方向就向嗰邊掀），超時自動開 */
 function sqManualOpen(el, sec){
   return new Promise(res=>{
@@ -2098,45 +2072,40 @@ function sqManualOpen(el, sec){
       clearInterval(iv); sqTimerShow(0);
       el.removeEventListener('pointerdown',onDown); window.removeEventListener('pointermove',onMove); window.removeEventListener('pointerup',onUp);
       el.removeEventListener('touchstart',onDown); window.removeEventListener('touchmove',onMove); window.removeEventListener('touchend',onUp);
-      if(auto && prog<0.5){ el.classList.add('flip','show-num'); }               // 超時：自動掀開動畫
+      if(auto && prog<0.5){ el.classList.add('flip'); }               // 超時：自動掀開動畫
       else { back.style.transition='clip-path .45s'; back.style.clipPath=clipFor(dir,1.01);    // 手動：順住你嘅方向全開
         // 數字只喺張牌真·完全掀開(clip 過渡到 full)嗰陣先顯示；中途/未過半收返合都唔准顯示
         back.addEventListener('transitionend', function hn(e){ if(e.propertyName==='clip-path'){ back.removeEventListener('transitionend',hn); el.classList.add('show-num'); } });
       }
-      setTimeout(()=>{ el.style.transform=''; el.style.zIndex=''; if(scoreEl) scoreEl.classList.remove('squeeze-pin'); if(scoreElB) scoreElB.classList.remove('squeeze-pin'); el.classList.add('show-num'); sndDeal(); res(); }, auto?4000:1000);
+      setTimeout(()=>{ el.style.transform=''; el.style.zIndex=''; if(scoreEl) scoreEl.classList.remove('squeeze-pin'); if(scoreElB) scoreElB.classList.remove('squeeze-pin'); sndDeal(); res(); }, auto?4000:1000);
     }
     el.addEventListener('pointerdown',onDown); window.addEventListener('pointermove',onMove); window.addEventListener('pointerup',onUp);
     el.addEventListener('touchstart',onDown,{passive:false}); window.addEventListener('touchmove',onMove,{passive:false}); window.addEventListener('touchend',onUp);
   });
 }
-/* 第3隻補牌：squeeze模式點擊→豎起→搥牌→回平；3D模式翻牌完成後打橫 */
+/* ===== 第3隻補牌揭牌 ===== */
+/* squeeze模式：點擊打橋牌→豎起→選擇搥開→回橋 | 3D模式：牌打橋→豎起→翻牌→回橋 */
 async function revealThird(containerId){
   const kids=document.getElementById(containerId).children;
   const el=kids[kids.length-1]; if(!el) return;
   if(dealMode==='squeeze'){
-    // 搣牌模式：5秒揀→點咗手動10秒；冇點就自動開
+    // 搣牌模式：5秒揀牌 → 點咗手動10秒；冇點就自動開
     const pick=await sqWaitClick([el],5);
     if(pick){
-      // 點擊後豎起 (移除 .sq 的橫放)；搥完後恢復橫放
       el.classList.remove('sq');
       await sqManualOpen(pick,10);
       el.classList.add('sq');
     } else {
-      // 冇點：自動開 — 豎起→掀開→回平
       el.classList.remove('sq');
       sqAutoOpen(el);
       await sleep(4000);
       el.classList.add('sq');
     }
+    el.classList.add('show-num');
   } else {
-    // 3D 模式：第三隻牌流程
-    // 1. 牌開始打橫 (.flat) → 2. 移除 .flat 轉豎起 → 3. flip 翻牌 → 4. 加 .flat 回橫放
-    // 稍微延遲移除 .flat 讓牌先顯示再豎起
+    // 3D模式：牌已打橋 (.flat) → 延遲移除 .flat 豎起 → cardEl 翻牌 → transitionend 回橋+顯示數字
     setTimeout(()=>{ el.classList.remove('flat'); }, 400);
   }
-  // 3D模式：show-num 由 cardEl 的 transitionend listener 負責
-  // squeeze模式：此處確認顯示數字
-  if(el && dealMode==='squeeze'){ el.classList.add('show-num'); }
 }
 function renderCards(container, cards, delay){
   container.innerHTML='';
@@ -2144,11 +2113,11 @@ function renderCards(container, cards, delay){
 }
 function appendCard(containerId, c){
   return new Promise(res=>{ setTimeout(()=>{ const el=cardEl(c);
-    // 標記第三隻牌 (data-card3) — 第3張以後的牌
+    // 標記第三隻牌 (第3張以後的牌)
     const kids=document.getElementById(containerId).children;
-    if(kids.length>=2){ 
+    if(kids.length>=2){
       el.setAttribute('data-card3','1');
-      // 3D模式：第三隻牌先打橫放 (等 revealThird 將 .flat 移除旋轉豎起)
+      // 3D模式：第三隻牌先打橋放 (.flat)，等 revealThird 移除 .flat 後翻牌
       if(dealMode!=='squeeze'){ el.classList.add('flat'); }
     }
     document.getElementById(containerId).appendChild(el);
@@ -2160,11 +2129,21 @@ function hideMsg(){ document.getElementById('centerMsg').classList.remove('show'
 function showMsg(txt,color){ const m=document.getElementById('centerMsg'); m.textContent=txt; m.style.color=color||'var(--gold2)'; m.classList.add('show'); }
 /* 卡牌下移：第3隻牌(打橫，.cards 第3隻) 底部對齊 roadpanel 底部 → 貼住大路底、投注區上方；
    dealzone 整體跟住下移，手機/桌面自動適配 */
+function positionDealzone(){
+  const dz=document.getElementById('dealzoneOverlay');
+  const panel=document.querySelector('.roadpanel');
+  if(!dz||!panel) return;
+  const pr=panel.getBoundingClientRect();
+  const third=document.querySelector('#playerCards > .card:nth-child(3), #bankerCards > .card:nth-child(3)');
+  const anchor = third ? third.getBoundingClientRect() : (document.querySelector('.cards')?.getBoundingClientRect() || dz.getBoundingClientRect());
+  const delta = pr.bottom - anchor.bottom;
+  dz.style.transform = delta!==0 ? 'translateY('+delta+'px)' : '';
+  dz.dataset.dzShift=String(delta);
+}
+
 async function deal(auto){
   if(dealing) return;                 // 已經開緊牌就唔再開（防止重複發牌）
   dealing=true;                       // 即時上鎖：doShuffle / 緩衝期間任何並發呼叫都擋到
-  phraseCounter++;                    // 每局開始計一次
-  if(phraseCounter >= 60){ phraseReset(); }  // 60局重置，冷靜期結束
   try{
   let total=0; for(const x in bets) total+=bets[x];
   // 只有在「無下注、非自動、無 AI」且「預測系統沒有建議」時才阻擋
@@ -2246,12 +2225,12 @@ async function deal(auto){
 
   if(p0<8 && b0<8){
     if(p0<=5){
-    dealerCall('閒家補牌','#a9d2ff');
-    const pt=drawCard(); pc.push(pt); await appendCard('playerCards',pt); await revealThird('playerCards'); await sleep(1000);
-    updateScore('player',handTotal(pc));
-    if(bankerShouldDraw(b0,pt.value)){ dealerCall('莊家補牌','#ffb3b3'); const bt=drawCard(); bc.push(bt); await appendCard('bankerCards',bt); await revealThird('bankerCards'); await sleep(900); updateScore('banker',handTotal(bc)); }
+      dealerCall('閒家補牌','#a9d2ff');
+      const pt=drawCard(); pc.push(pt); await appendCard('playerCards',pt); await revealThird('playerCards'); await sleep(1000);
+      if(dealMode!=='squeeze') updateScore('player',handTotal(pc));
+      if(bankerShouldDraw(b0,pt.value)){ dealerCall('莊家補牌','#ffb3b3'); const bt=drawCard(); bc.push(bt); await appendCard('bankerCards',bt); await revealThird('bankerCards'); await sleep(900); if(dealMode!=='squeeze') updateScore('banker',handTotal(bc)); }
     } else {
-    if(b0<=5){ dealerCall('莊家補牌','#ffb3b3'); const bt=drawCard(); bc.push(bt); await appendCard('bankerCards',bt); await revealThird('bankerCards'); await sleep(900); updateScore('banker',handTotal(bc)); }
+      if(b0<=5){ dealerCall('莊家補牌','#ffb3b3'); const bt=drawCard(); bc.push(bt); await appendCard('bankerCards',bt); await revealThird('bankerCards'); await sleep(900); if(dealMode!=='squeeze') updateScore('banker',handTotal(bc)); }
     }
   }
   await sleep(1000);
@@ -2913,7 +2892,7 @@ function updateAiBalances(){   // 頂欄橫向捲動：你(人類)永遠第一�
   let hotId=null, best=-1;
   ais.forEach(ai=>{ if(ai && ai.currentBet && ai.balance>0 && (ai.winStreak||0)>best){ best=ai.winStreak||0; hotId=ai.id; } });
   // 你 永遠第一格；格式同AI完全一樣(icon+名+餘額) 確保4格對稱
-  let html='<div class="aib human"><small>👤 '+playerTag()+'</small><b>'+fmt(balance)+'</b></div>';
+  let html='<div class="aib human"><small>👤 你</small><b>'+fmt(balance)+'</b></div>';
   ais.forEach(ai=>{
     const isHot = ai.id===hotId;
     const em=ai.emotion||50;
@@ -2925,6 +2904,8 @@ function updateAiBalances(){   // 頂欄橫向捲動：你(人類)永遠第一�
   box.innerHTML=html;
   
 }
+function updateAiBalance(){ updateAiBalances(); }
+function showAiBalanceBox(){ updateAiBalances(); }
 function showStats(){
   // 統一 7 項：本金 / 資金 / 勝率 / 總投注額 / 最高金額 / 最長連贏 / 最長連輸（跟 AI 詳細卡一致）
   const humanG=(stats.wins||0)+(stats.losses||0)+(stats.humanTie||0);   // 有落注且已分勝/負/和嘅局（共 = 勝+負+和）
@@ -3084,6 +3065,42 @@ function updateOdds(){
   // 注意：roadTip(預測句)改由 updatePredict() 控制(牌局結束+2秒早出)，唔喺呢度寫避免13秒落注期覆蓋
 }
 // 路單預測提示：根據大路連勢 + 下三路(大眼仔/小路/蟑螂)紅藍比例，比一句睇路建議
+function updateRoadTip(){
+  const el=document.getElementById('roadTip'); if(!el) return;
+  if(!history || history.length===0){ el.className='road-tip'; el.textContent=''; return; }
+  const rs=roadState();
+  // 下三路紅藍：blue=true 係藍(破碎/轉勢)，紅=false(整齊/持續)
+  let red=0, blue=0;
+  for(const off of [1,2,3]){ const d=deriveRoad(off); for(const n of d){ if(n.blue) blue++; else red++; } }
+  const total=red+blue;
+  const blueRatio = total>0 ? blue/total : 0.5;
+  const hotSide = rs.streakType==='player' ? '閒' : (rs.streakType==='banker' ? '莊' : '');
+  const oppSide = hotSide==='閒' ? '莊' : (hotSide==='莊' ? '閒' : '');
+  let tip, cls='road-tip', suggest='';
+  if(rs.streakLen>=3){
+    tip='📈 路單連 '+rs.streakLen+' 鋪'+hotSide+'：跟紅頂，繼續追旺門';
+    cls='road-tip hot';
+    suggest = hotSide ? '｜請投注'+hotSide : '';
+  } else if(blueRatio>0.6){
+    tip='🔄 下三路偏藍（'+Math.round(blueRatio*100)+'%）：路破碎，宜反手等轉唔好死跟';
+    cls='road-tip cold';
+    suggest = oppSide ? '｜請投注'+oppSide : '';
+  } else if(blueRatio<0.35){
+    tip='➡️ 下三路偏紅（'+Math.round((1-blueRatio)*100)+'%）：路整齊，趨勢持續可跟';
+    cls='road-tip hot';
+    suggest = hotSide ? '｜請投注'+hotSide : '';
+  } else if(rs.streakLen>=2){
+    tip='👀 近 '+rs.streakLen+' 鋪'+hotSide+'：小勢形成，可小注試跟';
+    cls='road-tip';
+    suggest = hotSide ? '｜請投注'+hotSide : '';
+  } else {
+    tip='⏸ 路勢未明（紅藍參半）：觀望為主，等清晰路再落';
+    cls='road-tip';
+    suggest = '';
+  }
+  el.className=cls; el.textContent=tip+suggest;
+}
+
 function threeBead(){  // 三珠路：每3局一列，統計莊/閒組合形態偏向（忽略和）
   const h=(history||[]).map(x=> x && x.winner==='banker' ? 'B' : x && x.winner==='player' ? 'P' : 'T').filter(x=>x!=='T'); if(h.length<3) return null;
   let bCount=0, pCount=0;
@@ -3266,7 +3283,6 @@ function resetFollowStats(){
   showToast('🧹 跟注統計已重置');
 }
 async function doShuffle(){
-  phraseReset();  // 洗牌 = 新靴，重置 AI 對話去重池 + 計數器
   const ov=document.getElementById('shuffleOverlay');
   if(ov){ ov.querySelector('.title').textContent='🔀 洗牌中…'; ov.classList.add('show'); }
   resetShoe(); resetRoads(); drawAllRoads();
@@ -3602,6 +3618,7 @@ function spawnRandomAi(){
   return ai;
 }
 // 自動離枱 + 補替：AI 餘額低過最細注(連最低注都唔能夠落)就自動走，隨機補一個新 AI 入替
+function autoReplaceBrokeAis(){}  // 舊名保留兼容（唔再用）
 // 結算後：餘額不足最低注就自動離枱（補替改到洗牌時才做）
 function removeBrokeAis(){
   if(!ais.length) return 0;
@@ -3652,60 +3669,6 @@ document.getElementById('btnLlm').addEventListener('click',()=>{
   if(LLM_CHAT){ showToast('🧠 AI腦開啟（本地 Ollama 即時聊天；手機要同 PC 同一 WiFi）'); }
   else { showToast('🧠 AI腦關閉（用返預製句）'); }
 });
-// 玩家顯示名（陪玩資金區/投注格用）：冇改名就顯「你」，改咗就顯名
-function playerTag(){
-  try{ const n=localStorage.getItem('bac_player_name'); return n && n.trim() ? n.trim() : '你'; }
-  catch(e){ return '你'; }
-}
-// 玩家名稱：localStorage 儲存，撳名彈輸入框改
-(function(){
-  const KEY='bac_player_name';
-  const txt=document.getElementById('playerNameTxt');
-  const btn=document.getElementById('btnPlayerName');
-  const balName=document.getElementById('balanceName');
-  function loadName(){ return localStorage.getItem(KEY) || '玩家'; }
-  function renderName(){
-    const n=loadName();
-    txt.textContent = n;
-    if(balName) balName.textContent = '👤 ' + n;
-  }
-  renderName();
-  btn.addEventListener('click',()=>{
-    const cur=loadName();
-    const box=document.createElement('div');
-    box.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;z-index:9999;';
-    const card=document.createElement('div');
-    card.style.cssText='background:#1d1530;border:1px solid #ffd479;border-radius:12px;padding:16px;width:80%;max-width:280px;color:#fff;font-family:inherit;';
-    card.innerHTML='<div style="font-size:14px;font-weight:800;margin-bottom:10px;color:#ffd479;">改你嘅名稱</div>';
-    const inp=document.createElement('input');
-    inp.value=cur==='玩家'?'':cur;
-    inp.placeholder='填你嘅名（例如：阿強）';
-    inp.maxLength=12;
-    inp.style.cssText='width:100%;box-sizing:border-box;padding:8px;border-radius:8px;border:1px solid #555;background:#0f0a1c;color:#fff;font-size:14px;';
-    card.appendChild(inp);
-    const row=document.createElement('div');
-    row.style.cssText='display:flex;gap:8px;margin-top:12px;';
-    const ok=document.createElement('button');
-    ok.textContent='確定';
-    ok.style.cssText='flex:1;padding:8px;border:none;border-radius:8px;background:#3a7c5a;color:#fff;font-size:14px;font-weight:700;cursor:pointer;';
-    const cancel=document.createElement('button');
-    cancel.textContent='取消';
-    cancel.style.cssText='flex:1;padding:8px;border:none;border-radius:8px;background:#444;color:#fff;font-size:14px;cursor:pointer;';
-    row.appendChild(ok); row.appendChild(cancel);
-    card.appendChild(row);
-    box.appendChild(card);
-    document.body.appendChild(box);
-    setTimeout(()=>inp.focus(),50);
-    function close(){ if(box.parentNode) box.parentNode.removeChild(box); }
-    ok.addEventListener('click',()=>{
-      const v=inp.value.trim();
-      if(v){ localStorage.setItem(KEY,v); renderName(); showToast('✅ 名稱已改為「'+v+'」'); }
-      close();
-    });
-    cancel.addEventListener('click',close);
-    box.addEventListener('click',e=>{ if(e.target===box) close(); });
-  });
-})();
 document.getElementById('btnLeaderboard').addEventListener('click',()=>{
   // AI 組合排行榜：讀 localStorage 嘅 bac_ai_combos，按指標排序（累積，唔清）
   const panel=document.getElementById('aiLbPanel');
@@ -3715,11 +3678,6 @@ document.getElementById('btnLeaderboard').addEventListener('click',()=>{
   function render(){
     const combos=loadCombos();
     const arr=Object.keys(combos).map(k=>({...combos[k], key:k}));
-    // 加入你本人（手機本地 stats）一齊排
-    const meGames=(stats.wins||0)+(stats.losses||0)+(stats.humanTie||0);
-    arr.push({ isMe:true, name:playerTag(), totalProfit:stats.totalProfit||0, games:meGames,
-      wins:stats.wins||0, losses:stats.losses||0, totalWager:stats.totalWager||0, peak:stats.peak||balance,
-      maxWin:stats.maxStreak||0, maxLose:stats.maxLoseStreak||0, bestWin:stats.winAmt||0, bust:0, age:'你' });
     arr.sort((a,b)=>{
       let av,bv;
       if(sortKey==='games'){ av=a.games||0; bv=b.games||0; }
@@ -3730,24 +3688,6 @@ document.getElementById('btnLeaderboard').addEventListener('click',()=>{
     });
     if(!arr.length){ list.innerHTML='<div class="alb-row" style="color:#7a8a7a;">尚無組合紀錄（玩幾鋪就有）</div>'; return; }
     list.innerHTML=arr.map((c,i)=>{
-      if(c.isMe){
-        const winRate = ((c.wins||0)+(c.losses||0)>0) ? Math.round((c.wins||0)/((c.wins||0)+(c.losses||0))*100)+'%' : '—';
-        return '<div class="alb-combo me">'+
-          '<div class="cb-top"><span class="cb-name">👤 '+(i+1)+'. '+c.name+'（你）</span><span class="cb-cnt">你嘅總結</span></div>'+
-          '<div class="cb-grid">'+
-            '<div>局數 <b>'+fmt(c.games)+'</b></div>'+
-            '<div>贏/輸 <b>'+fmt(c.wins)+'/'+fmt(c.losses)+'</b></div>'+
-            '<div>勝率 <b>'+winRate+'</b></div>'+
-            '<div>總投注 <b>'+fmt(c.totalWager)+'</b></div>'+
-            '<div>總盈利 <b>'+fmt(c.totalProfit)+'</b></div>'+
-            '<div class="cb-peak">最高資金 <b>'+fmt(c.peak)+'</b></div>'+
-            '<div>最多贏一次 <b>'+fmt(c.bestWin)+'</b></div>'+
-            '<div>最長連贏 <b>'+fmt(c.maxWin)+'</b></div>'+
-            '<div>最長連輸 <b>'+fmt(c.maxLose)+'</b></div>'+
-            (c.bust>0?'<span class="cb-bust">💀破產×'+c.bust+'</span>':'<span>破產 0</span>')+
-            '<div>年齡 <b>—</b></div>'+
-          '</div></div>';
-      }
       const bustCls = (c.bust||0)>0 ? ' bust' : '';
       const bustTxt = (c.bust||0)>0 ? '<span class="cb-bust">💀破產×'+c.bust+'</span>' : '<span>破產 0</span>';
       const winRate = ((c.wins||0)+(c.losses||0)>0) ? Math.round((c.wins||0)/((c.wins||0)+(c.losses||0))*100)+'%' : '—';
