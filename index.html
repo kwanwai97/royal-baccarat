@@ -122,25 +122,19 @@
   #bankerScore.squeeze-pin{ position:fixed; z-index:40; font-size:20px; margin:0; right:4px; left:auto; }
   /* 兩隻牌一行；第3隻補牌自動摺落下一行(下方中心打橫)，固定高度避免發牌區跳動 */
   /* 固定高度 Grid 預留第2行：首兩張永遠貼頂固定，第3張填落第2行 → 唔會向上跳 */
-  .cards{display:grid; grid-template-columns:repeat(2,52px); grid-auto-rows:72px; gap:4px; width:108px; height:152px; align-content:start; justify-content:center; margin-top:2px;}
+  .cards{display:grid; grid-template-columns:repeat(2,52px); grid-auto-rows:72px; gap:4px; width:108px; height:152px; align-content:start; justify-content:center;}
   .card{ width:52px; height:72px; border-radius:4px; background:#fff; color:#000; position:relative;
     box-shadow:0 2px 6px rgba(0,0,0,.5); font-weight:800; display:flex; align-items:center; justify-content:center;
     font-size:22px; transform:translateY(-4px) rotate(-4deg); opacity:0; transition:all .3s cubic-bezier(.2,.8,.3,1.2);
     border:1px solid #ccc; }
   .card.show{opacity:1; transform:translateY(0) rotate(0);}
-  /* 第3隻補牌打橫擺喺兩張牌下方正中；margin-top 2px（緊貼上面兩隻牌） */
-  .cards .card:nth-child(3){grid-column:1 / -1; justify-self:center; margin-top:4px;}
-  /* squeeze模式：打橅 90°，牌身+內容一起旋轉 */
-  .card:nth-child(3).sq{transform:translateY(0) rotate(90deg);}
-  /* squeeze模式點擊後豎起(暫時取消橅放) */
-  .card:nth-child(3).sq.upright{transform:translateY(0) rotate(0);}
-  /* 3D模式翻牌完成：打橫 90°，放在兩隻直牌下方 (1秒慢速旋轉) */
-  .card:nth-child(3).flat{transform:translateY(0) rotate(90deg); transition:transform 1s ease-in-out;}
+  /* 第3隻補牌打橫擺喺兩張牌下方正中（賭場慣例），預留第2行格子令首兩張唔會向上跳 */
+  .cards .card:nth-child(3){grid-column:1 / -1; justify-self:center; margin-top:6px; transform-origin:center;}
+  .cards .card:nth-child(3).show{transform:translateY(0);}
   /* 第3隻牌打橫：取消中間大點數；角落數字隨牌身90°旋轉變垂直（同1、2隻一樣只顯數字rank） */
   .cards .card:nth-child(3) .mid{display:none;}
   /* 第3隻牌打橫：牌身 rotate(90deg) 令整張橫置；角落數字反向 rotate(-90deg) 抵消牌身旋轉 → 數字保持企直可讀（6 唔會變 9）。
-     牌身 +90° 後 TL 角去到可視右上、BR 角去到可視左下，兩隻數字都反向轉 -90° 企返直。
-     --- 3D模式: 翻牌完成後添加 .flat 類別 --- */
+     牌身 +90° 後 TL 角去到可視右上、BR 角去到可視左下，兩隻數字都反向轉 -90° 企返直。 */
   .cards .card:nth-child(3) .corner.tl{top:4px; left:5px; right:auto; bottom:auto;}
   .cards .card:nth-child(3) .corner.br{bottom:4px; right:5px; left:auto; top:auto;}
   .cards .card:nth-child(3).show-num .corner{opacity:1;}
@@ -849,8 +843,8 @@
     .betrow.bottom .bet .chips-stack{ min-height:16px; margin-top:1px; }  /* 橫版底列收: 52→48 */
     .chip{ width:26px; height:26px; font-size:8px; }
 </style>
-</head><body>
-<script src="shop.js"></script>
+</head>
+<body>
 <div class="app">
   <!-- 手機本地 AI 組合排行榜面板（按 性格×注碼×年齡 累積，唔清，純 localStorage） -->
   <div id="aiLbPanel" class="ai-lb-panel" hidden>
@@ -1758,17 +1752,6 @@ async function genAiLineLLM(ai, ctx, prev){
   }
   return null;  // 全部失敗 → caller fallback 預製句
 }
-// AI 對話去重機制：60局內不重複（冷靜期）
-// usedPhrasesGlobal: 今靴用過嘅 AI 句子（跨 AI 全局共享）
-// phraseCounter: 計數器，每 60 局重置一次
-let usedPhrasesGlobal = [];   // 儲存今靴用過嘅句子
-let phraseCounter = 0;        // 計局數
-function phraseUsed(msg){ return usedPhrasesGlobal.indexOf(msg) >= 0; }
-function phraseAdd(msg){
-  usedPhrasesGlobal.push(msg);
-  if(usedPhrasesGlobal.length > 200) usedPhrasesGlobal.shift();  // 防止太大
-}
-function phraseReset(){ usedPhrasesGlobal = []; phraseCounter = 0; }
 
 function genFunnyLine(ai, ctx) {
   const p = AI_PERSONAS[ai.persona];
@@ -1947,25 +1930,9 @@ async function tableChatPhase(sec) {
         if (Date.now() - t0 > CHAT_BUDGET_MS) break;   // 預算用完就收聲，唔硬出4句
         const ai = speakers[i];
         let msg = null;
-        if(LLM_CHAT){
-          let llmAttempts = 0;
-          do {
-            msg = await genAiLineLLM(ai, ctx, prev);
-            llmAttempts++;
-            if (!msg) break;  // LLM 失敗 → 跳出嘗試 fallback
-          } while (llmAttempts < 3 && phraseUsed(msg));
-          if (!msg || phraseUsed(msg)) msg = null;  // 用完就清，讓 fallback 預製句接手
-        }
-        if(!msg){
-          let fbAttempts = 0;
-          do {
-            msg = genChatLine(ai, ai._prePick, ctx, prev, usedThisRound);
-            fbAttempts++;
-          } while (fbAttempts < 3 && phraseUsed(msg));
-        }
+        if(LLM_CHAT){ msg = await genAiLineLLM(ai, ctx, prev); }   // 🧠 LLM 即時生成（call 唔到會 null）
+        if(!msg){ msg = genChatLine(ai, ai._prePick, ctx, prev, usedThisRound); }  // fallback 預製句
         if (!msg) { prev = ai; continue; }
-        if (phraseUsed(msg)) phraseAdd(msg);  // 已經存在就補充（避免永遠重試）
-        phraseAdd(msg);
         addChatBubble(ai, msg);
         if (!mute) {
             await speak(ai.name + '：' + msg);   // 原版 speak，唔收 ms，保語音安全
@@ -2020,17 +1987,9 @@ function cardEl(card){
   if(!sq){ 
     setTimeout(()=>d.classList.add('flip'), 800);
     // 3D模式：翻牌transition完成後顯示數字
-    // 第3隻牌翻牌完成後回到橫放 (.flat)
     const cf=d.querySelector('.cf');
     cf.addEventListener('transitionend',function handler(e){
-      if(e.propertyName==='transform'){
-        cf.removeEventListener('transitionend',handler);
-        if(d.hasAttribute('data-card3')){
-          setTimeout(()=>{ d.classList.add('flat'); }, 200);
-        } else {
-          d.classList.add('show-num');
-        }
-      }
+      if(e.propertyName==='transform'){ cf.removeEventListener('transitionend',handler); d.classList.add('show-num'); }
     });
   } else {
     // 搣牌模式：數字只喺張牌真·完全掀開嗰陣先顯示
@@ -2099,74 +2058,32 @@ function sqManualOpen(el, sec){
       clearInterval(iv); sqTimerShow(0);
       el.removeEventListener('pointerdown',onDown); window.removeEventListener('pointermove',onMove); window.removeEventListener('pointerup',onUp);
       el.removeEventListener('touchstart',onDown); window.removeEventListener('touchmove',onMove); window.removeEventListener('touchend',onUp);
-      if(auto && prog<0.5){ el.classList.add('flip'); }               // 超時：自動掀開動畫（數字由 animationend 顯示）
+      if(auto && prog<0.5){ el.classList.add('flip'); }               // 超時：自動掀開動畫
       else { back.style.transition='clip-path .45s'; back.style.clipPath=clipFor(dir,1.01);    // 手動：順住你嘅方向全開
         // 數字只喺張牌真·完全掀開(clip 過渡到 full)嗰陣先顯示；中途/未過半收返合都唔准顯示
         back.addEventListener('transitionend', function hn(e){ if(e.propertyName==='clip-path'){ back.removeEventListener('transitionend',hn); el.classList.add('show-num'); } });
       }
-      setTimeout(()=>{ el.style.transform=''; el.style.zIndex=''; if(scoreEl) scoreEl.classList.remove('squeeze-pin'); if(scoreElB) scoreElB.classList.remove('squeeze-pin'); el.classList.add('show-num'); sndDeal(); res(); }, auto?4000:1000);
+      setTimeout(()=>{ el.style.transform=''; el.style.zIndex=''; if(scoreEl) scoreEl.classList.remove('squeeze-pin'); if(scoreElB) scoreElB.classList.remove('squeeze-pin'); sndDeal(); res(); }, auto?4000:1000);
     }
     el.addEventListener('pointerdown',onDown); window.addEventListener('pointermove',onMove); window.addEventListener('pointerup',onUp);
     el.addEventListener('touchstart',onDown,{passive:false}); window.addEventListener('touchmove',onMove,{passive:false}); window.addEventListener('touchend',onUp);
   });
 }
-/* ===== 第3隻補牌揭牌 ===== */
-/* 第3隻補牌揭牌 — 根據模式分離處理 */
+/* 第3隻補牌：5秒揀→點咗手動10秒；冇點就自動開 */
 async function revealThird(containerId){
+  if(dealMode!=='squeeze') return;
   const kids=document.getElementById(containerId).children;
   const el=kids[kids.length-1]; if(!el) return;
-  if(dealMode==='squeeze'){ await revealThirdSqueeze(el); }
-  else { await revealThird3D(el); }
-}
-/* === 3D模式：自動開牌 (無互動，只翻牌動畫) === */
-async function revealThird3D(el){
-  // 流程: 牌開始打橫 (.flat) → 400ms 後豎起 → cardEl 800ms 後翻牌 → flip 完成 → 數字顯示 → .flat 回橕 (1秒)
-  // .flat 延遲移除讓牌先顯示再豎起
-  setTimeout(()=>{ el.classList.remove('flat'); }, 400);
-  // 數字顯示: 翻牌完成後 (400+800+500ms = ~1300ms) 立即顯示，唔等1秒回橋
-  setTimeout(()=>{ 
-    // 顯示所有牌的數字 (第一二隻 + 第3隻)
-    ['playerCards','bankerCards'].forEach(cid=>{
-      const box=document.getElementById(cid);
-      if(!box) return;
-      Array.prototype.forEach.call(box.children, c=>c.classList.add('show-num'));
-    });
-  }, 1950);
-}
-/* === Squeeze模式：手動/自動搣牌 === */
-async function revealThirdSqueeze(el){
-  // 搣牌模式：5秒揀牌 → 點咗手動10秒；冇點就自動開
   const pick=await sqWaitClick([el],5);
-  if(pick){
-    // 點擊後豎起 (添加 .upright 覆蓋 .sq 的橋放)；搥完後移除 .upright 回橋
-    // .sq 保持不變以確保 squeeze reveal animation 正確
-    el.classList.add('upright');
-    await sqManualOpen(pick,10);
-    el.classList.remove('upright');
-  } else {
-    // 冇點：自動開 — 豎起→掀開→回平
-    el.classList.add('upright');
-    sqAutoOpen(el);
-    await sleep(4000);
-    el.classList.remove('upright');
-  }
-  if(el){ el.classList.add('show-num'); }
+  if(pick){ await sqManualOpen(pick,10); }
+  else { sqAutoOpen(el); await sleep(4000); }
 }
 function renderCards(container, cards, delay){
   container.innerHTML='';
   cards.forEach((c,i)=>{ setTimeout(()=>{ const el=cardEl(c); container.appendChild(el); requestAnimationFrame(()=>el.classList.add('show')); sndDeal(); }, delay*i); });
 }
 function appendCard(containerId, c){
-  return new Promise(res=>{ setTimeout(()=>{ const el=cardEl(c);
-    // 標記第三隻牌 (data-card3) — 第3張以後的牌
-    const kids=document.getElementById(containerId).children;
-    if(kids.length>=2){ 
-      el.setAttribute('data-card3','1');
-      // 3D模式：第三隻牌先打橫放 (等 revealThird 將 .flat 移除旋轉豎起)
-      if(dealMode!=='squeeze'){ el.classList.add('flat'); }
-    }
-    document.getElementById(containerId).appendChild(el);
-    requestAnimationFrame(()=>el.classList.add('show')); sndDeal(); res(); },0); });
+  return new Promise(res=>{ setTimeout(()=>{ const el=cardEl(c); document.getElementById(containerId).appendChild(el); requestAnimationFrame(()=>el.classList.add('show')); sndDeal(); res(); },0); });
 }
 function updateScore(who,val){ const el=document.getElementById(who+'Score'); el.textContent=val; el.classList.add('show'); }
 function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
@@ -2177,8 +2094,6 @@ function showMsg(txt,color){ const m=document.getElementById('centerMsg'); m.tex
 async function deal(auto){
   if(dealing) return;                 // 已經開緊牌就唔再開（防止重複發牌）
   dealing=true;                       // 即時上鎖：doShuffle / 緩衝期間任何並發呼叫都擋到
-  phraseCounter++;                    // 每局開始計一次
-  if(phraseCounter >= 60){ phraseReset(); }  // 60局重置，冷靜期結束
   try{
   let total=0; for(const x in bets) total+=bets[x];
   // 只有在「無下注、非自動、無 AI」且「預測系統沒有建議」時才阻擋
@@ -2260,12 +2175,12 @@ async function deal(auto){
 
   if(p0<8 && b0<8){
     if(p0<=5){
-    dealerCall('閒家補牌','#a9d2ff');
-    const pt=drawCard(); pc.push(pt); await appendCard('playerCards',pt); await revealThird('playerCards'); await sleep(1000);
-    updateScore('player',handTotal(pc));
-    if(bankerShouldDraw(b0,pt.value)){ dealerCall('莊家補牌','#ffb3b3'); const bt=drawCard(); bc.push(bt); await appendCard('bankerCards',bt); await revealThird('bankerCards'); await sleep(900); updateScore('banker',handTotal(bc)); }
+      dealerCall('閒家補牌','#a9d2ff');
+      const pt=drawCard(); pc.push(pt); await appendCard('playerCards',pt); await revealThird('playerCards'); await sleep(1000);
+      if(dealMode!=='squeeze') updateScore('player',handTotal(pc));
+      if(bankerShouldDraw(b0,pt.value)){ dealerCall('莊家補牌','#ffb3b3'); const bt=drawCard(); bc.push(bt); await appendCard('bankerCards',bt); await revealThird('bankerCards'); await sleep(900); if(dealMode!=='squeeze') updateScore('banker',handTotal(bc)); }
     } else {
-    if(b0<=5){ dealerCall('莊家補牌','#ffb3b3'); const bt=drawCard(); bc.push(bt); await appendCard('bankerCards',bt); await revealThird('bankerCards'); await sleep(900); updateScore('banker',handTotal(bc)); }
+      if(b0<=5){ dealerCall('莊家補牌','#ffb3b3'); const bt=drawCard(); bc.push(bt); await appendCard('bankerCards',bt); await revealThird('bankerCards'); await sleep(900); if(dealMode!=='squeeze') updateScore('banker',handTotal(bc)); }
     }
   }
   await sleep(1000);
@@ -3280,7 +3195,6 @@ function resetFollowStats(){
   showToast('🧹 跟注統計已重置');
 }
 async function doShuffle(){
-  phraseReset();  // 洗牌 = 新靴，重置 AI 對話去重池 + 計數器
   const ov=document.getElementById('shuffleOverlay');
   if(ov){ ov.querySelector('.title').textContent='🔀 洗牌中…'; ov.classList.add('show'); }
   resetShoe(); resetRoads(); drawAllRoads();
@@ -3671,108 +3585,6 @@ function playerTag(){
   try{ const n=localStorage.getItem('bac_player_name'); return n && n.trim() ? n.trim() : '你'; }
   catch(e){ return '你'; }
 }
-// 商店功能：模擬伺服器版充值
-const shop = {
-  // 讀取資源
-  getCoins() { try { return parseInt(localStorage.getItem('bac_coins')||'0') || 0; } catch(e){ return 0; } },
-  getRevives() { try { return parseInt(localStorage.getItem('bac_ai_revives')||'0') || 0; } catch(e){ return 0; } },
-  // 充值（模擬 API）
-  recharge(amount, label) {
-    const coins = this.getCoins() + amount;
-    localStorage.setItem('bac_coins', coins);
-    showToast('💰 充值成功！獲得 ' + amount.toLocaleString() + ' 幣（' + label + '）');
-    this.updateBalanceDisplay();
-  },
-  // 購買 AI 復活
-  buyRevives(count, price) {
-    const coins = this.getCoins();
-    if (coins < price) { showToast('❌ 餘額不足！需要 ' + price + ' 幣'); return false; }
-    const revives = this.getRevives() + count;
-    localStorage.setItem('bac_coins', coins - price);
-    localStorage.setItem('bac_ai_revives', revives);
-    showToast('🤖 購買成功！AI 復活次數 +' + count + ' 次');
-    this.updateBalanceDisplay();
-    return true;
-  },
-  // 顯示本人資源彈窗
-  openProfileModal() {
-    const cur=loadName();
-    const box=document.createElement('div');
-    box.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;z-index:9999;';
-    const card=document.createElement('div');
-    card.style.cssText='background:#1d1530;border:1px solid #ffd479;border-radius:12px;padding:16px;width:80%;max-width:280px;color:#fff;font-family:inherit;';
-    card.innerHTML='<div style="font-size:14px;font-weight:800;margin-bottom:10px;color:#ffd479;">個人資源</div>';
-    const coins = this.getCoins();
-    const revives = this.getRevives();
-    card.innerHTML += '<div style="margin:8px 0;"><span style="color:#ffd479;">💎 幣數：</span> ' + coins.toLocaleString() + '</div>';
-    card.innerHTML += '<div style="margin:8px 0;"><span style="color:#ffd479;">🤖 AI復活次數：</span> ' + revives + '</div>';
-    const row=document.createElement('div');
-    row.style.cssText='display:flex;gap:8px;margin-top:12px;';
-    const shopBtn=document.createElement('button');
-    shopBtn.textContent='商店';
-    shopBtn.style.cssText='flex:1;padding:8px;border:none;border-radius:8px;background:#5a7cbf;color:#fff;font-size:14px;font-weight:700;cursor:pointer;';
-    const closeBtn=document.createElement('button');
-    closeBtn.textContent='關閉';
-    closeBtn.style.cssText='flex:1;padding:8px;border:none;border-radius:8px;background:#444;color:#fff;font-size:14px;cursor:pointer;';
-    row.appendChild(shopBtn); row.appendChild(closeBtn);
-    card.appendChild(row);
-    box.appendChild(card);
-    document.body.appendChild(box);
-    function close(){ if(box.parentNode) box.parentNode.removeChild(box); }
-    closeBtn.addEventListener('click',close);
-    box.addEventListener('click',e=>{ if(e.target===box) close(); });
-    // 商店按鈕
-    shopBtn.addEventListener('click',()=>{ this.openShop(); close(); });
-  },
-  // 開啟商店
-  openShop() {
-    const coins = this.getCoins();
-    const box=document.createElement('div');
-    box.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;z-index:9999;';
-    const card=document.createElement('div');
-    card.style.cssText='background:#1d1530;border:1px solid #ffd479;border-radius:12px;padding:16px;width:90%;max-width:320px;color:#fff;font-family:inherit;';
-    card.innerHTML='<div style="font-size:14px;font-weight:800;margin-bottom:10px;color:#ffd479;">🛒 銀行商店</div>';
-    const shopContent=document.createElement('div');
-    shopContent.innerHTML =
-      '<div style="margin:8px 0;padding:8px;background:#0f0a1c;border-radius:6px;">' +
-      '<div style="color:#ffd479;font-weight:700;margin-bottom:6px;">充值</div>' +
-      '<button data-amount="100" style="width:100%;margin:4px 0;padding:8px;border:none;border-radius:6px;background:#3a7c5a;color:#fff;cursor:pointer;">✅ 充值 100 幣 (模擬)</button>' +
-      '<button data-amount="500" style="width:100%;margin:4px 0;padding:8px;border:none;border-radius:6px;background:#3a7c5a;color:#fff;cursor:pointer;">✅ 充值 500 幣 (模擬)</button>' +
-      '<button data-amount="1000" style="width:100%;margin:4px 0;padding:8px;border:none;border-radius:6px;background:#3a7c5a;color:#fff;cursor:pointer;">✅ 充值 1000 幣 +500 贈 (模擬)</button>' +
-      '</div>' +
-      '<div style="margin:8px 0;padding:8px;background:#0f0a1c;border-radius:6px;">' +
-      '<div style="color:#ffd479;font-weight:700;margin-bottom:6px;">AI 陪玩復活</div>' +
-      '<button data-price="200" data-count="3" style="width:100%;margin:4px 0;padding:8px;border:none;border-radius:6px;background:#9b59b6;color:#fff;cursor:pointer;">🤖 購買 3 次復活 (200 幣)</button>' +
-      '</div>';
-    card.appendChild(shopContent);
-    const closeBtn=document.createElement('button');
-    closeBtn.textContent='關閉';
-    closeBtn.style.cssText='margin-top:8px;padding:8px 16px;border:none;border-radius:6px;background:#444;color:#fff;cursor:pointer;';
-    card.appendChild(closeBtn);
-    box.appendChild(card);
-    document.body.appendChild(box);
-    function close(){ if(box.parentNode) box.parentNode.removeChild(box); }
-    // 充值按鈕
-    card.querySelectorAll('button[data-amount]').forEach(btn=>{
-      btn.addEventListener('click',()=>{ this.recharge(parseInt(btn.dataset.amount), btn.textContent); });
-    });
-    // AI復活按鈕
-    card.querySelectorAll('button[data-price]').forEach(btn=>{
-      btn.addEventListener('click',()=>{ this.buyRevives(parseInt(btn.dataset.count), parseInt(btn.dataset.price)); });
-    });
-    closeBtn.addEventListener('click',close);
-    box.addEventListener('click',e=>{ if(e.target===box) close(); });
-  },
-  updateBalanceDisplay() {
-    const txt=document.getElementById('playerNameTxt');
-    const balName=document.getElementById('balanceName');
-    if(balName){
-      const coins = this.getCoins();
-      balName.textContent = '👤 ' + (txt ? txt.textContent : '玩家') + ' 💎' + coins;
-    }
-  }
-};
-
 // 玩家名稱：localStorage 儲存，撳名彈輸入框改
 (function(){
   const KEY='bac_player_name';
@@ -3786,7 +3598,41 @@ const shop = {
     if(balName) balName.textContent = '👤 ' + n;
   }
   renderName();
-  btn.addEventListener('click',()=>{ shopOpenProfile(loadName); });
+  btn.addEventListener('click',()=>{
+    const cur=loadName();
+    const box=document.createElement('div');
+    box.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;z-index:9999;';
+    const card=document.createElement('div');
+    card.style.cssText='background:#1d1530;border:1px solid #ffd479;border-radius:12px;padding:16px;width:80%;max-width:280px;color:#fff;font-family:inherit;';
+    card.innerHTML='<div style="font-size:14px;font-weight:800;margin-bottom:10px;color:#ffd479;">改你嘅名稱</div>';
+    const inp=document.createElement('input');
+    inp.value=cur==='玩家'?'':cur;
+    inp.placeholder='填你嘅名（例如：阿強）';
+    inp.maxLength=12;
+    inp.style.cssText='width:100%;box-sizing:border-box;padding:8px;border-radius:8px;border:1px solid #555;background:#0f0a1c;color:#fff;font-size:14px;';
+    card.appendChild(inp);
+    const row=document.createElement('div');
+    row.style.cssText='display:flex;gap:8px;margin-top:12px;';
+    const ok=document.createElement('button');
+    ok.textContent='確定';
+    ok.style.cssText='flex:1;padding:8px;border:none;border-radius:8px;background:#3a7c5a;color:#fff;font-size:14px;font-weight:700;cursor:pointer;';
+    const cancel=document.createElement('button');
+    cancel.textContent='取消';
+    cancel.style.cssText='flex:1;padding:8px;border:none;border-radius:8px;background:#444;color:#fff;font-size:14px;cursor:pointer;';
+    row.appendChild(ok); row.appendChild(cancel);
+    card.appendChild(row);
+    box.appendChild(card);
+    document.body.appendChild(box);
+    setTimeout(()=>inp.focus(),50);
+    function close(){ if(box.parentNode) box.parentNode.removeChild(box); }
+    ok.addEventListener('click',()=>{
+      const v=inp.value.trim();
+      if(v){ localStorage.setItem(KEY,v); renderName(); showToast('✅ 名稱已改為「'+v+'」'); }
+      close();
+    });
+    cancel.addEventListener('click',close);
+    box.addEventListener('click',e=>{ if(e.target===box) close(); });
+  });
 })();
 document.getElementById('btnLeaderboard').addEventListener('click',()=>{
   // AI 組合排行榜：讀 localStorage 嘅 bac_ai_combos，按指標排序（累積，唔清）
