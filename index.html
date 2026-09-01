@@ -849,8 +849,8 @@
     .betrow.bottom .bet .chips-stack{ min-height:16px; margin-top:1px; }  /* 橫版底列收: 52→48 */
     .chip{ width:26px; height:26px; font-size:8px; }
 </style>
-</head>
-<body>
+</head><body>
+<script src="shop.js"></script>
 <div class="app">
   <!-- 手機本地 AI 組合排行榜面板（按 性格×注碼×年齡 累積，唔清，純 localStorage） -->
   <div id="aiLbPanel" class="ai-lb-panel" hidden>
@@ -3671,6 +3671,108 @@ function playerTag(){
   try{ const n=localStorage.getItem('bac_player_name'); return n && n.trim() ? n.trim() : '你'; }
   catch(e){ return '你'; }
 }
+// 商店功能：模擬伺服器版充值
+const shop = {
+  // 讀取資源
+  getCoins() { try { return parseInt(localStorage.getItem('bac_coins')||'0') || 0; } catch(e){ return 0; } },
+  getRevives() { try { return parseInt(localStorage.getItem('bac_ai_revives')||'0') || 0; } catch(e){ return 0; } },
+  // 充值（模擬 API）
+  recharge(amount, label) {
+    const coins = this.getCoins() + amount;
+    localStorage.setItem('bac_coins', coins);
+    showToast('💰 充值成功！獲得 ' + amount.toLocaleString() + ' 幣（' + label + '）');
+    this.updateBalanceDisplay();
+  },
+  // 購買 AI 復活
+  buyRevives(count, price) {
+    const coins = this.getCoins();
+    if (coins < price) { showToast('❌ 餘額不足！需要 ' + price + ' 幣'); return false; }
+    const revives = this.getRevives() + count;
+    localStorage.setItem('bac_coins', coins - price);
+    localStorage.setItem('bac_ai_revives', revives);
+    showToast('🤖 購買成功！AI 復活次數 +' + count + ' 次');
+    this.updateBalanceDisplay();
+    return true;
+  },
+  // 顯示本人資源彈窗
+  openProfileModal() {
+    const cur=loadName();
+    const box=document.createElement('div');
+    box.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;z-index:9999;';
+    const card=document.createElement('div');
+    card.style.cssText='background:#1d1530;border:1px solid #ffd479;border-radius:12px;padding:16px;width:80%;max-width:280px;color:#fff;font-family:inherit;';
+    card.innerHTML='<div style="font-size:14px;font-weight:800;margin-bottom:10px;color:#ffd479;">個人資源</div>';
+    const coins = this.getCoins();
+    const revives = this.getRevives();
+    card.innerHTML += '<div style="margin:8px 0;"><span style="color:#ffd479;">💎 幣數：</span> ' + coins.toLocaleString() + '</div>';
+    card.innerHTML += '<div style="margin:8px 0;"><span style="color:#ffd479;">🤖 AI復活次數：</span> ' + revives + '</div>';
+    const row=document.createElement('div');
+    row.style.cssText='display:flex;gap:8px;margin-top:12px;';
+    const shopBtn=document.createElement('button');
+    shopBtn.textContent='商店';
+    shopBtn.style.cssText='flex:1;padding:8px;border:none;border-radius:8px;background:#5a7cbf;color:#fff;font-size:14px;font-weight:700;cursor:pointer;';
+    const closeBtn=document.createElement('button');
+    closeBtn.textContent='關閉';
+    closeBtn.style.cssText='flex:1;padding:8px;border:none;border-radius:8px;background:#444;color:#fff;font-size:14px;cursor:pointer;';
+    row.appendChild(shopBtn); row.appendChild(closeBtn);
+    card.appendChild(row);
+    box.appendChild(card);
+    document.body.appendChild(box);
+    function close(){ if(box.parentNode) box.parentNode.removeChild(box); }
+    closeBtn.addEventListener('click',close);
+    box.addEventListener('click',e=>{ if(e.target===box) close(); });
+    // 商店按鈕
+    shopBtn.addEventListener('click',()=>{ this.openShop(); close(); });
+  },
+  // 開啟商店
+  openShop() {
+    const coins = this.getCoins();
+    const box=document.createElement('div');
+    box.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;z-index:9999;';
+    const card=document.createElement('div');
+    card.style.cssText='background:#1d1530;border:1px solid #ffd479;border-radius:12px;padding:16px;width:90%;max-width:320px;color:#fff;font-family:inherit;';
+    card.innerHTML='<div style="font-size:14px;font-weight:800;margin-bottom:10px;color:#ffd479;">🛒 銀行商店</div>';
+    const shopContent=document.createElement('div');
+    shopContent.innerHTML =
+      '<div style="margin:8px 0;padding:8px;background:#0f0a1c;border-radius:6px;">' +
+      '<div style="color:#ffd479;font-weight:700;margin-bottom:6px;">充值</div>' +
+      '<button data-amount="100" style="width:100%;margin:4px 0;padding:8px;border:none;border-radius:6px;background:#3a7c5a;color:#fff;cursor:pointer;">✅ 充值 100 幣 (模擬)</button>' +
+      '<button data-amount="500" style="width:100%;margin:4px 0;padding:8px;border:none;border-radius:6px;background:#3a7c5a;color:#fff;cursor:pointer;">✅ 充值 500 幣 (模擬)</button>' +
+      '<button data-amount="1000" style="width:100%;margin:4px 0;padding:8px;border:none;border-radius:6px;background:#3a7c5a;color:#fff;cursor:pointer;">✅ 充值 1000 幣 +500 贈 (模擬)</button>' +
+      '</div>' +
+      '<div style="margin:8px 0;padding:8px;background:#0f0a1c;border-radius:6px;">' +
+      '<div style="color:#ffd479;font-weight:700;margin-bottom:6px;">AI 陪玩復活</div>' +
+      '<button data-price="200" data-count="3" style="width:100%;margin:4px 0;padding:8px;border:none;border-radius:6px;background:#9b59b6;color:#fff;cursor:pointer;">🤖 購買 3 次復活 (200 幣)</button>' +
+      '</div>';
+    card.appendChild(shopContent);
+    const closeBtn=document.createElement('button');
+    closeBtn.textContent='關閉';
+    closeBtn.style.cssText='margin-top:8px;padding:8px 16px;border:none;border-radius:6px;background:#444;color:#fff;cursor:pointer;';
+    card.appendChild(closeBtn);
+    box.appendChild(card);
+    document.body.appendChild(box);
+    function close(){ if(box.parentNode) box.parentNode.removeChild(box); }
+    // 充值按鈕
+    card.querySelectorAll('button[data-amount]').forEach(btn=>{
+      btn.addEventListener('click',()=>{ this.recharge(parseInt(btn.dataset.amount), btn.textContent); });
+    });
+    // AI復活按鈕
+    card.querySelectorAll('button[data-price]').forEach(btn=>{
+      btn.addEventListener('click',()=>{ this.buyRevives(parseInt(btn.dataset.count), parseInt(btn.dataset.price)); });
+    });
+    closeBtn.addEventListener('click',close);
+    box.addEventListener('click',e=>{ if(e.target===box) close(); });
+  },
+  updateBalanceDisplay() {
+    const txt=document.getElementById('playerNameTxt');
+    const balName=document.getElementById('balanceName');
+    if(balName){
+      const coins = this.getCoins();
+      balName.textContent = '👤 ' + (txt ? txt.textContent : '玩家') + ' 💎' + coins;
+    }
+  }
+};
+
 // 玩家名稱：localStorage 儲存，撳名彈輸入框改
 (function(){
   const KEY='bac_player_name';
@@ -3684,41 +3786,7 @@ function playerTag(){
     if(balName) balName.textContent = '👤 ' + n;
   }
   renderName();
-  btn.addEventListener('click',()=>{
-    const cur=loadName();
-    const box=document.createElement('div');
-    box.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;z-index:9999;';
-    const card=document.createElement('div');
-    card.style.cssText='background:#1d1530;border:1px solid #ffd479;border-radius:12px;padding:16px;width:80%;max-width:280px;color:#fff;font-family:inherit;';
-    card.innerHTML='<div style="font-size:14px;font-weight:800;margin-bottom:10px;color:#ffd479;">改你嘅名稱</div>';
-    const inp=document.createElement('input');
-    inp.value=cur==='玩家'?'':cur;
-    inp.placeholder='填你嘅名（例如：阿強）';
-    inp.maxLength=12;
-    inp.style.cssText='width:100%;box-sizing:border-box;padding:8px;border-radius:8px;border:1px solid #555;background:#0f0a1c;color:#fff;font-size:14px;';
-    card.appendChild(inp);
-    const row=document.createElement('div');
-    row.style.cssText='display:flex;gap:8px;margin-top:12px;';
-    const ok=document.createElement('button');
-    ok.textContent='確定';
-    ok.style.cssText='flex:1;padding:8px;border:none;border-radius:8px;background:#3a7c5a;color:#fff;font-size:14px;font-weight:700;cursor:pointer;';
-    const cancel=document.createElement('button');
-    cancel.textContent='取消';
-    cancel.style.cssText='flex:1;padding:8px;border:none;border-radius:8px;background:#444;color:#fff;font-size:14px;cursor:pointer;';
-    row.appendChild(ok); row.appendChild(cancel);
-    card.appendChild(row);
-    box.appendChild(card);
-    document.body.appendChild(box);
-    setTimeout(()=>inp.focus(),50);
-    function close(){ if(box.parentNode) box.parentNode.removeChild(box); }
-    ok.addEventListener('click',()=>{
-      const v=inp.value.trim();
-      if(v){ localStorage.setItem(KEY,v); renderName(); showToast('✅ 名稱已改為「'+v+'」'); }
-      close();
-    });
-    cancel.addEventListener('click',close);
-    box.addEventListener('click',e=>{ if(e.target===box) close(); });
-  });
+  btn.addEventListener('click',()=>{ shopOpenProfile(loadName); });
 })();
 document.getElementById('btnLeaderboard').addEventListener('click',()=>{
   // AI 組合排行榜：讀 localStorage 嘅 bac_ai_combos，按指標排序（累積，唔清）
