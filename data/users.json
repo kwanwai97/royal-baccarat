@@ -1,0 +1,10 @@
+{
+  "guest": {
+    "id": "guest",
+    "name": "玩家",
+    "balance": 100000,
+    "coins": 0,
+    "ai_revives": 0,
+    "avatar": "👤"
+  }
+}
