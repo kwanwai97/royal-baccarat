@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>皇家百家樂 · 商業版</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "Microsoft JhengHei", "PingFang TC", sans-serif;
+    background: linear-gradient(135deg, #1a0b2e 0%, #2d1b4e 100%);
+    color: #f3e9ff;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .card {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 215, 180, 0.25);
+    border-radius: 20px;
+    padding: 36px 28px;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+  }
+  h1 {
+    text-align: center;
+    font-size: 26px;
+    margin-bottom: 8px;
+    background: linear-gradient(90deg, #ffd700, #ffaa00);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .subtitle {
+    text-align: center;
+    font-size: 13px;
+    color: #c9a8ff;
+    margin-bottom: 26px;
+  }
+  .tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 22px;
+    background: rgba(0, 0, 0, 0.25);
+    border-radius: 12px;
+    padding: 4px;
+  }
+  .tab {
+    flex: 1;
+    padding: 10px 0;
+    text-align: center;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 14px;
+    transition: all 0.2s;
+    border: none;
+    background: transparent;
+    color: #c9a8ff;
+  }
+  .tab.active {
+    background: linear-gradient(135deg, #ffd700, #ff8c00);
+    color: #2d1b4e;
+    box-shadow: 0 4px 12px rgba(255, 140, 0, 0.3);
+  }
+  .form { display: none; flex-direction: column; gap: 14px; }
+  .form.show { display: flex; }
+  label {
+    font-size: 13px;
+    color: #e2c7ff;
+    font-weight: 600;
+  }
+  input {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 215, 180, 0.3);
+    border-radius: 12px;
+    padding: 12px 14px;
+    color: #fff;
+    font-size: 15px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  input:focus {
+    border-color: #ffd700;
+  }
+  .btn {
+    background: linear-gradient(135deg, #ffd700, #ff8c00);
+    color: #2d1b4e;
+    border: none;
+    border-radius: 12px;
+    padding: 13px;
+    font-size: 15px;
+    font-weight: 800;
+    cursor: pointer;
+    margin-top: 6px;
+    transition: transform 0.15s, box-shadow 0.2s;
+  }
+  .btn:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(255, 140, 0, 0.35); }
+  .msg {
+    margin-top: 14px;
+    text-align: center;
+    font-size: 13px;
+    min-height: 18px;
+    font-weight: 700;
+  }
+  .msg.error { color: #ff8a8a; }
+  .msg.ok { color: #8aff8a; }
+  .footer {
+    margin-top: 18px;
+    text-align: center;
+    font-size: 12px;
+    color: #a78bc7;
+  }
+  .user {
+    display: none;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .user.show { display: flex; }
+  .stat-row {
+    display: flex;
+    gap: 10px;
+  }
+  .stat {
+    flex: 1;
+    background: rgba(0,0,0,0.25);
+    border: 1px solid rgba(255,215,180,0.2);
+    border-radius: 14px;
+    padding: 14px 10px;
+    text-align: center;
+  }
+  .stat .num {
+    font-size: 22px;
+    font-weight: 800;
+    color: #ffd700;
+  }
+  .stat .lbl {
+    font-size: 12px;
+    color: #c9a8ff;
+    margin-top: 4px;
+  }
+  .actions { display: flex; flex-direction: column; gap: 10px; }
+  .ghost {
+    background: rgba(255,255,255,0.08);
+    color: #f3e9ff;
+    border: 1px solid rgba(255,215,180,0.25);
+  }
+  .ghost:hover { background: rgba(255,255,255,0.14); }
+</style>
+</head>
+<body>
+  <div class="card">
+    <h1>🎰 皇家百家樂</h1>
+    <div class="subtitle">商業版 · 帳號系統</div>
+
+    <div id="authPanel">
+      <div class="tabs">
+        <button class="tab active" data-tab="login">登入</button>
+        <button class="tab" data-tab="register">註冊</button>
+      </div>
+
+      <form id="loginForm" class="form show" autocomplete="off">
+        <div>
+          <label>帳號</label>
+          <input type="text" id="loginUser" required minlength="3" maxlength="20">
+        </div>
+        <div>
+          <label>密碼</label>
+          <input type="password" id="loginPass" required minlength="4">
+        </div>
+        <button type="submit" class="btn">登入</button>
+        <div class="msg" id="loginMsg"></div>
+      </form>
+
+      <form id="regForm" class="form" autocomplete="off">
+        <div>
+          <label>帳號</label>
+          <input type="text" id="regUser" required minlength="3" maxlength="20">
+        </div>
+        <div>
+          <label>密碼</label>
+          <input type="password" id="regPass" required minlength="4">
+        </div>
+        <button type="submit" class="btn">建立帳號</button>
+        <div class="msg" id="regMsg"></div>
+      </form>
+
+      <div class="footer">本地測試版 · 資料只存呢部機</div>
+    </div>
+
+    <div id="userPanel" class="user">
+      <div class="stat-row">
+        <div class="stat">
+          <div class="num" id="uCredits">0</div>
+          <div class="lbl">籌碼</div>
+        </div>
+        <div class="stat">
+          <div class="num" id="uRevival">0</div>
+          <div class="lbl">復活</div>
+        </div>
+        <div class="stat">
+          <div class="num" id="uAds">0</div>
+          <div class="lbl">已看廣告</div>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btn" id="btnRevive">💖 使用 1 次復活 (+0 籌碼)</button>
+        <button class="btn ghost" id="btnAd">📺 看廣告 +50 籌碼</button>
+        <button class="btn ghost" id="btnBuy500">🛒 購買 500 籌碼 (Demo)</button>
+        <button class="btn ghost" id="btnBuy1500">🛒 購買 1500 籌碼 (Demo)</button>
+        <button class="btn ghost" id="btnBuyRevival">🛒 購買 1 次復活 (Demo)</button>
+        <button class="btn ghost" id="btnLogout">🚪 登出</button>
+      </div>
+      <div class="msg" id="actionMsg"></div>
+    </div>
+  </div>
+
+<script>
+const API = location.origin;
+let token = localStorage.getItem("rb_token") || null;
+
+function msg(id, text, ok) {
+  const el = document.getElementById(id);
+  el.textContent = text || "";
+  el.className = "msg" + (ok === true ? " ok" : ok === false ? " error" : "");
+}
+function setTab(t) {
+  document.querySelectorAll(".tab").forEach(b => b.classList.toggle("active", b.dataset.tab === t));
+  document.getElementById("loginForm").classList.toggle("show", t === "login");
+  document.getElementById("regForm").classList.toggle("show", t === "register");
+}
+function showAuth() {
+  document.getElementById("authPanel").style.display = "";
+  document.getElementById("userPanel").classList.remove("show");
+}
+function showUser() {
+  document.getElementById("authPanel").style.display = "none";
+  document.getElementById("userPanel").classList.add("show");
+}
+async function post(path, body) {
+  const res = await fetch(API + path, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + token
+    },
+    body: JSON.stringify(body || {})
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || "失敗");
+  return data;
+}
+async function getMe() {
+  const data = await post("/api/me");
+  document.getElementById("uCredits").textContent = data.credits;
+  document.getElementById("uRevival").textContent = data.revival;
+  document.getElementById("uAds").textContent = data.ads_watched;
+}
+async function doLogout() {
+  await post("/api/logout").catch(() => {});
+  localStorage.removeItem("rb_token");
+  token = null;
+  showAuth();
+}
+async function init() {
+  if (token) {
+    try {
+      await getMe();
+      showUser();
+    } catch (e) {
+      localStorage.removeItem("rb_token");
+      token = null;
+      showAuth();
+    }
+    return;
+  }
+  showAuth();
+}
+
+document.querySelectorAll(".tab").forEach(b => b.addEventListener("click", () => setTab(b.dataset.tab)));
+
+document.getElementById("loginForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const username = document.getElementById("loginUser").value.trim();
+  const password = document.getElementById("loginPass").value;
+  msg("loginMsg", "登入中…", "");
+  try {
+    const data = await post("/api/login", { username, password });
+    token = data.token;
+    localStorage.setItem("rb_token", token);
+    await getMe();
+    showUser();
+    msg("loginMsg", "", "");
+  } catch (err) {
+    msg("loginMsg", err.message, false);
+  }
+});
+
+document.getElementById("regForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const username = document.getElementById("regUser").value.trim();
+  const password = document.getElementById("regPass").value;
+  msg("regMsg", "註冊中…", "");
+  try {
+    const data = await post("/api/register", { username, password });
+    token = data.token;
+    localStorage.setItem("rb_token", token);
+    await getMe();
+    showUser();
+    msg("regMsg", "", "");
+  } catch (err) {
+    msg("regMsg", err.message, false);
+  }
+});
+
+document.getElementById("btnRevive").addEventListener("click", async () => {
+  try {
+    const data = await post("/api/revive");
+    document.getElementById("uRevival").textContent = data.revival;
+    document.getElementById("uCredits").textContent = data.credits;
+    msg("actionMsg", "已復活 1 次", true);
+  } catch (err) {
+    msg("actionMsg", err.message, false);
+  }
+});
+
+document.getElementById("btnAd").addEventListener("click", async () => {
+  try {
+    const data = await post("/api/watch-ad");
+    document.getElementById("uAds").textContent = data.ads_watched;
+    document.getElementById("uCredits").textContent = data.credits;
+    msg("actionMsg", "看廣告完成，+50 籌碼", true);
+  } catch (err) {
+    msg("actionMsg", err.message, false);
+  }
+});
+
+document.getElementById("btnBuy500").addEventListener("click", async () => {
+  try {
+    const data = await post("/api/purchase", { item: "credits_500" });
+    document.getElementById("uCredits").textContent = data.credits;
+    msg("actionMsg", "已購買 500 籌碼", true);
+  } catch (err) {
+    msg("actionMsg", err.message, false);
+  }
+});
+
+document.getElementById("btnBuy1500").addEventListener("click", async () => {
+  try {
+    const data = await post("/api/purchase", { item: "credits_1500" });
+    document.getElementById("uCredits").textContent = data.credits;
+    msg("actionMsg", "已購買 1500 籌碼", true);
+  } catch (err) {
+    msg("actionMsg", err.message, false);
+  }
+});
+
+document.getElementById("btnBuyRevival").addEventListener("click", async () => {
+  try {
+    const data = await post("/api/purchase", { item: "revival_1" });
+    document.getElementById("uRevival").textContent = data.revival;
+    msg("actionMsg", "已購買 1 次復活", true);
+  } catch (err) {
+    msg("actionMsg", err.message, false);
+  }
+});
+
+document.getElementById("btnLogout").addEventListener("click", doLogout);
+
+init();
+</script>
+</body>
+</html>
