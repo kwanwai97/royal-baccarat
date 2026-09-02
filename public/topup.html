@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>皇家百家樂 · 充值</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "Microsoft JhengHei", "PingFang TC", sans-serif;
+    background: linear-gradient(135deg, #1a0b2e 0%, #2d1b4e 100%);
+    color: #f3e9ff;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .card {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 215, 180, 0.25);
+    border-radius: 20px;
+    padding: 32px 24px;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+  }
+  h1 {
+    text-align: center;
+    font-size: 22px;
+    margin-bottom: 8px;
+    background: linear-gradient(90deg, #ffd700, #ffaa00);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .subtitle { text-align: center; font-size: 13px; color: #c9a8ff; margin-bottom: 22px; }
+  .item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(0,0,0,0.25);
+    border: 1px solid rgba(255,215,180,0.2);
+    border-radius: 14px;
+    padding: 14px 16px;
+    margin-bottom: 12px;
+  }
+  .item .info .name { font-weight: 700; font-size: 15px; }
+  .item .info .price { font-size: 12px; color: #c9a8ff; margin-top: 4px; }
+  .btn {
+    background: linear-gradient(135deg, #ffd700, #ff8c00);
+    color: #2d1b4e;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-weight: 800;
+    cursor: pointer;
+    font-size: 13px;
+  }
+  .back {
+    margin-top: 14px;
+    width: 100%;
+    background: rgba(255,255,255,0.08);
+    color: #f3e9ff;
+    border: 1px solid rgba(255,215,180,0.25);
+    border-radius: 12px;
+    padding: 12px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .msg { margin-top: 12px; text-align: center; font-size: 13px; font-weight: 700; min-height: 18px; }
+  .msg.error { color: #ff8a8a; }
+  .msg.ok { color: #8aff8a; }
+</style>
+</head>
+<body>
+  <div class="card">
+    <h1>🛒 充值商店</h1>
+    <div class="subtitle">選擇商品</div>
+
+    <div class="item">
+      <div class="info">
+        <div class="name">500 籌碼</div>
+        <div class="price">Demo 價錢：30 元</div>
+      </div>
+      <button class="btn" data-item="credits_500">購買</button>
+    </div>
+
+    <div class="item">
+      <div class="info">
+        <div class="name">1500 籌碼</div>
+        <div class="price">Demo 價錢：80 元</div>
+      </div>
+      <button class="btn" data-item="credits_1500">購買</button>
+    </div>
+
+    <div class="item">
+      <div class="info">
+        <div class="name">1 次復活</div>
+        <div class="price">Demo 價錢：20 元</div>
+      </div>
+      <button class="btn" data-item="revival_1">購買</button>
+    </div>
+
+    <button class="back" id="btnBack">← 返回</button>
+    <div class="msg" id="msg"></div>
+  </div>
+
+<script>
+const API = location.origin;
+let token = localStorage.getItem("rb_token") || null;
+function msg(id, text, ok) {
+  const el = document.getElementById(id);
+  el.textContent = text || "";
+  el.className = "msg" + (ok === true ? " ok" : ok === false ? " error" : "");
+}
+async function post(path, body) {
+  const res = await fetch(API + path, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: "Bearer " + token },
+    body: JSON.stringify(body || {})
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || "失敗");
+  return data;
+}
+document.querySelectorAll(".item .btn").forEach(b => b.addEventListener("click", async () => {
+  const item = b.dataset.item;
+  msg("msg", "處理中…", "");
+  try {
+    const data = await post("/api/purchase", { item });
+    msg("msg", "購買成功", true);
+    localStorage.setItem("rb_last", JSON.stringify(data));
+  } catch (e) {
+    msg("msg", e.message, false);
+  }
+}));
+document.getElementById("btnBack").addEventListener("click", () => {
+  location.href = "/";
+});
+if (!token) location.href = "/";
+</script>
+</body>
+</html>
