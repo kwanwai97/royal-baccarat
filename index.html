@@ -1760,7 +1760,7 @@ function genFunnyLine(ai, ctx) {
   const funnyPool = [];
   if (ws >= 4) funnyPool.push('旺到阿媽都唔認得，連贏'+ws+'鋪！我係賭神轉世😎');
   if (ws >= 3) funnyPool.push('連贏'+ws+'鋪，你仲跟唔跟？唔跟就笨啦');
-  if (ls >= 4) funnyPool.push('連輸'+ls+'鋪…我啲錢係紙印㗎嘛，唔痛😭');
+  if (ls >= 4) funnyPool.push('連輸'+ls+'鋪…我啲錢係自己印翻嚟，唔痛😭');
   if (ls >= 3) funnyPool.push('輸到褲浪都濕晒，但老子唔服！');
   if (ctx && ctx.streakLen >= 4) {
     const t = ctx.streakType === 'banker' ? '莊' : '閒';
@@ -1768,17 +1768,18 @@ function genFunnyLine(ai, ctx) {
     funnyPool.push(ctx.streakType==='banker'?'莊狗又偷食，跟咗都唔知點解贏':'閒家威到冇朋友，條龍仲未斷');
   }
   if (ctx && ctx.streakLen === 2) funnyPool.push('兩鋪同邊，係咪要變龍？我賭佢斷😏');
-  if (lastHumanWon && ls >= 2) funnyPool.push('你贏緊我輸緊，我哋係對立😤');
+  if (lastHumanWon && ls >= 2) funnyPool.push('你贏緊我輸緊，風水輪流轉😤');
   if (!lastHumanWon && ws >= 2) funnyPool.push('我旺你衰，跟返我啦笨😝');
   if (ctx && ctx.last === 'tie') funnyPool.push('又和？莊閒講好咗扮曬嘢，冇癮😒');
-  if (tag) funnyPool.push(tag+'…呢鋪我賭佢反轉，跟我冇死');
+  if (tag) funnyPool.push(tag+'…呢鋪我賭佢反轉，再輸返屋企');
   // 更抵死長句（港式市井，跟牌路/局勢嘲諷）
   if (ws >= 5) funnyPool.push('連贏'+ws+'鋪！我準備退休買島，你哋仲喺度博緊彩數😏');
   if (ls >= 5) funnyPool.push('連輸'+ls+'鋪…我决定改行做荷官，起碼唔使輸😭');
   if (ctx && ctx.streakLen >= 5) funnyPool.push('嘩條龍'+ctx.streakLen+'鋪！莊閒都唔敢郁，得我敢跟😂');
   if (lastHumanWon && ls >= 3) funnyPool.push('你贏緊我輸到趴街，我懷疑你係荷官親戚🤬');
-  if (!lastHumanWon && ws >= 3) funnyPool.push('我旺到飛起你伏到落衝，跟唔跟自己想😎');
-  if (ctx && ctx.last === 'tie') funnyPool.push('又和！莊閒兩家講好咗扮曬嘢，我飛咗去邊😒');
+  if (lastHumanWon && ls >= 3) funnyPool.push('賭就輸撚死，唔賭就悶等死🤬');
+  if (!lastHumanWon && ws >= 3) funnyPool.push('我旺到飛起你輸到撲街，跟唔跟自己想😎');
+  if (ctx && ctx.last === 'tie') funnyPool.push('又和！莊閒兩家講好咗扮曬嘢，唔信你唔開莊😒');
   // ===== 新增：抵死 / 對句子 / 搞笑（港式市井）=====
   // 連贏 extra
   if (ws >= 3) funnyPool.push('連贏'+ws+'鋪，我已經唔記得輸係咩味，你話跟唔跟😏');
@@ -1801,7 +1802,7 @@ function genFunnyLine(ai, ctx) {
   funnyPool.push('呢張枱就係我嘅提款機，奈何今日維修中🔧');
   funnyPool.push('你話跟莊定跟閒？我話跟運氣，運氣跟我都唔得😼');
   // 對句子（對仗押韻）
-  funnyPool.push('贏一鋪笑哈哈，輸一鋪食花生🥜');
+  funnyPool.push('贏一鋪笑哈哈，輸一鋪黑曬面🥜');
   funnyPool.push('跟紅頂白係智慧，反手返身係本事💪');
   funnyPool.push('閒家威我就跟閒，莊家威我就跟莊，跟到甩皮先算數🔥');
   funnyPool.push('一局定生死，半注見真章，手唔順就當冇嚟過😐');
