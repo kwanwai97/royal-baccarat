@@ -122,19 +122,25 @@
   #bankerScore.squeeze-pin{ position:fixed; z-index:40; font-size:20px; margin:0; right:4px; left:auto; }
   /* 兩隻牌一行；第3隻補牌自動摺落下一行(下方中心打橫)，固定高度避免發牌區跳動 */
   /* 固定高度 Grid 預留第2行：首兩張永遠貼頂固定，第3張填落第2行 → 唔會向上跳 */
-  .cards{display:grid; grid-template-columns:repeat(2,52px); grid-auto-rows:72px; gap:4px; width:108px; height:152px; align-content:start; justify-content:center;}
+  .cards{display:grid; grid-template-columns:repeat(2,52px); grid-auto-rows:72px; gap:4px; width:108px; height:152px; align-content:start; justify-content:center; margin-top:2px;}
   .card{ width:52px; height:72px; border-radius:4px; background:#fff; color:#000; position:relative;
     box-shadow:0 2px 6px rgba(0,0,0,.5); font-weight:800; display:flex; align-items:center; justify-content:center;
     font-size:22px; transform:translateY(-4px) rotate(-4deg); opacity:0; transition:all .3s cubic-bezier(.2,.8,.3,1.2);
     border:1px solid #ccc; }
   .card.show{opacity:1; transform:translateY(0) rotate(0);}
-  /* 第3隻補牌打橫擺喺兩張牌下方正中（賭場慣例），預留第2行格子令首兩張唔會向上跳 */
-  .cards .card:nth-child(3){grid-column:1 / -1; justify-self:center; margin-top:6px; transform-origin:center;}
-  .cards .card:nth-child(3).show{transform:translateY(0);}
+  /* 第3隻補牌打橫擺喺兩張牌下方正中；margin-top 2px（緊貼上面兩隻牌） */
+  .cards .card:nth-child(3){grid-column:1 / -1; justify-self:center; margin-top:4px;}
+  /* squeeze模式：打橅 90°，牌身+內容一起旋轉 */
+  .card:nth-child(3).sq{transform:translateY(0) rotate(90deg);}
+  /* squeeze模式點擊後豎起(暫時取消橅放) */
+  .card:nth-child(3).sq.upright{transform:translateY(0) rotate(0);}
+  /* 3D模式翻牌完成：打橫 90°，放在兩隻直牌下方 (1秒慢速旋轉) */
+  .card:nth-child(3).flat{transform:translateY(0) rotate(90deg); transition:transform 1s ease-in-out;}
   /* 第3隻牌打橫：取消中間大點數；角落數字隨牌身90°旋轉變垂直（同1、2隻一樣只顯數字rank） */
   .cards .card:nth-child(3) .mid{display:none;}
   /* 第3隻牌打橫：牌身 rotate(90deg) 令整張橫置；角落數字反向 rotate(-90deg) 抵消牌身旋轉 → 數字保持企直可讀（6 唔會變 9）。
-     牌身 +90° 後 TL 角去到可視右上、BR 角去到可視左下，兩隻數字都反向轉 -90° 企返直。 */
+     牌身 +90° 後 TL 角去到可視右上、BR 角去到可視左下，兩隻數字都反向轉 -90° 企返直。
+     --- 3D模式: 翻牌完成後添加 .flat 類別 --- */
   .cards .card:nth-child(3) .corner.tl{top:4px; left:5px; right:auto; bottom:auto;}
   .cards .card:nth-child(3) .corner.br{bottom:4px; right:5px; left:auto; top:auto;}
   .cards .card:nth-child(3).show-num .corner{opacity:1;}
@@ -928,7 +934,7 @@
         </div>
       </div>
       <div class="tablechat tc-left" id="tableChatL">
-        <div class="tc-title">💬 枱邊閒聊 <span class="tc-close" id="tcCloseL">✕</span><button id="btnShowLines" style="background:none;border:1px solid rgba(212,175,55,.5);color:#ffd479;border-radius:6px;padding:2px 8px;cursor:pointer;font-size:11px;margin-left:6px;">語句</button></div>
+        <div class="tc-title">💬 枱邊閒聊 <span class="tc-close" id="tcCloseL">✕</span></div>
         <div class="tc-count" id="tcCountL"></div>
         <div class="tc-body" id="tcBodyL"></div>
       </div>
@@ -1752,6 +1758,17 @@ async function genAiLineLLM(ai, ctx, prev){
   }
   return null;  // 全部失敗 → caller fallback 預製句
 }
+// AI 對話去重機制：60局內不重複（冷靜期）
+// usedPhrasesGlobal: 今靴用過嘅 AI 句子（跨 AI 全局共享）
+// phraseCounter: 計數器，每 60 局重置一次
+let usedPhrasesGlobal = [];   // 儲存今靴用過嘅句子
+let phraseCounter = 0;        // 計局數
+function phraseUsed(msg){ return usedPhrasesGlobal.indexOf(msg) >= 0; }
+function phraseAdd(msg){
+  usedPhrasesGlobal.push(msg);
+  if(usedPhrasesGlobal.length > 200) usedPhrasesGlobal.shift();  // 防止太大
+}
+function phraseReset(){ usedPhrasesGlobal = []; phraseCounter = 0; }
 
 function genFunnyLine(ai, ctx) {
   const p = AI_PERSONAS[ai.persona];
@@ -1760,7 +1777,7 @@ function genFunnyLine(ai, ctx) {
   const funnyPool = [];
   if (ws >= 4) funnyPool.push('旺到阿媽都唔認得，連贏'+ws+'鋪！我係賭神轉世😎');
   if (ws >= 3) funnyPool.push('連贏'+ws+'鋪，你仲跟唔跟？唔跟就笨啦');
-  if (ls >= 4) funnyPool.push('連輸'+ls+'鋪…我啲錢係自己印翻嚟，唔痛😭');
+  if (ls >= 4) funnyPool.push('連輸'+ls+'鋪…我啲錢係紙印㗎嘛，唔痛😭');
   if (ls >= 3) funnyPool.push('輸到褲浪都濕晒，但老子唔服！');
   if (ctx && ctx.streakLen >= 4) {
     const t = ctx.streakType === 'banker' ? '莊' : '閒';
@@ -1768,22 +1785,21 @@ function genFunnyLine(ai, ctx) {
     funnyPool.push(ctx.streakType==='banker'?'莊狗又偷食，跟咗都唔知點解贏':'閒家威到冇朋友，條龍仲未斷');
   }
   if (ctx && ctx.streakLen === 2) funnyPool.push('兩鋪同邊，係咪要變龍？我賭佢斷😏');
-  if (lastHumanWon && ls >= 2) funnyPool.push('你贏緊我輸緊，風水輪流轉😤');
+  if (lastHumanWon && ls >= 2) funnyPool.push('你贏緊我輸緊，我哋係對立😤');
   if (!lastHumanWon && ws >= 2) funnyPool.push('我旺你衰，跟返我啦笨😝');
   if (ctx && ctx.last === 'tie') funnyPool.push('又和？莊閒講好咗扮曬嘢，冇癮😒');
-  if (tag) funnyPool.push(tag+'…呢鋪我賭佢反轉，再輸返屋企');
+  if (tag) funnyPool.push(tag+'…呢鋪我賭佢反轉，信我冇死');
   // 更抵死長句（港式市井，跟牌路/局勢嘲諷）
   if (ws >= 5) funnyPool.push('連贏'+ws+'鋪！我準備退休買島，你哋仲喺度博緊彩數😏');
   if (ls >= 5) funnyPool.push('連輸'+ls+'鋪…我决定改行做荷官，起碼唔使輸😭');
   if (ctx && ctx.streakLen >= 5) funnyPool.push('嘩條龍'+ctx.streakLen+'鋪！莊閒都唔敢郁，得我敢跟😂');
   if (lastHumanWon && ls >= 3) funnyPool.push('你贏緊我輸到趴街，我懷疑你係荷官親戚🤬');
-  if (lastHumanWon && ls >= 3) funnyPool.push('賭就輸撚死，唔賭就悶等死🤬');
-  if (!lastHumanWon && ws >= 3) funnyPool.push('我旺到飛起你輸到撲街，跟唔跟自己想😎');
-  if (ctx && ctx.last === 'tie') funnyPool.push('又和！莊閒兩家講好咗扮曬嘢，唔信你唔開莊😒');
+  if (!lastHumanWon && ws >= 3) funnyPool.push('我旺到飛起你伏到落衝，跟唔跟自己想😎');
+  if (ctx && ctx.last === 'tie') funnyPool.push('又和！莊閒兩家講好咗扮曬嘢，我啲注飛咗去邊😒');
   // ===== 新增：抵死 / 對句子 / 搞笑（港式市井）=====
   // 連贏 extra
   if (ws >= 3) funnyPool.push('連贏'+ws+'鋪，我已經唔記得輸係咩味，你話跟唔跟😏');
-  if (ws >= 4) funnyPool.push('旺到連廁所位都讓畀我去，啲錢自己走過嚟💰');
+  if (ws >= 4) funnyPool.push('旺到連廁所位都讓畀我，啲錢自己走過嚟💰');
   if (ws >= 2) funnyPool.push('贏錢靠眼光，輸錢靠硬頸，我兩樣都齊😎');
   // 連輸 extra
   if (ls >= 3) funnyPool.push('連輸'+ls+'鋪，我當畀緊學費，師傅幾時先教真嘢🤡');
@@ -1802,59 +1818,15 @@ function genFunnyLine(ai, ctx) {
   funnyPool.push('呢張枱就係我嘅提款機，奈何今日維修中🔧');
   funnyPool.push('你話跟莊定跟閒？我話跟運氣，運氣跟我都唔得😼');
   // 對句子（對仗押韻）
-  funnyPool.push('贏一鋪笑哈哈，輸一鋪黑曬面🥜');
-  funnyPool.push('跟紅頂白係智慧，反手返身係本事💪');
+  funnyPool.push('贏一鋪笑哈哈，輸一鋪食花生🥜');
+  funnyPool.push('跟紅頂白係智慧，反手清袋係本事💪');
   funnyPool.push('閒家威我就跟閒，莊家威我就跟莊，跟到甩皮先算數🔥');
-  funnyPool.push('一局定生死，半注見真章，手唔順就當冇嚟過😐');
+  funnyPool.push('一局定生死，半注見真章，手唔抖就當冇嚟過😐');
   funnyPool.push('旺起上嚟擋都擋唔住，衰起上嚟推都推唔走🎢');
-  funnyPool.push('八輸九,周是有,賭錢就係咁😝');
   funnyPool.push('注碼細過塵，膽子大過天，我就係咁嘅人😝');
   if (funnyPool.length === 0) return null;
   return funnyPool[Math.floor(Math.random()*funnyPool.length)];
 }
-// 枱邊閒聊冷卻池：一靴牌60鋪內盡量不重複，通用得意句
-const COOLDOWN_LINES=[
-  '今日手風不錯，各位跟實我',
-  '又嚟到抽水時間，莊家等我',
-  '闲家今日好醒目的，唔好睇小',
-  '睇路好似話跟邊邊，我自己都唔信',
-  '你呢鋪注碼細過我，我唔好意思贏',
-  '我今日戰績彪炳，谦虚冇朋友',
-  '牌靴又翻本，我準備好',
-  '你哋慢慢估，我直接落注',
-  '枱面氣氛紧张，我心跳加速',
-  '我嘅直覺今日好靈',
-  '跟大隊有運行，我都係跟風',
-  '今日幸運女神係咪企我這邊',
-  '呢鋪我感覺到贏',
-  '你睇我眼神，今鋪我贏硬',
-  '我買邊？買我今日靚位',
-  '又洗牌？我未玩夠呀',
-  '今日我狀態好，唔使睇牌',
-  '你哋投注我唔會同你爭',
-  '我呢鋪跟心水，唔理數據',
-  '荷官都話我靚仔，贏梗',
-  '贏咗請飲茶，輸咗我走',
-  '賭錢最緊要開心，我而家好開心',
-  '我今日有主角光環',
-  '各位大佬放我一馬',
-  '我買幸運7，搏一搏',
-  '你哋買咩我就買相反',
-  '我今日有預感贏大鑊',
-  '我而家唔講野，用行動證明',
-  '輸極有限，贏到盡頭',
-  '我今日運程指數爆燈',
-  '我而家好冷靜， specially 冷靜',
-  '我買幸運6，試試新屎坑',
-  '呢鋪我賭我今期運',
-  '我今日贏多過輸，繼續',
-  '我今日狀態如風',
-  '你睇我今日靚仔樣，必贏',
-  '我係賭場幸運兒',
-  '今日我眼光獨到',
-  '我嘅第六感好靈',
-  '我而家唔輸得，頂硬上'
-];
 function genChatLine(ai, pickSide, ctx, prevTalker, usedSet) {
   const p = AI_PERSONAS[ai.persona];
   const pickTxt = pickSide === 'banker' ? '莊' : pickSide === 'player' ? '閒' : '和';
@@ -1975,9 +1947,25 @@ async function tableChatPhase(sec) {
         if (Date.now() - t0 > CHAT_BUDGET_MS) break;   // 預算用完就收聲，唔硬出4句
         const ai = speakers[i];
         let msg = null;
-        if(LLM_CHAT){ msg = await genAiLineLLM(ai, ctx, prev); }   // 🧠 LLM 即時生成（call 唔到會 null）
-        if(!msg){ msg = genChatLine(ai, ai._prePick, ctx, prev, usedThisRound); }  // fallback 預製句
+        if(LLM_CHAT){
+          let llmAttempts = 0;
+          do {
+            msg = await genAiLineLLM(ai, ctx, prev);
+            llmAttempts++;
+            if (!msg) break;  // LLM 失敗 → 跳出嘗試 fallback
+          } while (llmAttempts < 3 && phraseUsed(msg));
+          if (!msg || phraseUsed(msg)) msg = null;  // 用完就清，讓 fallback 預製句接手
+        }
+        if(!msg){
+          let fbAttempts = 0;
+          do {
+            msg = genChatLine(ai, ai._prePick, ctx, prev, usedThisRound);
+            fbAttempts++;
+          } while (fbAttempts < 3 && phraseUsed(msg));
+        }
         if (!msg) { prev = ai; continue; }
+        if (phraseUsed(msg)) phraseAdd(msg);  // 已經存在就補充（避免永遠重試）
+        phraseAdd(msg);
         addChatBubble(ai, msg);
         if (!mute) {
             await speak(ai.name + '：' + msg);   // 原版 speak，唔收 ms，保語音安全
@@ -2032,9 +2020,17 @@ function cardEl(card){
   if(!sq){ 
     setTimeout(()=>d.classList.add('flip'), 800);
     // 3D模式：翻牌transition完成後顯示數字
+    // 第3隻牌翻牌完成後回到橫放 (.flat)
     const cf=d.querySelector('.cf');
     cf.addEventListener('transitionend',function handler(e){
-      if(e.propertyName==='transform'){ cf.removeEventListener('transitionend',handler); d.classList.add('show-num'); }
+      if(e.propertyName==='transform'){
+        cf.removeEventListener('transitionend',handler);
+        if(d.hasAttribute('data-card3')){
+          setTimeout(()=>{ d.classList.add('flat'); }, 200);
+        } else {
+          d.classList.add('show-num');
+        }
+      }
     });
   } else {
     // 搣牌模式：數字只喺張牌真·完全掀開嗰陣先顯示
@@ -2103,32 +2099,74 @@ function sqManualOpen(el, sec){
       clearInterval(iv); sqTimerShow(0);
       el.removeEventListener('pointerdown',onDown); window.removeEventListener('pointermove',onMove); window.removeEventListener('pointerup',onUp);
       el.removeEventListener('touchstart',onDown); window.removeEventListener('touchmove',onMove); window.removeEventListener('touchend',onUp);
-      if(auto && prog<0.5){ el.classList.add('flip'); }               // 超時：自動掀開動畫
+      if(auto && prog<0.5){ el.classList.add('flip'); }               // 超時：自動掀開動畫（數字由 animationend 顯示）
       else { back.style.transition='clip-path .45s'; back.style.clipPath=clipFor(dir,1.01);    // 手動：順住你嘅方向全開
         // 數字只喺張牌真·完全掀開(clip 過渡到 full)嗰陣先顯示；中途/未過半收返合都唔准顯示
         back.addEventListener('transitionend', function hn(e){ if(e.propertyName==='clip-path'){ back.removeEventListener('transitionend',hn); el.classList.add('show-num'); } });
       }
-      setTimeout(()=>{ el.style.transform=''; el.style.zIndex=''; if(scoreEl) scoreEl.classList.remove('squeeze-pin'); if(scoreElB) scoreElB.classList.remove('squeeze-pin'); sndDeal(); res(); }, auto?4000:1000);
+      setTimeout(()=>{ el.style.transform=''; el.style.zIndex=''; if(scoreEl) scoreEl.classList.remove('squeeze-pin'); if(scoreElB) scoreElB.classList.remove('squeeze-pin'); el.classList.add('show-num'); sndDeal(); res(); }, auto?4000:1000);
     }
     el.addEventListener('pointerdown',onDown); window.addEventListener('pointermove',onMove); window.addEventListener('pointerup',onUp);
     el.addEventListener('touchstart',onDown,{passive:false}); window.addEventListener('touchmove',onMove,{passive:false}); window.addEventListener('touchend',onUp);
   });
 }
-/* 第3隻補牌：5秒揀→點咗手動10秒；冇點就自動開 */
+/* ===== 第3隻補牌揭牌 ===== */
+/* 第3隻補牌揭牌 — 根據模式分離處理 */
 async function revealThird(containerId){
-  if(dealMode!=='squeeze') return;
   const kids=document.getElementById(containerId).children;
   const el=kids[kids.length-1]; if(!el) return;
+  if(dealMode==='squeeze'){ await revealThirdSqueeze(el); }
+  else { await revealThird3D(el); }
+}
+/* === 3D模式：自動開牌 (無互動，只翻牌動畫) === */
+async function revealThird3D(el){
+  // 流程: 牌開始打橫 (.flat) → 400ms 後豎起 → cardEl 800ms 後翻牌 → flip 完成 → 數字顯示 → .flat 回橕 (1秒)
+  // .flat 延遲移除讓牌先顯示再豎起
+  setTimeout(()=>{ el.classList.remove('flat'); }, 400);
+  // 數字顯示: 翻牌完成後 (400+800+500ms = ~1300ms) 立即顯示，唔等1秒回橋
+  setTimeout(()=>{ 
+    // 顯示所有牌的數字 (第一二隻 + 第3隻)
+    ['playerCards','bankerCards'].forEach(cid=>{
+      const box=document.getElementById(cid);
+      if(!box) return;
+      Array.prototype.forEach.call(box.children, c=>c.classList.add('show-num'));
+    });
+  }, 1950);
+}
+/* === Squeeze模式：手動/自動搣牌 === */
+async function revealThirdSqueeze(el){
+  // 搣牌模式：5秒揀牌 → 點咗手動10秒；冇點就自動開
   const pick=await sqWaitClick([el],5);
-  if(pick){ await sqManualOpen(pick,10); }
-  else { sqAutoOpen(el); await sleep(4000); }
+  if(pick){
+    // 點擊後豎起 (添加 .upright 覆蓋 .sq 的橋放)；搥完後移除 .upright 回橋
+    // .sq 保持不變以確保 squeeze reveal animation 正確
+    el.classList.add('upright');
+    await sqManualOpen(pick,10);
+    el.classList.remove('upright');
+  } else {
+    // 冇點：自動開 — 豎起→掀開→回平
+    el.classList.add('upright');
+    sqAutoOpen(el);
+    await sleep(4000);
+    el.classList.remove('upright');
+  }
+  if(el){ el.classList.add('show-num'); }
 }
 function renderCards(container, cards, delay){
   container.innerHTML='';
   cards.forEach((c,i)=>{ setTimeout(()=>{ const el=cardEl(c); container.appendChild(el); requestAnimationFrame(()=>el.classList.add('show')); sndDeal(); }, delay*i); });
 }
 function appendCard(containerId, c){
-  return new Promise(res=>{ setTimeout(()=>{ const el=cardEl(c); document.getElementById(containerId).appendChild(el); requestAnimationFrame(()=>el.classList.add('show')); sndDeal(); res(); },0); });
+  return new Promise(res=>{ setTimeout(()=>{ const el=cardEl(c);
+    // 標記第三隻牌 (data-card3) — 第3張以後的牌
+    const kids=document.getElementById(containerId).children;
+    if(kids.length>=2){ 
+      el.setAttribute('data-card3','1');
+      // 3D模式：第三隻牌先打橫放 (等 revealThird 將 .flat 移除旋轉豎起)
+      if(dealMode!=='squeeze'){ el.classList.add('flat'); }
+    }
+    document.getElementById(containerId).appendChild(el);
+    requestAnimationFrame(()=>el.classList.add('show')); sndDeal(); res(); },0); });
 }
 function updateScore(who,val){ const el=document.getElementById(who+'Score'); el.textContent=val; el.classList.add('show'); }
 function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
@@ -2139,6 +2177,8 @@ function showMsg(txt,color){ const m=document.getElementById('centerMsg'); m.tex
 async function deal(auto){
   if(dealing) return;                 // 已經開緊牌就唔再開（防止重複發牌）
   dealing=true;                       // 即時上鎖：doShuffle / 緩衝期間任何並發呼叫都擋到
+  phraseCounter++;                    // 每局開始計一次
+  if(phraseCounter >= 60){ phraseReset(); }  // 60局重置，冷靜期結束
   try{
   let total=0; for(const x in bets) total+=bets[x];
   // 只有在「無下注、非自動、無 AI」且「預測系統沒有建議」時才阻擋
@@ -2220,12 +2260,12 @@ async function deal(auto){
 
   if(p0<8 && b0<8){
     if(p0<=5){
-      dealerCall('閒家補牌','#a9d2ff');
-      const pt=drawCard(); pc.push(pt); await appendCard('playerCards',pt); await revealThird('playerCards'); await sleep(1000);
-      if(dealMode!=='squeeze') updateScore('player',handTotal(pc));
-      if(bankerShouldDraw(b0,pt.value)){ dealerCall('莊家補牌','#ffb3b3'); const bt=drawCard(); bc.push(bt); await appendCard('bankerCards',bt); await revealThird('bankerCards'); await sleep(900); if(dealMode!=='squeeze') updateScore('banker',handTotal(bc)); }
+    dealerCall('閒家補牌','#a9d2ff');
+    const pt=drawCard(); pc.push(pt); await appendCard('playerCards',pt); await revealThird('playerCards'); await sleep(1000);
+    updateScore('player',handTotal(pc));
+    if(bankerShouldDraw(b0,pt.value)){ dealerCall('莊家補牌','#ffb3b3'); const bt=drawCard(); bc.push(bt); await appendCard('bankerCards',bt); await revealThird('bankerCards'); await sleep(900); updateScore('banker',handTotal(bc)); }
     } else {
-      if(b0<=5){ dealerCall('莊家補牌','#ffb3b3'); const bt=drawCard(); bc.push(bt); await appendCard('bankerCards',bt); await revealThird('bankerCards'); await sleep(900); if(dealMode!=='squeeze') updateScore('banker',handTotal(bc)); }
+    if(b0<=5){ dealerCall('莊家補牌','#ffb3b3'); const bt=drawCard(); bc.push(bt); await appendCard('bankerCards',bt); await revealThird('bankerCards'); await sleep(900); updateScore('banker',handTotal(bc)); }
     }
   }
   await sleep(1000);
@@ -3240,6 +3280,7 @@ function resetFollowStats(){
   showToast('🧹 跟注統計已重置');
 }
 async function doShuffle(){
+  phraseReset();  // 洗牌 = 新靴，重置 AI 對話去重池 + 計數器
   const ov=document.getElementById('shuffleOverlay');
   if(ov){ ov.querySelector('.title').textContent='🔀 洗牌中…'; ov.classList.add('show'); }
   resetShoe(); resetRoads(); drawAllRoads();
