@@ -928,7 +928,7 @@
         </div>
       </div>
       <div class="tablechat tc-left" id="tableChatL">
-        <div class="tc-title">💬 枱邊閒聊 <span class="tc-close" id="tcCloseL">✕</span></div>
+        <div class="tc-title">💬 枱邊閒聊 <span class="tc-close" id="tcCloseL">✕</span><button id="btnShowLines" style="background:none;border:1px solid rgba(212,175,55,.5);color:#ffd479;border-radius:6px;padding:2px 8px;cursor:pointer;font-size:11px;margin-left:6px;">語句</button></div>
         <div class="tc-count" id="tcCountL"></div>
         <div class="tc-body" id="tcBodyL"></div>
       </div>
@@ -1812,6 +1812,49 @@ function genFunnyLine(ai, ctx) {
   if (funnyPool.length === 0) return null;
   return funnyPool[Math.floor(Math.random()*funnyPool.length)];
 }
+// 枱邊閒聊冷卻池：一靴牌60鋪內盡量不重複，通用得意句
+const COOLDOWN_LINES=[
+  '今日手風不錯，各位跟實我',
+  '又嚟到抽水時間，莊家等我',
+  '闲家今日好醒目的，唔好睇小',
+  '睇路好似話跟邊邊，我自己都唔信',
+  '你呢鋪注碼細過我，我唔好意思贏',
+  '我今日戰績彪炳，谦虚冇朋友',
+  '牌靴又翻本，我準備好',
+  '你哋慢慢估，我直接落注',
+  '枱面氣氛紧张，我心跳加速',
+  '我嘅直覺今日好靈',
+  '跟大隊有運行，我都係跟風',
+  '今日幸運女神係咪企我這邊',
+  '呢鋪我感覺到贏',
+  '你睇我眼神，今鋪我贏硬',
+  '我買邊？買我今日靚位',
+  '又洗牌？我未玩夠呀',
+  '今日我狀態好，唔使睇牌',
+  '你哋投注我唔會同你爭',
+  '我呢鋪跟心水，唔理數據',
+  '荷官都話我靚仔，贏梗',
+  '贏咗請飲茶，輸咗我走',
+  '賭錢最緊要開心，我而家好開心',
+  '我今日有主角光環',
+  '各位大佬放我一馬',
+  '我買幸運7，搏一搏',
+  '你哋買咩我就買相反',
+  '我今日有預感贏大鑊',
+  '我而家唔講野，用行動證明',
+  '輸極有限，贏到盡頭',
+  '我今日運程指數爆燈',
+  '我而家好冷靜， specially 冷靜',
+  '我買幸運6，試試新屎坑',
+  '呢鋪我賭我今期運',
+  '我今日贏多過輸，繼續',
+  '我今日狀態如風',
+  '你睇我今日靚仔樣，必贏',
+  '我係賭場幸運兒',
+  '今日我眼光獨到',
+  '我嘅第六感好靈',
+  '我而家唔輸得，頂硬上'
+];
 function genChatLine(ai, pickSide, ctx, prevTalker, usedSet) {
   const p = AI_PERSONAS[ai.persona];
   const pickTxt = pickSide === 'banker' ? '莊' : pickSide === 'player' ? '閒' : '和';
