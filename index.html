@@ -743,9 +743,6 @@
     .lb-stack button{ width:auto !important; padding:3px 8px !important; font-size:11px !important; }
     #btnServerLb .srv-sub{ display:none !important; }
 
-    .lb-stack{ flex-direction:row !important; gap:3px !important; flex-wrap:wrap; align-items:center; }
-    .lb-stack button{ width:auto !important; padding:2px 7px !important; font-size:10px !important; border-radius:4px !important; line-height:1.2 !important; }
-    #btnServerLb .srv-sub{ display:block !important; text-align:left; }
   .brand #btnServerLb .srv-sub{ display:block; text-align:left; }  /* 橫版：伺服榜副文斷兩行(跟直版) */
     .brand-sub{ font-size:10px; }
     .brand-sub #shoeInfo{ font-size:12px; }
@@ -898,6 +895,13 @@
       <div class="ai-balances" id="aiBalanceBox" style="display:none;"></div>
       
     </div>
+  </div>
+
+  <div class="server-toolbar" style="display:flex;flex-wrap:wrap;gap:4px;align-items:center;padding:2px 0;">
+    <button id="btnRooms" title="房間大廳" style="background:linear-gradient(90deg,#2faf5a,#1e8c4a);color:#fff;border:none;padding:4px 8px;border-radius:4px;font-size:11px;cursor:pointer;">🏠 房間</button>
+    <button id="btnTopup" title="充值" style="background:linear-gradient(90deg,#d4af37,#b8941f);color:#1a1200;border:none;padding:4px 8px;border-radius:4px;font-size:11px;cursor:pointer;">💰 充值</button>
+    <button id="btnShop" title="商店" style="background:linear-gradient(90deg,#9b59b6,#8e44ad);color:#fff;border:none;padding:4px 8px;border-radius:4px;font-size:11px;cursor:pointer;">🛒 商店</button>
+    <button id="btnServerChat" title="公共聊天室" style="background:linear-gradient(90deg,#2d7dd2,#1e5ba8);color:#fff;border:none;padding:4px 8px;border-radius:4px;font-size:11px;cursor:pointer;">💬 聊天</button>
   </div>
 
   <div class="odds-row"></div>
@@ -3833,6 +3837,18 @@ _albFileInput.addEventListener('change',e=>{
 // 🖥️ 伺服榜：開 server 版 leaderboard.html（相對路徑，連同一個 server 嘅 8888/3000 都讀到）
 document.getElementById('btnServerLb').addEventListener('click',()=>{
   window.open('leaderboard.html', '_blank');
+});
+document.getElementById('btnRooms').addEventListener('click',()=>{
+  window.open('rooms.html', '_blank');
+});
+document.getElementById('btnTopup').addEventListener('click',()=>{
+  window.open('/topup', '_blank');
+});
+document.getElementById('btnShop').addEventListener('click',()=>{
+  window.open('shop.html', '_blank');
+});
+document.getElementById('btnServerChat').addEventListener('click',()=>{
+  window.open('chat.html', '_blank');
 });
 
 document.getElementById('btnAi').addEventListener('click',()=>{ document.getElementById('aiModal').classList.add('show'); editingAiId=null; document.getElementById('aiConfirm').textContent='確認 · 新增 AI'; renderAiList(); if(ais.length<8) randomizeNewAi(); });  // 陪玩AI管理+新增模式自動隨機性格/注碼
