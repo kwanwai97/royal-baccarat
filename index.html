@@ -738,7 +738,16 @@
     .brand{ grid-column:1 / 2; grid-row:1; align-self:start; margin-left:0; display:flex; flex-direction:row; align-items:center; gap:6px; font-size:13px; padding-top:6px; }  /* 橫版：brand行排列, 伺服榜貼左其他掣貼右 */
     .brand #btnServerLb{ order:-1; margin-right:auto; }  /* 橫版：伺服榜排最左, 推開其他掣去右 */
     .brand #btnLeaderboard{ font-size:11px; padding:1px 4px; }
-    .lb-stack{ margin-left:-2px; }  /* 橫版：AI榜/server貼左(由1px→-1px校正) */
+    .lb-stack{ margin-left:-2px; }  /* 橫版：AI榜/server貼左(由1px→-1px校正) 
+    .lb-stack{ flex-direction:row !important; gap:4px !important; flex-wrap:wrap; }
+    .lb-stack button{ width:auto !important; padding:3px 8px !important; font-size:11px !important; }
+    #btnServerLb .srv-sub{ display:none !important; }
+
+    /* 橫版：新功能按鈕放brand區，隱藏toolbar */
+    .server-toolbar{ display:none; }
+    .lb-stack{ flex-direction:row !important; gap:4px !important; flex-wrap:wrap; }
+    .lb-stack button{ width:auto !important; padding:3px 8px !important; font-size:11px !important; }
+    #btnServerLb .srv-sub{ display:none !important; }
   .brand #btnServerLb .srv-sub{ display:block; text-align:left; }  /* 橫版：伺服榜副文斷兩行(跟直版) */
     .brand-sub{ font-size:10px; }
     .brand-sub #shoeInfo{ font-size:12px; }
@@ -879,6 +888,10 @@
         <button id="btnServerLb" title="伺服榜（連 server 版）" style="align-self:flex-start;margin:0;width:69px;background:linear-gradient(90deg,#2d5c4a,#3d7c5a);color:#fff;border:none;padding:1px 6px;border-radius:6px;font-size:11px;line-height:1.2;cursor:pointer;letter-spacing:0;white-space:nowrap;">🖥️ 伺服榜<span class="srv-sub" style="font-size:9px;opacity:.75;letter-spacing:0;"> server 版</span></button>
         <button id="btnLeaderboard" title="AI 排行榜" style="align-self:flex-start;margin:0;width:69px;background:linear-gradient(90deg,#3a2d5c,#5a3d7c);color:#fff;border:none;padding:1px 6px;border-radius:6px;font-size:11px;line-height:1.2;cursor:pointer;letter-spacing:0;white-space:nowrap;">🏆 AI排行榜<div style="font-size:9px;opacity:.75;letter-spacing:0;">即時</div></button>
         <button id="btnPlayerName" title="撳呢度改你嘅名" style="align-self:flex-start;margin:0;width:69px;background:rgba(255,255,255,.08);color:#ffd479;border:1px solid rgba(255,212,121,.4);padding:4px 6px;border-radius:6px;font-size:11px;line-height:1.2;cursor:pointer;letter-spacing:0;white-space:nowrap;max-width:140px;overflow:hidden;text-overflow:ellipsis;">👤 <span id="playerNameTxt">玩家</span></button>
+        <button id="btnRoomsL" title="房間大廳" style="align-self:flex-start;margin:0;width:69px;background:linear-gradient(90deg,#2faf5a,#1e8c4a);color:#fff;border:none;padding:1px 6px;border-radius:6px;font-size:11px;line-height:1.2;cursor:pointer;letter-spacing:0;white-space:nowrap;">🏠 房間</button>
+        <button id="btnTopupL" title="充值" style="align-self:flex-start;margin:0;width:69px;background:linear-gradient(90deg,#d4af37,#b8941f);color:#1a1200;border:none;padding:1px 6px;border-radius:6px;font-size:11px;line-height:1.2;cursor:pointer;letter-spacing:0;white-space:nowrap;">💰 充值</button>
+        <button id="btnShopL" title="商店" style="align-self:flex-start;margin:0;width:69px;background:linear-gradient(90deg,#9b59b6,#8e44ad);color:#fff;border:none;padding:1px 6px;border-radius:6px;font-size:11px;line-height:1.2;cursor:pointer;letter-spacing:0;white-space:nowrap;">🛒 商店</button>
+        <button id="btnServerChatL" title="公共聊天室" style="align-self:flex-start;margin:0;width:69px;background:linear-gradient(90deg,#2d7dd2,#1e5ba8);color:#fff;border:none;padding:1px 6px;border-radius:6px;font-size:11px;line-height:1.2;cursor:pointer;letter-spacing:0;white-space:nowrap;">💬 聊天</button>
       </div>
       <div class="brand-sub"><span id="shoeInfo"></span></div>
       <div id="topBtns" class="top-btns">
@@ -3826,6 +3839,19 @@ _albFileInput.addEventListener('change',e=>{
 // 🖥️ 伺服榜：開 server 版 leaderboard.html（相對路徑，連同一個 server 嘅 8888/3000 都讀到）
 document.getElementById('btnServerLb').addEventListener('click',()=>{
   window.open('leaderboard.html', '_blank');
+});
+
+document.getElementById('btnRoomsL').addEventListener('click',()=>{
+  window.open('rooms.html', '_blank');
+});
+document.getElementById('btnTopupL').addEventListener('click',()=>{
+  window.open('/topup', '_blank');
+});
+document.getElementById('btnShopL').addEventListener('click',()=>{
+  window.open('shop.html', '_blank');
+});
+document.getElementById('btnServerChatL').addEventListener('click',()=>{
+  window.open('chat.html', '_blank');
 });
 document.getElementById('btnAi').addEventListener('click',()=>{ document.getElementById('aiModal').classList.add('show'); editingAiId=null; document.getElementById('aiConfirm').textContent='確認 · 新增 AI'; renderAiList(); if(ais.length<8) randomizeNewAi(); });  // 陪玩AI管理+新增模式自動隨機性格/注碼
 // 升級⑧ 限紅自選 modal
