@@ -706,11 +706,11 @@
     .odds-row{ display:none; }            /* 勝率行：打橫收，避免空白 */
     /* 右欄：投注→籌碼→洗牌 各自一格，貼頂對齊 */
     .h-left{ display:contents; }
-    .bets{ grid-column:4 / 7; grid-row:5; align-self:start; }     /* 右欄投注區：籌碼區之下 */
-    .chips-row{ grid-column:4 / 7; grid-row:4; align-self:start; margin-top:0 !important; } /* 右欄頂：籌碼區搬去投注區上方; 永遠緊貼資金區底(保險) */
+    .bets{ grid-column:4 / 7; grid-row:4; align-self:start; }     /* 右欄投注區：籌碼區之下 */
+    .chips-row{ grid-column:4 / 7; grid-row:3; align-self:start; margin-top:0 !important; } /* 右欄頂：籌碼區搬去投注區上方; 永遠緊貼資金區底(保險) */
     /* 橫版：左上三掣(#topBtns)已按 orientation 搬入籌碼區，跟籌碼區水平並排 */
     .chips-row #topBtns{ order:0; margin-top:0; display:flex; gap:3px; align-items:center; }
-    .controls{ grid-column:4 / 7; grid-row:6; align-self:start; padding:3px 6px 0; gap:4px; }  /* 右欄底：洗牌/發牌區 */
+    .controls{ grid-column:4 / 7; grid-row:5; align-self:start; padding:3px 6px 0; gap:4px; }  /* 右欄底：洗牌/發牌區 */
     /* 打橫溫和壓縮底部掣：padding/字/圓角收細 */
     .controls .btn{ padding:5px 6px; font-size:12px; border-radius:6px; letter-spacing:0; }
     /* 打橫收埋左右 panel 自身 margin/padding，令下半兩邊真·貼住 48% 分界線（根治中間空位） */
@@ -740,17 +740,17 @@
     .brand #btnLeaderboard{ font-size:11px; padding:1px 4px; }
     .lb-stack{ margin-left:-2px; }  /* 橫版：AI榜/server貼左(由1px→-1px校正) 
     .server-toolbar{
-      grid-column: 4 / 7;
-      grid-row: 3;
+      grid-column: 1 / -1;
+      grid-row: 2;
       display: flex !important;
       flex-direction: row !important;
-      flex-wrap: wrap;
+      flex-wrap: nowrap;
       gap: 4px;
       justify-content: center;
-      padding: 3px 0;
+      padding: 4px 0;
       align-self: stretch;
-      background: rgba(255,0,0,0.3) !important;
-      border: 2px solid red !important;
+      background: transparent;
+      border: none;
     }
     .server-toolbar button{
       padding: 3px 10px;
