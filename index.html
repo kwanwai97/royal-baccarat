@@ -736,20 +736,8 @@
     /* 用 display:contents 拆開 topbar，brand 同 topright 各自成 grid item */
     .topbar{ display:contents; }
     .brand{ grid-column:1 / 2; grid-row:1; align-self:start; margin-left:0; display:flex; flex-direction:row; align-items:center; gap:6px; font-size:13px; padding-top:6px; }  /* 橫版：brand行排列, 伺服榜貼左其他掣貼右 */
-    .brand #btnServerLb{ order:-1; margin-right:auto; }  /* 橫版：伺服榜排最左, 推開其他掣去右 */
-    .brand #btnLeaderboard{ font-size:11px; padding:1px 4px; }
-    .lb-stack{ margin-left:-2px; }  /* 橫版：AI榜/server貼左(由1px→-1px校正) 
-    .server-toolbar{ display:flex !important; flex-wrap:wrap; gap:4px; padding:2px 0; }
-    .server-toolbar button{ padding:3px 8px; font-size:11px; border-radius:4px; }
 
-    .lb-stack{ flex-direction:row !important; gap:4px !important; flex-wrap:wrap; }
-    .lb-stack button{ width:auto !important; padding:3px 8px !important; font-size:11px !important; }
-    #btnServerLb .srv-sub{ display:none !important; }
 
-  .brand #btnServerLb .srv-sub{ display:block; text-align:left; }  /* 橫版：伺服榜副文斷兩行(跟直版) */
-    .brand-sub{ font-size:10px; }
-    .brand-sub #shoeInfo{ font-size:12px; }
-    .brand-sub{ text-align:left; }   /* 橫版：剩餘卡牌N數由最左邊開始 */
     /* 橫版：自動+13秒掣(放籌碼區最左)，同其他四掣一樣高(33px)、闊度收細；全部掣左右緊貼零空隙 */
     .auto-btns{ display:flex; flex-direction:row; gap:0; margin:0; align-items:center; order:0; flex:0 0 auto; }
     .auto-btns .btn{ writing-mode:horizontal-tb; display:inline-flex; align-items:center; justify-content:center; width:35px; height:33px; padding:0; min-width:35px; max-width:35px; font-size:12px; margin:0; line-height:1; box-sizing:border-box; }
@@ -757,6 +745,7 @@
     .auto-btns #btnAuto .a-label{ writing-mode:horizontal-tb; font-size:11px; font-weight:800; line-height:1; }
     .auto-btns #btnAuto .a-state{ writing-mode:horizontal-tb; font-size:11px; font-weight:800; line-height:1; }
     .topright{ grid-column:5 / 7; grid-row:1 / span 2; display:flex; flex-direction:column; align-items:stretch; gap:3px; align-self:start; min-width:0; overflow:visible; padding:4px 1px 4px 1px; margin-left:-100px; margin-top:0; }  /* 橫版：資金區向左10px(-90→-100)同中間區拉開, 格唔窄 */
+    .server-toolbar{ grid-column:1 / -1; grid-row:2; justify-content:center; padding:2px 0; }
     .topright .balance{ font-size:15px; text-align:left; width:100%; }  /* 文字靠左, 貼資金區最左消除視覺空間 */
     .topright .balance b{ font-size:21px; }
     /* AI陪玩列表（資金）打橫：6個一行、2行顯示(6x2)，全部見到唔切走；頂欄span2行容納 */

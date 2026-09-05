@@ -2,9 +2,18 @@
   "guest": {
     "id": "guest",
     "name": "玩家",
-    "balance": 100000,
-    "coins": 0,
+    "balance": 50000,
+    "coins": 105200,
     "ai_revives": 0,
     "avatar": "👤"
+  },
+  "111": {
+    "id": "111",
+    "name": "111",
+    "balance": 50000,
+    "coins": 0,
+    "ai_revives": 0,
+    "avatar": "👤",
+    "password": "1111"
   }
 }

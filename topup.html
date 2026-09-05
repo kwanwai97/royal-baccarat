@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>🎰 皇家百家樂 · 充值</title>
+<style>
+  :root{--gold:#d4af37;--gold2:#f4d97b;--goldd:#b8860b;}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;height:100%;background:radial-gradient(circle at 50% 0%,#1a1a1a,#000 70%);color:#f5f0d8;font-family:"PingFang TC","Microsoft JhengHei",-apple-system,sans-serif;}
+  .wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;}
+  .card{width:min(380px,92vw);background:linear-gradient(180deg,#1a1200,#0d0a00);border:2px solid var(--gold);border-radius:16px;padding:18px;box-shadow:0 10px 30px rgba(0,0,0,.7);}
+  .title{text-align:center;color:var(--gold2);font-size:20px;font-weight:900;margin-bottom:4px;}
+  .sub{text-align:center;color:#cdbf8e;font-size:12px;opacity:.85;margin-bottom:14px;}
+  .plan{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;}
+  .item{padding:14px;border-radius:12px;border:1px solid var(--goldd);background:#0d1f15;text-align:center;cursor:pointer;}
+  .item:active{transform:scale(.97);}
+  .item .amt{font-size:18px;font-weight:900;color:var(--gold2);}
+  .item .coin{font-size:11px;color:#cdbf8e;margin-top:2px;}
+  .btn{width:100%;padding:12px;border-radius:12px;border:none;font-weight:900;font-size:15px;cursor:pointer;background:linear-gradient(180deg,var(--gold2),var(--goldd));color:#241a00;box-shadow:0 3px 0 #7a5a00;}
+  .btn:active{transform:scale(.97);}
+  .btn:disabled{opacity:.5;cursor:not-allowed;}
+  .qr-box{text-align:center;margin:12px 0;display:none;}
+  .qr-box img{max-width:260px;border:2px solid var(--gold);border-radius:12px;background:#fff;padding:8px;}
+  .qr-hint{font-size:11px;color:#cdbf8e;margin-top:6px;}
+  .method{display:flex;gap:8px;margin-bottom:10px;}
+  .method button{flex:1;padding:10px;border-radius:10px;border:1px solid var(--goldd);background:#0d1f15;color:#cdbf8e;font-weight:800;cursor:pointer;}
+  .method button.on{background:linear-gradient(180deg,var(--gold2),var(--goldd));color:#241a00;}
+  .back{display:block;text-align:center;margin-top:12px;color:var(--gold2);text-decoration:none;font-size:12px;}
+  .err{color:#ff9a9a;font-size:12px;text-align:center;margin-top:8px;min-height:16px;}
+  .balance-info{text-align:center;font-size:12px;color:#cdbf8e;margin-bottom:10px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="card">
+    <div class="title">💰 真實充值</div>
+    <div class="sub">掃碼付款後，請撳「確認已付款」</div>
+    <div class="balance-info" id="balanceInfo">載入中...</div>
+    <div class="method">
+      <button class="on" id="mWechat" onclick="setMethod('wechat')">微信支付</button>
+      <button id="mAlipay" onclick="setMethod('alipay')">支付寶</button>
+    </div>
+    <div class="plan">
+      <div class="item" onclick="createPay(100)"><div class="amt">100</div><div class="coin">金幣</div></div>
+      <div class="item" onclick="createPay(500)"><div class="amt">500</div><div class="coin">金幣</div></div>
+      <div class="item" onclick="createPay(1000)"><div class="amt">1,000</div><div class="coin">金幣</div></div>
+      <div class="item" onclick="createPay(5000)"><div class="amt">5,000</div><div class="coin">金幣</div></div>
+    </div>
+    <button class="btn" id="confirmBtn" style="display:none;" onclick="confirmPay()">✅ 確認已付款</button>
+    <div class="qr-box" id="qrBox">
+      <img id="qrImg" src="" alt="QR Code">
+      <div class="qr-hint" id="qrHint"></div>
+    </div>
+    <div class="err" id="err"></div>
+    <a class="back" href="/">← 返回遊戲</a>
+  </div>
+</div>
+<script>
+let method='wechat';
+let currentOrder=null;
+function setMethod(m){ method=m; document.getElementById('mWechat').classList.toggle('on',m==='wechat'); document.getElementById('mAlipay').classList.toggle('on',m==='alipay'); }
+async function loadBalance(){
+  try{
+    const r=await fetch('/api/user');
+    const j=await r.json();
+    if(j && j.id && j.id!=='guest'){
+      document.getElementById('balanceInfo').textContent='帳號：'+j.name+' | 餘額：'+j.balance.toLocaleString()+' | 金幣：'+(j.coins||0);
+    } else {
+      document.getElementById('balanceInfo').textContent='請先登入帳號';
+      setTimeout(()=>{ window.location.href='/login'; }, 1500);
+    }
+  }catch(e){}
+}
+async function createPay(amount){
+  const err=document.getElementById('err');
+  err.textContent='建立訂單中...';
+  try{
+    const r=await fetch('/api/payment/create',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({amount,method})});
+    const j=await r.json();
+    if(j.success){
+      currentOrder=j.order_id;
+      document.getElementById('qrImg').src=j.qr_url;
+      document.getElementById('qrHint').textContent='金額：'+amount+' 金幣 | 請掃碼付款後撳確認';
+      document.getElementById('qrBox').style.display='block';
+      document.getElementById('confirmBtn').style.display='block';
+      err.textContent='';
+    } else {
+      err.textContent=j.error||'建立失敗';
+    }
+  }catch(e){ err.textContent='網絡錯誤'; }
+}
+async function confirmPay(){
+  if(!currentOrder){ alert('請先選擇金額'); return; }
+  const err=document.getElementById('err');
+  err.textContent='確認中...';
+  try{
+    const r=await fetch('/api/payment/confirm',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({order_id:currentOrder})});
+    const j=await r.json();
+    if(j.success){
+      err.textContent='✅ '+j.message+' | 金幣已加：'+j.coins_added;
+      document.getElementById('confirmBtn').disabled=true;
+      setTimeout(loadBalance, 1000);
+    } else {
+      err.textContent=j.error||'確認失敗';
+    }
+  }catch(e){ err.textContent='網絡錯誤'; }
+}
+loadBalance();
+</script>
+</body>
+</html>

@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>🎰 皇家百家樂 · 管理後台</title>
+<style>
+  :root{--gold:#d4af37;--gold2:#f4d97b;--goldd:#b8860b;}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;height:100%;background:radial-gradient(circle at 50% 0%,#1a1a1a,#000 70%);color:#f5f0d8;font-family:"PingFang TC","Microsoft JhengHei",-apple-system,sans-serif;}
+  .wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;}
+  .card{width:min(520px,94vw);background:linear-gradient(180deg,#1a1200,#0d0a00);border:2px solid var(--gold);border-radius:16px;padding:18px;box-shadow:0 10px 30px rgba(0,0,0,.7);}
+  .title{text-align:center;color:var(--gold2);font-size:20px;font-weight:900;margin-bottom:12px;}
+  table{width:100%;border-collapse:collapse;font-size:12px;}
+  th,td{text-align:left;padding:8px;border-bottom:1px solid #2a3a30;vertical-align:top;}
+  th{color:var(--gold2);font-weight:800;font-size:11px;opacity:.85;}
+  .name{font-weight:800;color:#fff;}
+  .badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:800;}
+  .badge-admin{background:#2faf5a;color:#04110a;}
+  .badge-user{background:#233;color:#cfe;}
+  .badge-banned{background:#a22;color:#fff;}
+  .badge-pending{background:#d4af37;color:#241a00;}
+  .badge-confirmed{background:#2faf5a;color:#04110a;}
+  .actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;}
+  .btn{padding:6px 10px;border-radius:8px;border:none;font-weight:800;font-size:11px;cursor:pointer;color:#fff;}
+  .btn:active{transform:scale(.96);}
+  .btn-b{background:#2faf5a;}
+  .btn-r{background:#a22;}
+  .btn-a{background:#2d7dd2;}
+  .btn-g{background:#d4af37;color:#241a00;}
+  .back{display:block;text-align:center;margin-top:12px;color:var(--gold2);text-decoration:none;font-size:12px;}
+  .err{color:#ff9a9a;font-size:12px;text-align:center;margin-top:8px;min-height:16px;}
+  .tabs{display:flex;gap:6px;margin-bottom:12px;}
+  .tab{flex:1;padding:10px;border-radius:10px;border:1px solid var(--goldd);background:#0d1f15;color:#cdbf8e;font-weight:800;cursor:pointer;text-align:center;}
+  .tab.on{background:linear-gradient(180deg,var(--gold2),var(--goldd));color:#241a00;}
+  .panel{display:none;}
+  .panel.on{display:block;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="card">
+    <div class="title">🛡️ 管理後台</div>
+    <div class="tabs">
+      <button class="tab on" onclick="switchTab('users')">用戶管理</button>
+      <button class="tab" onclick="switchTab('payments')">支付訂單</button>
+    </div>
+    <div id="usersPanel" class="panel on">
+      <div style="overflow:auto;max-height:70vh;">
+        <table>
+          <thead>
+            <tr><th>帳號</th><th>名稱</th><th>餘額</th><th>金幣</th><th>身分</th><th>狀態</th><th>操作</th></tr>
+          </thead>
+          <tbody id="userTb"></tbody>
+        </table>
+      </div>
+    </div>
+    <div id="paymentsPanel" class="panel">
+      <div style="overflow:auto;max-height:70vh;">
+        <table>
+          <thead>
+            <tr><th>訂單號</th><th>帳號</th><th>金額</th><th>狀態</th><th>時間</th><th>操作</th></tr>
+          </thead>
+          <tbody id="payTb"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="err" id="err"></div>
+    <a class="back" href="/">← 返回遊戲</a>
+  </div>
+</div>
+<script>
+let currentTab='users';
+function switchTab(t){
+  currentTab=t;
+  document.querySelectorAll('.tab').forEach((el,i)=>{ el.classList.toggle('on', (i===0 && t==='users') || (i===1 && t==='payments')); });
+  document.getElementById('usersPanel').classList.toggle('on', t==='users');
+  document.getElementById('paymentsPanel').classList.toggle('on', t==='payments');
+  if(t==='payments') loadPayments();
+  else loadUsers();
+}
+async function loadUsers(){
+  const r=await fetch('/api/admin/users');
+  const j=await r.json();
+  if(!j.success){ document.getElementById('err').textContent=j.error||'載入失敗'; return; }
+  const tb=document.getElementById('userTb');
+  tb.innerHTML='';
+  j.users.forEach(u=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td><div class='name'>${u.id}</div></td>
+      <td>${u.name||''}</td>
+      <td>${u.balance??0}</td>
+      <td>${u.coins??0}</td>
+      <td><span class='badge ${u.role==='admin'?'badge-admin':'badge-user'}'>${u.role||'user'}</span></td>
+      <td>${u.banned?'<span class="badge badge-banned">封禁</span>':'正常'}</td>
+      <td><div class='actions'>
+        <button class='btn btn-a' onclick='setRole("${u.id}","admin")'>設管理員</button>
+        <button class='btn btn-a' onclick='setRole("${u.id}","user")'>設普通</button>
+        <button class='btn btn-b' onclick='setBan("${u.id}",0)'>解封</button>
+        <button class='btn btn-r' onclick='setBan("${u.id}",1)'>封禁</button>
+        <button class='btn btn-b' onclick='setBalance("${u.id}")'>設餘額</button>
+      </div></td>`;
+    tb.appendChild(tr);
+  });
+}
+async function loadPayments(){
+  const r=await fetch('/api/payment/pending');
+  const j=await r.json();
+  if(!j.success){ document.getElementById('err').textContent=j.error||'載入失敗'; return; }
+  const tb=document.getElementById('payTb');
+  tb.innerHTML='';
+  j.orders.forEach(o=>{
+    const tr=document.createElement('tr');
+    const dt = new Date(o.created_at).toLocaleString('zh-Hant');
+    tr.innerHTML=`<td><div class='name'>${o.id}</div></td>
+      <td>${o.user_id}</td>
+      <td>${o.amount}</td>
+      <td><span class='badge ${o.status==='pending'?'badge-pending':'badge-confirmed'}'>${o.status}</span></td>
+      <td>${dt}</td>
+      <td>${o.status==='pending'?`<button class='btn btn-g' onclick='confirmOrder(${o.id})'>確認收款</button>`:'已確認'}</td>`;
+    tb.appendChild(tr);
+  });
+}
+async function setRole(uid,role){
+  const err=document.getElementById('err');
+  try{
+    const r=await fetch('/api/admin/user/'+encodeURIComponent(uid),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({role})});
+    const j=await r.json(); if(j.success){ err.textContent='已更新'; loadUsers(); } else err.textContent=j.error;
+  }catch(e){ err.textContent='網絡錯誤'; }
+}
+async function setBan(uid,v){
+  const err=document.getElementById('err');
+  try{
+    const r=await fetch('/api/admin/user/'+encodeURIComponent(uid),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({banned:v})});
+    const j=await r.json(); if(j.success){ err.textContent='已更新'; loadUsers(); } else err.textContent=j.error;
+  }catch(e){ err.textContent='網絡錯誤'; }
+}
+async function setBalance(uid){
+  const amt=prompt('輸入新餘額：');
+  if(amt===null) return;
+  const n=parseInt(amt,10);
+  if(!n || n<0){ alert('請輸入正確數字'); return; }
+  const err=document.getElementById('err');
+  try{
+    const r=await fetch('/api/admin/user/'+encodeURIComponent(uid),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({balance:n})});
+    const j=await r.json(); if(j.success){ err.textContent='已更新'; loadUsers(); } else err.textContent=j.error;
+  }catch(e){ err.textContent='網絡錯誤'; }
+}
+async function confirmOrder(orderId){
+  const err=document.getElementById('err');
+  try{
+    const r=await fetch('/api/payment/confirm',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({order_id:orderId})});
+    const j=await r.json();
+    if(j.success){ err.textContent='✅ 已確認 | 金幣已加：'+j.coins_added; loadPayments(); }
+    else err.textContent=j.error;
+  }catch(e){ err.textContent='網絡錯誤'; }
+}
+loadUsers();
+</script>
+</body>
+</html>

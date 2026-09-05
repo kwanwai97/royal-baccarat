@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>🎰 皇家百家樂 · 商店</title>
+<style>
+  :root{--gold:#d4af37;--gold2:#f4d97b;--goldd:#b8860b;}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;height:100%;background:radial-gradient(circle at 50% 0%,#1a1a1a,#000 70%);color:#f5f0d8;font-family:"PingFang TC","Microsoft JhengHei",-apple-system,sans-serif;}
+  .wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;}
+  .card{width:min(380px,92vw);background:linear-gradient(180deg,#1a1200,#0d0a00);border:2px solid var(--gold);border-radius:16px;padding:18px;box-shadow:0 10px 30px rgba(0,0,0,.7);}
+  .title{text-align:center;color:var(--gold2);font-size:20px;font-weight:900;margin-bottom:4px;}
+  .sub{text-align:center;color:#cdbf8e;font-size:12px;opacity:.85;margin-bottom:14px;}
+  .item{display:flex;align-items:center;justify-content:space-between;padding:14px;border-radius:12px;border:1px solid var(--goldd);background:#0d1f15;margin-bottom:8px;cursor:pointer;}
+  .item:active{transform:scale(.98);}
+  .item-info{flex:1;}
+  .item-name{font-size:15px;font-weight:900;color:#fff;}
+  .item-desc{font-size:11px;color:#cdbf8e;margin-top:2px;}
+  .item-price{font-size:16px;font-weight:900;color:var(--gold2);}
+  .item-btn{padding:8px 14px;border-radius:8px;border:none;font-weight:800;font-size:12px;cursor:pointer;background:linear-gradient(180deg,var(--gold2),var(--goldd));color:#241a00;}
+  .item-btn:active{transform:scale(.95);}
+  .item-btn:disabled{opacity:.5;cursor:not-allowed;}
+  .back{display:block;text-align:center;margin-top:12px;color:var(--gold2);text-decoration:none;font-size:12px;}
+  .err{color:#ff9a9a;font-size:12px;text-align:center;margin-top:8px;min-height:16px;}
+  .balance-info{text-align:center;font-size:12px;color:#cdbf8e;margin-bottom:10px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="card">
+    <div class="title">🛒 商店</div>
+    <div class="sub">用金幣購買道具</div>
+    <div class="balance-info" id="balanceInfo">載入中...</div>
+    
+    <div class="item" onclick="buyRevive(1, 100)">
+      <div class="item-info">
+        <div class="item-name">💊 AI 復活 x1</div>
+        <div class="item-desc">AI 破產後可以復活繼續比賽</div>
+      </div>
+      <div class="item-price">100 金幣</div>
+      <button class="item-btn">購買</button>
+    </div>
+    
+    <div class="item" onclick="buyRevive(5, 450)">
+      <div class="item-info">
+        <div class="item-name">💊 AI 復活 x5</div>
+        <div class="item-desc">5 次復活機會，省 50 金幣</div>
+      </div>
+      <div class="item-price">450 金幣</div>
+      <button class="item-btn">購買</button>
+    </div>
+    
+    <div class="item" onclick="buyRevive(10, 800)">
+      <div class="item-info">
+        <div class="item-name">💊 AI 復活 x10</div>
+        <div class="item-desc">10 次復活機會，省 200 金幣</div>
+      </div>
+      <div class="item-price">800 金幣</div>
+      <button class="item-btn">購買</button>
+    </div>
+    
+    <div class="item" onclick="buyRevive(50, 3500)">
+      <div class="item-info">
+        <div class="item-name">💊 AI 復活 x50</div>
+        <div class="item-desc">50 次復活機會，省 1500 金幣</div>
+      </div>
+      <div class="item-price">3,500 金幣</div>
+      <button class="item-btn">購買</button>
+    </div>
+    
+    <div class="err" id="err"></div>
+    <a class="back" href="/">← 返回遊戲</a>
+  </div>
+</div>
+<script>
+async function loadBalance(){
+  try{
+    const r=await fetch('/api/user');
+    const j=await r.json();
+    if(j && j.id && j.id!=='guest'){
+      document.getElementById('balanceInfo').textContent='帳號：'+j.name+' | 餘額：'+j.balance.toLocaleString()+' | 金幣：'+(j.coins||0)+' | 復活次數：'+(j.ai_revives||0);
+    } else {
+      document.getElementById('balanceInfo').textContent='請先登入帳號';
+      setTimeout(()=>{ window.location.href='/login'; }, 1500);
+    }
+  }catch(e){}
+}
+async function buyRevive(count, price){
+  const err=document.getElementById('err');
+  err.textContent='購買中...';
+  try{
+    const r=await fetch('/api/buy-revives',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({count,price})});
+    const j=await r.json();
+    if(j.success){
+      err.textContent='✅ 購買成功！剩餘金幣：'+j.coins+' | 復活次數：'+j.revives;
+      loadBalance();
+    } else {
+      err.textContent=j.error||'購買失敗';
+    }
+  }catch(e){ err.textContent='網絡錯誤'; }
+}
+loadBalance();
+</script>
+</body>
+</html>

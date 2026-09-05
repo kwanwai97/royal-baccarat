@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>🎰 皇家百家樂 · 登入</title>
+<style>
+  :root{--gold:#d4af37;--gold2:#f4d97b;--goldd:#b8860b;--felt:#0b3d2e;}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;height:100%;background:radial-gradient(circle at 50% 0%,#1a1a1a,#000 70%);color:#f5f0d8;font-family:"PingFang TC","Microsoft JhengHei",-apple-system,sans-serif;}
+  .wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;}
+  .card{width:min(380px,92vw);background:linear-gradient(180deg,#1a1200,#0d0a00);border:2px solid var(--gold);border-radius:16px;padding:18px;box-shadow:0 10px 30px rgba(0,0,0,.7);}
+  .title{text-align:center;color:var(--gold2);font-size:22px;font-weight:900;margin-bottom:4px;letter-spacing:1px;}
+  .sub{text-align:center;color:#cdbf8e;font-size:12px;opacity:.85;margin-bottom:14px;}
+  .tabs{display:flex;gap:6px;margin-bottom:12px;}
+  .tab{flex:1;padding:10px;border-radius:10px;border:1px solid var(--goldd);background:#0d1f15;color:#cdbf8e;font-weight:800;cursor:pointer;text-align:center;}
+  .tab.on{background:linear-gradient(180deg,var(--gold2),var(--goldd));color:#241a00;}
+  .field{margin-bottom:10px;}
+  .field label{display:block;font-size:11px;color:var(--gold2);margin-bottom:4px;font-weight:700;}
+  .field input{width:100%;padding:10px 12px;border-radius:10px;border:1px solid #4a6;background:#0a1a12;color:#f5f0d8;font-size:14px;outline:none;}
+  .field input:focus{border-color:var(--gold2);}
+  .btn{width:100%;padding:12px;border-radius:12px;border:none;font-weight:900;font-size:15px;cursor:pointer;letter-spacing:1px;}
+  .btn.primary{background:linear-gradient(180deg,var(--gold2),var(--goldd));color:#241a00;box-shadow:0 3px 0 #7a5a00;}
+  .btn.topup{background:linear-gradient(180deg,#2faf5a,#1a8a4a);color:#fff;box-shadow:0 3px 0 #145c2e;margin-top:8px;}
+  .btn:active{transform:scale(.97);}
+  .btn:disabled{opacity:.5;cursor:not-allowed;}
+  .err{color:#ff9a9a;font-size:12px;min-height:16px;text-align:center;margin-top:6px;}
+  .links{display:flex;justify-content:space-between;margin-top:10px;font-size:12px;}
+  .links a{color:var(--gold2);text-decoration:none;}
+  .brand{text-align:center;margin-bottom:10px;}
+  .brand-icon{font-size:40px;}
+  .brand-name{font-size:18px;font-weight:900;color:var(--gold2);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="card">
+    <div class="brand">
+      <div class="brand-icon">🎰</div>
+      <div class="brand-name">皇家百家樂</div>
+    </div>
+    <div class="sub">server 版帳號系統</div>
+    <div class="tabs">
+      <button class="tab on" id="tabLogin" onclick="switchTab('login')">登入</button>
+      <button class="tab" id="tabRegister" onclick="switchTab('register')">註冊</button>
+    </div>
+    <div class="field">
+      <label>帳號</label>
+      <input id="username" type="text" placeholder="至少3個字" autocomplete="username">
+    </div>
+    <div class="field">
+      <label>密碼</label>
+      <input id="password" type="password" placeholder="輸入密碼" autocomplete="current-password">
+    </div>
+    <button class="btn primary" id="submitBtn" onclick="submit()">登入</button>
+    <button class="btn topup" id="topupBtn" onclick="goTopup()">💰 充值</button>
+    <div class="err" id="err"></div>
+    <div class="links">
+      <a href="/">🎮 開始遊戲</a>
+      <a href="/topup">💰 充值</a>
+      <a href="/transactions.html">📊 交易記錄</a>
+    </div>
+  </div>
+</div>
+<script>
+  let mode='login';
+  function switchTab(m){ mode=m; document.getElementById('tabLogin').classList.toggle('on',m==='login'); document.getElementById('tabRegister').classList.toggle('on',m==='register'); document.getElementById('submitBtn').textContent=m==='login'?'登入':'註冊'; document.getElementById('err').textContent=''; }
+  function goTopup(){ window.location.href='/topup'; }
+  async function submit(){
+    const u=document.getElementById('username').value.trim();
+    const p=document.getElementById('password').value;
+    const err=document.getElementById('err');
+    if(!u||!p){ err.textContent='請輸入帳號密碼'; return; }
+    const url=mode==='login'?'/api/login':'/api/register';
+    try{
+      const r=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u,password:p})});
+      const j=await r.json();
+      if(j.success){ window.location.href='/'; }
+      else{ err.textContent=j.error||'操作失敗'; }
+    }catch(e){ err.textContent='網絡錯誤'; }
+  }
+  // 如果已登入，直接回遊戲
+  (async function(){
+    try{ const r=await fetch('/api/user'); const j=await r.json(); if(j && j.id && j.id !== 'guest') window.location.href='/'; }catch(e){}
+  })();
+</script>
+</body>
+</html>
