@@ -672,151 +672,194 @@
   /* ===== 打橫 landscape：純 CSS grid 重排，唔郁 DOM、唔改 id/邏輯 ===== */
   @media (orientation:landscape){
   #cloudSlot{display:none;}
-  .app{
-    display:grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr;
-    grid-template-rows: auto auto auto;
-    gap: 2px;
-    padding: 2px;
-    max-width: 100%;
-    height: 100vh;
-    box-sizing: border-box;
-  }
-  /* Top row: 4 columns side by side */
-  .topbar{
-    grid-column: 1 / 5;
-    grid-row: 1;
-    display: flex !important;
-    flex-direction: row !important;
-    gap: 4px;
-    align-items: stretch;
-    min-width: 0;
-  }
-  .brand{
-    flex: 1;
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 2px;
-  }
-  .lb-stack{
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 2px !important;
-  }
-  .lb-stack button{
-    width: auto !important;
-    padding: 2px 6px !important;
-    font-size: 10px !important;
-  }
-  .follow-left{
-    grid-column: 2 / 3;
-    grid-row: 1;
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 2px;
-    min-width: 0;
-    overflow: hidden;
-  }
-  .follow-right{
-    grid-column: 3 / 4;
-    grid-row: 1;
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 2px;
-    align-items: stretch;
-    min-width: 0;
-    overflow: hidden;
-  }
-  .topright{
-    grid-column: 4 / 5;
-    grid-row: 1 / 3;
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 2px;
-    align-items: stretch;
-    min-width: 0;
-    overflow: hidden;
-  }
-  /* Bottom left: roadpanel */
-  .roadpanel{
-    grid-column: 1 / 3;
-    grid-row: 2 / 4;
-    width: 100%;
-    overflow: hidden;
-  }
-  /* Bottom middle: server-toolbar at bottom of funds */
-  .server-toolbar{
-    grid-column: 2 / 4;
-    grid-row: 3;
-    display: flex !important;
-    flex-wrap: wrap;
-    gap: 4px;
-    justify-content: center;
-    padding: 4px 0;
-  }
-  .server-toolbar button{
-    padding: 4px 12px;
-    font-size: 12px;
-    border-radius: 6px;
-  }
-  /* Bottom right: betting area */
-  .h-left{
-    grid-column: 3 / 5;
-    grid-row: 2 / 4;
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 2px;
-    min-width: 0;
-  }
-  .chips-row{
-    flex: 0 0 auto;
-  }
-  .bets{
-    flex: 1 1 auto;
-    display: grid !important;
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(3, 1fr);
-    gap: 1px;
-  }
-  .controls{
-    flex: 0 0 auto;
-  }
-  /* Hide follow controls that don't fit */
-  .follow-left, .follow-right{
-    display: none !important;
-  }
-  /* Adjust road elements */
-  #bigCanvas, #beadCanvas, #beeCanvas, #smallCanvas, #cockCanvas{
-    height: auto !important;
-    max-height: 100%;
-  }
-  .info-strip{
-    height: auto !important;
-  }
-  .odds-row{
-    display: none !important;
-  }
-  .dealzone{
-    padding-top: 0 !important;
-  }
-  .bet{
-    min-width: 60px;
-    min-height: 40px;
-  }
-  .betrow.top .bet{
-    min-height: 80px;
-  }
-  .chip{
-    width: 24px;
-    height: 24px;
-    font-size: 8px;
-  }
-  .btn{
-    padding: 3px 6px !important;
-    font-size: 10px !important;
-  }
-}
+  /* 橫版：直版專用大路標題置中對普通開牌有效(共用絕對置中)；剩餘數留喺brand-sub正常流 */
+  .roadpanel > div:first-child{ position:relative; }   /* 大路標題行做定位參考(橫版都啟用) */
+  .dealmode-wrap{ display:inline-flex; }  /* 橫版wrapper正常box，開牌掣flex排 */
+  .dealmode-wrap #btnDealMode{ position:static; transform:none; }
+  .roadpanel > div:first-child #shoeInfo{ font-size:13px; color:#5fe08a; font-weight:800; white-space:nowrap; flex:0 0 auto; margin-left:auto; }  /* 橫版：剩餘數做組首,auto推成組(剩餘+開牌+5圖案)去右邊 */
+  .road-header #btnDealMode{ margin-right:0; }  /* 橫版：剩餘卡牌+開牌緊貼右邊5圖案(直版係15px) */
+  /* 橫版：大路標題唔郁；剩張+開牌+5圖案成組向右65px（剩張 margin-left:50px 壓過 auto；移除 auto 本身已右移約15px，故用50湊正） */
+  .road-header #shoeInfo{ margin-left:50px !important; }
+    .pred-row1 .freset{ margin-left:5px; }   /* 橫版清除掣距請投注5px（直版0px） */
+    /* 橫版：預測系統框內三行撐滿框, 消除框右側留白(框外已貼跟注區) */
+    .follow-left .pred-row1, .follow-left .pred-row2, .follow-left .pred-row3{ width:100%; justify-content:flex-start; }  /* 橫版：預測框內5行全部向左(反轉舊嘅向右) */
+    .app{
+      display:grid;
+      grid-template-columns:60px minmax(0,2.5fr) 90px minmax(0,1fr) minmax(0,1fr) minmax(0,1fr);   /* 第1欄固定60px; 第2欄路單主體2.5fr; 第3欄5掣90px; 第4-6欄投注/資金(各1fr); 試51/49 */
+      grid-template-rows:auto auto auto auto auto auto;
+      align-content:start;                /* 整體貼頂 */
+      align-items:start;
+      grid-auto-rows:min-content;
+      column-gap:1px; row-gap:0;          /* 頂部四區左右距1px，行距保持0 */
+      max-width:none;                     /* 打橫填滿，唔再 560px 限死 */
+      padding:0 3px;                      /* 兩邊各預留3px空白 */
+    }
+    /* 下半左：路單（大路+珠盤+下三路）跨左3欄、佔 row2-4 全高 */
+    .roadpanel{ grid-column:1 / 4; grid-row:3 / span 4; align-self:start; }   /* 打橫：路單頂部落一格，同右投注區(row3)頂部水平並排；容器收實貼內容高度(唔被grid拉伸留空位) */
+    /* 打橫：發牌區張卡貼頂(緊貼藍色結果文字下方)，唔再跌去路單區底(直版感一致) */
+    .dealzone{ align-items:start; padding-top:34px; }  /* 橫版：卡牌貼大路標題底(路單頂部開始) */
+    /* 打橫壓縮路單高度，騰出下面欄位空間（唔改內部/JS） */
+    #bigCanvas{ height:80px; }
+    #beadCanvas{ height:72px; }
+    #beeCanvas, #smallCanvas, #cockCanvas{ height:100%; }
+    .info-strip{ height:32px; }
+    .odds-row{ display:none; }            /* 勝率行：打橫收，避免空白 */
+    /* 右欄：投注→籌碼→洗牌 各自一格，貼頂對齊 */
+    .h-left{ display:contents; }
+    .bets{ grid-column:4 / 7; grid-row:4; align-self:start; }     /* 右欄投注區：籌碼區之下 */
+    .chips-row{ grid-column:4 / 7; grid-row:3; align-self:start; margin-top:0 !important; } /* 右欄頂：籌碼區搬去投注區上方; 永遠緊貼資金區底(保險) */
+    /* 橫版：左上三掣(#topBtns)已按 orientation 搬入籌碼區，跟籌碼區水平並排 */
+    .chips-row #topBtns{ order:0; margin-top:0; display:flex; gap:3px; align-items:center; }
+    .controls{ grid-column:4 / 7; grid-row:5; align-self:start; padding:3px 6px 0; gap:4px; }  /* 右欄底：洗牌/發牌區 */
+    /* 打橫溫和壓縮底部掣：padding/字/圓角收細 */
+    .controls .btn{ padding:5px 6px; font-size:12px; border-radius:6px; letter-spacing:0; }
+    /* 打橫收埋左右 panel 自身 margin/padding，令下半兩邊真·貼住 48% 分界線（根治中間空位） */
+    .roadpanel{ margin:0 1px 0 0; }     /* 路單：收右邊 8px 空白，貼住分界 */
+    .bets{ padding:2px 2px 2px 0; }     /* 投注區：收左右 10px */
+    .chips-row{ padding:2px 2px 2px 0; gap:2px; } /* 橫版：籌碼區頂padding收2px, 四掣跟籌碼2px */
+    /* 打橫：同直板一樣——限4個籌碼顯示，其餘(10K/50K)靠橫向推拉揭示，唔隱藏任何籌碼 */
+    .chips-row .chips{ flex-wrap:wrap; }
+    .chips-row .chip.c50k{ display:flex; }   /* 唔再隱藏50K，改由推拉揭示 */
+    /* 橫版：籌碼區內四個掣(清除/重複/發牌/洗牌)文字打橫；其他位置不變 */
+    .chips-row .vbtn{ writing-mode:horizontal-tb; text-orientation:initial; flex-direction:row; }
+    /* 橫版：籌碼區下方四掣(清除/重複/發牌/洗牌)高度收窄4px(35→30) */
+    .chips-row .btn, .chips-row .btn.shuffle{ height:30px !important; }
+    /* 橫版：洗牌/清除/重複/發牌 字體豎排(拆字span垂直) + 闊度收1px(35→34) */
+    .chips-row .btn.shuffle, .chips-row .btn.clear, .chips-row .btn.repeat, .chips-row .btn.deal{ writing-mode:horizontal-tb !important; width:33px !important; flex:0 0 33px !important; display:flex !important; flex-direction:column !important; align-items:center !important; justify-content:center !important; line-height:1.05; }
+    .chips-row .btn.shuffle .vchar, .chips-row .btn.clear .vchar, .chips-row .btn.repeat .vchar, .chips-row .btn.deal .vchar{ display:block; writing-mode:horizontal-tb; font-size:12px; }
+    /* 打橫下三路：derived-row 改回 flex:1 均分(同直版)，三張自動撐滿高度、貼住珠盤路底對齊；canvas 跟 height:100% */
+    .road-derived{ display:flex; flex-direction:column; }
+    .derived-row{ flex:1 1 0; min-height:0; }
+    .derived-row canvas{ width:100%; height:100%; }
+    .derived-label{ right:4px; bottom:1px; font-size:8px; }
+    /* 頂部3區：brand(左) | 跟注/預測(中) | 餘額+資金(右)，各佔2欄、緊貼慳位 */
+    /* 用 display:contents 拆開 topbar，brand 同 topright 各自成 grid item */
+    .topbar{ display:contents; }
+    .brand{ grid-column:1 / 2; grid-row:1; align-self:start; margin-left:0; display:flex; flex-direction:row; align-items:center; gap:6px; font-size:13px; padding-top:6px; }  /* 橫版：brand行排列, 伺服榜貼左其他掣貼右 */
 
+
+    /* 橫版：自動+13秒掣(放籌碼區最左)，同其他四掣一樣高(33px)、闊度收細；全部掣左右緊貼零空隙 */
+    .auto-btns{ display:flex; flex-direction:row; gap:0; margin:0; align-items:center; order:0; flex:0 0 auto; }
+    .auto-btns .btn{ writing-mode:horizontal-tb; display:inline-flex; align-items:center; justify-content:center; width:35px; height:33px; padding:0; min-width:35px; max-width:35px; font-size:12px; margin:0; line-height:1; box-sizing:border-box; }
+    .auto-btns #btnAuto{ flex-direction:column; gap:1px; }
+    .auto-btns #btnAuto .a-label{ writing-mode:horizontal-tb; font-size:11px; font-weight:800; line-height:1; }
+    .auto-btns #btnAuto .a-state{ writing-mode:horizontal-tb; font-size:11px; font-weight:800; line-height:1; }
+    .topright{ grid-column:5 / 7; grid-row:1 / span 3; display:flex; flex-direction:column; align-items:stretch; gap:3px; align-self:start; min-width:0; overflow:visible; padding:4px 1px 4px 1px; margin-left:-100px; margin-top:0; }  /* 橫版：資金區向左10px(-90→-100)同中間區拉開, 格唔窄 */
+    .server-toolbar{
+      grid-column: 5 / 7;
+      grid-row: 3;
+      display: flex !important;
+      flex-direction: row !important;
+      flex-wrap: wrap;
+      gap: 4px;
+      justify-content: center;
+      padding: 4px 0;
+      align-self: end;
+    }
+    .server-toolbar button{
+      padding: 4px 12px;
+      font-size: 12px;
+      border-radius: 6px;
+    }
+    .topright .balance{ font-size:15px; text-align:left; width:100%; }  /* 文字靠左, 貼資金區最左消除視覺空間 */
+    .topright .balance b{ font-size:21px; }
+    /* AI陪玩列表（資金）打橫：6個一行、2行顯示(6x2)，全部見到唔切走；頂欄span2行容納 */
+    .ai-balances{ display:grid; grid-template-columns:repeat(4,1fr); grid-auto-flow:row; gap:1px 2px; width:100%; min-width:0; overflow:visible; }  /* 橫版資金區跟直版=4列(4x3層); 撐滿靠左 */
+    /* 橫版唔截斷名+表情(避免3字名+表情被ellipsis食咗): small改visible+normal換行 */
+    .ai-balances .aib small{ overflow:visible; text-overflow:clip; white-space:normal; font-size:9px; }
+    /* 橫版格內容名9px/數字11px */
+    .ai-balances .aib{ padding:1px 3px; line-height:1.1; }
+    .ai-balances .aib b{ font-size:12px; }
+    .follow-wrap{
+      display:contents;
+    }
+.follow-left{ grid-column:auto; grid-row:1 / span 2; min-width:0; padding:6px 0 0 1px; position:relative; display:flex; flex-direction:column; align-items:flex-start; margin-right:0; margin-left:18px; width:fit-content; z-index:1; }  /* 橫版：預測系統唔鎖grid欄寬, 黃框fit-content跟內容收細+跟margin移; 向左18px(20→18); width:fit-content防透明層蓋住喇叭行 */
+/* 橫版：跟注文字搬入預測系統底部，打橫一行(取消疊牌)，緊貼預測系統、縮細 */
+.follow-left .follow-text{ display:flex; flex-direction:row; flex-wrap:nowrap; align-items:center; gap:5px; flex-basis:auto; min-width:0; order:3; margin-top:0; font-size:9px; }
+/* 打橫：預測系統區貼第二行最闊位(唔撐開、唔轉行)，保持三行位置唔變 */
+.follow-left .pred-system{ width:fit-content !important; max-width:none; justify-content:flex-start; gap:0; padding:0; min-height:0; }  /* 橫版套直版: 黃框跟內容闊度fit-content包實, 唔鎖grid欄 */
+.follow-left .pred-road{ justify-content:flex-start; }  /* 橫版：狀態欄向左 */
+.follow-left #followStatus{ text-align:left; }  /* 橫版：狀態文字向左 */
+.follow-left .pred-record{ justify-content:flex-start; }  /* 橫版：跟注次數紀錄向左 */
+.follow-left .pred-side{ margin-left:2px; }   /* 取消「請投注」撐開，第一行緊湊貼標題 */
+.follow-right{
+  grid-column:3 / 4; grid-row:1 / span 2;   /* 橫版：第3欄(跟注區), 框fit-content溢出顯示唔截斷 (還原v90位置, 唔郁位) */
+  display:flex; flex-direction:row; flex-wrap:wrap; align-items:stretch; align-content:flex-start; justify-content:flex-start; gap:0;  /* 橫版三層各自一行靠左; 行距0緊貼 */
+  align-self:start; min-width:0; padding:0; margin-top:5px;       /* 跟注控制(取消黃框); 橫版; 頂部留5px空間 */
+  width:fit-content !important; justify-self:start !important; min-width:0 !important; margin-left:-64px;   /* 橫版：跟反控制區向左30px(-34→-64) */
+}
+/* 橫版：三層各自一行(跟注/圖案/底層), 每行nowrap靠左, 容器fit-content=最闊行(~164) */
+.follow-right .frow{ display:flex; flex-direction:row; flex-wrap:nowrap; align-items:center; justify-content:flex-start; gap:0; width:fit-content; flex:0 0 auto; margin-top:0; }
+.follow-right .frow-bot{ order:7; margin-top:6px; }  /* 橫版底層行(喇叭/自動/13秒/±次數)貼住上面4掣, 同預測框底水平對齊 */
+/* 橫版5掣一行：跟預測/反預測/跟旺AI/反旺AI/±次數 全部一行(移除舊2上3下grid) */
+.follow-right #btnFollowPredict2{ order:1; }
+.follow-right #btnFollowRev{ order:2; }
+.follow-right #btnFollowHot{ order:3; }
+.follow-right #btnFollowHotRev{ order:4; }
+.follow-right .limit-row{ order:9; align-self:stretch; width:38px !important; flex:0 0 38px !important; min-width:38px !important; }  /* 橫版±次數掣38, 排13秒右邊 */
+/* 橫版：5圖案掣(.follow-mid)放5掣行下方,跟直版尺寸(前4個35x25,陪玩40x25) */
+.follow-right .follow-mid{ flex:0 0 auto; display:flex; flex-direction:row; flex-wrap:nowrap; align-items:center; justify-content:flex-start; gap:1px; order:6; margin-top:0px; }  /* 橫版：跟左貼頂行; 唔用flex:0 0 100%(否則撐闊容器) */
+.follow-right .follow-mid .iconbtn{ flex:0 0 auto; width:30px; height:24px; font-size:15px; display:inline-flex; align-items:center; justify-content:center; box-sizing:border-box; }  /* 跟直版前4圖案 30x24 */
+.follow-right .follow-mid #btnAi{ width:40px; height:24px; }  /* 跟直版陪玩 40x24 */
+/* 跟注文字+重置掣：換行到5掣下(唔入一行) */
+.follow-right .follow-text{ display:flex; flex-direction:row; align-items:center; gap:4px; flex-wrap:wrap; flex:1 0 100%; order:10; margin-top:0; }  /* 跟注文字貼上(垂直空間0) */
+/* 橫版：底層4掣(🔊自動/13秒/AI榜/洗牌)跟直版 order:2 排5圖案下方 */
+/* 橫版：底層3掣跟直版排5圖案下方, 順序: 喇叭第一 → 自動/13秒 → AI榜最後 */
+.follow-right > #btnMute{ order:7; flex:0 0 auto; }  /* 喇叭第一位 */
+.follow-right > #autoBtns{ order:8; flex:0 0 auto; }  /* 自動/13秒 中 */
+.follow-right > #btnLeaderboard{ order:9; flex:0 0 auto; }  /* AI榜最後 */
+.follow-right #btnMute, .follow-right #btnAuto, .follow-right #btnAutoInt, .follow-right #btnLeaderboard{ width:38px; height:38px; font-size:11px; }  /* 底行掣統一38px(自動/13秒/AI榜/🔊) */
+.follow-right #btnLeaderboard{ width:70px; white-space:nowrap; font-size:10px; line-height:1.1; }  /* AI榜闊度70, 橫版字唔轉行(🏆AI排行榜一行) */
+/* 重置掣做6掣之一：直排細掣，同fbtn一致 */
+.follow-right #btnFollowReset{ writing-mode:vertical-rl; text-orientation:upright; min-width:24px; height:30px; padding:0 1px 1px 1px; font-size:10px; line-height:1; justify-content:flex-start; align-items:center; }
+.follow-right .fbtn{
+  writing-mode:vertical-rl; text-orientation:upright;
+  min-width:38px; width:38px; height:38px; flex:0 0 auto;  /* 橫版5掣 38x38 統一 */
+  padding: 0 1px 0 1px;
+  font-size:10px;
+  line-height: 1;
+  justify-content: flex-start;
+  align-items: center;
+}
+/* 橫版：自動/13秒 統一30px(同跟注掣) */
+.follow-right .btn.auto, .follow-right .auto-int-btn{ min-width:38px !important; width:38px !important; height:38px !important; flex:0 0 38px !important; }
+    /* 跟注文字(狀態+統計)打橫一行、縮細、緊貼預測系統 */
+    .follow-text #followStatus{ text-align:left; white-space:nowrap; flex-basis:auto; font-size:9px; }
+    .follow-text .follow-stats{ text-align:left; white-space:nowrap; margin-left:0; font-size:9px; }
+/* 直版狀態列靠右(#followStatus 全域 text-align:right)，橫版覆蓋為左對齊；整體文字區靠左 */
+    #followStatus{ text-align:left; }
+    .follow-text{ text-align:left; }
+.follow-right .limit-row{
+  writing-mode:horizontal-tb; text-orientation:mixed; 
+  flex-direction:column; flex-wrap:nowrap; 
+  align-items:center; justify-content:center; gap:1px; 
+  flex:0 0 38px; min-width:38px; width:38px; height:38px; align-self:stretch;  /* 橫版±次數 38x38 方塊 */
+  padding:0 1px;
+  margin:0; box-sizing:border-box;
+}
+.follow-right .limit-row .fstep{ 
+  writing-mode:vertical-rl; text-orientation:upright; 
+  width:auto; flex:0 0 auto; padding:0; font-size:10px;
+  line-height: 1;
+}
+.follow-right .limit-row .limit-val{ 
+  writing-mode:vertical-rl; text-orientation:upright; 
+  width:auto; flex:0 0 auto;
+  font-size:10px; line-height: 1;
+}
+    /* 打橫投注區壓縮：3×3 貼頂、第2/3行細啲，令右欄同左路單水平並排唔溢出 */
+    .bets{ display:grid; grid-template-columns:repeat(3,1fr); gap:1px; }
+    .betrow{ display:contents; }     /* 三行變 grid 子項，整體 3×3 一齊排 */
+    .bet{ min-height:35px; padding:0; font-size:11px; }   /* 下兩行保持壓縮, 全0空隙 */
+    /* 橫版：頂/中/底 統一 90/30/30（與直版對齊緊貼） */
+    .betrow.top .bet{ min-height:88px; padding:0; }       /* 頂列(閒莊和) 88px 高 */
+    .betrow.mid .bet, .betrow.bottom .bet{ min-height:35px; padding:0; }  /* 第二/三列各 35px 高 */
+    .bet .bn{ font-size:11px; }
+    .bet .od{ font-size:8px; }
+    .bet .chips-stack{ min-height:12px; margin-top:1px; }
+    .betrow.bottom .bet .chips-stack{ min-height:16px; margin-top:1px; }  /* 橫版底列收: 52→48 */
+    .chip{ width:26px; height:26px; font-size:8px; }
+</style>
 </head>
 <body>
 <div class="app">
