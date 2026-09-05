@@ -669,791 +669,205 @@
   .bet.ai-bet{ outline:2px solid #ffd98a; outline-offset:1px; }
   .bet .ai-amt{ position:absolute; top:-12px; left:50%; transform:translateX(-50%); font-size:9px; color:#ffd98a; font-weight:800; background:rgba(0,0,0,.7); padding:1px 4px; border-radius:6px; white-space:nowrap; pointer-events:none; }
 
-  /* ===== 打橫 landscape：clean rewrite，穩定可維護 ===== */
+  /* ===== 打橫 landscape：純 CSS grid 重排，唔郁 DOM、唔改 id/邏輯 ===== */
   @media (orientation:landscape){
   #cloudSlot{display:none;}
-  .app{
-    display:grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr;
-    grid-template-rows: auto auto;
-    gap: 2px;
-    padding: 2px;
-    max-width: 100%;
-    height: 100vh;
-    box-sizing: border-box;
-  }
-  /* Top row: 4 columns side by side */
-  .topbar{
-    grid-column: 1 / 5;
-    grid-row: 1;
-    display: grid !important;
-    grid-template-columns: 1fr 1fr 1fr 1fr;
-    gap: 4px;
-    align-items: stretch;
-    min-width: 0;
-  }
-  .brand{
-    flex: 1;
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 2px;
-  }
-  .lb-stack{
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 2px !important;
-  }
-  .lb-stack button{
-    width: auto !important;
-    padding: 2px 6px !important;
-    font-size: 10px !important;
-  }
-  .follow-left{
-    grid-column: 2 / 3;
-    grid-row: 1;
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 2px;
-    min-width: 0;
-    overflow: hidden;
-  }
-  .follow-right{
-    grid-column: 3 / 4;
-    grid-row: 1;
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 2px;
-    align-items: stretch;
-    min-width: 0;
-    overflow: hidden;
-  }
-  .topright{
-    grid-column: 4 / 5;
-    grid-row: 1;
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 2px;
-    align-items: stretch;
-    min-width: 0;
-    overflow: hidden;
-  }
-  /* Bottom row: left = roadpanel, right = betting area */
-  .roadpanel{
-    grid-column: 1 / 3;
-    grid-row: 2;
-    width: 100%;
-    overflow: hidden;
-  }
-  .h-left{
-    grid-column: 3 / 5;
-    grid-row: 2;
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 2px;
-    min-width: 0;
-  }
-  .chips-row{
-    flex: 0 0 auto;
-  }
-  .bets{
-    flex: 1 1 auto;
-    display: grid !important;
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(3, 1fr);
-    gap: 1px;
-  }
-  .controls{
-    flex: 0 0 auto;
-  }
-  /* Hide server-toolbar in landscape since new buttons are in follow-right */
-  .server-toolbar{
-    display: none !important;
-  }
-  /* Compact adjustments */
-  #bigCanvas, #beadCanvas, #beeCanvas, #smallCanvas, #cockCanvas{
-    height: auto !important;
-    max-height: 100%;
-  }
-  .info-strip{
-    height: auto !important;
-  }
-  .odds-row{
-    display: none !important;
-  }
-  .dealzone{
-    padding-top: 0 !important;
-  }
-26-08-27T12:55 籌碼區永遠緊貼資金底(加margin-top:0保險) -->
-<html lang="zh-Hant">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>🎰 皇家百家樂 · 真人豪華版</title>
-<style>
-  :root{
-    --gold:#d4af37; --gold2:#f4d97b; --goldd:#b8860b;
-    --felt:#0b3d2e; --felt2:#0a5c3a; --felt3:#06321f;
-    --red:#e23b3b; --blue:#2d7dd2; --green:#2faf5a;
-    --ink:#0a0a0a;
-  }
-  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
-  html,body{margin:0; padding:0; height:100%;}
-  body{
-    font-family:"PingFang TC","Microsoft JhengHei",-apple-system,sans-serif;
-    background:radial-gradient(circle at 50% 0%, #1a1a1a 0%, #000 70%);
-    color:#f5f0d8; overflow-x:hidden; user-select:none;
-  }
-  .app{max-width:560px; margin:0 auto; min-height:100vh; display:flex; flex-direction:column; position:relative; padding-top:0;}
-  .h-left{display:contents;}   /* 直向：透明外殼，內容攤返入 .app flex 直欄；打橫由 media 改為左欄一格 */
-
-  /* 頂部 */
-  .topbar{
-    background:linear-gradient(180deg,#2a1d00,#1a1200);
-    border-bottom:2px solid var(--gold); padding:4px 12px; margin-top:0;
-    display:flex; align-items:center; justify-content:space-between;
-    box-shadow:0 2px 10px rgba(0,0,0,.6); position:relative; top:0; z-index:30;
-  }
-  .brand{font-weight:800; letter-spacing:1px; color:var(--gold2);
-    font-size:15px; text-shadow:0 0 8px rgba(212,175,55,.6); display:flex; flex-direction:column; align-items:flex-start; gap:2px; margin-left:-6px;}
-  .brand-sub{font-size:11px; font-weight:600; color:#cdbf8e; opacity:.85; display:flex; flex-direction:column; gap:1px; order:2;}
-  .brand #btnServerLb .srv-sub{ display:block; text-align:left; }  /* 直版：伺服榜server版副文斷兩行 */
-  .brand-title{order:1;}
-  #btnServerLb{order:0;}
-  #btnLeaderboard{order:1;}
-  #btnPlayerName{order:2;}
-  .lb-stack{ margin-left:-5px; }  /* 直版：AI榜/server貼左(由6px→1px) */
-  #btnLeaderboard{ text-indent:-3px; }  /* AI榜文字向左3px */
-  .brand-sub #shoeInfo{font-size:14px; font-weight:800; color:#7fffb0; text-shadow:0 0 6px rgba(80,255,160,.5);}
-  .topright{display:flex; align-items:center; gap:10px; margin-left:-9px; transform:translateX(3px);}  /* 資金區(取消黃框); 直版向左10px, translateX(+3px)向右3px */
-  .balance{font-size:12px; text-align:right;}
-  .balance .bname{ font-size:12px; color:#ffd479; font-weight:700; margin-bottom:1px; max-width:140px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-  .balance b{color:var(--gold2); font-size:18px; margin-left:1px;}
-  .iconbtn{background:#1a1200; border:1px solid var(--goldd); color:var(--gold2); border-radius:8px; padding:6px 9px; font-size:13px; cursor:pointer;}
-  .iconbtn:active{transform:scale(.92);}
-
-  .streak-badge{background:linear-gradient(90deg,#7b3ff2,#c77dff); color:#fff; border-radius:20px; padding:3px 10px; font-size:11px; font-weight:800; display:none;}
-  .streak-badge.show{display:inline-block; animation:pop .4s;}
-  @keyframes pop{0%{transform:scale(.5);}70%{transform:scale(1.2);}100%{transform:scale(1);}}
-
-  /* 整合路單面板 */
-  .roadpanel{margin:3px 8px 0; background:#06120c; border:1px solid #1c3a2a; border-radius:8px; overflow:visible; position:relative;}
-  .road-section-title{font-size:10px; color:var(--gold2); opacity:.8; padding:4px 8px; background:#0a1a12; border-bottom:1px solid #14241c; letter-spacing:1px; position:relative; z-index:11;}
-  .road-big{position:relative;}
-  #bigCanvas{width:100%; display:block; background:#02110a;}
-  .road-lower{display:flex; gap:0; border-top:1px solid #14241c; position:relative;}
-  .road-bead{flex:0 0 50%; border-right:1px solid #14241c; position:relative;}
-  #beadCanvas{width:100%; display:block; background:#02110a;}
-  .road-derived{flex:1; display:flex; flex-direction:column; position:relative;}
-  .derived-row{position:relative; border-bottom:1px solid #14241c; flex:1;}
-  .derived-row:last-child{border-bottom:none;}
-  .derived-row canvas{width:100%; height:100%; display:block; background:#02110a;}
-  /* 下三路標籤：擺喺每張圖右下角（唔喺左上），半透明金色細字 */
-  .derived-label{position:absolute; right:6px; bottom:2px; font-size:8px; opacity:.6; padding:0; letter-spacing:0; background:none; border:none; pointer-events:none; text-align:right;}
-  /* 手機本地 AI 排行榜面板 */
-  .ai-lb-panel{position:absolute; top:6px; left:6px; z-index:61; width:248px; max-height:80vh; overflow-y:auto; background:#0c1a12; border:1px solid var(--goldd); border-radius:10px; padding:10px 12px; box-shadow:0 6px 24px rgba(0,0,0,.7); font-family:inherit; color:#e8e8e8;}
-  .ai-lb-panel[hidden]{display:none;}
-  .alb-head{display:flex; justify-content:space-between; align-items:center; font-weight:800; color:var(--gold2); font-size:13px; margin-bottom:8px;}
-  .alb-x{background:none; border:none; color:#aaa; font-size:15px; cursor:pointer; line-height:1;} .alb-x:hover{color:#fff;}
-  .alb-tabs{display:flex; gap:4px; margin-bottom:8px;}
-  .alb-act{ display:inline-flex; gap:4px; align-items:center; }
-  .alb-btn{ font-size:10px; line-height:1; padding:3px 6px; border-radius:6px; border:1px solid #6a5aa0; background:linear-gradient(90deg,#3a2d5c,#5a3d7c); color:#fff; cursor:pointer; }
-  .alb-tab{flex:1; padding:4px 0; border:1px solid #2a4a36; background:#06120c; color:#cdbf8e; border-radius:6px; font-size:10px; cursor:pointer;}
-  .alb-tab.active{background:var(--goldd); color:#06120c; font-weight:800;}
-  .alb-list{display:flex; flex-direction:column; gap:4px;}
-  .alb-row{display:flex; align-items:center; gap:6px; padding:5px 7px; background:#06120c; border-radius:6px; font-size:11px;}
-  /* 組合榜（測試版）：直版可滑，每行一組合 */
-  .alb-combo{background:#06120c; border:1px solid #1f3a2a; border-radius:8px; padding:7px 9px; font-size:11px; line-height:1.5;}
-  .alb-combo .cb-top{display:flex; justify-content:space-between; align-items:baseline; gap:6px;}
-  .alb-combo .cb-name{font-weight:800; color:var(--gold2); font-size:12px;}
-  .alb-combo .cb-cnt{color:#9fb8a4; font-size:10px;}
-  .alb-combo .cb-grid{display:grid; grid-template-columns:1fr 1fr 1fr; gap:2px 10px; margin-top:4px; color:#d6e6da;}
-  .alb-combo .cb-grid b{color:#fff;}
-  .alb-combo .cb-bust{color:#ff8a6a; font-weight:800;}
-  .alb-combo.bust .cb-name{color:#ff8a6a;}
-  .alb-combo .cb-peak{color:#ffd86b;}
-  .alb-combo.me{background:#1a1405; border:1.5px solid #ffd479; box-shadow:0 0 8px rgba(255,212,121,.3);}  /* 你本人行：金邊突顯 */
-  .alb-combo.me .cb-name{color:#ffd479;}
-  .alb-rank{width:18px; text-align:center; font-weight:800; color:var(--gold2);}
-  .alb-name{flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
-  .alb-stat{font-size:10px; color:#9fd6ff; white-space:nowrap;}
-  .alb-stat .v{color:#7fffb0; font-weight:700;}
-  .alb-hint{font-size:9px; color:#7a8a7a; margin-top:8px; line-height:1.3;}
-
-  /* 珠盤路下方資訊條：同底部按鈕區同高，2行4格緊湊顯示（這一靴牌統計） */
-  .info-strip{display:grid; grid-template-columns:repeat(4,1fr); grid-template-rows:repeat(2,1fr); gap:1px 4px; margin-top:3px; padding:3px 6px; height:44px;
-    background:rgba(0,0,0,.35); border:1px solid rgba(212,175,55,.25); border-radius:7px; font-size:9px; line-height:1.1; color:var(--gold2);}
-  .info-strip .cell{display:flex; align-items:center; justify-content:space-between; white-space:nowrap; overflow:hidden;}
-  .info-strip .k{opacity:.55; font-size:8px;}
-  .info-strip .v{font-weight:800; color:#fff;}
-  .info-strip .v.p{color:#a9d2ff;} .info-strip .v.b{color:#ffb3b3;} .info-strip .v.t{color:#8fe0ab;} .info-strip .v.c{color:#ffd45e;}
-  .dealzone{position:absolute; inset:0; z-index:10; display:grid; grid-template-columns:1fr 1fr; align-items:start; justify-items:center; gap:6px; padding:34px 8px 8px; border-radius:8px;
-    background:transparent; border:none; box-shadow:none;
-    opacity:0; pointer-events:none; transition:opacity .25s ease;}
-  .dealzone.show{opacity:1; pointer-events:auto; z-index:20;}
-  .dealzone.empty{display:none !important; opacity:0 !important; pointer-events:none !important;}
-  .hand{display:flex; flex-direction:column; align-items:center; justify-content:flex-start; gap:7px; width:100%; min-width:0; min-height:152px;}
-  .hand-row{display:flex; flex-direction:row; align-items:center; justify-content:center; gap:2px;}
-  .hand.player .hand-row{justify-content:center;}
-  .hand.banker .hand-row{justify-content:center;}
-  .hand-row.reverse{flex-direction:row-reverse;}
-  .hand .label{display:block; font-weight:700; font-size:10px; letter-spacing:.5px; color:var(--gold2); opacity:.85; white-space:nowrap;}
-  /* 結果點數：黃色數字，每側卡牌右邊 */
-  #playerScore,#bankerScore{font-size:23px; font-weight:900; color:var(--gold2); text-shadow:0 0 10px #000,0 2px 5px #000; z-index:21; pointer-events:none; transition:color .3s, opacity .35s ease; line-height:1; align-self:center; margin-left:0; margin-right:0; transform:translateY(-30px); opacity:0;}
-  #playerScore.show,#bankerScore.show{opacity:1;}
-  #bankerScore{margin-left:0; margin-right:0;}
-  /* 手動搣牌放大第3隻牌期間：兩邊點數大字都 20px（統一），貼屏幕左右邊緣，垂直留牌組原高度 */
-  #playerScore.squeeze-pin{ position:fixed; z-index:40; font-size:20px; margin:0; left:4px; right:auto; }
-  #bankerScore.squeeze-pin{ position:fixed; z-index:40; font-size:20px; margin:0; right:4px; left:auto; }
-  /* 兩隻牌一行；第3隻補牌自動摺落下一行(下方中心打橫)，固定高度避免發牌區跳動 */
-  /* 固定高度 Grid 預留第2行：首兩張永遠貼頂固定，第3張填落第2行 → 唔會向上跳 */
-  .cards{display:grid; grid-template-columns:repeat(2,52px); grid-auto-rows:72px; gap:4px; width:108px; height:152px; align-content:start; justify-content:center; margin-top:2px;}
-  .card{ width:52px; height:72px; border-radius:4px; background:#fff; color:#000; position:relative;
-    box-shadow:0 2px 6px rgba(0,0,0,.5); font-weight:800; display:flex; align-items:center; justify-content:center;
-    font-size:22px; transform:translateY(-4px) rotate(-4deg); opacity:0; transition:all .3s cubic-bezier(.2,.8,.3,1.2);
-    border:1px solid #ccc; }
-  .card.show{opacity:1; transform:translateY(0) rotate(0);}
-  /* 第3隻補牌打橫擺喺兩張牌下方正中；margin-top 2px（緊貼上面兩隻牌） */
-  .cards .card:nth-child(3){grid-column:1 / -1; justify-self:center; margin-top:4px;}
-  /* squeeze模式：打橅 90°，牌身+內容一起旋轉 */
-  .card:nth-child(3).sq{transform:translateY(0) rotate(90deg);}
-  /* squeeze模式點擊後豎起(暫時取消橅放) */
-  .card:nth-child(3).sq.upright{transform:translateY(0) rotate(0);}
-  /* 3D模式翻牌完成：打橫 90°，放在兩隻直牌下方 (1秒慢速旋轉) */
-  .card:nth-child(3).flat{transform:translateY(0) rotate(90deg); transition:transform 1s ease-in-out;}
-  /* 第3隻牌打橫：取消中間大點數；角落數字隨牌身90°旋轉變垂直（同1、2隻一樣只顯數字rank） */
-  .cards .card:nth-child(3) .mid{display:none;}
-  /* 第3隻牌打橫：牌身 rotate(90deg) 令整張橫置；角落數字反向 rotate(-90deg) 抵消牌身旋轉 → 數字保持企直可讀（6 唔會變 9）。
-     牌身 +90° 後 TL 角去到可視右上、BR 角去到可視左下，兩隻數字都反向轉 -90° 企返直。
-     --- 3D模式: 翻牌完成後添加 .flat 類別 --- */
-  .cards .card:nth-child(3) .corner.tl{top:4px; left:5px; right:auto; bottom:auto;}
-  .cards .card:nth-child(3) .corner.br{bottom:4px; right:5px; left:auto; top:auto;}
-  .cards .card:nth-child(3).show-num .corner{opacity:1;}
-  .card .corner{position:absolute; font-size:13px; line-height:1; font-weight:800; opacity:0; transition:opacity .25s ease;}
-  .card .mid{display:none;}
-  .card.show-num .corner{opacity:1;}
-  /* 真實啤牌牌面：排點/公仔 */
-  .card .corner small{display:block; font-size:11px; text-align:center;}
-  .pips{position:absolute; inset:6px 7px; }
-  .pips .pip{position:absolute; font-size:13px; line-height:1; transform:translate(-50%,-50%);}
-  .pips .pip.inv{transform:translate(-50%,-50%) rotate(180deg);}
-  .pips.ace .pip{font-size:30px;}
-  .courtbox{position:absolute; inset:8px 9px; border:1.5px solid currentColor; border-radius:3px;
-    display:flex; align-items:center; justify-content:center; flex-direction:column; opacity:.9;}
-  .courtbox .cl{font-size:18px; font-weight:900; line-height:1;}
-  .courtbox .cs{font-size:14px; line-height:1.1;}
-  /* ===== 3D 翻牌模式 ===== */
-  .card.f3d{background:transparent; border:none; box-shadow:none; perspective:420px;}
-  .card.f3d .cf{position:absolute; inset:0; transform-style:preserve-3d; transition:transform 1.1s cubic-bezier(.3,.7,.3,1); transform:rotateY(180deg); border-radius:4px;}
-  .card.f3d.flip .cf{transform:rotateY(0deg);}
-  /* 搣牌模式：牌背漸進掀開（真賭場捽牌），四方向隨機 */
-  .card.f3d.sq .cf{transition:none; transform:none;}
-  .card.f3d.sq .face{transform:none;}
-  .card.f3d.sq .back{transform:none; z-index:2;}
-  .card.f3d.sq.flip .back{animation-duration:2.4s; animation-timing-function:cubic-bezier(.45,.05,.35,1); animation-fill-mode:forwards;}
-  .card.f3d.sq.d0.flip .back{animation-name:sqUp;}     /* 由下向上掀 */
-  .card.f3d.sq.d1.flip .back{animation-name:sqDown;}   /* 由上向下掀 */
-  .card.f3d.sq.d2.flip .back{animation-name:sqLeft;}   /* 由左到右掀 */
-  .card.f3d.sq.d3.flip .back{animation-name:sqRight;}  /* 由右到左掀 */
-  /* inset(上 右 下 左)：邊個 inset 增大就由嗰邊開始露出牌面 */
-  @keyframes sqUp{
-    0%{clip-path:inset(0 0 0 0);} 28%{clip-path:inset(0 0 32% 0);} 42%{clip-path:inset(0 0 24% 0);}
-    66%{clip-path:inset(0 0 68% 0);} 78%{clip-path:inset(0 0 58% 0);} 100%{clip-path:inset(0 0 101% 0);} }
-  @keyframes sqDown{
-    0%{clip-path:inset(0 0 0 0);} 28%{clip-path:inset(32% 0 0 0);} 42%{clip-path:inset(24% 0 0 0);}
-    66%{clip-path:inset(68% 0 0 0);} 78%{clip-path:inset(58% 0 0 0);} 100%{clip-path:inset(101% 0 0 0);} }
-  @keyframes sqLeft{
-    0%{clip-path:inset(0 0 0 0);} 28%{clip-path:inset(0 0 0 32%);} 42%{clip-path:inset(0 0 0 24%);}
-    66%{clip-path:inset(0 0 0 68%);} 78%{clip-path:inset(0 0 0 58%);} 100%{clip-path:inset(0 0 0 101%);} }
-  @keyframes sqRight{
-    0%{clip-path:inset(0 0 0 0);} 28%{clip-path:inset(0 32% 0 0);} 42%{clip-path:inset(0 24% 0 0);}
-    66%{clip-path:inset(0 68% 0 0);} 78%{clip-path:inset(0 58% 0 0);} 100%{clip-path:inset(0 101% 0 0);} }
-  /* 手動搣牌：倒數（底部）+ 放大中的牌 */
-  .sq-timer{position:absolute; bottom:2px; left:50%; transform:translateX(-50%); z-index:7;
-    color:#2faf5a; font-weight:800; font-size:17px; text-shadow:0 0 6px rgba(0,0,0,.8); pointer-events:none;}
-  .card.f3d.sq{cursor:pointer;}
-  .card.f3d .face,.card.f3d .back{position:absolute; inset:0; backface-visibility:hidden; -webkit-backface-visibility:hidden; border-radius:4px; border:1px solid #ccc;
-    display:flex; align-items:center; justify-content:center; box-shadow:0 3px 8px rgba(0,0,0,.5);}
-  .card.f3d .face{background:#fff;}
-  .card.f3d .back{transform:rotateY(180deg);
-    background:repeating-linear-gradient(45deg,#7a1f1f 0 6px,#932525 6px 12px); border:2px solid #d4af37;}
-  /* 開牌模式切換掣 */
-  .dealmode-btn{position:static; transform:none; z-index:auto;
-    font-size:10px; font-weight:800; padding:3px 10px; border-radius:10px; cursor:pointer;
-    background:rgba(0,0,0,.45); color:var(--gold2); border:1px solid rgba(212,175,55,.5); letter-spacing:1px;}
-  .dealmode-btn:active{transform:scale(.94);}
-  .card .corner.tl{top:4px; left:5px;}
-  .card .corner.br{bottom:4px; right:5px; transform:rotate(180deg);}
-  .card .mid{font-size:24px;}
-  .card.red{color:var(--red);}
-  .card.black{color:#111;}
-  .center-msg{position:absolute; top:30px; left:50%; transform:translateX(-50%); z-index:25; max-width:96%;
-    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1px;
-    font-size:14px; font-weight:800; line-height:1.2; color:var(--gold2); text-shadow:0 0 14px #000,0 2px 4px #000; opacity:0; transition:opacity .25s; pointer-events:none; text-align:center; white-space:nowrap;}
-  .center-msg.show{opacity:1;}
-
-  /* 下注區 3x3 */
-  .bets{display:flex; flex-direction:column; gap:1px; padding:3px 10px 4px;}
-  .betrow{display:grid; gap:1px; grid-template-columns:repeat(3,1fr);}
-  .betrow.top{grid-template-columns:repeat(3,1fr);}
-  .betrow.bottom{grid-template-columns:repeat(3,1fr);}
-  .bet{position:relative; border-radius:8px; padding:5px 3px 4px; text-align:center; cursor:pointer;
-    border:2px solid; background:#0d1f16; transition:transform .12s, box-shadow .12s;}
-  .bet:active{transform:scale(.96);}
-  .bet.sel{box-shadow:inset 0 0 0 2px rgba(244,217,123,.28); background:rgba(212,175,55,.10);}
-  .bet .bn{font-size:12px; font-weight:800; letter-spacing:.5px;}
-  .bet .od{font-size:9px; opacity:.8; margin-top:1px;}
-  .bet.hot-predict{ border:2px solid #ffd479 !important; box-shadow:0 0 10px rgba(255,212,121,.6), inset 0 0 8px rgba(255,212,121,.25); }
-  /* 旺AI跟注：只係佢投注格入面個注碼數字(.pc.hot .v.a)變螢光綠(同資金區旺AI色一致)，唔加框唔變格 */
-  .chips-stack .pc.hot .v.a{ color:#ccff00 !important; text-shadow:0 0 6px rgba(204,255,0,.9); font-weight:900; }
-  /* 頂列3格(閒/莊/和)：高度加大，籌碼疊上覆蓋賠率，籌碼間留空間，4+人自動分兩層 */
-  .betrow.top .bet{position:relative; min-height:90px; padding:7px 3px 7px; display:flex; flex-direction:column; justify-content:flex-start; align-items:center;}
-  .betrow.top .bet .od{position:relative; z-index:1;}
-  .betrow.top .bet .chips-stack{position:absolute; left:0; right:0; bottom:6px; top:24px; z-index:2;
-    display:grid; grid-template-columns:repeat(4,1fr); align-content:center; justify-items:center; gap:4px 6px; min-height:60px; margin-top:0; overflow:hidden;}
-  /* 第9個起：9個全部留喺同一格內（唔溢出下面），縮細字體+收窄行距令3行排晒 */
-  .betrow.top .bet .chips-stack.top-stack{ align-content:start; gap:1px 4px; }
-  .betrow.top .bet .chips-stack.top-stack .pc .tag{font-size:8px;}
-  .betrow.top .bet .chips-stack.top-stack .pc .v{font-size:10px;}
-  .betrow.top .bet .chips-stack .pc{gap:1px;}
-  .betrow.top .bet .chips-stack .pc .tag{font-size:11px;}
-  .betrow.top .bet .chips-stack .pc .v{font-size:14px;}
-  /* 投注區：玩家/AI 籌碼平排顯示（橫排，最多4個） */
-  .bet .chips-stack{display:flex; justify-content:center; align-items:center; gap:2px; flex-wrap:nowrap; min-height:18px; margin-top:3px;}
-  .bet .chips-stack .pc{display:flex; flex-direction:column; align-items:center; line-height:1; position:relative;}
-  .bet .chips-stack .pc .v{font-size:10px; font-weight:800; white-space:nowrap;}
-  .bet .chips-stack .pc .v.h{color:#fff;}            /* 人類 */
-  .bet .chips-stack .pc .v.a{color:#ffd98a;}          /* AI */
-  .bet .chips-stack .pc .tag{font-size:7px; opacity:.8; margin-bottom:1px;}
-  /* 特別投注區（3×3 統一格局，每格居中） */
-  .betrow.bottom .bet{display:flex; flex-direction:column; justify-content:center;}
-  .betrow.bottom .bet .chips-stack{display:flex; justify-content:center; align-items:center; gap:2px; flex-wrap:nowrap; min-height:18px; margin-top:3px;}
-  .betrow.bottom .bet .chips-stack .pc{justify-self:center;}
-  /* 直版：中列/底列統一 35px 高（與橫版一致） */
-  .betrow.mid .bet, .betrow.bottom .bet{ min-height:35px; }
-  .bet.banker{border-color:var(--red); color:#ffb3b3;}
-  .bet.player{border-color:var(--blue); color:#a9d2ff;}
-  .bet.tie{border-color:var(--green); color:#8fe0ab;}
-  .bet.bpair{border-color:#c77dff; color:#e3bcff;}
-  .bet.ppair{border-color:#7dffb0; color:#b6ffd3;}
-  .bet.big{border-color:#ffd166; color:#ffe6a3;}
-  .bet.small{border-color:#90e0ef; color:#c4f0f8;}
-  .bet.luck6{border-color:#ff8c42; color:#ffc599;}
-  .bet.luck7{border-color:#ff5d8f; color:#ffb3cd;}
-
-  /* 籌碼行：左標籤 / 中籌碼 / 右剩餘牌數 */
-  .chips-row{display:flex; align-items:center; gap:2px; padding:4px 10px 2px; flex-wrap:nowrap; overflow-x:auto;}  /* 籌碼區+洗牌/清除/重複/發牌 四掣跟籌碼2px間距 */
-  .chips-row .btn, .chips-row .btn.shuffle{margin:0; flex:0 0 auto; width:35px; height:35px; padding:2px; display:flex; align-items:center; justify-content:center; box-sizing:border-box;}
-  .chips-row .btn.auto-int-btn{margin-left:0;}
-  .top-btns{display:flex; gap:3px; margin-top:2px; order:3;}
-  .top-btns .btn.auto-int-btn{margin-left:0;}
-  .top-btns .btn, .top-btns .btn.shuffle{margin:0; flex:0 0 auto; width:35px; height:35px; padding:2px; display:flex; align-items:center; justify-content:center; box-sizing:border-box;}
-  .vbtn{writing-mode:vertical-rl; text-orientation:upright; line-height:1.1; padding:4px 6px; letter-spacing:1px;}
-  .btn.auto.vbtn{writing-mode:horizontal-tb; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px;}
-  .btn.auto .a-label{writing-mode:vertical-rl; text-orientation:upright; line-height:1.1;}
-  .btn.auto .a-state{writing-mode:horizontal-tb; font-size:10px;}
-  .vbtn .hnum{writing-mode:horizontal-tb; text-orientation:initial; letter-spacing:0;}
-  .vnum{display:flex; flex-direction:column; align-items:center; justify-content:center; line-height:1; padding:3px 6px;}
-  .vnum .hnum{writing-mode:horizontal-tb; text-orientation:initial; letter-spacing:0;}
-  .vnum .vsec{writing-mode:vertical-rl; text-orientation:upright; font-size:9px; line-height:1; margin-top:1px;}
-  .chips-label{font-size:11px; font-weight:700; color:var(--gold2); white-space:nowrap; opacity:.85;}
-  .chips{flex:0 0 auto; display:flex; gap:3px; justify-content:flex-start; flex-wrap:nowrap; flex-wrap:wrap;}
-  .chips::-webkit-scrollbar{display:none;}
-  .chip{width:30px; height:30px; flex:0 0 auto; border-radius:50%; border:2px dashed #fff; display:flex; align-items:center; justify-content:center;
-    font-size:8px; font-weight:800; color:#fff; cursor:pointer; box-shadow:0 2px 4px rgba(0,0,0,.5); position:relative; transition:transform .12s;}
-  .shoe-info{flex:0 0 auto; font-size:11px; font-weight:700; color:#06243f !important; background:rgba(169,210,255,.9); padding:2px 8px; border-radius:10px; white-space:nowrap; text-align:right;}
-  .streak-bar{flex:0 0 auto; display:flex; align-items:center; gap:2px; padding:2px 8px; border-radius:10px; background:rgba(40,20,10,.85); border:1px solid rgba(212,175,55,.4); font-size:11px; font-weight:700; color:#f5f0d8; white-space:nowrap;}
-  .streak-bar .seg{width:9px; height:9px; border-radius:2px; background:rgba(255,255,255,.18);}
-  .streak-bar .seg.on{background:linear-gradient(180deg,#ffd479,#e6a417); box-shadow:0 0 4px #ffd479;}
-  .streak-bar.hot{border-color:#ffb347; color:#ffd479;}
-  .streak-bar.zero{opacity:.55;}
-  .odds-row{display:flex; justify-content:center; align-items:center; gap:10px; padding:0 10px 2px; width:100%; box-sizing:border-box;}
-  .odds-info{font-size:11px; font-weight:700; color:#06243f; background:rgba(255,236,179,.95); padding:3px 10px; border-radius:10px; white-space:nowrap; text-align:center; line-height:1.45; border:1px solid #e6b54a; max-width:100%; overflow:hidden; text-overflow:ellipsis;}
-  .odds-info b{color:#7a3d00;}
-  .road-tip{font-size:14px; font-weight:700; color:#fff; background:rgba(20,40,30,.92); padding:5px 12px; border-radius:10px; text-align:center; line-height:1.4; border:1px solid rgba(212,175,55,.5); max-width:100%; overflow:visible; white-space:normal;}
-  .road-tip.hot{color:#ffd479; border-color:#e6b54a;}
-  .road-tip.cold{color:#9fd3ff; border-color:#5aa9e6;}
-  .chip.active{transform:scale(1.12); border-color:#fff;}
-  .chip-icon{width:30px; height:30px; flex:0 0 auto; border-radius:8px; border:1px solid rgba(212,175,55,.4); background:linear-gradient(180deg,#1a2f24,#0d1a12); display:flex; align-items:center; justify-content:center; font-size:13px; color:#f5f0d8; cursor:pointer;}
-  /* 大路標題行：只 AI陪玩(🤖)加闊15px+黃底；其餘唔郁 */
-  #btnAi{ width:45px; background:linear-gradient(180deg,#ffd479,#e6a417); color:#241a00; border-color:#ffb347; }
-  /* (舊)剩N張向左15px 已移除；向右推改喺直版/橫版 media 以 margin-right 處理 */
-  .chip-icon:hover{background:linear-gradient(180deg,#26402f,#142318);}
-  .chip.c100{background:radial-gradient(#bbb,#888); border-color:#fff;}
-  .chip.c500{background:radial-gradient(#ff7676,#c0392b);}
-  .chip.c1k{background:radial-gradient(#6fb1ff,#2d7dd2);}
-  .chip.c5k{background:radial-gradient(#b07dff,#7b3ff2);}
-  .chip.c10k{background:radial-gradient(#ffd166,#e0a800); border-color:#fff;}
-  .chip.c50k{background:radial-gradient(#ff9f6b,#d35400); border-color:#fff;}
-
-  /* 飛行籌碼動畫 */
-  .fly-chip{position:fixed; z-index:999; width:34px; height:34px; border-radius:50%; border:2px dashed #fff;
-    display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:800; color:#fff;
-    pointer-events:none; box-shadow:0 3px 8px rgba(0,0,0,.6); transition:transform .45s cubic-bezier(.4,.1,.2,1), opacity .45s;}
-
-  /* 洗牌動畫遮罩 */
-  .shuffle-overlay{position:fixed; inset:0; z-index:1000; background:rgba(2,12,8,.92); display:none; align-items:center; justify-content:center; flex-direction:column; gap:18px;}
-  .shuffle-overlay.show{display:flex;}
-  .shuffle-overlay .title{color:var(--gold2); font-size:20px; font-weight:800; letter-spacing:2px;}
-  .shuffle-cards{display:flex; gap:6px;}
-  .shuffle-cards .sc{width:40px; height:56px; border-radius:6px; background:#fff; border:1px solid #ccc; box-shadow:0 3px 8px rgba(0,0,0,.5);
-    animation:shuffleMove .9s ease-in-out infinite; transform-origin:center;}
-  .shuffle-cards .sc:nth-child(1){animation-delay:0s;}
-  .shuffle-cards .sc:nth-child(2){animation-delay:.12s;}
-  .shuffle-cards .sc:nth-child(3){animation-delay:.24s;}
-  .shuffle-cards .sc:nth-child(4){animation-delay:.36s;}
-  .shuffle-cards .sc:nth-child(5){animation-delay:.48s;}
-  @keyframes shuffleMove{ 0%{transform:translateY(0) rotate(0);} 50%{transform:translateY(-22px) rotate(12deg);} 100%{transform:translateY(0) rotate(0);} }
-
-  /* 控制 */
-  .controls{display:flex; gap:5px; padding:4px 10px 0;}
-  .btn{flex:1; padding:7px; border-radius:8px; font-size:13px; font-weight:800; border:none; cursor:pointer; letter-spacing:1px;}
-  .btn.deal{background:linear-gradient(180deg,var(--gold2),var(--goldd)); color:#241a00; box-shadow:0 3px 0 #7a5a00;}
-  .btn.repeat{background:#233; color:#cfe; border:1px solid #4a6;}
-  .btn.clear{background:#311; color:#fbb; border:1px solid #a44;}
-  .btn:disabled{opacity:.4; filter:grayscale(.6);}
-  .btn.shuffle{background:#222; color:var(--gold2); border:1px solid var(--goldd); flex:0 0 auto; padding:7px 10px;}
-  .btn.follow{background:linear-gradient(180deg,#ffd479,#e6a417); color:#241a00; border:1px solid #ffb347; flex:0 0 auto; padding:7px 10px; font-weight:800; box-shadow:0 3px 0 #7a5a00;}
-  .btn.follow-predict{background:linear-gradient(180deg,#9fd3ff,#4a90d9); color:#06243f; border:1px solid #6fb3ef; flex:0 0 auto; padding:7px 10px; font-weight:800; box-shadow:0 3px 0 #2a5a8a; opacity:.6;}
-  .btn.follow-predict.on{background:linear-gradient(180deg,#5fffa0,#1faf5a); color:#06240f; border:1px solid #3fdf7a; opacity:1; box-shadow:0 3px 0 #0a7a3a;}
-  .odds-row.predict-row{display:flex; align-items:center; gap:8px; flex-wrap:nowrap;}
-  .odds-row.predict-row .road-tip{flex:1 1 auto;}
-  .odds-row.predict-row{align-items:flex-start;}
-  .follow-col{display:flex; flex-direction:row; flex-wrap:wrap; gap:4px; flex:0 1 auto; margin-left:8px; align-items:center;}
-  /* 新版：左右兩半（左預測，右5格打橫一排） */
-.follow-wrap{display:flex; gap:2px; align-items:stretch; margin-bottom:0px;}
-/* 直版：跟注區 — 頂5掣貼頂不變，底層掣(🔊自動13秒AI榜)貼投注區，中間空隙擺5圖案掣(戰績/禮物/腦袋/限額/陪玩) */
-@media (orientation:portrait){
-  .follow-wrap{ gap:0; margin-bottom:0; }  /* align-items 留 stretch 令頂5掣貼頂 */
-  .follow-right{ align-content:space-between; gap:1px !important; }  /* 跟注控制(取消黃框) */
-  .follow-right .frow{ display:flex; flex-direction:row; flex-wrap:wrap; align-items:center; justify-content:flex-start; gap:1px; width:100%; }  /* 直版：行容器flex, 跟注行/圖案行橫排 */
-  .follow-right .frow-top{ order:0; }  /* 跟注行置頂 */
-  .follow-right .frow-bot{ flex-direction:row; align-items:center; width:100%; flex:0 0 auto; order:2; flex-wrap:wrap; }  /* 直版底層(喇叭/自動/13秒/AI榜)打橫一排, 排圖案之後 */
-  .follow-right > .fbtn{ order:0; }                                  /* 頂5掣排第一行 */
-  .follow-mid{ flex:0 0 100%; display:flex; flex-direction:row; flex-wrap:nowrap; align-items:center; justify-content:flex-start; gap:1px; order:1; }  /* 中間一行：100%寬強制換行到第二行，直版5圖案掣緊貼左(你要求) */
-  .follow-right > #btnMute, .follow-right > #btnAuto, .follow-right > #btnAutoInt, .follow-right > #btnLeaderboard{ order:2; }  /* 底層掣排最後一行(貼投注區) */
-  .follow-right > .limit-row{ order:3; }  /* 直版：±次數排13秒右邊(最尾) */
-  .follow-mid .iconbtn{ flex:0 0 auto; width:30px; height:26px; font-size:15px; display:inline-flex; align-items:center; justify-content:center; box-sizing:border-box; }  /* 中間前4圖案(戰績/禮物/大佬/限額): 30x26 */
-  .follow-mid #btnAi{ width:40px; height:26px; }  /* 第5個陪玩: 40x26 */
-  /* 直版：大路標題 header 行 — 普通開牌掣正中央，剩餘數緊貼其左跟掣走 */
-  .roadpanel > div:first-child{ position:relative; }   /* header 行做定位參考 */
-  .dealmode-wrap{ display:inline-flex; }
+  /* 橫版：直版專用大路標題置中對普通開牌有效(共用絕對置中)；剩餘數留喺brand-sub正常流 */
+  .roadpanel > div:first-child{ position:relative; }   /* 大路標題行做定位參考(橫版都啟用) */
+  .dealmode-wrap{ display:inline-flex; }  /* 橫版wrapper正常box，開牌掣flex排 */
   .dealmode-wrap #btnDealMode{ position:static; transform:none; }
-  .roadpanel > div:first-child #shoeInfo{ font-size:13px; color:#5fe08a; font-weight:800; white-space:nowrap; flex:0 0 auto; margin-left:auto; }  /* 直版：剩餘數做組首,auto推成組(剩餘+開牌+5圖案)去右邊 */
-  /* 直版：大路標題唔郁；剩張+開牌+5圖案成組向右15px（剩張 margin-left:0 壓過 auto；移除 auto 本身已右移約15px，故用0湊正）*/
-  .road-header #shoeInfo{ margin-left:0 !important; }
-  .bets{ padding-top:0; padding-bottom:0; }  /* 直版：投注區上下padding清零，同籌碼區距離交畀chips-row頂padding控制 */
-  .chips-row{ padding-top:1px !important; gap:2px !important; align-items:flex-start; }  /* 直版：籌碼區頂padding=1px, 四掣跟籌碼2px */
-  .chips-row .chips{ align-self:flex-start; }
-}
-.follow-left{flex:0 0 50%; display:flex; flex-direction:column; gap:5px; min-width:0; justify-content:flex-start; padding-left:6px;}
-  @media (orientation:portrait){ .follow-left{ padding-left:10px; } .pred-system{ margin-right:2px; } }
-/* 預測系統固定資訊區：上面一行(標題+請投注) + 下面一行(勝率/次數/勝負)，固定空間唔收起 */
-.pred-system{ min-height:46px; display:flex; flex-direction:column; gap:2px; padding:0; border:1px solid #b98a17; border-radius:8px; background:rgba(20,30,20,.55); box-sizing:border-box; justify-content:center; }  /* 復原黃框; padding 0 貼實內容(跟直版); 邊框恢復1px(用家撤銷加闊) */
-.pred-row1{ display:flex; align-items:center; gap:5px; font-size:12px; font-weight:800; color:#ffd479; flex-wrap:nowrap; white-space:nowrap; }
-.pred-ico{ font-size:13px; }
-.pred-title{ color:#ffd479; }
-.pred-side{ color:#fff; font-size:13px; font-weight:800; white-space:nowrap; }
-.pred-row1 .freset{ margin-left:5px; padding:1px 6px; font-size:9px; border-radius:6px; background:rgba(255,120,80,.25); border:1px solid rgba(255,120,80,.5); color:#ffb3a0; cursor:pointer; flex:0 0 auto; white-space:nowrap; }
-.pred-row1 .freset:hover{ background:rgba(255,120,80,.4); }
-.pred-row2{ display:flex; flex-wrap:wrap; gap:2px; font-size:10px; color:#9fe6b8; }
-.pred-row2 .ps-item{ white-space:nowrap; }
-.pred-row2 b{ color:#ffd479; font-weight:800; }
-.pred-row2 .pred-log{ display:inline-flex; align-items:center; gap:2px; }
-.pred-row3{ display:flex; flex-wrap:wrap; gap:2px; font-size:10px; color:#9fe6b8; margin-top:1px; }
-.pred-row3 .pred-log{ display:inline-flex; align-items:center; gap:2px; white-space:nowrap; }
-.pred-row3 .pred-perm{ color:#ffd479; font-weight:700; white-space:nowrap; }
-.pred-row2 .plog-dot{ font-style:normal; font-size:10px; font-weight:800; line-height:1; }
-.pred-row2 .plog-empty{ color:rgba(255,255,255,.25); }
-/* 預測系統內額外兩段：跟路單狀態 + 跟注統計（由投注區頂搬入） */
-.pred-road{ display:flex; align-items:center; gap:2px; min-height:12px; margin-top:1px; }
-.pred-road .follow-status{ color:#7fffb0; font-size:10px; white-space:normal; text-align:left; margin:0; min-height:10px; }
-.pred-record{ display:flex; flex-wrap:wrap; gap:3px 10px; align-items:center; font-size:10px; color:#9fe6b8; border-top:1px dashed rgba(255,212,121,.25); padding-top:2px; margin-top:1px; }
-.pred-record .ps-item{ white-space:nowrap; }
-.pred-record b{ color:#ffd479; font-weight:800; }
-.pred-record .ps-wl{ display:inline-flex; align-items:center; gap:3px; flex-wrap:nowrap; white-space:nowrap; }
-.pred-record .btn.freset{ flex:0 0 auto; margin:0 0 0 2px; padding:1px 6px; font-size:9px; font-weight:700; color:#ffd9a8; background:rgba(255,120,80,0.16); border:1px solid rgba(255,150,110,0.5); border-radius:8px; cursor:pointer; white-space:nowrap; }
-.follow-right{flex:1 1 50%; display:flex; flex-direction:row; flex-wrap:wrap; gap:1px; align-items:flex-start; justify-content:flex-start; padding-right:2px; position:relative; z-index:2;}  /* z-index:2 確保喇叭行永遠喺預測區透明層之上(橫版防擋click) */
-.follow-right .frow-top, .follow-right .frow-bot{ gap:1px; }  /* 上下行掣左右距離統一1px(全局, 直橫都生效) */
-.follow-right #bottomRowLand > *, .follow-right #bottomRow > *{ margin-left:1px; }
-.follow-right #bottomRowLand > :first-child, .follow-right #bottomRow > :first-child{ margin-left:0; }  /* 首個唔加左距 */
-.follow-text{display:flex; flex-direction:row; flex-wrap:nowrap; align-items:center; gap:6px; white-space:nowrap; order:-1; margin:2px 0;}   /* 直版：獨立成整行(投注區#bets頂, 閒P正上方), column flex 下 order:-1 排最前; 唔再關聯跟注掣 */
-/* 直版 .follow-text 被 JS 搬入 #bets, 原有 .follow-right scoped rule 失效 → 呢度補返狀態+統計成一行(狀態左統計右) */
-.bets .follow-status, .bets .follow-stats{ display:inline-flex; flex:0 0 auto; flex-wrap:nowrap; white-space:nowrap; align-items:center; font-size:10px; }
-.bets .follow-text{ display:flex; flex-direction:row; flex-wrap:nowrap; }
+  .roadpanel > div:first-child #shoeInfo{ font-size:13px; color:#5fe08a; font-weight:800; white-space:nowrap; flex:0 0 auto; margin-left:auto; }  /* 橫版：剩餘數做組首,auto推成組(剩餘+開牌+5圖案)去右邊 */
+  .road-header #btnDealMode{ margin-right:0; }  /* 橫版：剩餘卡牌+開牌緊貼右邊5圖案(直版係15px) */
+  /* 橫版：大路標題唔郁；剩張+開牌+5圖案成組向右65px（剩張 margin-left:50px 壓過 auto；移除 auto 本身已右移約15px，故用50湊正） */
+  .road-header #shoeInfo{ margin-left:50px !important; }
+    .pred-row1 .freset{ margin-left:5px; }   /* 橫版清除掣距請投注5px（直版0px） */
+    /* 橫版：預測系統框內三行撐滿框, 消除框右側留白(框外已貼跟注區) */
+    .follow-left .pred-row1, .follow-left .pred-row2, .follow-left .pred-row3{ width:100%; justify-content:flex-start; }  /* 橫版：預測框內5行全部向左(反轉舊嘅向右) */
+    .app{
+      display:grid;
+      grid-template-columns:60px minmax(0,2.5fr) 90px minmax(0,1fr) minmax(0,1fr) minmax(0,1fr);   /* 第1欄固定60px; 第2欄路單主體2.5fr; 第3欄5掣90px; 第4-6欄投注/資金(各1fr); 試51/49 */
+      grid-template-rows:auto auto auto auto auto auto auto;
+      align-content:start;                /* 整體貼頂 */
+      align-items:start;
+      grid-auto-rows:min-content;
+      column-gap:1px; row-gap:0;          /* 頂部四區左右距1px，行距保持0 */
+      max-width:none;                     /* 打橫填滿，唔再 560px 限死 */
+      padding:0 3px;                      /* 兩邊各預留3px空白 */
+    }
+    /* 下半左：路單（大路+珠盤+下三路）跨左3欄、佔 row2-4 全高 */
+    .roadpanel{ grid-column:1 / 4; grid-row:3 / span 3; align-self:start; }   /* 打橫：路單頂部落一格，同右投注區(row3)頂部水平並排；容器收實貼內容高度(唔被grid拉伸留空位) */
+    /* 打橫：發牌區張卡貼頂(緊貼藍色結果文字下方)，唔再跌去路單區底(直版感一致) */
+    .dealzone{ align-items:start; padding-top:34px; }  /* 橫版：卡牌貼大路標題底(路單頂部開始) */
+    /* 打橫壓縮路單高度，騰出下面欄位空間（唔改內部/JS） */
+    #bigCanvas{ height:80px; }
+    #beadCanvas{ height:72px; }
+    #beeCanvas, #smallCanvas, #cockCanvas{ height:100%; }
+    .info-strip{ height:32px; }
+    .odds-row{ display:none; }            /* 勝率行：打橫收，避免空白 */
+    /* 右欄：投注→籌碼→洗牌 各自一格，貼頂對齊 */
+    .h-left{ display:contents; }
+    .bets{ grid-column:4 / 7; grid-row:5; align-self:start; }     /* 右欄投注區：籌碼區之下 */
+    .chips-row{ grid-column:4 / 7; grid-row:6; align-self:start; margin-top:0 !important; } /* 右欄頂：籌碼區搬去投注區上方; 永遠緊貼資金區底(保險) */
+    /* 橫版：左上三掣(#topBtns)已按 orientation 搬入籌碼區，跟籌碼區水平並排 */
+    .chips-row #topBtns{ order:0; margin-top:0; display:flex; gap:3px; align-items:center; }
+    .controls{ grid-column:4 / 7; grid-row:7; align-self:start; padding:3px 6px 0; gap:4px; }  /* 右欄底：洗牌/發牌區 */
+    /* 打橫溫和壓縮底部掣：padding/字/圓角收細 */
+    .controls .btn{ padding:5px 6px; font-size:12px; border-radius:6px; letter-spacing:0; }
+    /* 打橫收埋左右 panel 自身 margin/padding，令下半兩邊真·貼住 48% 分界線（根治中間空位） */
+    .roadpanel{ margin:0 1px 0 0; }     /* 路單：收右邊 8px 空白，貼住分界 */
+    .bets{ padding:2px 2px 2px 0; }     /* 投注區：收左右 10px */
+    .chips-row{ padding:2px 2px 2px 0; gap:2px; } /* 橫版：籌碼區頂padding收2px, 四掣跟籌碼2px */
+    /* 打橫：同直板一樣——限4個籌碼顯示，其餘(10K/50K)靠橫向推拉揭示，唔隱藏任何籌碼 */
+    .chips-row .chips{ flex-wrap:wrap; }
+    .chips-row .chip.c50k{ display:flex; }   /* 唔再隱藏50K，改由推拉揭示 */
+    /* 橫版：籌碼區內四個掣(清除/重複/發牌/洗牌)文字打橫；其他位置不變 */
+    .chips-row .vbtn{ writing-mode:horizontal-tb; text-orientation:initial; flex-direction:row; }
+    /* 橫版：籌碼區下方四掣(清除/重複/發牌/洗牌)高度收窄4px(35→30) */
+    .chips-row .btn, .chips-row .btn.shuffle{ height:30px !important; }
+    /* 橫版：洗牌/清除/重複/發牌 字體豎排(拆字span垂直) + 闊度收1px(35→34) */
+    .chips-row .btn.shuffle, .chips-row .btn.clear, .chips-row .btn.repeat, .chips-row .btn.deal{ writing-mode:horizontal-tb !important; width:33px !important; flex:0 0 33px !important; display:flex !important; flex-direction:column !important; align-items:center !important; justify-content:center !important; line-height:1.05; }
+    .chips-row .btn.shuffle .vchar, .chips-row .btn.clear .vchar, .chips-row .btn.repeat .vchar, .chips-row .btn.deal .vchar{ display:block; writing-mode:horizontal-tb; font-size:12px; }
+    /* 打橫下三路：derived-row 改回 flex:1 均分(同直版)，三張自動撐滿高度、貼住珠盤路底對齊；canvas 跟 height:100% */
+    .road-derived{ display:flex; flex-direction:column; }
+    .derived-row{ flex:1 1 0; min-height:0; }
+    .derived-row canvas{ width:100%; height:100%; }
+    .derived-label{ right:4px; bottom:1px; font-size:8px; }
+    /* 頂部3區：brand(左) | 跟注/預測(中) | 餘額+資金(右)，各佔2欄、緊貼慳位 */
+    /* 用 display:contents 拆開 topbar，brand 同 topright 各自成 grid item */
+    .topbar{ display:contents; }
+    .brand{ grid-column:1 / 2; grid-row:1; align-self:start; margin-left:0; display:flex; flex-direction:row; align-items:center; gap:6px; font-size:13px; padding-top:6px; }  /* 橫版：brand行排列, 伺服榜貼左其他掣貼右 */
+    .brand #btnServerLb{ order:-1; margin-right:auto; }  /* 橫版：伺服榜排最左, 推開其他掣去右 */
+    .brand #btnLeaderboard{ font-size:11px; padding:1px 4px; }
+    .lb-stack{ margin-left:-2px; }  /* 橫版：AI榜/server貼左(由1px→-1px校正) 
+    .server-toolbar{
+      grid-column: 4 / 7;
+      grid-row: 4;
+      display:flex !important;
+      flex-wrap:wrap;
+      gap:4px;
+      justify-content:center;
+      padding:3px 0;
+    }
+    .server-toolbar button{
+      padding:3px 10px;
+      font-size:11px;
+      border-radius:4px;
+    }
 
-/* 五個掣統一尺寸：4個策略掣 flex:1 1 0 平均闊度；第5個次數掣固定36px；高度統一32px */
+    .lb-stack{ flex-direction:row !important; gap:4px !important; flex-wrap:wrap; }
+    .lb-stack button{ width:auto !important; padding:3px 8px !important; font-size:11px !important; }
+    #btnServerLb .srv-sub{ display:none !important; }
+
+  .brand #btnServerLb .srv-sub{ display:block; text-align:left; }  /* 橫版：伺服榜副文斷兩行(跟直版) */
+    .brand-sub{ font-size:10px; }
+    .brand-sub #shoeInfo{ font-size:12px; }
+    .brand-sub{ text-align:left; }   /* 橫版：剩餘卡牌N數由最左邊開始 */
+    /* 橫版：自動+13秒掣(放籌碼區最左)，同其他四掣一樣高(33px)、闊度收細；全部掣左右緊貼零空隙 */
+    .auto-btns{ display:flex; flex-direction:row; gap:0; margin:0; align-items:center; order:0; flex:0 0 auto; }
+    .auto-btns .btn{ writing-mode:horizontal-tb; display:inline-flex; align-items:center; justify-content:center; width:35px; height:33px; padding:0; min-width:35px; max-width:35px; font-size:12px; margin:0; line-height:1; box-sizing:border-box; }
+    .auto-btns #btnAuto{ flex-direction:column; gap:1px; }
+    .auto-btns #btnAuto .a-label{ writing-mode:horizontal-tb; font-size:11px; font-weight:800; line-height:1; }
+    .auto-btns #btnAuto .a-state{ writing-mode:horizontal-tb; font-size:11px; font-weight:800; line-height:1; }
+    .topright{ grid-column:5 / 7; grid-row:1 / span 2; display:flex; flex-direction:column; align-items:stretch; gap:3px; align-self:start; min-width:0; overflow:visible; padding:4px 1px 4px 1px; margin-left:-100px; margin-top:0; }  /* 橫版：資金區向左10px(-90→-100)同中間區拉開, 格唔窄 */
+    .topright .balance{ font-size:15px; text-align:left; width:100%; }  /* 文字靠左, 貼資金區最左消除視覺空間 */
+    .topright .balance b{ font-size:21px; }
+    /* AI陪玩列表（資金）打橫：6個一行、2行顯示(6x2)，全部見到唔切走；頂欄span2行容納 */
+    .ai-balances{ display:grid; grid-template-columns:repeat(4,1fr); grid-auto-flow:row; gap:1px 2px; width:100%; min-width:0; overflow:visible; }  /* 橫版資金區跟直版=4列(4x3層); 撐滿靠左 */
+    /* 橫版唔截斷名+表情(避免3字名+表情被ellipsis食咗): small改visible+normal換行 */
+    .ai-balances .aib small{ overflow:visible; text-overflow:clip; white-space:normal; font-size:9px; }
+    /* 橫版格內容名9px/數字11px */
+    .ai-balances .aib{ padding:1px 3px; line-height:1.1; }
+    .ai-balances .aib b{ font-size:12px; }
+    .follow-wrap{
+      display:contents;
+    }
+.follow-left{ grid-column:auto; grid-row:1 / span 2; min-width:0; padding:6px 0 0 1px; position:relative; display:flex; flex-direction:column; align-items:flex-start; margin-right:0; margin-left:18px; width:fit-content; z-index:1; }  /* 橫版：預測系統唔鎖grid欄寬, 黃框fit-content跟內容收細+跟margin移; 向左18px(20→18); width:fit-content防透明層蓋住喇叭行 */
+/* 橫版：跟注文字搬入預測系統底部，打橫一行(取消疊牌)，緊貼預測系統、縮細 */
+.follow-left .follow-text{ display:flex; flex-direction:row; flex-wrap:nowrap; align-items:center; gap:5px; flex-basis:auto; min-width:0; order:3; margin-top:0; font-size:9px; }
+/* 打橫：預測系統區貼第二行最闊位(唔撐開、唔轉行)，保持三行位置唔變 */
+.follow-left .pred-system{ width:fit-content !important; max-width:none; justify-content:flex-start; gap:0; padding:0; min-height:0; }  /* 橫版套直版: 黃框跟內容闊度fit-content包實, 唔鎖grid欄 */
+.follow-left .pred-road{ justify-content:flex-start; }  /* 橫版：狀態欄向左 */
+.follow-left #followStatus{ text-align:left; }  /* 橫版：狀態文字向左 */
+.follow-left .pred-record{ justify-content:flex-start; }  /* 橫版：跟注次數紀錄向左 */
+.follow-left .pred-side{ margin-left:2px; }   /* 取消「請投注」撐開，第一行緊湊貼標題 */
+.follow-right{
+  grid-column:3 / 4; grid-row:1 / span 2;   /* 橫版：第3欄(跟注區), 框fit-content溢出顯示唔截斷 (還原v90位置, 唔郁位) */
+  display:flex; flex-direction:row; flex-wrap:wrap; align-items:stretch; align-content:flex-start; justify-content:flex-start; gap:0;  /* 橫版三層各自一行靠左; 行距0緊貼 */
+  align-self:start; min-width:0; padding:0; margin-top:5px;       /* 跟注控制(取消黃框); 橫版; 頂部留5px空間 */
+  width:fit-content !important; justify-self:start !important; min-width:0 !important; margin-left:-64px;   /* 橫版：跟反控制區向左30px(-34→-64) */
+}
+/* 橫版：三層各自一行(跟注/圖案/底層), 每行nowrap靠左, 容器fit-content=最闊行(~164) */
+.follow-right .frow{ display:flex; flex-direction:row; flex-wrap:nowrap; align-items:center; justify-content:flex-start; gap:0; width:fit-content; flex:0 0 auto; margin-top:0; }
+.follow-right .frow-bot{ order:7; margin-top:6px; }  /* 橫版底層行(喇叭/自動/13秒/±次數)貼住上面4掣, 同預測框底水平對齊 */
+/* 橫版5掣一行：跟預測/反預測/跟旺AI/反旺AI/±次數 全部一行(移除舊2上3下grid) */
+.follow-right #btnFollowPredict2{ order:1; }
+.follow-right #btnFollowRev{ order:2; }
+.follow-right #btnFollowHot{ order:3; }
+.follow-right #btnFollowHotRev{ order:4; }
+.follow-right .limit-row{ order:9; align-self:stretch; width:38px !important; flex:0 0 38px !important; min-width:38px !important; }  /* 橫版±次數掣38, 排13秒右邊 */
+/* 橫版：5圖案掣(.follow-mid)放5掣行下方,跟直版尺寸(前4個35x25,陪玩40x25) */
+.follow-right .follow-mid{ flex:0 0 auto; display:flex; flex-direction:row; flex-wrap:nowrap; align-items:center; justify-content:flex-start; gap:1px; order:6; margin-top:0px; }  /* 橫版：跟左貼頂行; 唔用flex:0 0 100%(否則撐闊容器) */
+.follow-right .follow-mid .iconbtn{ flex:0 0 auto; width:30px; height:24px; font-size:15px; display:inline-flex; align-items:center; justify-content:center; box-sizing:border-box; }  /* 跟直版前4圖案 30x24 */
+.follow-right .follow-mid #btnAi{ width:40px; height:24px; }  /* 跟直版陪玩 40x24 */
+/* 跟注文字+重置掣：換行到5掣下(唔入一行) */
+.follow-right .follow-text{ display:flex; flex-direction:row; align-items:center; gap:4px; flex-wrap:wrap; flex:1 0 100%; order:10; margin-top:0; }  /* 跟注文字貼上(垂直空間0) */
+/* 橫版：底層4掣(🔊自動/13秒/AI榜/洗牌)跟直版 order:2 排5圖案下方 */
+/* 橫版：底層3掣跟直版排5圖案下方, 順序: 喇叭第一 → 自動/13秒 → AI榜最後 */
+.follow-right > #btnMute{ order:7; flex:0 0 auto; }  /* 喇叭第一位 */
+.follow-right > #autoBtns{ order:8; flex:0 0 auto; }  /* 自動/13秒 中 */
+.follow-right > #btnLeaderboard{ order:9; flex:0 0 auto; }  /* AI榜最後 */
+.follow-right #btnMute, .follow-right #btnAuto, .follow-right #btnAutoInt, .follow-right #btnLeaderboard{ width:38px; height:38px; font-size:11px; }  /* 底行掣統一38px(自動/13秒/AI榜/🔊) */
+.follow-right #btnLeaderboard{ width:70px; white-space:nowrap; font-size:10px; line-height:1.1; }  /* AI榜闊度70, 橫版字唔轉行(🏆AI排行榜一行) */
+/* 重置掣做6掣之一：直排細掣，同fbtn一致 */
+.follow-right #btnFollowReset{ writing-mode:vertical-rl; text-orientation:upright; min-width:24px; height:30px; padding:0 1px 1px 1px; font-size:10px; line-height:1; justify-content:flex-start; align-items:center; }
 .follow-right .fbtn{
-  flex:0 0 38px; min-width:38px; width:38px;
-  height:38px; padding:6px 4px; font-size:11px; font-weight:800; line-height:1.15;
-  text-align:center; white-space:nowrap; letter-spacing:0;
-  border-radius:8px; border:1px solid #ffb347; background:linear-gradient(180deg,#ffd479,#e6a417); color:#241a00; opacity:.7; box-sizing:border-box;
-}
-/* 直版：自動開/13秒搬入 follow-right 最底，統一 .fbtn 尺寸；@media portrait 限定，橫版唔受 */
-@media (orientation:portrait){
-  .follow-right .btn.auto, .follow-right .auto-int-btn{
-    flex:0 0 38px; min-width:38px; width:38px;
-    height:38px; padding:4px 1px; font-size:11px; font-weight:800; line-height:1;
-    text-align:center; letter-spacing:0;
-    border-radius:8px; border:1px solid #ffb347; background:linear-gradient(180deg,#ffd479,#e6a417); color:#241a00; opacity:.7; box-sizing:border-box;
-  }
-  /* 自動開：文字垂直（自/動/關 由上到下） */
-  .follow-right .btn.auto{ display:flex; align-items:center; justify-content:center; writing-mode:vertical-rl; text-orientation:upright; }
-  .follow-right .auto .a-label, .follow-right .auto .a-state{ writing-mode:vertical-rl; text-orientation:upright; font-size:11px; line-height:1; }
-  /* 13秒：13上層、秒下層 */
-  .follow-right .auto-int-btn{ display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1px; }
-  .follow-right .auto-int-btn .hnum{ writing-mode:horizontal-tb; font-size:13px; font-weight:800; line-height:1; }
-  .follow-right .auto-int-btn .vsec{ writing-mode:horizontal-tb; font-size:9px; line-height:1; }
-  /* 直版：AI排行榜搬到跟注區最底(13秒右)，闊70 */
-  .follow-right #btnLeaderboard{
-    flex:0 0 70px; min-width:70px; width:70px;
-    height:34px; padding:6px 4px; font-size:11px; font-weight:800; line-height:1.15;
-    text-align:center; white-space:nowrap; letter-spacing:0;
-    border-radius:8px; border:1px solid #ffb347; background:linear-gradient(180deg,#ffd479,#e6a417); color:#241a00; opacity:.7; box-sizing:border-box;
-    align-self:stretch;
-  }
-  /* 喇叭搬入底層自動左：統一 .btn.auto 尺寸，作 icon 掣 */
-  .follow-right #btnMute{
-    flex:0 0 38px; min-width:38px; width:38px;
-    height:38px; padding:4px 1px; font-size:14px; line-height:1;
-    text-align:center;
-    border-radius:8px; border:1px solid #ffb347; background:linear-gradient(180deg,#ffd479,#e6a417); color:#241a00; opacity:.7; box-sizing:border-box;
-  }
-  /* 底層全部掣 左右空間0（由 .follow-right gap:1px 統一控制） */
-  .follow-right #btnMute, .follow-right #btnAuto, .follow-right #btnAutoInt, .follow-right #btnLeaderboard{ margin:0; }
-}
-.follow-right .limit-row{
-  flex:0 0 38px; min-width:0;
-  height:38px; padding:4px 1px;
-  border-radius:8px; border:1px solid #ffb347; background:linear-gradient(180deg,#ffd479,#e6a417); color:#241a00; opacity:.7; box-sizing:border-box;
-}
-
-/* limit-row 專屬設定（只覆蓋需要唔同嘅部分） */
-.follow-right .limit-row {
-  flex: 0 0 38px;
-  min-width: 38px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 1px;
-  padding: 3px 2px;
-}
-
-.follow-right .limit-row .fstep {
-  background: none;
-  border: none;
-  color: #241a00;
-  font-size: 10px;
-  font-weight: 800;
-  padding: 0;
-  line-height: 1;
-  width: 100%;
-  cursor: pointer;
-  writing-mode: horizontal-tb;
-  text-orientation: mixed;
-}
-
-.follow-right .limit-row .limit-val {
-  font-size: 11px;
-  font-weight: 900;
-  line-height: 1;
-  color: #241a00;
-}
-
-.follow-right .follow-status {
-  flex: 0 0 auto;
-  font-size: 10px;
-  color: #7fffb0;
-  min-height: 16px;
-  white-space: nowrap;
-  text-align: left;
-  margin-top: 0;
-  padding: 0 2px;
-}
-.follow-right .follow-stats {
-  flex: 0 0 auto;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px 12px;
-  font-size: 10px;
-  color: #9fe6b8;
-  text-align: left;
-  padding: 0 2px;
-}
-.follow-right .follow-stats b{ color:#ffd479; font-weight:800; }
-/* 重置掣(橫版在 .follow-stats 內 / 直版在 .bets 內) 統一細款打橫, 同統計字一致 */
-.follow-stats .btn.freset, .bets .btn.freset{
-  display:inline-flex; flex:0 0 auto; margin:0 0 0 4px; padding:1px 6px; font-size:10px; font-weight:700;
-  writing-mode:horizontal-tb; text-orientation:initial;
-  color:#ffd9a8; background:rgba(255,120,80,0.16); border:1px solid rgba(255,150,110,0.5);
-  border-radius:8px; cursor:pointer; white-space:nowrap; align-items:center; justify-content:center;
-}
-.follow-right .follow-stats .ps-wl{ display:inline-flex; align-items:center; gap:4px; flex-wrap:nowrap; white-space:nowrap; }
-.bets .btn.freset{   /* 直版重置掣被 JS 搬入 .follow-stats, 原 .follow-right scoped 失效 → 補返細款同統計統一 */
-  flex:0 0 auto; margin:0 0 0 4px; padding:1px 6px; font-size:10px; font-weight:700;
-  color:#ffd9a8; background:rgba(255,120,80,0.16); border:1px solid rgba(255,150,110,0.5);
-  border-radius:8px; cursor:pointer; white-space:nowrap;
-}
-.follow-right .btn.freset{
-  flex:0 0 auto;
-  margin:0 0 0 4px;
-  padding:1px 6px;
+  writing-mode:vertical-rl; text-orientation:upright;
+  min-width:38px; width:38px; height:38px; flex:0 0 auto;  /* 橫版5掣 38x38 統一 */
+  padding: 0 1px 0 1px;
   font-size:10px;
-  font-weight:700;
-  color:#ffd9a8;
-  background:rgba(255,120,80,0.16);
-  border:1px solid rgba(255,150,110,0.5);
-  border-radius:8px;
-  cursor:pointer;
-  white-space:nowrap;
+  line-height: 1;
+  justify-content: flex-start;
+  align-items: center;
 }
-.follow-right .freset:hover{ background:rgba(255,120,80,0.3); }
-
-/* 原有其他樣式保留 */
-/* 喇叭開咗著黃色(放最後確保優先) */
-#btnMute.on{ background:linear-gradient(180deg,#ffd479,#e6a417) !important; color:#241a00 !important; border:1px solid #ffb347 !important; box-shadow:0 0 8px rgba(255,196,80,.6) !important; }
-.follow-right .fbtn.on{
-  background:linear-gradient(180deg,#5fffa0,#1faf5a); color:#06240f; border:1px solid #3fdf7a; opacity:1; box-shadow:0 2px 0 #0a7a3a;
+/* 橫版：自動/13秒 統一30px(同跟注掣) */
+.follow-right .btn.auto, .follow-right .auto-int-btn{ min-width:38px !important; width:38px !important; height:38px !important; flex:0 0 38px !important; }
+    /* 跟注文字(狀態+統計)打橫一行、縮細、緊貼預測系統 */
+    .follow-text #followStatus{ text-align:left; white-space:nowrap; flex-basis:auto; font-size:9px; }
+    .follow-text .follow-stats{ text-align:left; white-space:nowrap; margin-left:0; font-size:9px; }
+/* 直版狀態列靠右(#followStatus 全域 text-align:right)，橫版覆蓋為左對齊；整體文字區靠左 */
+    #followStatus{ text-align:left; }
+    .follow-text{ text-align:left; }
+.follow-right .limit-row{
+  writing-mode:horizontal-tb; text-orientation:mixed; 
+  flex-direction:column; flex-wrap:nowrap; 
+  align-items:center; justify-content:center; gap:1px; 
+  flex:0 0 38px; min-width:38px; width:38px; height:38px; align-self:stretch;  /* 橫版±次數 38x38 方塊 */
+  padding:0 1px;
+  margin:0; box-sizing:border-box;
 }
-.follow-right .fbtn .ai-h{display:inline-block; writing-mode:horizontal-tb; font-size:10px; font-weight:800; letter-spacing:0;}
-
-/* 呢行刪走咗 min-width:auto，改返同上面一致 */
-.follow-right .limit-row{background:linear-gradient(180deg,#ffd479,#e6a417); color:#241a00; border:1px solid #ffb347; border-radius:8px; padding:3px 2px; font-weight:800; line-height:1;}
-
-.follow-right .limit-val{font-weight:800; color:#241a00; font-size:9px;}
-.follow-right .fstep{background:none; border:none; color:#241a00; font-size:9px; font-weight:800; padding:0 3px; line-height:1; writing-mode:vertical-rl; text-orientation:upright;}
-.follow-status{flex:0 0 auto; font-size:10px; color:#7fffb0; min-height:10px; white-space:nowrap; text-align:left; margin-top:0;}
-
-/* ===== 大路標題行：五圖案細細哋排開牌右；nowrap強制一行唔跳行；再收細左右空間 ===== */
-.road-header{ display:flex; align-items:center; gap:1px; flex-wrap:nowrap; padding:2px 3px; white-space:nowrap; }
-.road-header .road-section-title{ flex:0 0 auto; margin-right:2px; }
-.road-header #btnDealMode{ flex:0 0 auto; height:26px; padding:1px 5px; font-size:11px; margin-right:0; }  /* 直版：剩餘卡牌+開牌緊貼右邊5圖案(同橫版) */
-.follow-icons-header{ flex:0 0 auto; display:flex; align-items:center; gap:1px; min-width:0; }
-.follow-icons-header .iconbtn{ min-width:0; padding:2px 3px; height:26px; display:inline-flex; align-items:center; justify-content:center; box-sizing:border-box; }  /* 5圖案高度統一26px */
-.road-header #btnMute{ flex:0 0 auto; }
-#followStatus{ text-align:left; }   /* 直版做一行：狀態在統計左邊，文字靠左；橫版同樣靠左 */
-.btn.fbtn{background:linear-gradient(180deg,#ffd479,#e6a417); color:#241a00; border:1px solid #ffb347; font-size:10px; font-weight:800; padding:1px 2px; border-radius:8px; opacity:.6; writing-mode:vertical-rl; text-orientation:upright; white-space:nowrap; letter-spacing:0; min-width:30px; line-height:1.0; text-align:center;}
-.btn.fbtn.on{background:linear-gradient(180deg,#5fffa0,#1faf5a); color:#06240f; border:1px solid #3fdf7a; opacity:1; box-shadow:0 2px 0 #0a7a3a;}
-.btn.fbtn.rev{background:linear-gradient(180deg,#ffd0a0,#d9804a); color:#2a1400; border:1px solid #ef9b6f; opacity:.7;}
-.btn.fbtn.rev.on{background:linear-gradient(180deg,#ff9a6f,#d94f1f); color:#2a0900; border:1px solid #ef7a4a; opacity:1;}
-.btn.auto{background:#2a2113; color:#e0b34a; border:1px solid #7a5a1a; flex:0 0 auto; padding:7px 7px; font-size:11px;}
-.btn.auto.on{background:#2faf5a; color:#04110a; border-color:#2faf5a; box-shadow:0 0 10px rgba(47,175,90,.5);}
-.btn.auto-int-btn{background:#2a2113; color:#e0b34a; border:1px solid #7a5a1a; flex:0 0 auto; padding:7px 7px; font-size:11px; margin-left:6px;}
-
-.toast{position:fixed; left:50%; top:42%; transform:translate(-50%,-50%); background:#000c; color:#ffd45e;
-  padding:12px 22px; border-radius:22px; font-size:18px; font-weight:800; border:1px solid var(--gold); opacity:0; transition:opacity .3s; z-index:50; pointer-events:none; text-shadow:0 0 10px #000; box-shadow:0 0 18px rgba(212,175,55,.4);}
-.toast.show{opacity:1;}
-  /* AI 走馬燈：無框無底, 右對齊, 顏色即身份 */
-  .marquee{position:fixed; top:266px; right:24px; left:auto; transform:none; width:auto; max-width:calc(100vw - 28px); z-index:51; pointer-events:none; opacity:0; transition:opacity .3s; display:flex; flex-direction:column; gap:4px; background:none; border:none; padding:0;}
-  .marquee-item{display:flex !important; justify-content:flex-end !important; align-items:center; gap:4px; font-size:12px; font-weight:800; color:#ffd45e; text-shadow:0 0 8px #000, 0 2px 4px #000; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%; text-align:right; background:none !important; border:none !important; border-radius:0 !important; padding:2px 0 !important; margin:0 !important;}
-  .marquee-item.ai-0{color:#ffb347;}
-  .marquee-item.ai-1{color:#4da6ff;}
-  .marquee-item.ai-2{color:#5ce0a0;}
-  @media (max-width:768px){
-    .marquee{top:238px; right:24px; left:auto; transform:none; width:auto; max-width:calc(100vw - 28px);}
-  }
-  .marquee.show{opacity:1;}
-  .marquee-track{display:flex; flex-direction:column; gap:4px;}
-
-  /* ===== ① 開局前枱邊閒聊：單一面板，只佔左半（珠盤路位），唔遮右邊下三路 ===== */
-  /* #tableChatL 佔左半(珠盤路位)；top:0 喺大路底，標題貼大路第6格底 */
-  .tablechat{position:absolute; top:0; bottom:0; z-index:15; margin:0; background:rgba(2,17,10,.9); border:none; border-radius:0; padding:6px 8px; display:flex; flex-direction:column; max-height:none; opacity:0; visibility:hidden; pointer-events:none; transition:opacity .35s ease, visibility .35s;}
-  .tc-left{left:0; right:50%; top:-20px;}   /* 只佔左半，蓋住珠盤路；右半下三路露出 */
-  .tablechat.show{opacity:1; visibility:visible; pointer-events:auto;}
-  .tc-title{font-size:14px; color:var(--gold2); opacity:.9; letter-spacing:1px; margin-bottom:3px; flex:0 0 auto; display:flex; align-items:center; justify-content:space-between;}
-  .tc-close{font-size:16px; line-height:1; color:#f5f0d8; background:rgba(212,175,55,.28); border:1px solid rgba(212,175,55,.7); border-radius:6px; padding:3px 9px; cursor:pointer; pointer-events:auto;}
-  .tc-close:active{transform:scale(.9);}
-  .tc-count{font-size:10px; font-weight:800; color:#6fffa6; line-height:1.3; min-height:14px; display:none;}
-  .tc-count.show{display:block;}
-  .tc-body{overflow-y:auto; display:flex; flex-direction:column; gap:2px; flex:1 1 auto; max-height:none; justify-content:flex-start;}
-  .tc-bubble{font-size:12px; line-height:1.3; display:flex; gap:4px; align-items:baseline;}  /* 放大12px */
-  .tc-bubble .ic{flex:0 0 auto; font-size:13px;}
-  .tc-bubble .tx{color:#f0e8c8; font-size:12px;}
-  .tc-bubble .tx b{color:#fff; font-weight:800; margin-right:1px; font-size:12px;}
-  .tc-bubble.ai-0 .tx{color:#ffd9a8;} .tc-bubble.ai-1 .tx{color:#a9d2ff;} .tc-bubble.ai-2 .tx{color:#8fe0ab;}
-  .tc-bubble.ai-5 .tx{color:#c4f0f8;}
-  /* 落注倒數：顯示喺 3D 開牌掣下方、大路紅藍圖案上方（靜態行，唔彈跳） */
-  .bet-countdown{position:absolute; left:50%; transform:translateX(-50%); bottom:1px; line-height:1; z-index:25; display:none; text-align:center; font-size:14px; font-weight:800; color:var(--gold2); letter-spacing:1px; text-shadow:0 0 10px #000,0 2px 4px #000; white-space:nowrap; background:none; border:none; pointer-events:none;}
-  .bet-countdown.show{display:block;}
-
-  .win-pulse{animation:winp .8s ease;}
-  @keyframes winp{0%{box-shadow:0 0 0 0 var(--gold2);}50%{box-shadow:0 0 0 6px rgba(244,217,123,.6);}100%{box-shadow:0 0 0 0 rgba(244,217,123,0);}}
-  /* 統一閃燈：6s 4次（輸贏都閃），唔再分快/中/慢 */
-.win-pulse-slow{animation:winpSlow 6s ease;}
-@keyframes winpSlow{0%{box-shadow:0 0 0 0 var(--gold2);}12.5%{box-shadow:0 0 0 7px rgba(244,217,123,.65);}25%{box-shadow:0 0 0 0 rgba(244,217,123,0);}37.5%{box-shadow:0 0 0 7px rgba(244,217,123,.65);}50%{box-shadow:0 0 0 0 rgba(244,217,123,0);}62.5%{box-shadow:0 0 0 7px rgba(244,217,123,.65);}75%{box-shadow:0 0 0 0 rgba(244,217,123,0);}87.5%{box-shadow:0 0 0 7px rgba(244,217,123,.65);}100%{box-shadow:0 0 0 0 rgba(244,217,123,0);}}
-.win-pulse2{animation:winp2 var(--flash-dur,5s) ease;}
-  @keyframes winp2{0%{box-shadow:0 0 0 0 var(--gold2);}30%{box-shadow:0 0 0 7px rgba(244,217,123,.65);}50%{box-shadow:0 0 0 0 rgba(244,217,123,0);}80%{box-shadow:0 0 0 7px rgba(244,217,123,.65);}100%{box-shadow:0 0 0 0 rgba(244,217,123,0);}}
-
-  .limitinfo{font-size:10px; opacity:.65; text-align:center; padding:4px 12px; line-height:1.5;}
-  .hist{font-size:11px; padding:4px 7px; border-radius:5px; font-weight:700; flex:0 0 auto;}
-  .hist.b{background:var(--red); color:#fff;}
-  .hist.p{background:var(--blue); color:#fff;}
-  .hist.t{background:var(--gold); color:#241a00;}
-
-  .limitinfo{text-align:center; font-size:10px; opacity:.6; padding:2px 10px 6px;}
-
-
-  /* 彩帶 canvas */
-  #confetti{position:fixed; inset:0; pointer-events:none; z-index:60;}
-
-  /* Modal */
-  .modal{position:fixed; inset:0; background:#000c; z-index:70; display:none; align-items:center; justify-content:center; padding:20px;}
-  .modal.show{display:flex;}
-  .modal-box{background:linear-gradient(180deg,#1a1200,#0d0a00); border:2px solid var(--gold); border-radius:14px; padding:18px; max-width:420px; width:100%; max-height:80vh; overflow-y:auto;}
-  .modal-box h3{margin:0 0 12px; color:var(--gold2); text-align:center;}
-  .stat-row{display:flex; justify-content:space-between; padding:7px 4px; border-bottom:1px solid #333; font-size:14px;}
-  .stat-row span:last-child{color:var(--gold2); font-weight:800;}
-  .quest-box{margin:10px 0; padding:8px 10px; border:1px solid var(--goldd); border-radius:10px; background:rgba(255,215,121,.08);}
-  .quest-title{font-size:13px; font-weight:800; color:var(--gold2);}
-  .quest-desc{font-size:11px; opacity:.9; margin:3px 0;}
-  .quest-prog{height:10px; background:#222; border-radius:6px; overflow:hidden; margin:4px 0;}
-  .quest-bar{height:100%; width:0; background:linear-gradient(90deg,#ffd479,#e6a417); transition:width .4s;}
-  .quest-reward{font-size:10px; opacity:.8; margin-bottom:4px;}
-  .quest-box.done .quest-bar{background:linear-gradient(90deg,#4ade80,#16a34a);}
-  .modal-close{display:block; margin:14px auto 0; background:var(--goldd); color:#fff; border:none; padding:10px 28px; border-radius:8px; font-weight:800; cursor:pointer;}
-
-  .daily-tip{text-align:center; font-size:11px; color:var(--gold2); padding:0 10px 4px; min-height:14px;}
-  /* AI 陪玩 · 3+1 顯示：上面2個AI + 下邊1個AI + 你最底 */
-  .ai-balances{display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:2px 3px; align-items:center; justify-items:stretch; width:min(292px,80vw);}  /* 固定寬度→2/3字名都同一闊, 成個資金區唔會因3字名變闊向左跳 */
-  .ai-balances .aib{display:flex; flex-direction:column; line-height:1.1; padding:1px 5px; min-width:0; overflow:hidden; border-left:1px solid rgba(255,255,255,.15);}
-  .ai-balances .aib small{font-size:10px; opacity:.8; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%;}
-  .ai-balances .aib b{font-size:13px; color:var(--gold2); font-weight:800;}
-  /* 旺AI高亮：純螢光色數字(唔包底色塊) → 完全無塊長短問題，旺跳去邊都唔會跳 */
-  .ai-balances .aib.hot small{ color:#ffd479; }
-  .ai-balances .aib.hot b{ color:#ccff00 !important; text-shadow:0 0 6px rgba(204,255,0,.9), 0 0 12px rgba(204,255,0,.6); font-weight:900; }  /* 高亮只包數字, padding減到1px令塊短啲 */
-  /* 旺AI閃爍只作用在金額b，唔撼整格 */
-  @keyframes emWinFlash{ 0%{ background:rgba(255,215,121,.0);} 30%{ background:rgba(255,215,121,.55);} 100%{ background:rgba(255,215,121,0);} }
-  @keyframes emLoseFlash{ 0%{ background:rgba(120,140,160,0);} 30%{ background:rgba(120,140,160,.45);} 100%{ background:rgba(120,140,160,0);} }
-  .ai-balances .aib.em-flash-win b{ animation:emWinFlash 1.5s ease; }
-  .ai-balances .aib.em-flash-lose b{ animation:emLoseFlash 1.5s ease; }
-  /* 升級⑦ AI情緒動畫 */
-  .ai-balances .aib.em-hot small{ color:#ffd479; }
-  .ai-balances .aib.em-cold{ opacity:.7; }
-  .ai-balances .aib.em-cold small{ color:#9fb3c8; }
-
-  /* AI 管理列表 modal */
-  .ai-list{margin:10px 0; display:flex; flex-direction:column; gap:5px;}
-  .ai-empty{font-size:12px; opacity:.6; text-align:center; padding:6px;}
-  .ai-row{display:flex; align-items:center; gap:6px; background:#0d1f15; border:1px solid #2c5240; border-radius:8px; padding:5px 8px;}
-  .ai-row-ic{font-size:16px;}
-  .ai-row-info{display:flex; flex-direction:column; flex:1; line-height:1.15; min-width:0;}
-  .ai-row-info b{font-size:13px; color:#f5f0d8;}
-  .ai-row-info small{font-size:9px; opacity:.7; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
-  .ai-row-info .ai-stat{font-size:9px; opacity:.85; color:var(--gold2);}
-  .ai-row-edit, .ai-row-del, .ai-row-detail{background:none; border:1px solid #2c5240; border-radius:6px; width:28px; height:28px; font-size:13px; cursor:pointer; color:#cfe9d8;}
-  .ai-row-del{border-color:#7a2d2d; color:#ffb3b3;}
-  .ai-row-detail{border-color:#7a6a2d; color:#ffd98a;}
-  .ai-blurb{font-size:13px; color:var(--gold2); opacity:.9; margin-top:5px; padding:4px 10px; background:#0d1f15; border-radius:6px; border:1px solid #2c5240;}
-  .ai-modal-btns{display:flex; gap:8px; margin:14px 0 4px;}
-  .ai-modal-btns .modal-close{margin:0; flex:1;}
-  .ai-opt-label{font-size:12px; color:var(--gold2); margin-bottom:5px; font-weight:700;}
-  .ai-chips{display:flex; flex-wrap:wrap; gap:6px;}
-  .ai-chip{padding:6px 10px; border-radius:14px; background:#0d1f15; border:1px solid #2c5240; color:#cfe9d8; font-size:13px; cursor:pointer; user-select:none;}
-  .ai-chip.sel{background:var(--goldd); color:#fff; border-color:var(--goldd); font-weight:800;}
-  .bet.ai-bet{ outline:2px solid #ffd98a; outline-offset:1px; }
-  .bet .ai-amt{ position:absolute; top:-12px; left:50%; transform:translateX(-50%); font-size:9px; color:#ffd98a; font-weight:800; background:rgba(0,0,0,.7); padding:1px 4px; border-radius:6px; white-space:nowrap; pointer-events:none; }
-
-  </style>
+.follow-right .limit-row .fstep{ 
+  writing-mode:vertical-rl; text-orientation:upright; 
+  width:auto; flex:0 0 auto; padding:0; font-size:10px;
+  line-height: 1;
+}
+.follow-right .limit-row .limit-val{ 
+  writing-mode:vertical-rl; text-orientation:upright; 
+  width:auto; flex:0 0 auto;
+  font-size:10px; line-height: 1;
+}
+    /* 打橫投注區壓縮：3×3 貼頂、第2/3行細啲，令右欄同左路單水平並排唔溢出 */
+    .bets{ display:grid; grid-template-columns:repeat(3,1fr); gap:1px; }
+    .betrow{ display:contents; }     /* 三行變 grid 子項，整體 3×3 一齊排 */
+    .bet{ min-height:35px; padding:0; font-size:11px; }   /* 下兩行保持壓縮, 全0空隙 */
+    /* 橫版：頂/中/底 統一 90/30/30（與直版對齊緊貼） */
+    .betrow.top .bet{ min-height:88px; padding:0; }       /* 頂列(閒莊和) 88px 高 */
+    .betrow.mid .bet, .betrow.bottom .bet{ min-height:35px; padding:0; }  /* 第二/三列各 35px 高 */
+    .bet .bn{ font-size:11px; }
+    .bet .od{ font-size:8px; }
+    .bet .chips-stack{ min-height:12px; margin-top:1px; }
+    .betrow.bottom .bet .chips-stack{ min-height:16px; margin-top:1px; }  /* 橫版底列收: 52→48 */
+    .chip{ width:26px; height:26px; font-size:8px; }
+</style>
 </head>
 <body>
 <div class="app">
@@ -2510,7 +1924,63 @@ function chatGlobalHas(msg){
 }
 function addChatBubble(ai, msg) {
   const L = document.getElementById('tcBodyL');
-  if (!L) sg = null;  // 用完就清，讓 fallback 預製句接手
+  if (!L) return;
+  // 取消右邊，所有對話都落枱邊閒聊單一面板（最多留 8 句）；共 4 句唔會到頂
+  if (L.childElementCount >= 8) return;
+
+  // 更新 AI 最近聊天記錄（去重用）
+  if (ai) {
+    if (!ai.recentChats) ai.recentChats = [];
+    ai.recentChats.push(msg);
+    if (ai.recentChats.length > 8) ai.recentChats.shift();
+  }
+  chatGlobalPush(msg);
+
+  const b = document.createElement('div');
+  b.className = 'tc-bubble ai-' + (ais.indexOf(ai) % 6);
+  b.innerHTML = '<span class="ic">' + ai.icon + '</span><span class="tx"><b>' + ai.name + '：</b>' + msg + '</span>';
+  L.appendChild(b);
+  L.scrollTop = L.scrollHeight;
+  // 注意：出聲由 tableChatPhase 控制，呢度唔 call speak（避免雙重出聲）
+}
+function showTableChat(){
+  ['L'].forEach(s=>{
+    const c=document.getElementById('tableChat'+s); if(!c) return;
+    const tt=c.querySelector('.tc-title'); if(tt) tt.textContent='💬 枱邊閒聊';
+    const body=document.getElementById('tcBody'+s); if(body) body.innerHTML='';
+    const cc=document.getElementById('tcCount'+s); if(cc){ cc.textContent=''; cc.classList.remove('show'); }
+    c.classList.add('show');
+  });
+}
+function hideTableChat(){ ['L'].forEach(s=>{ const c=document.getElementById('tableChat'+s); if(c) c.classList.remove('show'); }); }
+document.getElementById('tcCloseL').addEventListener('click',()=>{ hideTableChat(); const f=window._tcFinish; if(f){ window._tcFinish(); window._tcFinish=null; } });
+const CHAT_BUDGET_MS = 15000;  // 枱邊閒聊彈性預算15秒：語音唔係噪音後加長，更好笑更抵死  // 枱邊閒聊彈性預算：最多喺呢段時間內講，好笑就長啲，唔好笑就短啲（唔固定4句）
+async function tableChatPhase(sec) {
+    if (ais.length === 0) return;
+    showTableChat();
+
+    // 彈性：唔固定4句，按10秒預算出句（出1段/2段/更長都得，預算用完就收聲）
+    const shuffled = [...ais].sort(() => Math.random() - 0.5);
+    const speakers = shuffled.slice(0, Math.min(6, shuffled.length));  // 最多6個排住隊，預算用完就停
+    speakers.forEach(ai => { ai._prePick = aiPick(ai); });
+
+    const ctx = roadState();
+    const usedThisRound = new Set();
+    let prev = null;
+    const t0 = Date.now();
+
+    for (let i = 0; i < speakers.length; i++) {
+        if (Date.now() - t0 > CHAT_BUDGET_MS) break;   // 預算用完就收聲，唔硬出4句
+        const ai = speakers[i];
+        let msg = null;
+        if(LLM_CHAT){
+          let llmAttempts = 0;
+          do {
+            msg = await genAiLineLLM(ai, ctx, prev);
+            llmAttempts++;
+            if (!msg) break;  // LLM 失敗 → 跳出嘗試 fallback
+          } while (llmAttempts < 3 && phraseUsed(msg));
+          if (!msg || phraseUsed(msg)) msg = null;  // 用完就清，讓 fallback 預製句接手
         }
         if(!msg){
           let fbAttempts = 0;
