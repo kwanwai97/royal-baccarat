@@ -107,6 +107,27 @@
     background: #d4af37;
     color: #1a1200;
   }
+  .room-ai {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(20,30,20,.65);
+    border: 1px solid rgba(212,175,55,.55);
+    padding: 5px 10px;
+    border-radius: 10px;
+    font-size: 11px;
+    color: #ffd479;
+    font-weight: 800;
+  }
+  .room-ai::before {
+    content: '💧 💧 💧';
+    letter-spacing: 2px;
+    opacity: .95;
+  }
   .create-room {
     margin-top: 20px;
     text-align: center;
@@ -159,6 +180,7 @@
           <span>3 人在線</span>
         </div>
         <div class="room-status waiting">等待中</div>
+        <div class="room-ai">AI 陪玩</div>
       </div>
     </div>
 
@@ -173,6 +195,7 @@
           <span>2 人在線</span>
         </div>
         <div class="room-status waiting">等待中</div>
+        <div class="room-ai">AI 陪玩</div>
       </div>
     </div>
 
@@ -189,6 +212,7 @@
           <span>4 人在線</span>
         </div>
         <div class="room-status playing">遊戲中</div>
+        <div class="room-ai">AI 陪玩</div>
       </div>
     </div>
 
@@ -202,6 +226,7 @@
           <span>1 人在線</span>
         </div>
         <div class="room-status waiting">等待中</div>
+        <div class="room-ai">AI 陪玩</div>
       </div>
     </div>
   </div>
