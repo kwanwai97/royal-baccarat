@@ -888,7 +888,7 @@
   <button id="btnShop" style="background:linear-gradient(90deg,#9b59b6,#8e44ad);color:#fff;border:none;padding:2px 6px;border-radius:4px;font-size:10px;cursor:pointer;white-space:nowrap;">🛒 商店</button>
   <button id="btnServerChat" style="background:linear-gradient(90deg,#2d7dd2,#1e5ba8);color:#fff;border:none;padding:2px 6px;border-radius:4px;font-size:10px;cursor:pointer;white-space:nowrap;">💬 聊天</button>
   <button id="btnLimits" style="background:linear-gradient(90deg,#ffd479,#e6a417);color:#241a00;border:none;padding:2px 6px;border-radius:4px;font-size:10px;cursor:pointer;white-space:nowrap;">🎚 限紅</button>
-  <button id="btnAi" style="background:linear-gradient(90deg,#ff9a6f,#d94f1f);color:#fff;border:none;padding:2px 6px;border-radius:4px;font-size:10px;cursor:pointer;white-space:nowrap;">🤖 AI陪玩</button>
+  <button id="btnLlm" style="background:linear-gradient(90deg,#2d7dd2,#1e5ba8);color:#fff;border:none;padding:2px 6px;border-radius:4px;font-size:10px;cursor:pointer;white-space:nowrap;">🧠 AI腦袋</button>
 </div>
 
   <div class="odds-row"></div>
@@ -898,9 +898,9 @@
   <div class="road-section-title" style="border:none;background:none;padding:0;flex:0 0 auto;">🔝 大路</div>
   <button class="dealmode-btn" id="btnDealMode" style="flex:0 0 auto;white-space:nowrap;">自動開牌</button>
   <div id="followIconsHeader" class="follow-icons-header" style="flex:0 0 auto;display:flex;align-items:center;gap:3px;min-width:0;">
-    <button class="iconbtn chip-icon" id="btnStats" title="戰績" style="width:auto;padding:2px 6px;white-space:nowrap;">📊戰績</button>
-    <button class="iconbtn chip-icon" id="btnDaily" title="每日免費籌碼" style="width:auto;padding:2px 6px;white-space:nowrap;">🎁免費</button>
-    <button class="iconbtn chip-icon" id="btnLlm" title="AI腦即時聊天(本地Ollama)" style="width:auto;padding:2px 6px;white-space:nowrap;">🧠AI腦</button>
+    <button class="iconbtn chip-icon" id="btnStats" title="戰績" style="width:auto;padding:2px 6px;white-space:nowrap;">📊 戰績</button>
+    <button class="iconbtn chip-icon" id="btnDaily" title="每日免費籌碼" style="width:auto;padding:2px 6px;white-space:nowrap;">🎁 免費</button>
+    <button class="iconbtn chip-icon" id="btnAi" title="陪玩AI管理" style="width:auto;padding:2px 6px;white-space:nowrap;">🤖 AI陪玩</button>
   </div>
   <button class="iconbtn chip-icon" id="btnMute" title="音效" style="flex:0 0 auto;white-space:nowrap;">🔊</button>
 </div>
@@ -3896,29 +3896,22 @@ function placeTopBtns(){
   const tb = document.getElementById('topBtns');
   const brand = document.querySelector('.brand');
   const chips = document.querySelector('.chips-row');
-  const deal = document.getElementById('btnDeal');
   const auto = document.getElementById('btnAuto');
   const aint = document.getElementById('btnAutoInt');
   const shuf = document.getElementById('btnShuffle');
   const mute = document.getElementById('btnMute');
-  const roadTools = document.getElementById('roadTools');
-  if(!tb||!brand||!chips||!deal||!auto||!aint||!shuf) return;
+  if(!tb||!brand||!chips||!auto||!aint||!shuf) return;
 
-  const lb = document.getElementById('btnLeaderboard');
   const dealModeBtn = document.getElementById('btnDealMode');
   const shoeInfo = document.getElementById('shoeInfo');
 
-  // ---------- 新増：將 #btnLimits 和 #btnAi 強制固定在 .server-toolbar ----------
+  // ---- 確保 #btnLimits 固定在工具欄（不移動 #btnAi） ----
   const toolbar = document.querySelector('.server-toolbar');
   const limitsBtn = document.getElementById('btnLimits');
-  const aiBtn = document.getElementById('btnAi');
   if (toolbar && limitsBtn && limitsBtn.parentElement !== toolbar) {
     toolbar.appendChild(limitsBtn);
   }
-  if (toolbar && aiBtn && aiBtn.parentElement !== toolbar) {
-    toolbar.appendChild(aiBtn);
-  }
-  // ---------------------------------------------------------------------
+  // ----------------------------------------------------
 
   let autoWrap = document.getElementById('autoBtns');
   if(!autoWrap){ autoWrap = document.createElement('div'); autoWrap.id='autoBtns'; autoWrap.className='auto-btns'; }
@@ -3946,30 +3939,29 @@ function placeTopBtns(){
     }
 
     if(dealModeBtn){
-      const header = document.querySelector('.roadpanel > div');
+      const header = document.querySelector('.roadpanel > div:first-child');
       let dwrap = document.getElementById('dealModeWrap');
       if(!dwrap){ dwrap = document.createElement('div'); dwrap.id='dealModeWrap'; dwrap.className='dealmode-wrap'; }
       if(dealModeBtn.parentElement!==dwrap) dwrap.appendChild(dealModeBtn);
       if(dwrap.parentElement!==header) header.insertBefore(dwrap, document.getElementById('followIconsHeader'));
     }
     if(shoeInfo){
-      const headerL = document.querySelector('.roadpanel > div');
+      const headerL = document.querySelector('.roadpanel > div:first-child');
       const fih = document.getElementById('followIconsHeader');
       if(headerL && fih){
         if(shoeInfo.parentElement!==headerL) headerL.insertBefore(shoeInfo, fih);
-        if(shoeInfo.parentElement===headerL){
-          const dm = document.getElementById('dealModeWrap');
-          if(dm && dm.parentElement===headerL) headerL.insertBefore(shoeInfo, dm);
-        }
+        const dm = document.getElementById('dealModeWrap');
+        if(dm && dm.parentElement===headerL) headerL.insertBefore(shoeInfo, dm);
       }
       shoeInfo.style.position = ''; shoeInfo.style.left = ''; shoeInfo.style.top = '';
     }
 
+    // 清理殘留容器（只處理 btnStats, btnDaily，不碰 btnAi）
     const frL = document.querySelector('.follow-right');
     if(frL){
       const oldMid = document.getElementById('followMid');
       if(oldMid && oldMid.parentElement===frL){
-        ['btnStats','btnDaily','btnLlm'].forEach(id => {
+        ['btnStats','btnDaily'].forEach(id => {
           const el = document.getElementById(id);
           if(el && el.parentElement===oldMid){ const fh = document.getElementById('followIconsHeader'); if(fh) fh.appendChild(el); }
         });
@@ -3982,7 +3974,7 @@ function placeTopBtns(){
     if(fr){
       const oldMidL = document.getElementById('followMidLand');
       if(oldMidL && oldMidL.parentElement===fr){
-        ['btnStats','btnDaily','btnLlm'].forEach(id => {
+        ['btnStats','btnDaily'].forEach(id => {
           const el = document.getElementById(id);
           if(el && el.parentElement===oldMidL) fr.appendChild(el);
         });
@@ -4001,14 +3993,14 @@ function placeTopBtns(){
 
       let mid = document.getElementById('followMid');
       if(!mid){ mid = document.createElement('div'); mid.id='followMid'; mid.className='follow-mid'; fr.appendChild(mid); }
-      // 只搬運三個圖案（btnStats, btnDaily, btnLlm），不再搬 #btnLimits 和 #btnAi
-      ['btnStats','btnDaily','btnLlm'].forEach(id => {
+      // 只搬運 btnStats 和 btnDaily（不再碰 btnAi）
+      ['btnStats','btnDaily'].forEach(id => {
         const el = document.getElementById(id);
         const fh = document.getElementById('followIconsHeader');
         if(el && fh && el.parentElement!==fh) fh.appendChild(el);
       });
       if(dealModeBtn){
-        const header = document.querySelector('.roadpanel > div');
+        const header = document.querySelector('.roadpanel > div:first-child');
         let dwrap = document.getElementById('dealModeWrap');
         if(!dwrap){ dwrap = document.createElement('div'); dwrap.id='dealModeWrap'; dwrap.className='dealmode-wrap'; }
         if(dealModeBtn.parentElement!==dwrap) dwrap.appendChild(dealModeBtn);
@@ -4031,9 +4023,315 @@ let _ptbT=null;
 function placeTopBtnsDebounced(){ if(_ptbT) clearTimeout(_ptbT); _ptbT=setTimeout(placeTopBtns,300); }
 window.addEventListener('resize', placeTopBtnsDebounced);
 if(window.matchMedia){ try{ window.matchMedia('(orientation:landscape)').addEventListener('change', placeTopBtnsDebounced); }catch(e){} }
-if(!loadShoe()) resetShoe();   // 有儲存嘅鞋就續返(派過幾多張繼續)，否則開新鞋
-updateShoeInfo();   // 無論續鞋定開新鞋都刷新剩餘張數顯示
+if(!loadShoe()) resetShoe();   // 有儲存嘅鞋就續返(派過幾多張繼續)，否則開新鞭
+updateShoeInfo();   // 無論續鞋定開新鞭都刷新剩餘張數顯示
 updateBalance(); updateBetDisplay(); checkDaily(); updateQuest(); drawAllRoads();
+
+/* ===================== Socket.IO 多人同步 =====================
+ * 此層為「增量覆蓋」：單人模式繼續如常運作，多人模式下通過 Socket.IO 同步下注/發牌/路單/餘額。
+ * 不刪除任何現有功能，只增多「收到伺服器事件時更新 UI」的監聽器。
+ * 多人模式下：伺服器是發牌/派彩的唯一來源；前端只負責渲染 + 統計 + AI。
+ */
+window.__baccSocket = null;
+window.__baccRoomName = (new URLSearchParams(window.location.search)).get('room') || '大廳';
+window.__baccMultiplayer = false;  // Socket.IO 連線成功 → 多人模式
+window.__baccPlayerName = (function(){ try { return localStorage.getItem('bac_player_name') || '玩家'; } catch(e) { return '玩家'; } })();
+// 每個玩家自己的餘額由伺服器發的 game_result 更新；本地 balance 僅在單人模式變動
+window.__baccRemotePlayers = {};  // { name: { balance, lastBet } } — 其他玩家
+
+function _initSocket(){
+  // 動態載入 socket.io client (Flask-SocketIO 自動在 /socket.io/socket.io.js 提供)
+  var el = document.createElement('script');
+  el.src = 'https://cdn.socket.io/4.7.2/socket.io.min.js';
+  el.onload = function(){
+    window.__baccSocket = io();
+
+    window.__baccSocket.on('connect', function(){
+      console.log('[Socket.IO] 已連接：', window.__baccSocket.id);
+      window.__baccMultiplayer = true;
+      window.__baccSocket.emit('join_room', {
+        room: window.__baccRoomName,
+        name: window.__baccPlayerName,
+        balance: balance  // 初始餘額同步給伺服器
+      });
+    });
+
+    // 未登入驗證失敗 → Socket.IO 連線被拒 → 跳轉到 login.html
+    window.__baccSocket.on('connect_error', function(err){
+      console.warn('[Socket.IO] 連線被拒：', err.message || '未登入');
+      window.__baccMultiplayer = false;
+      window.location.href = '/login.html?next=' + encodeURIComponent(window.location.pathname + window.location.search);
+    });
+
+    window.__baccSocket.on('disconnect', function(){
+      console.log('[Socket.IO] 斷線，回復單人模式');
+      window.__baccMultiplayer = false;
+    });
+
+    // 房間玩家列表更新
+    window.__baccSocket.on('room_players', function(data){
+      window.__baccRemotePlayers = {};
+      (data.players || []).forEach(function(p){
+        if(p.name !== window.__baccPlayerName) {
+          window.__baccRemotePlayers[p.name] = { balance: p.balance, lastBet: null };
+        }
+      });
+      console.log('[Socket.IO] 房間玩家:', data.players.map(function(p){return p.name;}).join(', '));
+    });
+
+    // 收到其他玩家下注 → 顯示提示 (可以在桌面上顯示籌碼)
+    window.__baccSocket.on('bet_placed', function(data){
+      if(data.player === window.__baccPlayerName) return;  // 跳過自己
+      // 更新遠端玩家餘額
+      if(window.__baccRemotePlayers[data.player]) {
+        window.__baccRemotePlayers[data.player].balance = data.balance || data.newBalance;
+        window.__baccRemotePlayers[data.player].lastBet = { target: data.target, amount: data.amount };
+      }
+      showToast(data.player + ' 下注 ' + data.target + ' ' + (data.amount||0));
+    });
+
+    // 收到發牌結果 → 多人同步開牌
+    window.__baccSocket.on('game_result', function(data){
+      console.log('[Socket.IO] 發牌結果:', data.winner, '閒'+data.pTotal+' 莊'+data.bTotal);
+      if(!window.__baccMultiplayer) return;  // 單人模式忽略
+
+      // 防止本地 deal() 同時運行 — 設定 flag
+      dealing = false;
+
+      // ===== 渲染伺服器發的牌 =====
+      var pcDiv = document.getElementById('playerCards');
+      var bcDiv = document.getElementById('bankerCards');
+      if(pcDiv) pcDiv.innerHTML = '';
+      if(bcDiv) bcDiv.innerHTML = '';
+
+      // 顯示發牌區
+      var dz = document.getElementById('dealzoneOverlay');
+      if(dz) dz.classList.add('show');
+      lockFollow(false);
+
+      // 渲染4張初始牌
+      function renderPhase1(){
+        if(pcDiv && data.p_cards && data.p_cards[0])
+          pcDiv.appendChild(cardEl(data.p_cards[0]));
+        if(bcDiv && data.b_cards && data.b_cards[0])
+          bcDiv.appendChild(cardEl(data.b_cards[0]));
+        updateScore('player', data.p_cards ? _handTotalFromCards(data.p_cards) : data.pTotal);
+        updateScore('banker', data.b_cards && data.b_cards.length > 1 ? data.bTotal : (data.b_cards ? _handTotalFromCards(data.b_cards.slice(0,1)) : '?'));
+      }
+      function renderPhase2(){
+        if(pcDiv && data.p_cards && data.p_cards[1])
+          pcDiv.appendChild(cardEl(data.p_cards[1]));
+        if(bcDiv && data.b_cards && data.b_cards[1])
+          bcDiv.appendChild(cardEl(data.b_cards[1]));
+        updateScore('player', _handTotalFromCards(data.p_cards || []));
+        updateScore('banker', _handTotalFromCards(data.b_cards || []));
+      }
+      function renderPhase3(){
+        // 第3張牌 (補牌)
+        if(data.p_cards && data.p_cards.length > 2 && pcDiv){
+          var el = cardEl(data.p_cards[2]);  // cardEl 內部會標 data-card3
+          // 標記為第三張牌 (cardEl 會設 data-card3，但只有 appendCard 有這邏輯；直接調用 cardEl 會有 transition)
+          el.setAttribute('data-card3','1');
+          if(dealMode !== 'squeeze') el.classList.add('flat');
+          pcDiv.appendChild(el);
+        }
+        if(data.b_cards && data.b_cards.length > 2 && bcDiv){
+          var el2 = cardEl(data.b_cards[2]);
+          el2.setAttribute('data-card3','1');
+          if(dealMode !== 'squeeze') el2.classList.add('flat');
+          bcDiv.appendChild(el2);
+        }
+        updateScore('player', data.pTotal);
+        updateScore('banker', data.bTotal);
+      }
+
+      renderPhase1();
+      setTimeout(renderPhase2, 1000);
+      setTimeout(renderPhase3, 2200);
+
+      // ===== 結算 (使用前端已有的 settle 函數，確保統計/動畫/路單都正確) =====
+      // 將本地 bets 設為伺服器結算結果的輸入，然後調用 settle
+      // settle 使用全局 bets/playerPair/bankerPair/totalCards 來計算
+      var winnerMap = {'player':'player','banker':'banker','tie':'tie'};
+      var winnerKey = winnerMap[data.winner] || data.winner;
+
+      // 先設置 bets 為零 (因為伺服器已扣款；前端 settle 會計算 payout 從 win-staked)
+      // 但 settle 會重新計算 balance += payout，其中 payout = win - staked
+      // 所以我們需要 bets 保持伺服器知道的下注金額
+      // 這裡 bets 已經由 placeBet 更新過 (多人模式下 placeBet 會 emit + 更新本地 bets)
+
+      // 調用 settle 進行統計/動畫/路單 (不要重複結算 balance — 由 server payout 更新)
+      // settle 會修改 balance, stats, bets, settled 等 — 我們需要在調用前準備好
+      // 但 settle 會再次計算 payout，導致雙重結算 — 所以在多人模式下我們跳過 settle 的 balance 邏輯
+      settled = true;
+      lastBets = Object.assign({}, bets);
+
+      // 手動執行 settle 的統計部分 (不要重複 balance 計算)
+      // --- 統計更新 (從 settle 抽取，避免調用原 settle 造成雙重結算) ---
+      if(staked === 0) { /* no bets */ }
+      var mainWin = (winnerKey === 'player' && bets.player > 0) ||
+                    (winnerKey === 'banker' && bets.banker > 0) ||
+                    (winnerKey === 'tie' && bets.tie > 0);
+      lastHumanWon = mainWin;
+
+      // 使用伺服器返回的派彩，直接更新本地 balance
+      var myPayout = null;
+      if(data.payouts){
+        for(var key in data.payouts){
+          var p = data.payouts[key];
+          if(p.player === window.__baccPlayerName){
+            myPayout = p;
+            break;
+          }
+        }
+      }
+      if(myPayout){
+        balance = myPayout.balance;
+        // 統計 (沿用原 settle 的邏輯)
+        var net = myPayout.net;
+        stats.totalWager = (stats.totalWager||0) + (myPayout.staked || 0);
+        stats.totalProfit = (stats.totalProfit||0) + net;
+        stats.curve.push(balance);
+        if(stats.curve.length > 200) stats.curve.shift();
+        if(winnerKey === 'player') stats.pWin++; else if(winnerKey === 'banker') stats.bWin++; else stats.tie++;
+        if(net > 0){ stats.wins++; stats.streak++; if(stats.streak>stats.maxStreak)stats.maxStreak=stats.streak; stats.loseStreak=0; stats.winAmt+=net;
+          sndWin(); launchConfetti();
+          var label = winnerKey==='player'?'閒家贏':winnerKey==='banker'?'莊家贏':'和局';
+          showMsg(resultText(label, data.pTotal, data.bTotal, data.player_pair, data.banker_pair, data.is_big, data.p_cards.length, data.b_cards.length, net),
+                  winnerKey==='banker'?'#ffb3b3':winnerKey==='player'?'#a9d2ff':'#8fe0ab');
+          showToast('🎉 贏 ' + fmt(net));
+        } else if(net < 0){ stats.losses++; stats.loseStreak++; if(stats.loseStreak>stats.maxLoseStreak)stats.maxLoseStreak=stats.loseStreak; stats.streak=0; stats.lossAmt+=(-net);
+          sndLose();
+          showToast('💸 輸 ' + fmt(-net));
+        } else { sndTie(); if(bets && Object.values(bets).some(function(v){return v>0;})) showToast('↔ 平手退還'); }
+        updateBalance(); updateAiBalances(); updateStreak();
+      }
+
+      // 路單更新 (所有玩家都看到同一個路單)
+      addResult(winnerKey, data.player_pair, data.banker_pair, data.total_cards);
+      shoeStats.round++;
+      if(winnerKey==='player') shoeStats.pWin++; else if(winnerKey==='banker') shoeStats.bWin++; else shoeStats.tie++;
+      if(data.player_pair) shoeStats.ppair++;
+      if(data.banker_pair) shoeStats.bpair++;
+      if(winnerKey==='banker' && data.bTotal===6) shoeStats.luck6++;
+      if(winnerKey==='player' && data.pTotal===7 && data.bTotal===6) shoeStats.luck7++;
+      shoeStats.lastCards = data.total_cards;
+      drawAllRoads();
+      saveStats();
+
+      // 閃燈效果
+      var resultDetail = {};
+      resultDetail[winnerKey] = true;
+      if(data.player_pair) resultDetail.ppair = true;
+      if(data.banker_pair) resultDetail.bpair = true;
+      if(data.is_big) resultDetail.big = true; else resultDetail.small = true;
+      if(winnerKey === 'banker' && data.bTotal === 6) resultDetail.luck6 = true;
+      if(winnerKey === 'player' && data.pTotal === 7 && data.bTotal === 6) resultDetail.luck7 = true;
+      var flashMap = {player:'.bet.player',banker:'.bet.banker',tie:'.bet.tie',ppair:'.bet.ppair',bpair:'.bet.bpair',big:'.bet.big',small:'.bet.small',luck6:'.bet.luck6',luck7:'.bet.luck7'};
+      document.querySelectorAll('.bet').forEach(function(el){ el.classList.remove('win-pulse-fast','win-pulse-med','win-pulse-slow'); });
+      var cls = 'win-pulse-slow';
+      for(var k in resultDetail){ var el = document.querySelector(flashMap[k]); if(el) el.classList.add(cls); }
+
+      // 牌面 3 秒後消失
+      setTimeout(function(){
+        ['playerCards','bankerCards'].forEach(function(id){
+          var box = document.getElementById(id); if(!box) return;
+          var kids = box.children;
+          for(var i=0;i<kids.length;i++){ if(kids[i]){ kids[i].style.transition='opacity .5s'; kids[i].style.opacity='0'; } }
+          setTimeout(function(){ if(box) box.innerHTML=''; }, 520);
+        });
+      }, 3000);
+
+      // 重置發牌區
+      var c = function(){
+        var dz2 = document.getElementById('dealzoneOverlay'); if(dz2) dz2.classList.remove('show');
+        hideMsg(); lockFollow(true); setControls(true);
+        bets = {player:0,banker:0,tie:0,ppair:0,bpair:0,big:0,small:0,luck6:0,luck7:0};
+        updateBetDisplay();
+      };
+      setTimeout(c, 4000);
+
+      // 結算完成
+      setTimeout(function(){ saveRoads(); settled=false; }, 6000);
+    });
+
+    // 收到錯誤提示
+    window.__baccSocket.on('bet_error', function(data){ showToast('⚠ ' + data.msg); });
+    window.__baccSocket.on('deal_error', function(data){ showToast('⚠ ' + data.msg); });
+  };
+  // 載入 socket.io client script (會自動連線到 same-origin server)
+  document.head.appendChild(el);
+}
+
+// 在多人模式下渲染牌面需要計算手牌總點數 (前端用)
+function _handTotalFromCards(cards){ if(!cards||!cards.length) return 0; return cards.reduce(function(s,c){ return s + (c.value||0); }, 0) % 10; }
+
+// 初始化 Socket.IO (單人模式下若無 server 會自動降為離線)
+_initSocket();
+
+// ===== 覆寫 placeBet：多人模式時發送到伺服器，單人模式時本地執行 =====
+var _origPlaceBet = placeBet;
+placeBet = function(k){
+  if(window.__baccMultiplayer){
+    // 多人模式：只發送到伺服器，餘額由 server 返回的 game_result 更新
+    if(window.__baccSocket){
+      window.__baccSocket.emit('place_bet', {
+        room: window.__baccRoomName,
+        target: k,
+        amount: currentChip,
+        player: window.__baccPlayerName
+      });
+    }
+    // 本地也更新 bets 顯示 (籌碼在桌上) + 扣除餘額預扣 (server 結算會同步)
+    if(balance >= currentChip){
+      balance -= currentChip;
+      bets[k] = (bets[k]||0) + currentChip;
+      flyChip(k);
+      updateBalance(); updateBetDisplay();
+    }
+  } else {
+    // 單人模式：原行為完全不變
+    _origPlaceBet(k);
+  }
+};
+
+// ===== 覆寫 btnDeal：多人模式時只發送到伺服器 =====
+var _origDealBtn = document.getElementById('btnDeal');
+if(_origDealBtn){
+  _origDealBtn.onclick = function(){
+    if(autoOn){ showToast('自動開牌進行中，請先按「自動」停止'); return; }
+    if(window.__baccMultiplayer){
+      // 多人模式：通知伺服器發牌，伺服器會廣播 game_result
+      if(window.__baccSocket){
+        window.__baccSocket.emit('request_deal', { room: window.__baccRoomName });
+      }
+      // 設定發牌中狀態 (阻止重複點擊 + 阻止手動開牌)
+      dealing = true;
+      setControls(false);
+      showToast('⏳ 等待伺服器發牌…');
+    } else {
+      // 單人模式：原行為
+      deal();
+    }
+  };
+}
+
+// ===== 覆寫 btnShuffle：多人模式下通知伺服器 =====
+var _origShuffleBtn = document.getElementById('btnShuffle');
+if(_origShuffleBtn){
+  var _origShuffleClick = _origShuffleBtn.onclick;
+  _origShuffleBtn.onclick = function(){
+    if(dealing) return;
+    if(window.__baccMultiplayer){
+      if(window.__baccSocket){
+        window.__baccSocket.emit('shuffle', { room: window.__baccRoomName });
+      }
+      showToast('🔀 已通知伺服器洗牌');
+    } else if(_origShuffleClick){
+      _origShuffleClick.call(this);
+    }
+  };
+}
 </script>
 </body>
 </html>
