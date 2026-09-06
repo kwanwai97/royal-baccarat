@@ -5,6 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>🎰 皇家百家樂 · 真人豪華版</title>
+
 <style>
   :root{
     --gold:#d4af37; --gold2:#f4d97b; --goldd:#b8860b;
@@ -837,6 +838,30 @@
   .betrow.bottom .bet .chips-stack{ min-height:16px; margin-top:1px; }
   .chip{ width:26px; height:26px; font-size:8px; }
 }
+  /* ---- 缩细大路标题区（AI陪玩、战績、奖品等按钮） ---- */
+.road-header .iconbtn,
+.road-header .dealmode-btn {
+  font-size: 0.65rem !important;    /* 字体缩小 */
+  padding: 0px 4px !important;      /* 上下内边距为0，左右保留 */
+  min-height: 20px !important;      /* 高度缩小 */
+  height: auto !important;
+  line-height: 1.2 !important;
+}
+.road-header .iconbtn {
+  width: auto !important;
+  padding: 0px 4px !important;
+}
+.road-header .dealmode-btn {
+  padding: 0px 4px !important;
+}
+/* 缩小该行按钮之间的间距 */
+.road-header #followIconsHeader {
+  gap: 2px !important;
+}
+/* 同时缩小"大路"标题字体 */
+.road-header .road-section-title {
+  font-size: 0.7rem !important;
+}
 </style>
 </head>
 <body>
@@ -888,7 +913,7 @@
   <button id="btnShop" style="background:linear-gradient(90deg,#9b59b6,#8e44ad);color:#fff;border:none;padding:2px 6px;border-radius:4px;font-size:10px;cursor:pointer;white-space:nowrap;">🛒 商店</button>
   <button id="btnServerChat" style="background:linear-gradient(90deg,#2d7dd2,#1e5ba8);color:#fff;border:none;padding:2px 6px;border-radius:4px;font-size:10px;cursor:pointer;white-space:nowrap;">💬 聊天</button>
   <button id="btnLimits" style="background:linear-gradient(90deg,#ffd479,#e6a417);color:#241a00;border:none;padding:2px 6px;border-radius:4px;font-size:10px;cursor:pointer;white-space:nowrap;">🎚 限紅</button>
-  <button id="btnAi" style="background:linear-gradient(90deg,#ff9a6f,#d94f1f);color:#fff;border:none;padding:2px 6px;border-radius:4px;font-size:10px;cursor:pointer;white-space:nowrap;">🤖 AI陪玩</button>
+  <button id="btnLlm" style="background:linear-gradient(90deg,#2d7dd2,#1e5ba8);color:#fff;border:none;padding:2px 6px;border-radius:4px;font-size:10px;cursor:pointer;white-space:nowrap;">🧠 AI腦袋</button>
 </div>
 
   <div class="odds-row"></div>
@@ -898,9 +923,9 @@
   <div class="road-section-title" style="border:none;background:none;padding:0;flex:0 0 auto;">🔝 大路</div>
   <button class="dealmode-btn" id="btnDealMode" style="flex:0 0 auto;white-space:nowrap;">自動開牌</button>
   <div id="followIconsHeader" class="follow-icons-header" style="flex:0 0 auto;display:flex;align-items:center;gap:3px;min-width:0;">
-    <button class="iconbtn chip-icon" id="btnStats" title="戰績" style="width:auto;padding:2px 6px;white-space:nowrap;">📊戰績</button>
-    <button class="iconbtn chip-icon" id="btnDaily" title="每日免費籌碼" style="width:auto;padding:2px 6px;white-space:nowrap;">🎁免費</button>
-    <button class="iconbtn chip-icon" id="btnLlm" title="AI腦即時聊天(本地Ollama)" style="width:auto;padding:2px 6px;white-space:nowrap;">🧠AI腦</button>
+    <button class="iconbtn chip-icon" id="btnStats" title="戰績" style="width:auto;padding:2px 6px;white-space:nowrap;">📊 戰績</button>
+    <button class="iconbtn chip-icon" id="btnDaily" title="每日免費籌碼" style="width:auto;padding:2px 6px;white-space:nowrap;">🎁 免費</button>
+    <button class="iconbtn chip-icon" id="btnAi" title="陪玩AI管理" style="width:auto;padding:2px 6px;white-space:nowrap;">🤖 AI陪玩</button>
   </div>
   <button class="iconbtn chip-icon" id="btnMute" title="音效" style="flex:0 0 auto;white-space:nowrap;">🔊</button>
 </div>
@@ -3896,29 +3921,22 @@ function placeTopBtns(){
   const tb = document.getElementById('topBtns');
   const brand = document.querySelector('.brand');
   const chips = document.querySelector('.chips-row');
-  const deal = document.getElementById('btnDeal');
   const auto = document.getElementById('btnAuto');
   const aint = document.getElementById('btnAutoInt');
   const shuf = document.getElementById('btnShuffle');
   const mute = document.getElementById('btnMute');
-  const roadTools = document.getElementById('roadTools');
-  if(!tb||!brand||!chips||!deal||!auto||!aint||!shuf) return;
+  if(!tb||!brand||!chips||!auto||!aint||!shuf) return;
 
-  const lb = document.getElementById('btnLeaderboard');
   const dealModeBtn = document.getElementById('btnDealMode');
   const shoeInfo = document.getElementById('shoeInfo');
 
-  // ---------- 新増：將 #btnLimits 和 #btnAi 強制固定在 .server-toolbar ----------
+  // ---- 確保 #btnLimits 固定在工具欄（不移動 #btnAi） ----
   const toolbar = document.querySelector('.server-toolbar');
   const limitsBtn = document.getElementById('btnLimits');
-  const aiBtn = document.getElementById('btnAi');
   if (toolbar && limitsBtn && limitsBtn.parentElement !== toolbar) {
     toolbar.appendChild(limitsBtn);
   }
-  if (toolbar && aiBtn && aiBtn.parentElement !== toolbar) {
-    toolbar.appendChild(aiBtn);
-  }
-  // ---------------------------------------------------------------------
+  // ----------------------------------------------------
 
   let autoWrap = document.getElementById('autoBtns');
   if(!autoWrap){ autoWrap = document.createElement('div'); autoWrap.id='autoBtns'; autoWrap.className='auto-btns'; }
@@ -3946,30 +3964,29 @@ function placeTopBtns(){
     }
 
     if(dealModeBtn){
-      const header = document.querySelector('.roadpanel > div');
+      const header = document.querySelector('.roadpanel > div:first-child');
       let dwrap = document.getElementById('dealModeWrap');
       if(!dwrap){ dwrap = document.createElement('div'); dwrap.id='dealModeWrap'; dwrap.className='dealmode-wrap'; }
       if(dealModeBtn.parentElement!==dwrap) dwrap.appendChild(dealModeBtn);
       if(dwrap.parentElement!==header) header.insertBefore(dwrap, document.getElementById('followIconsHeader'));
     }
     if(shoeInfo){
-      const headerL = document.querySelector('.roadpanel > div');
+      const headerL = document.querySelector('.roadpanel > div:first-child');
       const fih = document.getElementById('followIconsHeader');
       if(headerL && fih){
         if(shoeInfo.parentElement!==headerL) headerL.insertBefore(shoeInfo, fih);
-        if(shoeInfo.parentElement===headerL){
-          const dm = document.getElementById('dealModeWrap');
-          if(dm && dm.parentElement===headerL) headerL.insertBefore(shoeInfo, dm);
-        }
+        const dm = document.getElementById('dealModeWrap');
+        if(dm && dm.parentElement===headerL) headerL.insertBefore(shoeInfo, dm);
       }
       shoeInfo.style.position = ''; shoeInfo.style.left = ''; shoeInfo.style.top = '';
     }
 
+    // 清理殘留容器（只處理 btnStats, btnDaily，不碰 btnAi）
     const frL = document.querySelector('.follow-right');
     if(frL){
       const oldMid = document.getElementById('followMid');
       if(oldMid && oldMid.parentElement===frL){
-        ['btnStats','btnDaily','btnLlm'].forEach(id => {
+        ['btnStats','btnDaily'].forEach(id => {
           const el = document.getElementById(id);
           if(el && el.parentElement===oldMid){ const fh = document.getElementById('followIconsHeader'); if(fh) fh.appendChild(el); }
         });
@@ -3982,7 +3999,7 @@ function placeTopBtns(){
     if(fr){
       const oldMidL = document.getElementById('followMidLand');
       if(oldMidL && oldMidL.parentElement===fr){
-        ['btnStats','btnDaily','btnLlm'].forEach(id => {
+        ['btnStats','btnDaily'].forEach(id => {
           const el = document.getElementById(id);
           if(el && el.parentElement===oldMidL) fr.appendChild(el);
         });
@@ -4001,14 +4018,14 @@ function placeTopBtns(){
 
       let mid = document.getElementById('followMid');
       if(!mid){ mid = document.createElement('div'); mid.id='followMid'; mid.className='follow-mid'; fr.appendChild(mid); }
-      // 只搬運三個圖案（btnStats, btnDaily, btnLlm），不再搬 #btnLimits 和 #btnAi
-      ['btnStats','btnDaily','btnLlm'].forEach(id => {
+      // 只搬運 btnStats 和 btnDaily（不再碰 btnAi）
+      ['btnStats','btnDaily'].forEach(id => {
         const el = document.getElementById(id);
         const fh = document.getElementById('followIconsHeader');
         if(el && fh && el.parentElement!==fh) fh.appendChild(el);
       });
       if(dealModeBtn){
-        const header = document.querySelector('.roadpanel > div');
+        const header = document.querySelector('.roadpanel > div:first-child');
         let dwrap = document.getElementById('dealModeWrap');
         if(!dwrap){ dwrap = document.createElement('div'); dwrap.id='dealModeWrap'; dwrap.className='dealmode-wrap'; }
         if(dealModeBtn.parentElement!==dwrap) dwrap.appendChild(dealModeBtn);
