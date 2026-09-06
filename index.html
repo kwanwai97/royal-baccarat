@@ -878,32 +878,32 @@
     <div class="topright">
       <div class="balance"><div class="bname" id="balanceName">👤 玩家</div><small>餘額</small><div><b id="balance">1,000,000</b></div></div>
       <div class="ai-balances" id="aiBalanceBox" style="display:none;"></div>
-      
+
     </div>
   </div>
 
-  <div class="server-toolbar" style="display:flex;flex-wrap:wrap;gap:4px;align-items:center;padding:2px 0;">
-    <button id="btnRooms" title="房間大廳" style="background:linear-gradient(90deg,#2faf5a,#1e8c4a);color:#fff;border:none;padding:4px 8px;border-radius:4px;font-size:11px;cursor:pointer;">🏠 房間</button>
-    <button id="btnTopup" title="充值" style="background:linear-gradient(90deg,#d4af37,#b8941f);color:#1a1200;border:none;padding:4px 8px;border-radius:4px;font-size:11px;cursor:pointer;">💰 充值</button>
-    <button id="btnShop" title="商店" style="background:linear-gradient(90deg,#9b59b6,#8e44ad);color:#fff;border:none;padding:4px 8px;border-radius:4px;font-size:11px;cursor:pointer;">🛒 商店</button>
-    <button id="btnServerChat" title="公共聊天室" style="background:linear-gradient(90deg,#2d7dd2,#1e5ba8);color:#fff;border:none;padding:4px 8px;border-radius:4px;font-size:11px;cursor:pointer;">💬 聊天</button>
-  </div>
+  <div class="server-toolbar" style="display:flex;flex-wrap:wrap;gap:3px;align-items:center;padding:2px 0;">
+  <button id="btnRooms" style="background:linear-gradient(90deg,#2faf5a,#1e8c4a);color:#fff;border:none;padding:2px 6px;border-radius:4px;font-size:10px;cursor:pointer;white-space:nowrap;">🏠 房間</button>
+  <button id="btnTopup" style="background:linear-gradient(90deg,#d4af37,#b8941f);color:#1a1200;border:none;padding:2px 6px;border-radius:4px;font-size:10px;cursor:pointer;white-space:nowrap;">💰 充值</button>
+  <button id="btnShop" style="background:linear-gradient(90deg,#9b59b6,#8e44ad);color:#fff;border:none;padding:2px 6px;border-radius:4px;font-size:10px;cursor:pointer;white-space:nowrap;">🛒 商店</button>
+  <button id="btnServerChat" style="background:linear-gradient(90deg,#2d7dd2,#1e5ba8);color:#fff;border:none;padding:2px 6px;border-radius:4px;font-size:10px;cursor:pointer;white-space:nowrap;">💬 聊天</button>
+  <button id="btnLimits" style="background:linear-gradient(90deg,#ffd479,#e6a417);color:#241a00;border:none;padding:2px 6px;border-radius:4px;font-size:10px;cursor:pointer;white-space:nowrap;">🎚 限紅</button>
+  <button id="btnAi" style="background:linear-gradient(90deg,#ff9a6f,#d94f1f);color:#fff;border:none;padding:2px 6px;border-radius:4px;font-size:10px;cursor:pointer;white-space:nowrap;">🤖 AI陪玩</button>
+</div>
 
   <div class="odds-row"></div>
 
   <div class="roadpanel">
-    <div class="road-header" style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;padding:4px 8px;">
-      <div class="road-section-title" style="border:none;background:none;padding:0;flex:0 0 auto;">🔝 大路</div>
-      <button class="dealmode-btn" id="btnDealMode" style="flex:0 0 auto;">普通開牌 ▾</button>
-      <div id="followIconsHeader" class="follow-icons-header" style="flex:0 0 auto;display:flex;align-items:center;gap:3px;min-width:0;">
-        <button class="iconbtn chip-icon" id="btnStats" title="戰績">📊</button>
-        <button class="iconbtn chip-icon" id="btnDaily" title="每日免費籌碼">🎁</button>
-        <button class="iconbtn chip-icon" id="btnLlm" title="AI腦即時聊天(本地Ollama)">🧠</button>
-        <button class="iconbtn chip-icon" id="btnLimits" title="限紅自選">🎚</button>
-        <button class="iconbtn chip-icon" id="btnAi" title="陪玩AI管理">🤖</button>
-      </div>
-      <button class="iconbtn chip-icon" id="btnMute" title="音效" style="flex:0 0 auto;">🔊</button>
-    </div>
+    <div class="road-header" style="display:flex;align-items:center;gap:4px;flex-wrap:nowrap;padding:4px 8px;overflow-x:auto;">
+  <div class="road-section-title" style="border:none;background:none;padding:0;flex:0 0 auto;">🔝 大路</div>
+  <button class="dealmode-btn" id="btnDealMode" style="flex:0 0 auto;white-space:nowrap;">自動開牌</button>
+  <div id="followIconsHeader" class="follow-icons-header" style="flex:0 0 auto;display:flex;align-items:center;gap:3px;min-width:0;">
+    <button class="iconbtn chip-icon" id="btnStats" title="戰績" style="width:auto;padding:2px 6px;white-space:nowrap;">📊戰績</button>
+    <button class="iconbtn chip-icon" id="btnDaily" title="每日免費籌碼" style="width:auto;padding:2px 6px;white-space:nowrap;">🎁免費</button>
+    <button class="iconbtn chip-icon" id="btnLlm" title="AI腦即時聊天(本地Ollama)" style="width:auto;padding:2px 6px;white-space:nowrap;">🧠AI腦</button>
+  </div>
+  <button class="iconbtn chip-icon" id="btnMute" title="音效" style="flex:0 0 auto;white-space:nowrap;">🔊</button>
+</div>
     <div class="road-big">
       <canvas id="bigCanvas" width="540" height="110"></canvas>
       <div class="bet-countdown" id="betCountdown"></div>
@@ -2013,7 +2013,7 @@ function cardEl(card){
   const dir = 'd'+Math.floor(Math.random()*4);   // 隨機搣牌方向：d0下上 d1上下 d2左右 d3右左
   d.className='card f3d '+(sq?'sq '+dir+' ':'')+(red?'red':'black');
   d.innerHTML='<div class="cf"><div class="face">'+inner+'</div><div class="back"></div></div>';
-  if(!sq){ 
+  if(!sq){
     setTimeout(()=>d.classList.add('flip'), 800);
     // 3D模式：翻牌transition完成後顯示數字
     // 第3隻牌翻牌完成後回到橫放 (.flat)
@@ -2120,7 +2120,7 @@ async function revealThird3D(el){
   // .flat 延遲移除讓牌先顯示再豎起
   setTimeout(()=>{ el.classList.remove('flat'); }, 400);
   // 數字顯示: 翻牌完成後 (400+800+500ms = ~1300ms) 立即顯示，唔等1秒回橋
-  setTimeout(()=>{ 
+  setTimeout(()=>{
     // 顯示所有牌的數字 (第一二隻 + 第3隻)
     ['playerCards','bankerCards'].forEach(cid=>{
       const box=document.getElementById(cid);
@@ -2156,7 +2156,7 @@ function appendCard(containerId, c){
   return new Promise(res=>{ setTimeout(()=>{ const el=cardEl(c);
     // 標記第三隻牌 (data-card3) — 第3張以後的牌
     const kids=document.getElementById(containerId).children;
-    if(kids.length>=2){ 
+    if(kids.length>=2){
       el.setAttribute('data-card3','1');
       // 3D模式：第三隻牌先打橫放 (等 revealThird 將 .flat 移除旋轉豎起)
       if(dealMode!=='squeeze'){ el.classList.add('flat'); }
@@ -2510,25 +2510,25 @@ function recordCombos(){
   saveCombos(combos);
   autoBackup();   /* 每次累積完自動備份, 唔使撳備份掣 */
 }
-function loadAiList(){ 
-  try{ 
-    const s=localStorage.getItem('bac_ai'); 
-    if(s){ 
-      const arr=JSON.parse(s); 
+function loadAiList(){
+  try{
+    const s=localStorage.getItem('bac_ai');
+    if(s){
+      const arr=JSON.parse(s);
       if(Array.isArray(arr)) {
-        ais = arr.map(ai => ({ 
-          ...ai, 
+        ais = arr.map(ai => ({
+          ...ai,
           plan: AI_PLANS[ai.plan] ? ai.plan : 'flat',   // 兼容舊存檔：已移除嘅注碼方案降級做平注
-          currentBet: null, 
-          emotion: ai.emotion || 50, 
-          joy: ai.joy || 0, 
-          rage: ai.rage || 0, 
-          winStreak: ai.winStreak || 0, 
+          currentBet: null,
+          emotion: ai.emotion || 50,
+          joy: ai.joy || 0,
+          rage: ai.rage || 0,
+          winStreak: ai.winStreak || 0,
           loseStreak: ai.loseStreak || 0,
           recentChats: ai.recentChats || []   // 兼容舊存檔
         }));
       }
-    } 
+    }
   } catch(e){}
   syncAiSeq();   // reload 後從現有最大號續上，避免重號
 }
@@ -2933,7 +2933,7 @@ function updateAiBalances(){   // 頂欄橫向捲動：你(人類)永遠第一�
     html+='<div class="aib'+(isHot?' hot':'')+emCls+'" data-ai="'+ai.id+'"><small>'+ai.icon+' '+ai.name+face+'</small><b>'+fmt(ai.balance)+'</b></div>';
   });
   box.innerHTML=html;
-  
+
 }
 function showStats(){
   // 統一 7 項：本金 / 資金 / 勝率 / 總投注額 / 最高金額 / 最長連贏 / 最長連輸（跟 AI 詳細卡一致）
@@ -3457,7 +3457,7 @@ document.getElementById('btnClaimQuest').addEventListener('click',claimQuest);
 document.getElementById('btnStats').addEventListener('click',showStats);
 document.getElementById('btnCloseStats').addEventListener('click',()=>document.getElementById('statsModal').classList.remove('show'));
 const btnDM=document.getElementById('btnDealMode');
-function refreshDealModeBtn(){ btnDM.textContent = dealMode==='squeeze' ? '搣牌 ▾' : '開牌 ▾'; }
+function refreshDealModeBtn(){ btnDM.textContent = dealMode==='squeeze' ? '手動開▾' : '自動開▾'; }
 btnDM.addEventListener('click',()=>{
   dealMode = dealMode==='squeeze' ? '3d' : 'squeeze';
   localStorage.setItem('bac_dealmode', dealMode);
@@ -3893,126 +3893,133 @@ window.addEventListener('resize', placeFollow);
 if(window.matchMedia){ try{ window.matchMedia('(orientation:landscape)').addEventListener('change', placeFollow); }catch(e){} }
 // 橫版：洗牌留籌碼區(.chips-row)，自動+13秒搬返剩餘卡牌(.brand-sub)下方並排；直版：自動+13秒回左上 brand，洗牌搬去籌碼區發牌右邊
 function placeTopBtns(){
-  const tb=document.getElementById('topBtns');
-  const brand=document.querySelector('.brand');
-  const chips=document.querySelector('.chips-row');
-  const deal=document.getElementById('btnDeal');
-  const auto=document.getElementById('btnAuto');
-  const aint=document.getElementById('btnAutoInt');
-  const shuf=document.getElementById('btnShuffle');
-  const mute=document.getElementById('btnMute');
-  const roadTools=document.getElementById('roadTools');
+  const tb = document.getElementById('topBtns');
+  const brand = document.querySelector('.brand');
+  const chips = document.querySelector('.chips-row');
+  const deal = document.getElementById('btnDeal');
+  const auto = document.getElementById('btnAuto');
+  const aint = document.getElementById('btnAutoInt');
+  const shuf = document.getElementById('btnShuffle');
+  const mute = document.getElementById('btnMute');
+  const roadTools = document.getElementById('roadTools');
   if(!tb||!brand||!chips||!deal||!auto||!aint||!shuf) return;
-  const lb=document.getElementById('btnLeaderboard');
-  const dealModeBtn=document.getElementById('btnDealMode');
-  const shoeInfo=document.getElementById('shoeInfo');
-  let autoWrap=document.getElementById('autoBtns');
-  if(!autoWrap){ autoWrap=document.createElement('div'); autoWrap.id='autoBtns'; autoWrap.className='auto-btns'; }
-  const land=window.matchMedia('(orientation:landscape)').matches;   // matchMedia(等layout穩定先fire, race比即時尺寸少)
+
+  const lb = document.getElementById('btnLeaderboard');
+  const dealModeBtn = document.getElementById('btnDealMode');
+  const shoeInfo = document.getElementById('shoeInfo');
+
+  // ---------- 新増：將 #btnLimits 和 #btnAi 強制固定在 .server-toolbar ----------
+  const toolbar = document.querySelector('.server-toolbar');
+  const limitsBtn = document.getElementById('btnLimits');
+  const aiBtn = document.getElementById('btnAi');
+  if (toolbar && limitsBtn && limitsBtn.parentElement !== toolbar) {
+    toolbar.appendChild(limitsBtn);
+  }
+  if (toolbar && aiBtn && aiBtn.parentElement !== toolbar) {
+    toolbar.appendChild(aiBtn);
+  }
+  // ---------------------------------------------------------------------
+
+  let autoWrap = document.getElementById('autoBtns');
+  if(!autoWrap){ autoWrap = document.createElement('div'); autoWrap.id='autoBtns'; autoWrap.className='auto-btns'; }
+
+  const land = window.matchMedia('(orientation:landscape)').matches;
   if(land){
-    if(auto.parentElement!==autoWrap) autoWrap.appendChild(auto); // 自動入 wrapper
-    if(aint.parentElement!==autoWrap) autoWrap.appendChild(aint); // 13秒入 wrapper
-    if(autoWrap.parentElement!==chips) chips.insertBefore(autoWrap, chips.firstChild); // 暫留(下面會搬入follow-right)
-    if(shuf && shuf.parentElement!==chips) chips.appendChild(shuf);  // 洗牌留籌碼區(跟直版)
-    if(tb.parentElement!==brand) brand.appendChild(tb);              // topBtns留brand(跟直版)
-    // 橫版：底層掣(自動/13秒/喇叭/AI榜)搬入follow-right底層(botLand); 喇叭直接入botLand, 唔經roadTools暫留(避免race飄去頂部header)
-    // 橫版：底層掣(自動/13秒/喇叭/AI榜)跟直版搬入follow-right底層(5圖案下方)；洗牌留籌碼區
-    const frLand=document.querySelector('.follow-right');
+    if(auto.parentElement!==autoWrap) autoWrap.appendChild(auto);
+    if(aint.parentElement!==autoWrap) autoWrap.appendChild(aint);
+    if(autoWrap.parentElement!==chips) chips.insertBefore(autoWrap, chips.firstChild);
+    if(shuf && shuf.parentElement!==chips) chips.appendChild(shuf);
+    if(tb.parentElement!==brand) brand.appendChild(tb);
+
+    const frLand = document.querySelector('.follow-right');
     if(frLand){
-      let botLand=document.getElementById('bottomRowLand');
-      if(!botLand){ botLand=document.createElement('div'); botLand.id='bottomRowLand'; botLand.className='frow frow-bot'; }
-      // 強制從直版容器(bottomRow)拎出mute, 避免race卡喺直版容器(y=358跳動)
-      const botPort=document.getElementById('bottomRow');
+      let botLand = document.getElementById('bottomRowLand');
+      if(!botLand){ botLand = document.createElement('div'); botLand.id='bottomRowLand'; botLand.className='frow frow-bot'; }
+      const botPort = document.getElementById('bottomRow');
       if(botPort && mute && mute.parentElement===botPort) botPort.removeChild(mute);
-      if(mute && mute.parentElement!==botLand) botLand.appendChild(mute);   // 喇叭排最左(order:7)
-      if(auto.parentElement!==botLand) botLand.appendChild(auto);           // 自動(order:8)
-      if(aint.parentElement!==botLand) botLand.appendChild(aint);          // 13秒(order:8)
-      const limRowL=document.querySelector('.limit-row');
-      if(limRowL && limRowL.parentElement!==botLand) botLand.appendChild(limRowL);  // ±次數排13秒右邊(order:9)
+      if(mute && mute.parentElement!==botLand) botLand.appendChild(mute);
+      if(auto.parentElement!==botLand) botLand.appendChild(auto);
+      if(aint.parentElement!==botLand) botLand.appendChild(aint);
+      const limRowL = document.querySelector('.limit-row');
+      if(limRowL && limRowL.parentElement!==botLand) botLand.appendChild(limRowL);
       if(botLand.parentElement!==frLand) frLand.appendChild(botLand);
     }
-    // 橫版：普通開牌掣搬去大路標題行(header行)開牌位置(跟五圖案同行, flex排唔置中)；剩餘數留brand-sub
+
     if(dealModeBtn){
-      const header=document.querySelector('.roadpanel > div');  // 大路標題行(header)
-      let dwrap=document.getElementById('dealModeWrap');
-      if(!dwrap){ dwrap=document.createElement('div'); dwrap.id='dealModeWrap'; dwrap.className='dealmode-wrap'; }
+      const header = document.querySelector('.roadpanel > div');
+      let dwrap = document.getElementById('dealModeWrap');
+      if(!dwrap){ dwrap = document.createElement('div'); dwrap.id='dealModeWrap'; dwrap.className='dealmode-wrap'; }
       if(dealModeBtn.parentElement!==dwrap) dwrap.appendChild(dealModeBtn);
-      if(dwrap.parentElement!==header) header.insertBefore(dwrap, document.getElementById('followIconsHeader'));   // 插喺五圖案之前(開牌→五圖案)
+      if(dwrap.parentElement!==header) header.insertBefore(dwrap, document.getElementById('followIconsHeader'));
     }
     if(shoeInfo){
-      const headerL=document.querySelector('.roadpanel > div');  // 大路標題 header 行
-      const fih=document.getElementById('followIconsHeader');
+      const headerL = document.querySelector('.roadpanel > div');
+      const fih = document.getElementById('followIconsHeader');
       if(headerL && fih){
-        if(shoeInfo.parentElement!==headerL) headerL.insertBefore(shoeInfo, fih);  // 插五圖案前=開牌後? 改插大路後
-        // 最終順序: 大路 → 剩餘 → 開牌 → 五圖案 → 用 fih 之前係開牌位置; 但要確保剩餘喺開牌前
+        if(shoeInfo.parentElement!==headerL) headerL.insertBefore(shoeInfo, fih);
         if(shoeInfo.parentElement===headerL){
-          const dm=document.getElementById('dealModeWrap');
-          if(dm && dm.parentElement===headerL) headerL.insertBefore(shoeInfo, dm);  // 大路→剩餘→開牌→五圖案
+          const dm = document.getElementById('dealModeWrap');
+          if(dm && dm.parentElement===headerL) headerL.insertBefore(shoeInfo, dm);
         }
       }
-      shoeInfo.style.position=''; shoeInfo.style.left=''; shoeInfo.style.top='';
+      shoeInfo.style.position = ''; shoeInfo.style.left = ''; shoeInfo.style.top = '';
     }
-    // 橫版：5圖案掣(戰績/禮物/腦袋/限額/陪玩)已喺 HTML 嘅 #followIconsHeader(大路標題行開牌右)，唔搬去 followMidLand
-    const frL=document.querySelector('.follow-right');
+
+    const frL = document.querySelector('.follow-right');
     if(frL){
-      // 只清理直版殘留 followMid 容器(若有)
-      const oldMid=document.getElementById('followMid');
+      const oldMid = document.getElementById('followMid');
       if(oldMid && oldMid.parentElement===frL){
-        ['btnStats','btnDaily','btnLlm','btnLimits','btnAi'].forEach(id=>{
-          const el=document.getElementById(id);
-          if(el && el.parentElement===oldMid){ const fh=document.getElementById('followIconsHeader'); if(fh) fh.appendChild(el); }
+        ['btnStats','btnDaily','btnLlm'].forEach(id => {
+          const el = document.getElementById(id);
+          if(el && el.parentElement===oldMid){ const fh = document.getElementById('followIconsHeader'); if(fh) fh.appendChild(el); }
         });
         oldMid.remove();
       }
     }
   } else {
-    // 直版：喇叭+自動+13秒+AI排行榜搬去 follow-right 最底；洗牌留 topBtns；autoBtns wrapper 唔使
-    // 5圖案掣(戰績/禮物/腦袋/限額/陪玩)搬去 follow-right 中間行(.follow-mid)
-    const fr=document.querySelector('.follow-right');
+    // 直版
+    const fr = document.querySelector('.follow-right');
     if(fr){
-      // 清理橫版分支殘留嘅 followMidLand 容器(旋轉後會並存), 先救出5圖案掣再移除空容器
-      const oldMidL=document.getElementById('followMidLand');
+      const oldMidL = document.getElementById('followMidLand');
       if(oldMidL && oldMidL.parentElement===fr){
-        ['btnStats','btnDaily','btnLlm','btnLimits','btnAi'].forEach(id=>{
-          const el=document.getElementById(id);
+        ['btnStats','btnDaily','btnLlm'].forEach(id => {
+          const el = document.getElementById(id);
           if(el && el.parentElement===oldMidL) fr.appendChild(el);
         });
         oldMidL.remove();
       }
-      let bot=document.getElementById('bottomRow');
-      if(!bot){ bot=document.createElement('div'); bot.id='bottomRow'; bot.className='frow frow-bot'; }
-      // 強制從橫版容器(bottomRowLand)拎出mute, 避免race卡喺橫版容器(y=54跳動)
-      const botLandOld=document.getElementById('bottomRowLand');
+      let bot = document.getElementById('bottomRow');
+      if(!bot){ bot = document.createElement('div'); bot.id='bottomRow'; bot.className='frow frow-bot'; }
+      const botLandOld = document.getElementById('bottomRowLand');
       if(botLandOld && mute && mute.parentElement===botLandOld) botLandOld.removeChild(mute);
-      if(mute && mute.parentElement!==bot) bot.appendChild(mute);   // 喇叭排最左
+      if(mute && mute.parentElement!==bot) bot.appendChild(mute);
       if(auto.parentElement!==bot) bot.appendChild(auto);
       if(aint.parentElement!==bot) bot.appendChild(aint);
-      const limRow=document.querySelector('.limit-row');
-      if(limRow && limRow.parentElement!==bot) bot.appendChild(limRow);  // ±次數排13秒右邊(入bottomRow最尾)
+      const limRow = document.querySelector('.limit-row');
+      if(limRow && limRow.parentElement!==bot) bot.appendChild(limRow);
       if(bot.parentElement!==fr) fr.appendChild(bot);
-      // 中間行 wrapper（只建立一次）
-      let mid=document.getElementById('followMid');
-      if(!mid){ mid=document.createElement('div'); mid.id='followMid'; mid.className='follow-mid'; fr.appendChild(mid); }
-      // 直版：5圖案掣已喺 HTML #followIconsHeader(開牌右)，唔搬去 followMid
-      ['btnStats','btnDaily','btnLlm','btnLimits','btnAi'].forEach(id=>{
-        const el=document.getElementById(id);
-        const fh=document.getElementById('followIconsHeader');
+
+      let mid = document.getElementById('followMid');
+      if(!mid){ mid = document.createElement('div'); mid.id='followMid'; mid.className='follow-mid'; fr.appendChild(mid); }
+      // 只搬運三個圖案（btnStats, btnDaily, btnLlm），不再搬 #btnLimits 和 #btnAi
+      ['btnStats','btnDaily','btnLlm'].forEach(id => {
+        const el = document.getElementById(id);
+        const fh = document.getElementById('followIconsHeader');
         if(el && fh && el.parentElement!==fh) fh.appendChild(el);
       });
-      // 直版：普通開牌掣放去大路標題 header 行開牌位置(跟五圖案同行, flex排唔置中)
       if(dealModeBtn){
-        const header=document.querySelector('.roadpanel > div');  // 大路標題 header 行
-        let dwrap=document.getElementById('dealModeWrap');
-        if(!dwrap){ dwrap=document.createElement('div'); dwrap.id='dealModeWrap'; dwrap.className='dealmode-wrap'; }
+        const header = document.querySelector('.roadpanel > div');
+        let dwrap = document.getElementById('dealModeWrap');
+        if(!dwrap){ dwrap = document.createElement('div'); dwrap.id='dealModeWrap'; dwrap.className='dealmode-wrap'; }
         if(dealModeBtn.parentElement!==dwrap) dwrap.appendChild(dealModeBtn);
-        if(dwrap.parentElement!==header) header.insertBefore(dwrap, document.getElementById('followIconsHeader'));  // 插喺五圖案之前(開牌→五圖案)
-        if(shoeInfo && shoeInfo.parentElement!==header) header.insertBefore(shoeInfo, dwrap);   // 剩N張插開牌前(順序:大路→剩餘→開牌→五圖案)
-        shoeInfo.style.position=''; shoeInfo.style.left=''; shoeInfo.style.top='';
+        if(dwrap.parentElement!==header) header.insertBefore(dwrap, document.getElementById('followIconsHeader'));
+        if(shoeInfo && shoeInfo.parentElement!==header) header.insertBefore(shoeInfo, dwrap);
+        shoeInfo.style.position = ''; shoeInfo.style.left = ''; shoeInfo.style.top = '';
       }
     }
-    if(tb.parentElement!==brand) brand.appendChild(tb);          // topBtns 留 brand(得洗牌)
-    if(shuf.parentElement!==chips) chips.appendChild(shuf);      // 直版：洗牌搬去籌碼區(發牌右)
-    if(autoWrap.parentElement) autoWrap.remove();               // 直版唔使 wrapper
+    if(tb.parentElement!==brand) brand.appendChild(tb);
+    if(shuf.parentElement!==chips) chips.appendChild(shuf);
+    if(autoWrap.parentElement) autoWrap.remove();
   }
 }
 placeTopBtns();
