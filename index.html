@@ -837,6 +837,30 @@
   .betrow.bottom .bet .chips-stack{ min-height:16px; margin-top:1px; }
   .chip{ width:26px; height:26px; font-size:8px; }
 }
+  /* ---- 缩细大路标题区（AI陪玩、战績、奖品等按钮） ---- */
+.road-header .iconbtn,
+.road-header .dealmode-btn {
+  font-size: 0.65rem !important;    /* 字体缩小 */
+  padding: 0px 4px !important;      /* 上下内边距为0，左右保留 */
+  min-height: 20px !important;      /* 高度缩小 */
+  height: auto !important;
+  line-height: 1.2 !important;
+}
+.road-header .iconbtn {
+  width: auto !important;
+  padding: 0px 4px !important;
+}
+.road-header .dealmode-btn {
+  padding: 0px 4px !important;
+}
+/* 缩小该行按钮之间的间距 */
+.road-header #followIconsHeader {
+  gap: 2px !important;
+}
+/* 同时缩小"大路"标题字体 */
+.road-header .road-section-title {
+  font-size: 0.7rem !important;
+}
 </style>
 </head>
 <body>
