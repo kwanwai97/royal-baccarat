@@ -545,8 +545,30 @@
 .road-header .road-section-title{ flex:0 0 auto; margin-right:2px; }
 .road-header #btnDealMode{ flex:0 0 auto; height:26px; padding:1px 5px; font-size:11px; margin-right:0; }  /* 直版：剩餘卡牌+開牌緊貼右邊5圖案(同橫版) */
 .follow-icons-header{ flex:0 0 auto; display:flex; align-items:center; gap:1px; min-width:0; }
-.follow-icons-header .iconbtn{ min-width:0; padding:2px 3px; height:26px; display:inline-flex; align-items:center; justify-content:center; box-sizing:border-box; }  /* 5圖案高度統一26px */
-.road-header #btnMute{ flex:0 0 auto; }
+/* 🎯 大路標題行 5 圖案掣：icon+文字同一行、縮字唔換行 */
+.follow-icons-header{ gap:2px; overflow:visible; }
+
+.follow-icons-header .iconbtn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:1px;
+  height:22px;
+  min-height:22px;
+  padding:0 4px;
+  font-size:10px;          /* ← 由 13px 縮到 10px 係關鍵 */
+  font-weight:800;
+  line-height:1;
+  letter-spacing:0;
+  white-space:nowrap;       /* ← 唔准跳行 */
+  word-break:keep-all;
+  flex:0 0 auto;
+  min-width:0;
+  box-sizing:border-box;
+}
+
+/* 大路標題行本身強制 nowrap，唔會把掣迫落第二行 */
+.road-header{ flex-wrap:nowrap; }
 #followStatus{ text-align:left; }   /* 直版做一行：狀態在統計左邊，文字靠左；橫版同樣靠左 */
 .btn.fbtn{background:linear-gradient(180deg,#ffd479,#e6a417); color:#241a00; border:1px solid #ffb347; font-size:10px; font-weight:800; padding:1px 2px; border-radius:8px; opacity:.6; writing-mode:vertical-rl; text-orientation:upright; white-space:nowrap; letter-spacing:0; min-width:30px; line-height:1.0; text-align:center;}
 .btn.fbtn.on{background:linear-gradient(180deg,#5fffa0,#1faf5a); color:#06240f; border:1px solid #3fdf7a; opacity:1; box-shadow:0 2px 0 #0a7a3a;}
@@ -900,9 +922,9 @@
       <div class="road-section-title" style="border:none;background:none;padding:0;flex:0 0 auto;">🔝 大路</div>
       <button class="dealmode-btn" id="btnDealMode" style="flex:0 0 auto;">普通開牌 ▾</button>
       <div id="followIconsHeader" class="follow-icons-header" style="flex:0 0 auto;display:flex;align-items:center;gap:3px;min-width:0;">
-        <button class="iconbtn chip-icon" id="btnStats" title="戰績">📊</button>
-        <button class="iconbtn chip-icon" id="btnDaily" title="每日免費籌碼">🎁</button>
-        <button class="iconbtn chip-icon" id="btnLimits" title="限紅自選">🎚</button>
+        <button class="iconbtn chip-icon" id="btnStats" title="戰績">📊戰績</button>
+        <button class="iconbtn chip-icon" id="btnDaily" title="每日免費籌碼">🎁免費</button>
+        <button class="iconbtn chip-icon" id="btnLimits" title="限紅自選">🎚限紅</button>
         <button class="iconbtn chip-icon" id="btnAi" title="陪玩AI管理">🤖AI陪玩</button>
       </div>
       <button class="iconbtn chip-icon" id="btnMute" title="音效" style="flex:0 0 auto;">🔊</button>
