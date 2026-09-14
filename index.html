@@ -566,7 +566,65 @@
   min-width:0;
   box-sizing:border-box;
 }
+/* ===== 大路標題行 圖案掣：每個唔同底色 ===== */
+.follow-icons-header .iconbtn{
+  border:1px solid rgba(255,255,255,.25);
+  color:#fff;
+  text-shadow:0 1px 2px rgba(0,0,0,.6);
+  transition:filter .15s, transform .12s;
+}
+.follow-icons-header .iconbtn:hover{ filter:brightness(1.15); }
+.follow-icons-header .iconbtn:active{ transform:scale(.94); }
 
+/* 📊 戰績 — 藍 */
+#btnStats{
+  background:linear-gradient(180deg,#3d8bff,#1f5fc4);
+  border-color:#7bb4ff;
+}
+
+/* 🎁 免費 — 金 */
+#btnDaily{
+  background:linear-gradient(180deg,#ffd479,#e0a800);
+  border-color:#ffe6a3;
+  color:#3a2500;
+  text-shadow:none;
+}
+
+/* 🎚 限紅 — 紫 */
+#btnLimits{
+  background:linear-gradient(180deg,#b07dff,#7b3ff2);
+  border-color:#d4b3ff;
+}
+
+/* 🤖 AI陪玩 — 綠 */
+#btnAi{
+  background:linear-gradient(180deg,#4ade80,#16a34a);
+  border-color:#a3f0bf;
+  color:#062a12;
+  text-shadow:none;
+}/* ===== 🔊 喇叭：永遠黃底（靜音 / 未靜音都係黃） ===== */
+#btnMute, #btnMute.on{
+  background:linear-gradient(180deg,#ffd479,#e6a417) !important;
+  color:#241a00 !important;
+  border:1px solid #ffb347 !important;
+  box-shadow:none !important;
+}
+#btnMute:active{ transform:scale(.94); }
+
+/* ===== 🤖 自動掣：預設（停止）＝紅色 ===== */
+#btnAuto{
+  background:linear-gradient(180deg,#ff7676,#c0392b) !important;
+  color:#fff !important;
+  border:1px solid #ff9a9a !important;
+  box-shadow:0 0 8px rgba(255,80,80,.45) !important;
+}
+/* ===== 🤖 自動掣：開啟＝綠色 ===== */
+#btnAuto.on{
+  background:linear-gradient(180deg,#5fffa0,#1faf5a) !important;
+  color:#06240f !important;
+  border:1px solid #3fdf7a !important;
+  box-shadow:0 0 10px rgba(47,175,90,.7) !important;
+}
 /* 大路標題行本身強制 nowrap，唔會把掣迫落第二行 */
 .road-header{ flex-wrap:nowrap; }
 #followStatus{ text-align:left; }   /* 直版做一行：狀態在統計左邊，文字靠左；橫版同樣靠左 */
