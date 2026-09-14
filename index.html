@@ -902,7 +902,6 @@
       <div id="followIconsHeader" class="follow-icons-header" style="flex:0 0 auto;display:flex;align-items:center;gap:3px;min-width:0;">
         <button class="iconbtn chip-icon" id="btnStats" title="戰績">📊</button>
         <button class="iconbtn chip-icon" id="btnDaily" title="每日免費籌碼">🎁</button>
-        <button class="iconbtn chip-icon" id="btnLlm" title="AI腦即時聊天(本地Ollama)">🧠</button>
         <button class="iconbtn chip-icon" id="btnLimits" title="限紅自選">🎚</button>
         <button class="iconbtn chip-icon" id="btnAi" title="陪玩AI管理">🤖</button>
       </div>
@@ -3656,16 +3655,7 @@ document.getElementById('aiStop').addEventListener('click',()=>{
   document.getElementById('aiModal').classList.remove('show');
   if(ais.length && confirm('確定移除全部 '+ais.length+' 個 AI 陪玩？')){ ais=[]; updateAiBalances(); renderAiList(); saveAiList(); showToast('🤖 已移除全部 AI'); }
 });
-document.getElementById('aiExit').addEventListener('click',()=>{ document.getElementById('aiModal').classList.remove('show'); });
-document.getElementById('btnMute').addEventListener('click',()=>{ mute=!mute; const m=document.getElementById('btnMute'); m.textContent=mute?'🔇':'🔊'; if(mute){ m.classList.add('on'); m.style.background='linear-gradient(180deg,#ffd479,#e6a417)'; m.style.color='#241a00'; m.style.border='1px solid #ffb347'; } else { m.classList.remove('on'); m.style.background=''; m.style.color=''; m.style.border=''; } if(!mute) sndChip(); });
-document.getElementById('btnLlm').addEventListener('click',()=>{
-  LLM_CHAT = !LLM_CHAT;
-  localStorage.setItem('bac_llmchat', LLM_CHAT?'1':'0');
-  document.getElementById('btnLlm').textContent = LLM_CHAT?'🧠':'🧠';
-  document.getElementById('btnLlm').style.opacity = LLM_CHAT?'1':'0.4';
-  if(LLM_CHAT){ showToast('🧠 AI腦開啟（本地 Ollama 即時聊天；手機要同 PC 同一 WiFi）'); }
-  else { showToast('🧠 AI腦關閉（用返預製句）'); }
-});
+
 // 玩家顯示名（陪玩資金區/投注格用）：冇改名就顯「你」，改咗就顯名
 function playerTag(){
   try{ const n=localStorage.getItem('bac_player_name'); return n && n.trim() ? n.trim() : '你'; }
