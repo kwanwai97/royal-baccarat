@@ -928,6 +928,17 @@
     .bet .chips-stack{ min-height:12px; margin-top:1px; }
     .betrow.bottom .bet .chips-stack{ min-height:16px; margin-top:1px; }  /* 橫版底列收: 52→48 */
     .chip{ width:26px; height:26px; font-size:8px; }}
+
+.chip.c100k{ background:linear-gradient(145deg,#2a2a2a,#111); color:#ffd479; border-color:#d4af37; }
+.chip.c500k{ background:linear-gradient(145deg,#4a1a6a,#2a0a4a); color:#f0c0ff; border-color:#c070ff; }
+.chip.c1m{ background:linear-gradient(145deg,#6a1010,#3a0505); color:#ffd0d0; border-color:#ff6a6a; }
+#btnMute.muted{
+  background:linear-gradient(180deg,#777,#444) !important;
+  color:#eee !important;
+  border:1px solid #999 !important;
+  box-shadow:none !important;
+  opacity:.95;
+}
 </style>
 </head>
 <body>
@@ -1164,9 +1175,10 @@
     <div class="chip c1k active" data-chip="1000">1K</div>
     <div class="chip c5k" data-chip="5000">5K</div>
     <div class="chip c10k" data-chip="10000">10K</div>
+    <div class="chip c50k" data-chip="50000">50K</div>
     <div class="chip c100k" data-chip="100000">100K</div>
     <div class="chip c500k" data-chip="500000">500K</div>
-    <div class="chip c1m"   data-chip="1000000">1M</div>
+    <div class="chip c1m" data-chip="1000000">1M</div>
   </div>
   <button class="btn shuffle vbtn" id="btnShuffle" title="重新洗牌"><span class="vchar">洗</span><span class="vchar">牌</span></button>
   <button class="btn clear vbtn" id="btnClear"><span class="vchar">清</span><span class="vchar">除</span></button>
@@ -1225,9 +1237,9 @@
 <div class="modal" id="limitsModal">
   <div class="modal-box">
     <h3>🎚 限紅自選</h3>
-    <div class="stat-row"><span>最低注（每注）</span><input id="limitMinInput" type="number" min="100" step="100" value="1000" style="width:110px; background:#1a1a1a; color:var(--gold2); border:1px solid var(--goldd); border-radius:6px; padding:4px;"></div>
-    <div class="stat-row"><span>最高注（每注）</span><input id="limitMaxInput" type="number" min="1000" step="1000" value="50000" style="width:110px; background:#1a1a1a; color:var(--gold2); border:1px solid var(--goldd); border-radius:6px; padding:4px;"></div>
-    <div class="quest-reward" id="limitsTip">預設：最低 1,000 ／ 最高 50,000</div>
+    <div class="stat-row"><span>個人最低注（每一門）</span><input id="limitMinInput" type="number" min="100" max="100000000" step="100" value="1000" style="width:110px; background:#1a1a1a; color:var(--gold2); border:1px solid var(--goldd); border-radius:6px; padding:4px;" max="100000000"></div>
+    <div class="stat-row"><span>個人最高注（每一門）</span><input id="limitMaxInput" type="number" min="1000" max="100000000" step="1000" value="50000" style="width:110px; background:#1a1a1a; color:var(--gold2); border:1px solid var(--goldd); border-radius:6px; padding:4px;"></div>
+    <div class="quest-reward" id="limitsTip">個人單注限紅（唔係全枱總額）。預設 1,000／50,000，可設 500000／5000000</div>
     <button class="modal-close" id="btnSaveLimits" style="background:#2faf5a;">儲存限紅</button>
     <button class="modal-close" id="btnCloseLimits">關閉</button>
   </div>
@@ -1241,7 +1253,7 @@ function cardValue(r){ if(r==='A')return 1; if(r==='10'||r==='J'||r==='Q'||r==='
 function buildShoe(decks=8){ const s=[]; for(let d=0;d<decks;d++) for(const su of SUITS) for(const r of RANKS) s.push({suit:su,rank:r,value:cardValue(r)}); return s; }
 function shuffle(a){ for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
 function handTotal(cards){ let s=0; for(const c of cards)s+=c.value; return s%10; }
-function bankerShouldDraw(bt,pt){ if(bt>=7)return false; if(bt===6)return pt===6; if(bt===5)return [4,5,6,7].includes(pt); if(bt===4)return [2,3,4,5,6,7].includes(pt); if(bt===3)return pt!==8; return true; }
+function bankerShouldDraw(bt,pt){ if(bt>=7)return false; if(bt===6)return pt===6||pt===7; if(bt===5)return [4,5,6,7].includes(pt); if(bt===4)return [2,3,4,5,6,7].includes(pt); if(bt===3)return pt!==8; return true; }
 
 /* ===================== 遊戲狀態 ===================== */
 let shoe=[], shoeDrawn=0;
@@ -1252,8 +1264,8 @@ let currentChip=1000;
 let bets={player:0,banker:0,tie:0,ppair:0,bpair:0,big:0,small:0,luck6:0,luck7:0};
 let lastBets=null;
 // 升級⑧ 限紅自選（玩家自設最低/最高每注，持久化）
-let limitMin=1000, limitMax=50000;
-function loadLimits(){ try{ const l=JSON.parse(localStorage.getItem('bac_limits')); if(l&&l.min>0&&l.max>=l.min){ limitMin=l.min; limitMax=l.max; } }catch(e){} }
+let limitMin=1000, limitMax=50000; // 個人單注最低／最高（唔係全枱總額）
+function loadLimits(){ try{ const l=JSON.parse(localStorage.getItem('bac_limits')); if(l&&l.min>0&&l.max>=l.min){ limitMin=Math.floor(+l.min)||limitMin; limitMax=Math.floor(+l.max)||limitMax; } }catch(e){} }
 function saveLimits(){ try{ localStorage.setItem('bac_limits',JSON.stringify({min:limitMin,max:limitMax})); }catch(e){} }
 let dealing=false;
 let autoOn=false;        // 自動進行中旗標（setControls 會保持 DEAL 掣停用）
@@ -1265,8 +1277,30 @@ let sessionStartBalance=50000;
 let shoeStats={ round:0, pWin:0, bWin:0, tie:0, ppair:0, bpair:0, luck6:0, luck7:0, lastCards:0 };
 let shoeHumanBets=[];  // 這一靴牌嘅人類投注明細（洗牌開新靴清零，跨 reload 保留直到洗牌）
 let mute=false;
+function loadMute(){ try{ mute = localStorage.getItem('bac_mute')==='1'; }catch(e){} }
+function saveMute(){ try{ localStorage.setItem('bac_mute', mute?'1':'0'); }catch(e){} }
+function applyMuteUi(){
+  const btn=document.getElementById('btnMute'); if(!btn) return;
+  btn.textContent = mute ? '🔇' : '🔊';
+  btn.title = mute ? '音效已關（撳開）' : '音效已開（撳關）';
+  btn.setAttribute('aria-pressed', mute ? 'true' : 'false');
+  btn.classList.toggle('muted', !!mute);
+  btn.classList.toggle('on', !mute);
+}
+function toggleMute(ev){
+  if(ev){ try{ ev.preventDefault(); ev.stopPropagation(); }catch(e){} }
+  mute = !mute; saveMute(); applyMuteUi();
+  if(mute){
+    try{ if(window.speechSynthesis) speechSynthesis.cancel(); }catch(e){}
+    try{ ttsQueue.forEach(it=>{ try{ if(it.done) it.done(); }catch(e){} }); ttsQueue=[]; ttsBusy=false; }catch(e){}
+    showToast('🔇 音效已關閉');
+  } else {
+    showToast('🔊 音效已開啟');
+  }
+}
+loadMute();
 
-const LIMIT_MIN=1000, LIMIT_MAX=20000, TABLE_MAX=50000;
+const LIMIT_MIN=1000; // AI 離枱門檻；玩家個人限紅用 limitMin/limitMax
 const STREAK_BONUS=[0,0,0,0.02,0.05,0.10,0.15,0.20,0.30,0.50]; // 連勝第3局起獎金比例(追加彩金)
 
 /* ===================== 路單系統 (正確賭場演算法) ===================== */
@@ -1655,12 +1689,34 @@ function flyChip(k){
 
 function placeBet(k){
   if((dealing && !betting) || settled) return;   // 發牌中(非落注期)或結算中不可落注；落注倒數期(betting=true)人手可照落/跟注
-  if(currentChip<limitMin){ showToast('⚠ 單注低過限紅最低 '+fmt(limitMin)); return; }
-  if(bets[k]+currentChip>limitMax){ showToast('⚠ 單注超過限紅最高 '+fmt(limitMax)); return; }
-  let total=0; for(const x in bets) total+=bets[x];
-  if(total+currentChip>TABLE_MAX){ showToast('⚠ 全桌注額超過 '+fmt(TABLE_MAX)); return; }
+  // 限紅 = 個人單注上下限：最低可疊注達標；最高以單一門檻計（唔限全枱總額）
+  if(bets[k]+currentChip>limitMax){ showToast('⚠ 呢門單注超過個人限紅最高 '+fmt(limitMax)); return; }
   if(balance<currentChip){ showToast('⚠ 餘額不足（剩 '+fmt(balance)+'）'); return; }
   balance -= currentChip; bets[k]+=currentChip; updateBalance(); updateAiBalances(); updateBetDisplay(); sndChip(); flyChip(k);
+}
+function betsMeetMinLimit(){
+  for(const k in bets){ if(bets[k]>0 && bets[k]<limitMin) return false; }
+  return true;
+}
+function betsBelowMinList(){
+  const names={player:'閒',banker:'莊',tie:'和',ppair:'閒對',bpair:'莊對',big:'大',small:'細',luck6:'幸運6',luck7:'幸運7'};
+  const bad=[]; for(const k in bets){ if(bets[k]>0 && bets[k]<limitMin) bad.push((names[k]||k)+' '+fmt(bets[k])); }
+  return bad;
+}
+function refreshChipBarForLimits(){
+  document.querySelectorAll('.chip[data-chip]').forEach(el=>{
+    const v=+el.dataset.chip;
+    if(v>=100000){ el.style.display = (limitMax>=v || limitMin>=Math.floor(v/5)) ? '' : 'none'; }
+  });
+  const cur=document.querySelector('.chip.active');
+  if(cur && cur.style.display==='none'){
+    const vis=[...document.querySelectorAll('.chip[data-chip]')].filter(c=>c.style.display!=='none');
+    if(vis.length){
+      document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
+      vis[vis.length-1].classList.add('active');
+      currentChip=+vis[vis.length-1].dataset.chip;
+    }
+  }
 }
 function clearBets(force){ if(dealing && !betting && !force)return; if(!settled){ const refund=Object.values(bets).reduce((a,b)=>a+b,0); balance+=refund; } bets={player:0,banker:0,tie:0,ppair:0,bpair:0,big:0,small:0,luck6:0,luck7:0}; updateBalance(); updateAiBalances(); updateBetDisplay(); document.querySelectorAll('.chips-stack .pc.hot').forEach(e=>e.classList.remove('hot')); }
 // 旺AI跟注標記：只係佢投注格入面個注碼數字變螢光綠(同資金區旺AI色一致)，唔加框唔變格
@@ -1741,7 +1797,8 @@ function bettingPhase(sec){
   });
 }
 function repeatBets(){ if((dealing && !betting)||!lastBets)return; let total=0; for(const x in lastBets) total+=lastBets[x];
-  if(total>TABLE_MAX||balance<total){ showToast('⚠ 餘額不足重複（剩 '+fmt(balance)+'）'); return; }
+  for(const x in lastBets){ if(lastBets[x]>limitMax){ showToast('⚠ 重複注碼有門超過個人限紅最高 '+fmt(limitMax)); return; } }
+  if(balance<total){ showToast('⚠ 餘額不足重複（剩 '+fmt(balance)+'）'); return; }
   balance-=total; bets=Object.assign({},lastBets); updateBalance(); updateAiBalances(); updateBetDisplay(); sndChip();
 }
 // 升級⑨ 跟旺AI：搵連勝最高嘅AI，你跟佢主注邊+同樣注額（落注期用）
@@ -1900,7 +1957,7 @@ function genFunnyLine(ai, ctx) {
   funnyPool.push('你話跟莊定跟閒？我話跟運氣，運氣跟我都唔得😼');
   // 對句子（對仗押韻）
   funnyPool.push('贏一鋪笑哈哈，輸一鋪西口西面🥜');
-  funnyPool.push('跟紅頂白係智慧，反手清袋係本事💪');
+  funnyPool.push('跟紅頂白係智慧，反手返本係本事💪');
   funnyPool.push('閒家威我就跟閒，莊家威我就跟莊，跟到甩皮先算數🔥');
   funnyPool.push('一局定生死，半注見真章，手唔順就當冇嚟過😐');
   funnyPool.push('旺起上嚟擋都擋唔住，衰起上嚟推都推唔走🎢');
@@ -2270,6 +2327,10 @@ async function deal(auto){
   if(total===0 && auto!==true && ais.length===0 && lastPredictSide){
     showToast('🔍 演示模式 – 僅記錄預測命中率');   // 無下注照開牌，結算唔影響餘額
   }
+  // 開牌前：每個有下注嘅門檻必須 ≥ 限紅最低（允許逐粒籌碼疊上去）
+  if(total>0 && !betsMeetMinLimit()){
+    showToast('⚠ 未達限紅最低 '+fmt(limitMin)+'（'+betsBelowMinList().join('、')+'）'); return;
+  }
   lastFollowSide='';   // 本局先清零跟注邊，落注期跟注函數會寫返；冇跟就保持空（recordFollowHit 會 skip）
   if(shoeDrawn>=shoeCut || shoeStats.round>=60){ await doShuffle(); }
   setControls(false);   // 禁 DEAL/清除/重複掣（唔設 dealing，等落注期人類照落得）
@@ -2543,7 +2604,7 @@ function lockFollow(v){ ['btnFollowPredict2','btnFollowRev','btnFollowHot','btnF
 /* ===================== 戰績 localStorage ===================== */
 function loadStats(){
   try{ const s=JSON.parse(localStorage.getItem('bac_stats')); if(s) stats=Object.assign(stats,s); }catch(e){}
-  try{ const b=localStorage.getItem('bac_balance'); if(b!==null) balance=Math.max(0,+b); }catch(e){}  // 直接用存檔餘額，唔好用 TABLE_MAX(桌注上限)截，否則贏多過5萬reload變返5萬
+  try{ const b=localStorage.getItem('bac_balance'); if(b!==null) balance=Math.max(0,+b); }catch(e){}  // 直接用存檔餘額，唔好用舊桌注上限截，否則贏多過5萬reload變返5萬
   try{ const d=JSON.parse(localStorage.getItem('bac_daily')); if(d){ dailyClaim=d; } }catch(e){}
   try{ const p=JSON.parse(localStorage.getItem('bac_pred')); if(p){ predHit=p.hit||0; predTotal=p.total||0; } }catch(e){}  // 預測命中統計恢復
   try{ const pp=JSON.parse(localStorage.getItem('bac_pred_perm')); if(pp){ predPermW=pp.w||0; predPermL=pp.l||0; } }catch(e){}  // 永久勝負紀錄恢復（跨靴保留，唔受洗牌影響）
@@ -3392,6 +3453,8 @@ document.querySelectorAll('.bet[data-bet]').forEach(b=>b.addEventListener('click
 document.getElementById('btnClear').addEventListener('click',clearBets);
 document.getElementById('btnRepeat').addEventListener('click',repeatBets);
 document.getElementById('btnDeal').addEventListener('click',function(){ if(autoOn){ showToast('自動開牌進行中，請先按「自動」停止'); return; } deal(); });
+document.getElementById('btnMute').addEventListener('click', toggleMute);
+applyMuteUi();
 function autoFollowPredict(reverse){
   const pr=predictScore();
   if(!pr.side){   // 觀望唔跟（正常）：仍要顯示一句，話畀用家知而家觀望緊
@@ -3904,20 +3967,26 @@ document.getElementById('btnAi').addEventListener('click',()=>{ document.getElem
 document.getElementById('btnLimits').addEventListener('click',()=>{
   document.getElementById('limitMinInput').value=limitMin;
   document.getElementById('limitMaxInput').value=limitMax;
+  document.getElementById('limitsTip').textContent='而家：個人單注最低 '+fmt(limitMin)+' ／ 最高 '+fmt(limitMax)+'（唔係全枱總額）';
   document.getElementById('limitsModal').classList.add('show');
 });
 document.getElementById('btnCloseLimits').addEventListener('click',()=>document.getElementById('limitsModal').classList.remove('show'));
 document.getElementById('btnSaveLimits').addEventListener('click',()=>{
-  const mn=Math.max(100, Math.floor(+document.getElementById('limitMinInput').value||1000));
-  const mx=Math.max(mn, Math.floor(+document.getElementById('limitMaxInput').value||50000));
+  const rawMin=String(document.getElementById('limitMinInput').value||'').trim().replace(/[,，\s]/g,'');
+  const rawMax=String(document.getElementById('limitMaxInput').value||'').trim().replace(/[,，\s]/g,'');
+  const mn=Math.max(100, Math.floor(Number(rawMin)||1000));
+  const mx=Math.max(mn, Math.floor(Number(rawMax)||50000));
+  if(!Number.isFinite(mn) || !Number.isFinite(mx)){ showToast('⚠ 請輸入有效數字'); return; }
+  if(mx>100000000){ showToast('⚠ 最高限紅唔可以超過 1 億'); return; }
   limitMin=mn; limitMax=mx; saveLimits();
-  document.getElementById('limitsTip').textContent='已設：最低 '+fmt(limitMin)+' ／ 最高 '+fmt(limitMax);
-  showToast('🎚 限紅已設：最低 '+fmt(limitMin)+' 最高 '+fmt(limitMax));
+  document.getElementById('limitsTip').textContent='已設：個人單注最低 '+fmt(limitMin)+' ／ 最高 '+fmt(limitMax);
+  showToast('🎚 個人限紅已設：最低 '+fmt(limitMin)+' 最高 '+fmt(limitMax));
   document.getElementById('limitsModal').classList.remove('show');
+  refreshChipBarForLimits();
 });
 
 
-loadStats(); loadRoads(); loadAiList(); loadQuest(); loadLimits(); updateAiBalances(); renderAiList();   // 修復: 開局重畫AI列表(否則reload後下方無卡片)
+loadStats(); loadRoads(); loadAiList(); loadQuest(); loadLimits(); loadMute(); applyMuteUi(); refreshChipBarForLimits(); updateAiBalances(); renderAiList();   // 修復: 開局重畫AI列表
 updatePredStats(); updateFollowStats();   // 開局即時刷預測/跟注統計行（載入 localStorage 後）
 sessionStartBalance=balance;   // 記低開局餘額，畀「本場淨贏/輸」用
 
